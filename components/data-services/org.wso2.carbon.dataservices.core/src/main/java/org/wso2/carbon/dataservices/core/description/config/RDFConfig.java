@@ -1,0 +1,77 @@
+/*
+ *  Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ *  WSO2 Inc. licenses this file to you under the Apache License,
+ *  Version 2.0 (the "License"); you may not use this file except
+ *  in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ *
+ */
+package org.wso2.carbon.dataservices.core.description.config;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.dataservices.common.DBConstants;
+import org.wso2.carbon.dataservices.common.DBConstants.DataSourceTypes;
+import org.wso2.carbon.dataservices.core.DBUtils;
+import org.wso2.carbon.dataservices.core.DataServiceFault;
+import org.wso2.carbon.dataservices.core.engine.DataService;
+
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+
+/**
+ * This class represents a RDF based data source configuration.
+ */
+public class RDFConfig extends Config {
+
+	private static final Log log = LogFactory.getLog(ExcelConfig.class);
+	
+	private String rdfDataSourcePath;
+	
+	public RDFConfig(DataService dataService, String configId, Map<String, String> properties) {
+		super(dataService, configId, DataSourceTypes.RDF, properties);
+		
+		this.rdfDataSourcePath = this.getProperty(DBConstants.RDF.DATASOURCE).trim();
+	}
+
+	public Model createRDFModel() throws IOException, DataServiceFault {
+		InputStream in = DBUtils.getInputStreamFromPath(this.getRDFDataSourcePath());
+		Model model = ModelFactory.createMemModelMaker().createDefaultModel();
+		model.read(in,null);		
+		return model;
+	}
+	
+	public String getRDFDataSourcePath() {
+		return rdfDataSourcePath;
+	}
+	
+	@Override
+	public boolean isActive() {
+		try {
+			Model model = this. createRDFModel();
+			return model != null;
+		} catch (Exception e) {
+			log.error("Error in checking RDF config availability", e);
+			return false;
+		}
+	}
+	
+	public void close() {
+		/* nothing to close */
+	}
+	
+}

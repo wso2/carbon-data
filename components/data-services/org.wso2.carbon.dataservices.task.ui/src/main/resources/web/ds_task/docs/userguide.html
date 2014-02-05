@@ -1,0 +1,139 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ ~ Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~
+ ~ WSO2 Inc. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~    http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied.  See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+    <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+    <link href="../../admin/css/documentation.css" rel="stylesheet" type="text/css" media="all" />
+    <title>Data Services Scheduled Tasks - User Guide</title></head>
+
+
+<body>
+<h1>Scheduled Tasks</h1>
+
+<h2>Content</h2><div class="toc"><ul><li><a href="#Introducti">Introduction</a></li>
+    <li><a href="#addNewTask">Adding New Tasks</a></li>
+    <li><a href="#configTask">Configuring Tasks</a></li>
+    <li><a href="#coordination">Coordination Server Clustering</a></li>
+    </ul>
+    </div><h2 id="Introducti">Introduction</h2>
+        <p>The Scheduled Tasks feature in Data Services Server can be used to invoke a particular operation periodically.
+           The scheduled tasks functionality is useful when a specific data service operation, which is scheduled to execute, is associated with an event-trigger. So when
+            a scheduled task is run, the event can be automatically fired by evaluating the even-trigger criteria.
+            As an example, if we have scheduled a task on &quot;getProductQuantity&quot; operation, and we can set an event (e.g. sending an email) if quantity has gone down to some level.
+        </p>
+        <p>We have added task coordination capability as well, which will be useful to coordinate tasks in a DSS clustered environment.
+           How to enable coordination functionality:<br />
+            By default coordination functionality is disable in tasks. You can enable it using configuration file &quot;coordination-client-config.xml&quot; located in &quot;$DSS_ROOT/repository/conf/advanced/&quot; directory.
+            Set &quot;&lt;CoordinationClientConfiguration enabled=&quot;true&quot;&gt;&quot; and define the coordination server host and port as well. 
+            You need to run a coordination provider server (ZooKeeper). If you want, the Carbon coordination feature can be installed instead of running external ZooKeeper server. Multiple coordination servers can be used to handle fail-over.
+        </p>
+        <p>Following sample configuration shows the coordination enabled coordination-client-config.xml </p>
+        <p><pre>
+            &lt;CoordinationClientConfiguration enabled=&quot;true&quot;&gt;
+                &lt;Servers&gt;
+                    &lt;Server host=&quot;localhost&quot; port=&quot;2181&quot;/&gt;
+                &lt;/Servers&gt;
+                &lt;SessionTimeout&gt;5000&lt;/SessionTimeout&gt;
+            &lt;/CoordinationClientConfiguration&gt;
+            </pre>
+        </p>
+        <p>When the tasks are run in a clustered environment, when multiple tasks are already registered/scheduled, and if the servers were shut down, there will be a problem when the
+            servers are started up, where a single server, who started first, would try to schedule all the tasks inside himself, since he can only see his server available. To handle
+            this situation, there is a mechanism in scheduled tasks, where given a server count parameter, it will wait for a certain number of servers to start up before scheduling any tasks.
+            So when all the required servers are started up, it will distribute the tasks among the identified task servers.
+            The startup server count is given by setting the Java system property &quot;task.server.count&quot;.
+            <br/>
+
+            eg: ./wso2server.sh -Dtask.server.count=3 <br/>
+            Here, all servers will wait until it detect three servers in total in the cluster.
+        </p>
+
+        <p>
+           NOTE: For scheduling tasks for invoking data service operations, only data services with an HTTP endpoint is available for scheduling, and also, only no input parameter operations
+            can be used in scheduling.
+        </p>
+        
+            <p><h2 id="addNewTask">Adding New Tasks</h2></p>
+            
+            <p>Click on &quot;Add New Task&quot; option</p>
+            <p>Then you will be redirected to the Task 
+                Configuration page</p>
+            
+            <img alt="task" src="images/task.png"/>
+           <p>Figure 1: Adding a New Task</p>
+
+            <p><h2 id="configTask">Configuring Tasks</h2></p>
+	     <p>Task can be configured to invoke a data-service operation or it can be configured to use custom java class which has implemented org.wso2.carbon.dataservices.task.DataTask interface. </p>
+             <p>The following set of properties should be defined in order to successfully create a task</p>
+
+           <ul>
+            <li>Task Name : Name of the task</li>
+            <li>Task Repeat Count : Number of cycles to be executed. If you provide repeat count as &quot;0&quot; then task will execute once and if you provide repeat count as &quot;1&quot; then task will execute twice and so on.</li>
+            <li>Task Interval : Time gap between to consecutive task executions</li>
+            <li>Start Time : Starting time of the scheduled task. If this is not given, then the task will start at the moment the task is scheduled.</li>
+	   </ul>
+           <p>Parameters required to define a task that use data-service operation</p>
+	   <ul>
+            <li>Data Service Name : Name of the relevant data service</li>
+            <li>Operation Name  : Data service operation to be execute from the task.</li>
+           </ul> 
+           <p>Parameters required to define a task that use custom java class</p>
+	   <ul>
+            <li>DataService Task Class : Name of the java class which has implemented org.wso2.carbon.dataservices.task.DataTask interface.</li>
+           </ul>    
+
+	    <p>After configuring the task with appropriate values, Hit the &quot;Schedule&quot; button to schedule it.</p>
+
+        <p><h2 id="coordination">Coordination Server Clustering</h2></p>
+
+        <p>
+            The coordination servers, which are Apache ZooKeeper servers itself can be clustered to cater the fail over scenarios. This is done by first creating a ZooKeeper cluster
+            configuration for each ZooKeeper server instance and starting them up, the ZooKeeper configuration can be found in &quot;$ZooKeeperROOT/conf/zoo.cfg&quot;, or in the embedded coordination server feature,
+            it will be available at &quot;$DSS_ROOT/repository/conf/advanced/zoo.cfg&quot;. A detailed guide on configuring ZooKeeper server for clustering can be found at
+            <a href="http://zookeeper.apache.org/doc/r3.2.2/zookeeperAdmin.html#sc_zkMulitServerSetup">http://zookeeper.apache.org/doc/r3.2.2/zookeeperAdmin.html#sc_zkMulitServerSetup</a>.
+            In the client side of the coordination functionality, the file &quot;$DSS_ROOT/repository/conf/advanced/coordination-client-config.xml&quot; will resemble the following for multiple clustered
+            coordination server entries. <br/>
+
+        <pre>
+            &lt;CoordinationClientConfiguration enabled=&quot;true&quot;&gt;
+                &lt;Servers&gt;
+                    &lt;Server host=&quot;localhost&quot; port=&quot;2181&quot;/&gt;
+                    &lt;Server host=&quot;192.168.0.2&quot; port=&quot;2181&quot;/&gt;
+                    &lt;Server host=&quot;192.168.0.3&quot; port=&quot;2181&quot;/&gt;
+                &lt;/Servers&gt;
+                &lt;SessionTimeout&gt;5000&lt;/SessionTimeout&gt;
+            &lt;/CoordinationClientConfiguration&gt;
+        </pre> 
+
+            So in the above configuration, we have pointed to three ZooKeeper servers residing on the localhost, 192.168.0.2 and 192.168.0.3 locations, all with client port 2181.
+
+        </p>
+        <div class="clear">
+</div>
+<div id="footer">
+    <div class="xright">&#169;
+        2011
+        WSO2 Inc
+
+    </div>
+    <div class="clear">
+        <hr/>
+    </div>
+</div>
+</body>
+</html>

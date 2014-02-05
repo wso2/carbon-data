@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ ~ Copyright (c) 2009-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~
+ ~ Licensed under the Apache License, Version 2.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~      http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing, software
+ ~ distributed under the License is distributed on an "AS IS" BASIS,
+ ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ ~ See the License for the specific language governing permissions and
+ ~ limitations under the License.
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <parent>
+        <groupId>org.wso2.carbon</groupId>
+        <artifactId>carbon-components</artifactId>
+        <version>4.3.0-SNAPSHOT</version>
+        <relativePath>../</relativePath>
+   </parent>
+    
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.wso2.carbon</groupId>
+    <artifactId>data-services</artifactId>
+    <packaging>pom</packaging>
+    <name>WSO2 Carbon - Data Services Aggregator Module</name>
+    <url>http://wso2.org</url>
+
+            <modules>
+                <module>org.wso2.carbon.dataservices.common</module>
+                <module>org.wso2.carbon.dataservices.core</module>
+                <module>org.wso2.carbon.dataservices.ui</module>
+		<module>org.wso2.carbon.dataservices.task</module>
+		<module>org.wso2.carbon.dataservices.task.ui</module>
+                <module>org.wso2.carbon.dataservices.sql.driver</module>
+            </modules>
+
+    <build>
+
+    <pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-scr-plugin</artifactId>
+                <version>1.0.10</version>
+                <executions>
+                    <execution>
+                        <id>generate-scr-scrdescriptor</id>
+                        <goals>
+                            <goal>scr</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </pluginManagement>
+    </build>
+
+    <properties>
+        <opencsv.version.data-services>1.8</opencsv.version.data-services>
+        <wso2carbon.version.data-services>${wso2carbon.version}</wso2carbon.version.data-services>
+        <wso2carbon.version.eventing.data-services>${wso2carbon.version.data-services}</wso2carbon.version.eventing.data-services>
+        <jena-arq.wso2.version.data-services>1.0.0.wso2v1</jena-arq.wso2.version.data-services>
+        <gdata-core.wso2.version.data-services>${gdata-core.wso2.version}</gdata-core.wso2.version.data-services>
+        <gdata-spreadsheet.wso2.version.data-services>${gdata-spreadsheet.wso2.version}</gdata-spreadsheet.wso2.version.data-services>
+        <poi.wso2.version.data-services>${poi.wso2.version}</poi.wso2.version.data-services>
+        <axis2.osgi.version.range.data-services>${axis2.osgi.version.range}</axis2.osgi.version.range.data-services>
+        <web-harvest.wso2.version.data-services>2.0.0.wso2v1</web-harvest.wso2.version.data-services>
+        <saxon.wso2.version.data-services>8.9.0.wso2v2</saxon.wso2.version.data-services>
+        <commons-httpclient.wso2.version.data-services>${commons-httpclient.wso2.version}</commons-httpclient.wso2.version.data-services>
+        <bsh.wso2.version.data-services>1.3.0.wso2v1</bsh.wso2.version.data-services>
+        <htmlcleaner.version.data-services>2.1.0.wso2v1</htmlcleaner.version.data-services>
+        <h2.engine.version>1.2.140.wso2v3</h2.engine.version>
+    </properties>
+    
+</project>

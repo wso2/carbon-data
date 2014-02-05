@@ -1,0 +1,101 @@
+<!--
+ ~ Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~
+ ~ WSO2 Inc. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~    http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied.  See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+<component xmlns="http://products.wso2.org/carbon">
+    <menus>
+        <menu>
+            <id>ds_menu</id>
+            <i18n-key>dataservices.menu.text</i18n-key>
+            <i18n-bundle>org.wso2.carbon.dataservices.ui.i18n.Resources</i18n-bundle>
+            <parent-menu>services_add_menu</parent-menu>
+            <link>#</link>
+            <region>region1</region>
+            <order>30</order>
+            <style-class>monitor</style-class>
+            <icon>../data_service/images/data-services.gif</icon>
+            <require-permission>/permission/admin/configure/dataservices</require-permission>
+        </menu>
+
+        <menu>
+            <id>ds_create_menu</id>
+            <i18n-key>dataservices.create.menu.text</i18n-key>
+            <i18n-bundle>org.wso2.carbon.dataservices.ui.i18n.Resources</i18n-bundle>
+            <parent-menu>ds_menu</parent-menu>
+            <link>../ds/serviceDetails.jsp</link>
+            <region>region1</region>
+            <order>5</order>
+            <style-class>manage</style-class>
+            <icon>../data_service/images/data-services-create.gif</icon>
+            <require-permission>/permission/admin/configure/dataservices</require-permission>
+        </menu>
+        
+        <menu>
+            <id>ds_generate_menu</id>
+            <i18n-key>dataservices.generate.menu.text</i18n-key>
+            <i18n-bundle>org.wso2.carbon.dataservices.ui.i18n.Resources</i18n-bundle>
+            <parent-menu>ds_menu</parent-menu>
+            <link>../ds/scriptAddSource.jsp</link>
+            <region>region1</region>
+            <order>5</order>
+            <style-class>monitor</style-class>
+            <icon>../data_service/images/dbsimport.gif</icon>
+            <require-permission>/permission/admin/configure/dataservices</require-permission>
+        </menu>
+        
+        <menu>
+            <id>ds_upload_menu</id>
+            <i18n-key>dataservices.upload.menu.text</i18n-key>
+            <i18n-bundle>org.wso2.carbon.dataservices.ui.i18n.Resources</i18n-bundle>
+            <parent-menu>ds_menu</parent-menu>
+            <link>../ds/upload.jsp</link>
+            <region>region1</region>
+            <order>10</order>
+            <style-class>monitor</style-class>
+            <icon>../data_service/images/data-services-upload.gif</icon>
+            <require-permission>/permission/admin/configure/dataservices</require-permission>
+        </menu>
+
+      <!--  <menu>
+            <id>ds_contract_first_menu</id>
+            <i18n-key>dataservices.contract.first.menu.text</i18n-key>
+            <i18n-bundle>org.wso2.carbon.dataservices.ui.i18n.Resources</i18n-bundle>
+            <parent-menu>ds_menu</parent-menu>
+            <link>../ds/uploadWsdl.jsp</link>
+            <region>region1</region>
+            <order>30</order>
+            <style-class>monitor</style-class>
+            <icon>../data_service/images/data-services-uploadWSDL.gif</icon>
+            <require-permission>/permission/admin/configure/dataservices</require-permission>
+        </menu> -->
+
+    </menus>
+    <FileUploadConfig>
+        <Mapping>
+            <Actions>
+                <Action>dbs</Action>
+            </Actions>
+            <Class>org.wso2.carbon.dataservices.ui.fileupload.DBSFileUploadExecutor</Class>
+        </Mapping>
+        <Mapping>
+            <Actions>
+                <Action>contractFirst</Action>
+            </Actions>
+            <Class>org.wso2.carbon.dataservices.ui.fileupload.WSDLUploadExecutor</Class>
+        </Mapping>
+    </FileUploadConfig>
+</component>
+

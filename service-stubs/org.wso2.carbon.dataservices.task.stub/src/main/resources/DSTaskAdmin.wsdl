@@ -1,0 +1,409 @@
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ns="http://task.dataservices.carbon.wso2.org" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:ax298="http://task.dataservices.carbon.wso2.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://task.dataservices.carbon.wso2.org">
+    <wsdl:documentation>DSTaskAdmin</wsdl:documentation>
+    <wsdl:types>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://task.dataservices.carbon.wso2.org/xsd">
+            <xs:complexType name="DSTaskInfo">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="cronExpression" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="dataTaskClassName" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="endTime" nillable="true" type="xs:dateTime" />
+                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="operationName" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="serviceName" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="startTime" nillable="true" type="xs:dateTime" />
+                    <xs:element minOccurs="0" name="taskCount" type="xs:int" />
+                    <xs:element minOccurs="0" name="taskInterval" type="xs:int" />
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax299="http://task.dataservices.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://task.dataservices.carbon.wso2.org">
+            <xs:import namespace="http://task.dataservices.carbon.wso2.org/xsd" />
+            <xs:element name="scheduleTask">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="dsTaskInfo" nillable="true" type="ax298:DSTaskInfo" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="rescheduleTask">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="dsTaskInfo" nillable="true" type="ax298:DSTaskInfo" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="rescheduleTaskResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="isTaskScheduled">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="taskName" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="isTaskScheduledResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getTaskInfo">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="taskName" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getTaskInfoResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax298:DSTaskInfo" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getNoParamDSOperations">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="dsName" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getNoParamDSOperationsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAllTaskNames">
+                <xs:complexType>
+                    <xs:sequence />
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAllTaskNamesResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAllSchedulableDataServices">
+                <xs:complexType>
+                    <xs:sequence />
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAllSchedulableDataServicesResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="deleteTask">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="taskName" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="deleteTaskRequest">
+        <wsdl:part name="parameters" element="ns:deleteTask" />
+    </wsdl:message>
+    <wsdl:message name="getAllSchedulableDataServicesRequest">
+        <wsdl:part name="parameters" element="ns:getAllSchedulableDataServices" />
+    </wsdl:message>
+    <wsdl:message name="getAllSchedulableDataServicesResponse">
+        <wsdl:part name="parameters" element="ns:getAllSchedulableDataServicesResponse" />
+    </wsdl:message>
+    <wsdl:message name="getAllTaskNamesRequest">
+        <wsdl:part name="parameters" element="ns:getAllTaskNames" />
+    </wsdl:message>
+    <wsdl:message name="getAllTaskNamesResponse">
+        <wsdl:part name="parameters" element="ns:getAllTaskNamesResponse" />
+    </wsdl:message>
+    <wsdl:message name="getTaskInfoRequest">
+        <wsdl:part name="parameters" element="ns:getTaskInfo" />
+    </wsdl:message>
+    <wsdl:message name="getTaskInfoResponse">
+        <wsdl:part name="parameters" element="ns:getTaskInfoResponse" />
+    </wsdl:message>
+    <wsdl:message name="isTaskScheduledRequest">
+        <wsdl:part name="parameters" element="ns:isTaskScheduled" />
+    </wsdl:message>
+    <wsdl:message name="isTaskScheduledResponse">
+        <wsdl:part name="parameters" element="ns:isTaskScheduledResponse" />
+    </wsdl:message>
+    <wsdl:message name="scheduleTaskRequest">
+        <wsdl:part name="parameters" element="ns:scheduleTask" />
+    </wsdl:message>
+    <wsdl:message name="rescheduleTaskRequest">
+        <wsdl:part name="parameters" element="ns:rescheduleTask" />
+    </wsdl:message>
+    <wsdl:message name="rescheduleTaskResponse">
+        <wsdl:part name="parameters" element="ns:rescheduleTaskResponse" />
+    </wsdl:message>
+    <wsdl:message name="getNoParamDSOperationsRequest">
+        <wsdl:part name="parameters" element="ns:getNoParamDSOperations" />
+    </wsdl:message>
+    <wsdl:message name="getNoParamDSOperationsResponse">
+        <wsdl:part name="parameters" element="ns:getNoParamDSOperationsResponse" />
+    </wsdl:message>
+    <wsdl:portType name="DSTaskAdminPortType">
+        <wsdl:operation name="deleteTask">
+            <wsdl:input message="ns:deleteTaskRequest" wsaw:Action="urn:deleteTask" />
+        </wsdl:operation>
+        <wsdl:operation name="getAllSchedulableDataServices">
+            <wsdl:input message="ns:getAllSchedulableDataServicesRequest" wsaw:Action="urn:getAllSchedulableDataServices" />
+            <wsdl:output message="ns:getAllSchedulableDataServicesResponse" wsaw:Action="urn:getAllSchedulableDataServicesResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="getAllTaskNames">
+            <wsdl:input message="ns:getAllTaskNamesRequest" wsaw:Action="urn:getAllTaskNames" />
+            <wsdl:output message="ns:getAllTaskNamesResponse" wsaw:Action="urn:getAllTaskNamesResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="getTaskInfo">
+            <wsdl:input message="ns:getTaskInfoRequest" wsaw:Action="urn:getTaskInfo" />
+            <wsdl:output message="ns:getTaskInfoResponse" wsaw:Action="urn:getTaskInfoResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="isTaskScheduled">
+            <wsdl:input message="ns:isTaskScheduledRequest" wsaw:Action="urn:isTaskScheduled" />
+            <wsdl:output message="ns:isTaskScheduledResponse" wsaw:Action="urn:isTaskScheduledResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="scheduleTask">
+            <wsdl:input message="ns:scheduleTaskRequest" wsaw:Action="urn:scheduleTask" />
+        </wsdl:operation>
+        <wsdl:operation name="rescheduleTask">
+            <wsdl:input message="ns:rescheduleTaskRequest" wsaw:Action="urn:rescheduleTask" />
+            <wsdl:output message="ns:rescheduleTaskResponse" wsaw:Action="urn:rescheduleTaskResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="getNoParamDSOperations">
+            <wsdl:input message="ns:getNoParamDSOperationsRequest" wsaw:Action="urn:getNoParamDSOperations" />
+            <wsdl:output message="ns:getNoParamDSOperationsResponse" wsaw:Action="urn:getNoParamDSOperationsResponse" />
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="DSTaskAdminSoap11Binding" type="ns:DSTaskAdminPortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        <wsdl:operation name="getAllTaskNames">
+            <soap:operation soapAction="urn:getAllTaskNames" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getAllSchedulableDataServices">
+            <soap:operation soapAction="urn:getAllSchedulableDataServices" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="deleteTask">
+            <soap:operation soapAction="urn:deleteTask" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="getTaskInfo">
+            <soap:operation soapAction="urn:getTaskInfo" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="isTaskScheduled">
+            <soap:operation soapAction="urn:isTaskScheduled" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="scheduleTask">
+            <soap:operation soapAction="urn:scheduleTask" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="rescheduleTask">
+            <soap:operation soapAction="urn:rescheduleTask" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getNoParamDSOperations">
+            <soap:operation soapAction="urn:getNoParamDSOperations" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="DSTaskAdminSoap12Binding" type="ns:DSTaskAdminPortType">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        <wsdl:operation name="getAllTaskNames">
+            <soap12:operation soapAction="urn:getAllTaskNames" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getAllSchedulableDataServices">
+            <soap12:operation soapAction="urn:getAllSchedulableDataServices" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="deleteTask">
+            <soap12:operation soapAction="urn:deleteTask" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="getTaskInfo">
+            <soap12:operation soapAction="urn:getTaskInfo" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="isTaskScheduled">
+            <soap12:operation soapAction="urn:isTaskScheduled" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="scheduleTask">
+            <soap12:operation soapAction="urn:scheduleTask" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="rescheduleTask">
+            <soap12:operation soapAction="urn:rescheduleTask" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getNoParamDSOperations">
+            <soap12:operation soapAction="urn:getNoParamDSOperations" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="DSTaskAdminHttpBinding" type="ns:DSTaskAdminPortType">
+        <http:binding verb="POST" />
+        <wsdl:operation name="getAllTaskNames">
+            <http:operation location="getAllTaskNames" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getAllSchedulableDataServices">
+            <http:operation location="getAllSchedulableDataServices" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="deleteTask">
+            <http:operation location="deleteTask" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="getTaskInfo">
+            <http:operation location="getTaskInfo" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="isTaskScheduled">
+            <http:operation location="isTaskScheduled" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="scheduleTask">
+            <http:operation location="scheduleTask" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="rescheduleTask">
+            <http:operation location="rescheduleTask" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getNoParamDSOperations">
+            <http:operation location="getNoParamDSOperations" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="DSTaskAdmin">
+        <wsdl:port name="DSTaskAdminHttpsSoap11Endpoint" binding="ns:DSTaskAdminSoap11Binding">
+            <soap:address location="https://192.168.2.135:9443/services/DSTaskAdmin.DSTaskAdminHttpsSoap11Endpoint/" />
+        </wsdl:port>
+        <wsdl:port name="DSTaskAdminHttpsSoap12Endpoint" binding="ns:DSTaskAdminSoap12Binding">
+            <soap12:address location="https://192.168.2.135:9443/services/DSTaskAdmin.DSTaskAdminHttpsSoap12Endpoint/" />
+        </wsdl:port>
+        <wsdl:port name="DSTaskAdminHttpsEndpoint" binding="ns:DSTaskAdminHttpBinding">
+            <http:address location="https://192.168.2.135:9443/services/DSTaskAdmin.DSTaskAdminHttpsEndpoint/" />
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

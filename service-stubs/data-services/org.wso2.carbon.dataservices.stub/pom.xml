@@ -20,16 +20,17 @@
 
     <parent>
         <groupId>org.wso2.carbon</groupId>
-        <artifactId>carbon-service-stubs</artifactId>
+        <artifactId>data-services-stub</artifactId>
         <version>4.3.0-SNAPSHOT</version>
 	<relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.wso2.carbon</groupId>
-    <artifactId>org.wso2.carbon.dataservices.fileupload.stub</artifactId>
+    <groupId>org.wso2.carbon</groupId> 
+    <artifactId>org.wso2.carbon.dataservices.stub</artifactId>
     <packaging>bundle</packaging>
-    <name>WSO2 Carbon - Data Services File Uploader Stub</name>
+    <name>WSO2 Carbon - Data Services Admin Stub</name>
+    <version>4.3.0-SNAPSHOT</version>
     <url>http://wso2.org</url>
 
     <build>
@@ -48,11 +49,16 @@
                         </goals>
                         <configuration>
                             <tasks>
+                                <path id="wsdl2java.classpath">
+			 <pathelement location="${settings.localRepository}/org/apache/ws/commons/axiom/wso2/axiom/${orbit.version.axiom}/axiom-${orbit.version.axiom}.jar"/>
+                                    <pathelement location="${settings.localRepository}/org/apache/axis2/wso2/axis2-client/${orbit.version.axis2}/axis2-client-${orbit.version.axis2}.jar"/>
+                                    <pathelement location="${settings.localRepository}/org/apache/axis2/wso2/axis2/${orbit.version.axis2}/axis2-${orbit.version.axis2}.jar"/>
+                                </path>
                                 <java classname="org.apache.axis2.wsdl.WSDL2Java" fork="true">
-									<arg line="-uri src/main/resources/DataServiceFileUploader.wsdl -u -uw -o target/generated-code -p org.wso2.carbon.dataservices.ui.fileupload.stub -ns2p http://admin.core.dataservices.carbon.wso2.org=org.wso2.carbon.dataservices.ui.fileupload.stub"/>
-									<classpath refid="maven.dependency.classpath"/>
-									<classpath refid="maven.compile.classpath"/>
-									<classpath refid="maven.runtime.classpath"/>
+                                    <arg line="-uri src/main/resources/DataServiceAdmin.wsdl -u -uw -o target/generated-code -p org.wso2.carbon.dataservices.ui.stub -ns2p http://admin.core.dataservices.carbon.wso2.org=org.wso2.carbon.dataservices.ui.stub.admin,http://admin.core.dataservices.carbon.wso2.org/xsd=org.wso2.carbon.dataservices.ui.stub.admin.xsd,http://org.apache.axis2/xsd=org.wso2.carbon.dataservices.ui.stub.admin.axis2.xsd,http://engine.core.dataservices.carbon.wso2.org/xsd=org.wso2.carbon.dataservices.ui.stub.admin.core.xsd,http://script.core.dataservices.carbon.wso2.org/xsd=org.wso2.carbon.dataservices.ui.stub.admin.core.xsd"/>
+                                    <classpath refid="maven.dependency.classpath"/>
+				    <classpath refid="maven.compile.classpath"/>
+				    <classpath refid="maven.runtime.classpath"/>
 								</java>
                             </tasks>
                         </configuration>
@@ -79,7 +85,7 @@
                     </execution>
                 </executions>
             </plugin>
-                     <plugin>
+             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 
@@ -90,12 +96,9 @@
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <Export-Package>
-                            org.wso2.carbon.dataservices.ui.fileupload.stub.*
+                            org.wso2.carbon.dataservices.ui.stub.*
+                            version="${carbon.platform.package.export.version}"
                         </Export-Package>
-			<Import-Package>
-                            !org.wso2.carbon.dataservices.ui.fileupload.stub.*
-                            javax.activation.*;version="[0.0.0, 1.0.0)"
-                        </Import-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>
                     </instructions>
                 </configuration>
@@ -103,7 +106,7 @@
         </plugins>
     </build>
 
-<dependencies>
+    <dependencies>
         <dependency>
             <groupId>org.apache.axis2.wso2</groupId>
             <artifactId>axis2</artifactId>

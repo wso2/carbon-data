@@ -38,13 +38,11 @@
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.dataservices.task.server.feature</artifactId>
-            <version>${carbon.platform.patch.version.421}</version>
             <type>zip</type>
 	    </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.dataservices.task.ui.feature</artifactId>
-            <version>${carbon.platform.version}</version>
             <type>zip</type>
 	    </dependency>
     </dependencies>
@@ -71,8 +69,8 @@
                                 </properties>
                             </adviceFile>
                             <includedFeatures>
-                                <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.dataservices.task.server.feature:${carbon.platform.patch.version.421}</includedFeatureDef>
-                                <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.dataservices.task.ui.feature:${carbon.platform.version}</includedFeatureDef>
+                                <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.dataservices.task.server.feature</includedFeatureDef>
+                                <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.dataservices.task.ui.feature</includedFeatureDef>
                             </includedFeatures>
                         </configuration>
                     </execution>
@@ -80,7 +78,5 @@
             </plugin>
         </plugins>
     </build>
-    <properties>
-        <carbon.platform.patch.version.421>4.3.0-SNAPSHOT</carbon.platform.patch.version.421>
-    </properties>
+
 </project>

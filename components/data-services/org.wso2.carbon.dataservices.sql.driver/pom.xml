@@ -41,32 +41,26 @@
         <dependency>
             <groupId>com.google.gdata.wso2</groupId>
             <artifactId>gdata-core</artifactId>
-            <version>${gdata-core.wso2.version.data-services}</version>
         </dependency>
         <dependency>
             <groupId>com.google.gdata.wso2</groupId>
             <artifactId>gdata-spreadsheet</artifactId>
-            <version>${gdata-spreadsheet.wso2.version.data-services}</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava.wso2</groupId>
             <artifactId>guava</artifactId>
-            <version>${google.guava.wso2.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.poi.wso2</groupId>
             <artifactId>poi</artifactId>
-            <version>${poi.wso2.version.data-services}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.poi.wso2</groupId>
             <artifactId>poi-ooxml</artifactId>
-            <version>${poi.wso2.version.data-services}</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.core</artifactId>
-            <version>4.3.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

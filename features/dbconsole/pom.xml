@@ -21,9 +21,9 @@
 
     <parent>
         <groupId>org.wso2.carbon</groupId>
-        <artifactId>carbon-features</artifactId>
+        <artifactId>carbon-data</artifactId>
         <version>4.3.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -36,24 +36,26 @@
         <module>org.wso2.carbon.dbconsole.ui.feature</module>
     </modules>
 
-    <dependencyManagement>
-        <dependencies>            
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.dbconsole.ui</artifactId>
-                <version>${wso2carbon.version.dbconsole}</version>
-            </dependency>
-            <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>1.2.140</version>
+    <dependencies>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.dbconsole.ui</artifactId>
         </dependency>
-        </dependencies>
-    </dependencyManagement>
-
-    <properties>
-        <wso2carbon.version.dbconsole>${wso2carbon.version}</wso2carbon.version.dbconsole>        
-    </properties>
+        <dependency>
+            <groupId>com.h2database.wso2</groupId>
+            <artifactId>h2-database-engine</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.eclipse.osgi</groupId>
+                    <artifactId>org.eclipse.osgi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+    </dependencies>
 
 </project>
 

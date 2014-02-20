@@ -38,23 +38,16 @@
         <module>org.wso2.carbon.dataservices.task.ui.feature</module>
     </modules>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.dataservices.task</artifactId>
-                <version>${carbon.platform.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.dataservices.task.ui</artifactId>
-                <version>${carbon.platform.version}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
-    <properties>
-    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.dataservices.task</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.dataservices.task.ui</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>
 

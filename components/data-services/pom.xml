@@ -21,16 +21,15 @@
 
     <parent>
         <groupId>org.wso2.carbon</groupId>
-        <artifactId>carbon-components</artifactId>
+        <artifactId>carbon-data</artifactId>
+        <relativePath>../../pom.xml</relativePath>
         <version>4.3.0-SNAPSHOT</version>
-        <relativePath>../</relativePath>
    </parent>
     
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.wso2.carbon</groupId>
     <artifactId>data-services</artifactId>
     <packaging>pom</packaging>
-    <name>WSO2 Carbon - Data Services Aggregator Module</name>
+    <name>WSO2 Carbon - Data Services Parent Module</name>
     <url>http://wso2.org</url>
 
             <modules>
@@ -62,22 +61,5 @@
         </plugins>
     </pluginManagement>
     </build>
-
-    <properties>
-        <opencsv.version.data-services>1.8</opencsv.version.data-services>
-        <wso2carbon.version.data-services>${wso2carbon.version}</wso2carbon.version.data-services>
-        <wso2carbon.version.eventing.data-services>${wso2carbon.version.data-services}</wso2carbon.version.eventing.data-services>
-        <jena-arq.wso2.version.data-services>1.0.0.wso2v1</jena-arq.wso2.version.data-services>
-        <gdata-core.wso2.version.data-services>${gdata-core.wso2.version}</gdata-core.wso2.version.data-services>
-        <gdata-spreadsheet.wso2.version.data-services>${gdata-spreadsheet.wso2.version}</gdata-spreadsheet.wso2.version.data-services>
-        <poi.wso2.version.data-services>${poi.wso2.version}</poi.wso2.version.data-services>
-        <axis2.osgi.version.range.data-services>${axis2.osgi.version.range}</axis2.osgi.version.range.data-services>
-        <web-harvest.wso2.version.data-services>2.0.0.wso2v1</web-harvest.wso2.version.data-services>
-        <saxon.wso2.version.data-services>8.9.0.wso2v2</saxon.wso2.version.data-services>
-        <commons-httpclient.wso2.version.data-services>${commons-httpclient.wso2.version}</commons-httpclient.wso2.version.data-services>
-        <bsh.wso2.version.data-services>1.3.0.wso2v1</bsh.wso2.version.data-services>
-        <htmlcleaner.version.data-services>2.1.0.wso2v1</htmlcleaner.version.data-services>
-        <h2.engine.version>1.2.140.wso2v3</h2.engine.version>
-    </properties>
     
 </project>

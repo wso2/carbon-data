@@ -38,19 +38,16 @@
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.dataservices.task</artifactId>
-            <version>${carbon.platform.patch.version.421}</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.ntask.core.feature</artifactId>
             <type>zip</type>
-            <version>${carbon.platform.patch.version.421}</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.dataservices.server.feature</artifactId>
             <type>zip</type>
-            <version>${carbon.platform.patch.version.421}</version>
         </dependency>
     </dependencies>
 
@@ -80,8 +77,8 @@
                                 <bundleDef>org.wso2.carbon:org.wso2.carbon.dataservices.task</bundleDef>
                             </bundles>
                             <includedFeatures>
-                                <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.ntask.core.feature:${carbon.platform.patch.version.421}</includedFeatureDef>
-                                <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.dataservices.server.feature:${carbon.platform.patch.version.421}</includedFeatureDef>
+                                <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.ntask.core.feature</includedFeatureDef>
+                                <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.dataservices.server.feature</includedFeatureDef>
                             </includedFeatures>
                         </configuration>
                     </execution>
@@ -89,7 +86,5 @@
             </plugin>
         </plugins>
     </build>
-    <properties>
-        <carbon.platform.patch.version.421>4.3.0-SNAPSHOT</carbon.platform.patch.version.421>
-    </properties>
+
 </project>

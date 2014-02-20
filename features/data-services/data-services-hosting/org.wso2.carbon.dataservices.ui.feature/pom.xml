@@ -38,33 +38,27 @@
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.dataservices.ui</artifactId>
-            <version>${carbon.platform.patch.version.421}</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.dataservices.stub</artifactId>
-            <version>4.3.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.dataservices.fileupload.stub</artifactId>
-            <version>${carbon.platform.version}</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.dataservices.common</artifactId>
-            <version>${carbon.platform.patch.version.421}</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.service.mgt.ui.feature</artifactId>
-            <version>4.3.0-SNAPSHOT</version>
             <type>zip</type>
         </dependency>
       	 <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.ndatasource.ui.feature</artifactId>
-            <version>4.3.0-SNAPSHOT</version>
             <type>zip</type>
         </dependency>
 
@@ -99,8 +93,8 @@
                                 <bundleDef>org.wso2.carbon:org.wso2.carbon.dataservices.fileupload.stub</bundleDef>
                             </bundles>
                             <importFeatures>
-                                <importFeatureDef>org.wso2.carbon.service.mgt.ui:4.3.0-SNAPSHOT</importFeatureDef>
-                                <importFeatureDef>org.wso2.carbon.ndatasource.ui:4.3.0-SNAPSHOT</importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.service.mgt.ui</importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.ndatasource.ui</importFeatureDef>
                             </importFeatures>
                         </configuration>
                     </execution>
@@ -108,7 +102,5 @@
             </plugin>
         </plugins>
     </build>
-   <properties>
-        <carbon.platform.patch.version.421>4.3.0-SNAPSHOT</carbon.platform.patch.version.421>
-    </properties>
+
 </project>

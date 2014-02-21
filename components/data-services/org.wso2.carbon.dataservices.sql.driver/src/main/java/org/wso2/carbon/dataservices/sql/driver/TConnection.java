@@ -23,6 +23,7 @@ import org.wso2.carbon.dataservices.sql.driver.parser.Constants;
 import java.sql.*;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Executor;
 
 public abstract class TConnection implements Connection {
 
@@ -231,6 +232,26 @@ public abstract class TConnection implements Connection {
 
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
         return false;  
+    }
+
+    public void setSchema(String schema) throws SQLException {
+
+    }
+
+    public String getSchema() throws SQLException {
+        return null;
+    }
+
+    public void abort(Executor executor) throws SQLException {
+
+    }
+
+    public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException {
+
+    }
+
+    public int getNetworkTimeout() throws SQLException{
+        return 0;
     }
 
 }

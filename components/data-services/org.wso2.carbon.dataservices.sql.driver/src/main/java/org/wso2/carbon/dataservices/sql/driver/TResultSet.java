@@ -675,6 +675,14 @@ public class TResultSet implements ResultSet {
         throw new SQLFeatureNotSupportedException("Data type is not supported");
     }
 
+    public <T> T getObject(String columnLabel, Class<T> type) throws SQLException {
+        throw new SQLFeatureNotSupportedException("Data type is not supported");
+    }
+
+    public <T> T getObject(int columnIndex, Class<T> type) throws SQLException {
+        throw new SQLFeatureNotSupportedException("Data type is not supported");
+    }
+
     public Ref getRef(String columnLabel) throws SQLException {
         determineResultSetState();
         throw new SQLFeatureNotSupportedException("Data type is not supported");

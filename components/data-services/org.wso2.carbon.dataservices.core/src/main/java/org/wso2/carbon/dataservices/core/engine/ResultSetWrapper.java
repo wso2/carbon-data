@@ -254,6 +254,14 @@ public class ResultSetWrapper implements ResultSet {
         return this.getResultSet().getObject(columnLabel);
     }
 
+    public <T> T getObject(String columnLabel, Class<T> type) throws SQLException {
+        return this.getResultSet().getObject(columnLabel, type);
+    }
+
+    public <T> T getObject(int columnIndex, Class<T> type) throws SQLException {
+        return this.getResultSet().getObject(columnIndex, type);
+    }
+
     @Override
     public int findColumn(String columnLabel) throws SQLException {
         return this.getResultSet().findColumn(columnLabel);

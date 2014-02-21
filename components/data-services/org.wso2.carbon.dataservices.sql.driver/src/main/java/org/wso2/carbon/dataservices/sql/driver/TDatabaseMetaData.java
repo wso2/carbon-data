@@ -901,4 +901,14 @@ public class TDatabaseMetaData implements DatabaseMetaData {
         return false;  
     }
 
+    public ResultSet getPseudoColumns(String catalog, String schemaPattern,
+                               String tableNamePattern, String columnNamePattern)
+            throws SQLException {
+        throw new SQLFeatureNotSupportedException("Functionality is not supported");
+    }
+
+    public boolean  generatedKeyAlwaysReturned() throws SQLException {
+        return true;
+    }
+
 }

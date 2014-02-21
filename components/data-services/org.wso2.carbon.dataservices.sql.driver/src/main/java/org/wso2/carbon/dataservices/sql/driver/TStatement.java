@@ -198,4 +198,12 @@ public class TStatement implements Statement {
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
         return false;  
     }
+
+    public void closeOnCompletion() throws SQLException {
+
+    }
+
+    public boolean isCloseOnCompletion() throws SQLException {
+        return true;
+    }
 }

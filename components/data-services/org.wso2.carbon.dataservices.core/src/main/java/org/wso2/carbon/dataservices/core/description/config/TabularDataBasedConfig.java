@@ -36,9 +36,11 @@ import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Types;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.logging.Logger;
 
 /**
  * This class represents a data services custom data source.
@@ -375,6 +377,10 @@ public class TabularDataBasedConfig extends SQLConfig {
 			}
 			
 		}
+
+        public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+            throw new SQLFeatureNotSupportedException("This method is not supported");
+        }
 		
 	}
 	

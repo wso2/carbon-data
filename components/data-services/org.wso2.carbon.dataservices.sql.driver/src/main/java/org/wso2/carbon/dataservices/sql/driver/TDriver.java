@@ -25,6 +25,7 @@ import org.wso2.carbon.dataservices.sql.driver.parser.Constants;
 import java.sql.*;
 import java.util.Enumeration;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 public class TDriver implements Driver {
 
@@ -214,6 +215,10 @@ public class TDriver implements Driver {
             return getNextTokenPos(url, pos, token);
         }
         return pos;
+    }
+
+    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+        throw new SQLFeatureNotSupportedException("This method is not supported");
     }
 
 }

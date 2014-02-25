@@ -30,8 +30,8 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>data-services-stub</artifactId>
     <packaging>pom</packaging>
-    <name>WSO2 Carbon - Webapp Management Parent Module</name>
-    <description>WSO2 Carbon Webapp Management</description>
+    <name>WSO2 Carbon - Dataservices Service-Stubs</name>
+    <description>WSO2 Carbon Dataservices Service-Stubs</description>
     <url>http://wso2.org</url>
 
     <modules>

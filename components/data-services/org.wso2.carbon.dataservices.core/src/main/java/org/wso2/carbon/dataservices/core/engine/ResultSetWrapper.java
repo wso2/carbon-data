@@ -255,11 +255,11 @@ public class ResultSetWrapper implements ResultSet {
     }
 
     public <T> T getObject(String columnLabel, Class<T> type) throws SQLException {
-        return this.getResultSet().getObject(columnLabel, type);
+        throw new SQLFeatureNotSupportedException("This method not supported");
     }
 
     public <T> T getObject(int columnIndex, Class<T> type) throws SQLException {
-        return this.getResultSet().getObject(columnIndex, type);
+        throw new SQLFeatureNotSupportedException("This method not supported");
     }
 
     @Override

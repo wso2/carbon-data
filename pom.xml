@@ -19,7 +19,6 @@
         <module>features/dbconsole</module>
     </modules>
 
-
     <dependencyManagement>
         <dependencies>
             <dependency>

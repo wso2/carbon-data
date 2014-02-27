@@ -14,6 +14,7 @@
         <module>service-stubs/data-services</module>
         <module>components/data-services</module>
         <module>components/dbconsole</module>
+        <module>features/cassandra-jdbc-1.2.5</module>
         <module>features/data-services</module>
         <module>features/dbconsole</module>
     </modules>
@@ -83,7 +84,7 @@
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.ndatasource.ui</artifactId>
-                <version>${previous.version}</version>
+                <version>${carbon.platform.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
@@ -103,7 +104,7 @@
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.ndatasource.ui.feature</artifactId>
-                <version>${previous.version}</version>
+                <version>${carbon.platform.version}</version>
                 <type>zip</type>
             </dependency>
             <dependency>
@@ -332,6 +333,16 @@
                 <artifactId>org.wso2.carbon.ui.menu.tools</artifactId>
                 <version>${carbon.platform.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache-extras.cassandra-jdbc.wso2</groupId>
+                <artifactId>cassandra-jdbc</artifactId>
+                <version>${cassandra-jdbc.driver.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache-extras.cassandra-jdbc.wso2</groupId>
+                <artifactId>cassandra-jdbc</artifactId>
+                <version>${cassandra-jdbc.driver.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -521,6 +532,7 @@
         <htmlcleaner.version.data-services>2.1.0.wso2v1</htmlcleaner.version.data-services>
         <jboss-transaction-api.version>1.0.0.Final</jboss-transaction-api.version>
         <ojdbc.version.data-services>6</ojdbc.version.data-services>
+        <cassandra-jdbc.driver.version>1.2.5.wso2v1</cassandra-jdbc.driver.version>
         <commons-dbcp.wso2.version.data-services>1.4.0.wso2v1</commons-dbcp.wso2.version.data-services>
         <commons-pool.wso2.version.data-services>1.5.6.wso2v1</commons-pool.wso2.version.data-services>
 

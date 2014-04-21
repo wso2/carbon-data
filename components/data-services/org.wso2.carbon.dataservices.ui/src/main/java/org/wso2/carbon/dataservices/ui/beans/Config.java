@@ -80,24 +80,20 @@ public class Config extends DataServiceConfigurationElement {
 
     private void setDatasourceType(String propertyName) {
         if (RDBMS.DRIVER_CLASSNAME.equals(propertyName) || RDBMS.DATASOURCE_CLASSNAME.equals(propertyName)) {
-            for (int i =0; i < properties.size(); i ++) {
-                if (properties.get(i).getName().equals(RDBMS.DRIVER_CLASSNAME)
-                        && properties.get(i).getValue().toString().equals("org.apache.cassandra.cql.jdbc.CassandraDriver")) {
-                    dataSourceType = DataSourceTypes.CASSANDRA;
-                    break;
-                } else {
-                    dataSourceType = DataSourceTypes.RDBMS;
-                }
-            }
+            dataSourceType = DataSourceTypes.RDBMS;
         } else if (CSV.DATASOURCE.equals(propertyName)) {
             dataSourceType = DataSourceTypes.CSV;
         } else if (Excel.DATASOURCE.equals(propertyName)) {
             dataSourceType = DataSourceTypes.EXCEL;
+        } else if (Cassandra.CASSANDRA_SERVERS.equals(propertyName)) {
+            dataSourceType = DataSourceTypes.CASSANDRA;
         } else if (RDF.DATASOURCE.equals(propertyName)) {
             dataSourceType = DataSourceTypes.RDF;
         } else if (SPARQL.DATASOURCE.equals(propertyName)) {
             dataSourceType = DataSourceTypes.SPARQL;
-        } else if (DBConstants.JNDI.PROVIDER_URL.equals(propertyName) 
+        } else if (MongoDB.SERVERS.equals(propertyName)) {
+            dataSourceType = DataSourceTypes.MONGODB;
+        } else if (DBConstants.JNDI.PROVIDER_URL.equals(propertyName)
         		|| DBConstants.JNDI.RESOURCE_NAME.equals(propertyName)) {
             dataSourceType = DataSourceTypes.JNDI;
         } else if (GSpread.DATASOURCE.equals(propertyName)) {

@@ -254,14 +254,6 @@ public class ResultSetWrapper implements ResultSet {
         return this.getResultSet().getObject(columnLabel);
     }
 
-    public <T> T getObject(String columnLabel, Class<T> type) throws SQLException {
-        throw new SQLFeatureNotSupportedException("This method not supported");
-    }
-
-    public <T> T getObject(int columnIndex, Class<T> type) throws SQLException {
-        throw new SQLFeatureNotSupportedException("This method not supported");
-    }
-
     @Override
     public int findColumn(String columnLabel) throws SQLException {
         return this.getResultSet().findColumn(columnLabel);

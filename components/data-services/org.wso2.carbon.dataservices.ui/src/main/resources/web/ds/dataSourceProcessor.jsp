@@ -119,12 +119,24 @@
     String csvStartingRow = request.getParameter(DBConstants.CSV.STARTING_ROW);
     String csvMaxRowCount = request.getParameter(DBConstants.CSV.MAX_ROW_COUNT);
     String csvHasHeader = request.getParameter(DBConstants.CSV.HAS_HEADER);
+    String csvHeaderRow = request.getParameter(DBConstants.CSV.HEADER_ROW);
 
     String jndiContextClass = request.getParameter(DBConstants.JNDI.INITIAL_CONTEXT_FACTORY);
     String jndiProviderUrl = request.getParameter(DBConstants.JNDI.PROVIDER_URL);
     String jndiResourceName = request.getParameter(DBConstants.JNDI.RESOURCE_NAME);
     String jndiUserName = request.getParameter(DBConstants.JNDI.USERNAME);
     String jndiPassword = request.getParameter(DBConstants.JNDI.PASSWORD);
+
+    String mongoDBServers = request.getParameter(DBConstants.MongoDB.SERVERS);
+    String mongoDBDatabase = request.getParameter(DBConstants.MongoDB.DATABASE);
+    String mongoDBWriteConcern = request.getParameter(DBConstants.MongoDB.WRITE_CONCERN);
+    String mongoDBReadPreference = request.getParameter(DBConstants.MongoDB.READ_PREFERENCE);
+    String mongoDBAutoConnectRetry= request.getParameter(DBConstants.MongoDB.AUTO_CONNECT_RETRY);
+    String mongoDBConnectTimeout = request.getParameter(DBConstants.MongoDB.CONNECT_TIMEOUT);
+    String mongoDBMaxWait = request.getParameter(DBConstants.MongoDB.MAX_WAIT_TIME);
+    String mongoDBSocketTimeout = request.getParameter(DBConstants.MongoDB.SOCKET_TIMEOUT);
+    String mongoDBConnectionsPerHost = request.getParameter(DBConstants.MongoDB.CONNECTIONS_PER_HOST);
+    String mongoDBThreadsAllowed= request.getParameter(DBConstants.MongoDB.THREADS_ALLOWED_TO_BLOCK_CONN_MULTIPLIER);
 
     String gspreadDatasource = request.getParameter(DBConstants.GSpread.DATASOURCE);
     String gspreadVisibility = request.getParameter(DBConstants.GSpread.VISIBILITY);
@@ -138,13 +150,41 @@
 
     String carbonDatasourceName = request.getParameter(DBConstants.CarbonDatasource.NAME);
 
-    String cassandraDriverClass = request.getParameter(DBConstants.RDBMS.DRIVER_CLASSNAME);
-    String cassandraJdbcUrl = request.getParameter(DBConstants.RDBMS.URL);
-    if(cassandraJdbcUrl != null) {
-        cassandraJdbcUrl = DBConstants.CASSANDRA.CASSANDRA_URL_PREFIX + cassandraJdbcUrl;
-    }
-    String cassandraUserName = request.getParameter(DBConstants.RDBMS.USERNAME);
-    String cassandraPassword = request.getParameter(DBConstants.RDBMS.PASSWORD);
+    String cassandraServers = request.getParameter(DBConstants.Cassandra.CASSANDRA_SERVERS);
+    String cassandraPort = request.getParameter(DBConstants.Cassandra.PORT);
+    String cassandraClusterName = request.getParameter(DBConstants.Cassandra.CLUSTER_NAME);
+    String cassandraCompression = request.getParameter(DBConstants.Cassandra.COMPRESSION);
+    String cassandraUsername = request.getParameter(DBConstants.Cassandra.USERNAME);
+    String cassandraPassword = request.getParameter(DBConstants.Cassandra.PASSWORD);
+    String cassandraLoadBalancingPolicy = request.getParameter(DBConstants.Cassandra.LOAD_BALANCING_POLICY);
+    String cassandraJMXReporting = request.getParameter(DBConstants.Cassandra.ENABLE_JMX_REPORTING);
+    String cassandraMetrics = request.getParameter(DBConstants.Cassandra.ENABLE_METRICS);
+    String cassandraLocalCoreConnPerHost = request.getParameter(DBConstants.Cassandra.LOCAL_CORE_CONNECTIONS_PER_HOST);
+    String cassandraRemoteCoreConnPerHost = request.getParameter(DBConstants.Cassandra.REMOTE_CORE_CONNECTIONS_PER_HOST);
+    String cassandraLocalMaxConnPerHost = request.getParameter(DBConstants.Cassandra.LOCAL_MAX_CONNECTIONS_PER_HOST);
+    String cassandraRemoteMaxConnPerHost = request.getParameter(DBConstants.Cassandra.REMOTE_MAX_CONNECTIONS_PER_HOST);
+    String cassandraLocalMaxSimulReq = request.getParameter(DBConstants.Cassandra.LOCAL_MAX_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST);
+    String cassandraRemoteMaxSimulReq = request.getParameter(DBConstants.Cassandra.REMOTE_MAX_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST);
+    String cassandraLocalMinSimulReq = request.getParameter(DBConstants.Cassandra.LOCAL_MIN_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST);
+    String cassandraRemoteMinSimulReq = request.getParameter(DBConstants.Cassandra.REMOTE_MIN_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST);
+    String cassandraProtocolVer = request.getParameter(DBConstants.Cassandra.PROTOCOL_VERSION);
+    String cassandraConsistencyLevel = request.getParameter(DBConstants.Cassandra.CONSISTENCY_LEVEL);
+    String cassandraFetchSize = request.getParameter(DBConstants.Cassandra.FETCH_SIZE);
+    String cassandraSerialConsistencyLevel = request.getParameter(DBConstants.Cassandra.SERIAL_CONSISTENCY_LEVEL);
+    String cassandraReconnectPolicy = request.getParameter(DBConstants.Cassandra.RECONNECTION_POLICY);
+    String cassandraConstantReconnectPolicyDelay = request.getParameter(DBConstants.Cassandra.CONSTANT_RECONNECTION_POLICY_DELAY);
+    String cassandraExpReconnectPolicyBaseDelay = request.getParameter(DBConstants.Cassandra.EXPONENTIAL_RECONNECTION_POLICY_BASE_DELAY);
+    String cassandraExpReconnectPolicyMaxDelay = request.getParameter(DBConstants.Cassandra.EXPONENTIAL_RECONNECTION_POLICY_MAX_DELAY);
+    String cassandraRetryPolicy = request.getParameter(DBConstants.Cassandra.RETRY_POLICY);
+    String cassandraConnTimeout = request.getParameter(DBConstants.Cassandra.CONNECTION_TIMEOUT_MILLIS);
+    String cassandraKeepAlive = request.getParameter(DBConstants.Cassandra.KEEP_ALIVE);
+    String cassandraReadTimeout = request.getParameter(DBConstants.Cassandra.READ_TIMEOUT_MILLIS);
+    String cassandraReceiveBuffSize = request.getParameter(DBConstants.Cassandra.RECEIVER_BUFFER_SIZE);
+    String cassandraSendBuffSize = request.getParameter(DBConstants.Cassandra.SEND_BUFFER_SIZE);
+    String cassandraReuseAdrs = request.getParameter(DBConstants.Cassandra.REUSE_ADDRESS);
+    String cassandraSoLinger = request.getParameter(DBConstants.Cassandra.SO_LINGER);
+    String cassandraTCPNoDelay = request.getParameter(DBConstants.Cassandra.TCP_NODELAY);
+    String cassandraSSL = request.getParameter(DBConstants.Cassandra.ENABLE_SSL);
     
     String customDSType = request.getParameter("customTypeValue");
     String customDSClassName = request.getParameter("customDataSourceClass");
@@ -424,6 +464,7 @@
                     updateConfiguration(dsConfig, DBConstants.CSV.STARTING_ROW, csvStartingRow);
                     updateConfiguration(dsConfig, DBConstants.CSV.MAX_ROW_COUNT, csvMaxRowCount);
                     updateConfiguration(dsConfig, DBConstants.CSV.HAS_HEADER, csvHasHeader);
+                    updateConfiguration(dsConfig, DBConstants.CSV.HEADER_ROW, csvHeaderRow);
                 } else if (DBConstants.DataSourceTypes.JNDI.equals(datasourceType)) {
                 	if (useSecretAliasForPassword) {
                     	jndiPassword = passwordAlias;
@@ -434,6 +475,17 @@
                     updateConfiguration(dsConfig, DBConstants.JNDI.RESOURCE_NAME, jndiResourceName);
                     updateConfiguration(dsConfig, DBConstants.JNDI.USERNAME, jndiUserName);
                     updateConfiguration(dsConfig, DBConstants.JNDI.PASSWORD, jndiPassword);
+                } else if (DBConstants.DataSourceTypes.MONGODB.equals(datasourceType)) {
+                    updateConfiguration(dsConfig, DBConstants.MongoDB.SERVERS, mongoDBServers);
+                    updateConfiguration(dsConfig, DBConstants.MongoDB.DATABASE, mongoDBDatabase);
+                    updateConfiguration(dsConfig, DBConstants.MongoDB.WRITE_CONCERN, mongoDBWriteConcern);
+                    updateConfiguration(dsConfig, DBConstants.MongoDB.READ_PREFERENCE, mongoDBReadPreference);
+                    updateConfiguration(dsConfig, DBConstants.MongoDB.AUTO_CONNECT_RETRY, mongoDBAutoConnectRetry);
+                    updateConfiguration(dsConfig, DBConstants.MongoDB.CONNECT_TIMEOUT, mongoDBConnectTimeout);
+                    updateConfiguration(dsConfig, DBConstants.MongoDB.MAX_WAIT_TIME, mongoDBMaxWait);
+                    updateConfiguration(dsConfig, DBConstants.MongoDB.SOCKET_TIMEOUT, mongoDBSocketTimeout);
+                    updateConfiguration(dsConfig, DBConstants.MongoDB.CONNECTIONS_PER_HOST, mongoDBConnectionsPerHost);
+                    updateConfiguration(dsConfig, DBConstants.MongoDB.THREADS_ALLOWED_TO_BLOCK_CONN_MULTIPLIER, mongoDBThreadsAllowed);
                 } else if (DBConstants.DataSourceTypes.GDATA_SPREADSHEET.equals(datasourceType)) {
                 	if (useSecretAliasForPassword) {
                     	gspreadPassword = passwordAlias;
@@ -479,10 +531,42 @@
                 } else if (DBConstants.DataSourceTypes.WEB.equals(datasourceType)) {
                     updateConfiguration(dsConfig, DBConstants.WebDatasource.WEB_CONFIG, webConfig);
                 } else if (DBConstants.DataSourceTypes.CASSANDRA.equals(datasourceType)) {
-                    updateConfiguration(dsConfig, DBConstants.RDBMS.URL, cassandraJdbcUrl);
-                    updateConfiguration(dsConfig, DBConstants.RDBMS.USERNAME, cassandraUserName);
-                    updateConfiguration(dsConfig, DBConstants.RDBMS.PASSWORD, cassandraPassword);
-                    updateConfiguration(dsConfig, DBConstants.RDBMS.DRIVER_CLASSNAME, cassandraDriverClass);
+                    updateConfiguration(dsConfig, DBConstants.Cassandra.CASSANDRA_SERVERS, cassandraServers);
+                    updateConfiguration(dsConfig, DBConstants.Cassandra.PORT, cassandraPort);
+                    updateConfiguration(dsConfig, DBConstants.Cassandra.CLUSTER_NAME, cassandraClusterName);
+                    updateConfiguration(dsConfig, DBConstants.Cassandra.COMPRESSION, cassandraCompression);
+                    updateConfiguration(dsConfig, DBConstants.Cassandra.USERNAME, cassandraUsername);
+                    updateConfiguration(dsConfig, DBConstants.Cassandra.PASSWORD, cassandraPassword);
+                    updateConfiguration(dsConfig, DBConstants.Cassandra.LOAD_BALANCING_POLICY, cassandraLoadBalancingPolicy);
+                    updateConfiguration(dsConfig, DBConstants.Cassandra.ENABLE_JMX_REPORTING, cassandraJMXReporting);
+                    updateConfiguration(dsConfig, DBConstants.Cassandra.ENABLE_METRICS, cassandraMetrics);
+                    updateConfiguration(dsConfig, DBConstants.Cassandra.LOCAL_CORE_CONNECTIONS_PER_HOST, cassandraLocalCoreConnPerHost);
+                    updateConfiguration(dsConfig, DBConstants.Cassandra.REMOTE_CORE_CONNECTIONS_PER_HOST, cassandraRemoteCoreConnPerHost);
+                    updateConfiguration(dsConfig, DBConstants.Cassandra.LOCAL_MAX_CONNECTIONS_PER_HOST, cassandraLocalMaxConnPerHost);
+                    updateConfiguration(dsConfig, DBConstants.Cassandra.REMOTE_MAX_CONNECTIONS_PER_HOST, cassandraRemoteMaxConnPerHost);
+                    updateConfiguration(dsConfig, DBConstants.Cassandra.LOCAL_MAX_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST, cassandraLocalMaxSimulReq);
+                    updateConfiguration(dsConfig, DBConstants.Cassandra.REMOTE_MAX_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST, cassandraRemoteMaxSimulReq);
+                    updateConfiguration(dsConfig, DBConstants.Cassandra.LOCAL_MIN_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST, cassandraLocalMinSimulReq);
+                    updateConfiguration(dsConfig, DBConstants.Cassandra.REMOTE_MIN_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST, cassandraRemoteMinSimulReq);
+                    updateConfiguration(dsConfig, DBConstants.Cassandra.PROTOCOL_VERSION, cassandraProtocolVer);
+                    updateConfiguration(dsConfig, DBConstants.Cassandra.CONSISTENCY_LEVEL, cassandraConsistencyLevel);
+                    updateConfiguration(dsConfig, DBConstants.Cassandra.FETCH_SIZE, cassandraFetchSize);
+                    updateConfiguration(dsConfig, DBConstants.Cassandra.SERIAL_CONSISTENCY_LEVEL, cassandraSerialConsistencyLevel);
+                    updateConfiguration(dsConfig, DBConstants.Cassandra.RECONNECTION_POLICY, cassandraReconnectPolicy);
+                    updateConfiguration(dsConfig, DBConstants.Cassandra.CONSTANT_RECONNECTION_POLICY_DELAY, cassandraConstantReconnectPolicyDelay);
+                    updateConfiguration(dsConfig, DBConstants.Cassandra.EXPONENTIAL_RECONNECTION_POLICY_BASE_DELAY, cassandraExpReconnectPolicyBaseDelay);
+                    updateConfiguration(dsConfig, DBConstants.Cassandra.EXPONENTIAL_RECONNECTION_POLICY_MAX_DELAY, cassandraExpReconnectPolicyMaxDelay);
+                    updateConfiguration(dsConfig, DBConstants.Cassandra.RETRY_POLICY, cassandraRetryPolicy);
+                    updateConfiguration(dsConfig, DBConstants.Cassandra.CONNECTION_TIMEOUT_MILLIS, cassandraConnTimeout);
+                    updateConfiguration(dsConfig, DBConstants.Cassandra.KEEP_ALIVE, cassandraKeepAlive);
+                    updateConfiguration(dsConfig, DBConstants.Cassandra.READ_TIMEOUT_MILLIS, cassandraReadTimeout);
+                    updateConfiguration(dsConfig, DBConstants.Cassandra.RECEIVER_BUFFER_SIZE, cassandraReceiveBuffSize);
+                    updateConfiguration(dsConfig, DBConstants.Cassandra.SEND_BUFFER_SIZE, cassandraSendBuffSize);
+                    updateConfiguration(dsConfig, DBConstants.Cassandra.REUSE_ADDRESS, cassandraReuseAdrs);
+                    updateConfiguration(dsConfig, DBConstants.Cassandra.SO_LINGER, cassandraSoLinger);
+                    updateConfiguration(dsConfig, DBConstants.Cassandra.TCP_NODELAY, cassandraTCPNoDelay);
+                    updateConfiguration(dsConfig, DBConstants.Cassandra.ENABLE_SSL, cassandraSSL);
+
                 } else if (DBConstants.DataSourceTypes.CUSTOM.equals(datasourceType)) {
                 	ArrayList<Property> property = new ArrayList<Property>();
                     Iterator<Property> iterator = dsConfig.getProperties().iterator();

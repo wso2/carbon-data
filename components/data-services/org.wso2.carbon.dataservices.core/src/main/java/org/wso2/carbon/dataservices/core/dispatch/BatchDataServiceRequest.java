@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.axiom.om.OMElement;
-import org.wso2.carbon.dataservices.core.DBUtils;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
+import org.wso2.carbon.dataservices.core.TLConnectionStore;
 import org.wso2.carbon.dataservices.core.engine.DataService;
 import org.wso2.carbon.dataservices.core.engine.ParamValue;
 
@@ -86,39 +86,54 @@ public class BatchDataServiceRequest extends DataServiceRequest {
 	 */
 	@Override
 	public OMElement processRequest() throws DataServiceFault {
-		DataService dataService = this.getDataService();
+		boolean error = true;
 		try {
 			/* signal that we are batch processing */
-			DBUtils.setBatchProcessing(true);
+			DispatchStatus.setBatchRequest();
 			List<SingleDataServiceRequest> requests = this.getDSRequests();
 			int count = requests.size();
 			/* set the batch request count in TL */
-			DBUtils.setBatchRequestCount(count);
-			/* begin a new data service transaction */
-			dataService.beginTransaction();
+			DispatchStatus.setBatchRequestCount(count);
 			/* dispatch individual requests */
 			for (int i = 0; i < count; i++) {
 				/* set the current batch request number in TL */
-				DBUtils.setBatchRequestNumber(i);
+			    DispatchStatus.setBatchRequestNumber(i);
 				/* execute/enqueue request */
 				requests.get(i).dispatch();
 			}
-			/* end transaction */
-			dataService.endTransaction();
+			/* signal that there aren't any errors */
+			error = false;
 			/* no result in batch requests */
 			return null;
-		} catch (DataServiceFault e) {
-			dataService.rollbackTransaction();
-			throw e;
 		} finally {
+		    /* finalize transactions */
+            this.finalizeTx(error);
 			/* release participants */
 			releaseParticipantResources();
 			clearParticipants();
-			/* reset TL values */
-			DBUtils.setBatchProcessing(false);
-			DBUtils.setBatchRequestCount(0);
-			DBUtils.setBatchRequestNumber(0);
 		}
+	}
+	
+	private void finalizeTx(boolean error) {
+	    if (DispatchStatus.isBoxcarringRequest()) {
+	        return;
+	    }
+	    if (error) {
+            if (this.getDataService().isInDTX()) {
+                TLConnectionStore.rollbackNonXAConns();
+                TLConnectionStore.closeAll();
+            } else {
+                TLConnectionStore.rollbackAll();
+                TLConnectionStore.closeAll();
+            }
+        } else {
+            if (this.getDataService().isInDTX()) {
+                TLConnectionStore.commitNonXAConns();
+            } else {
+                TLConnectionStore.commitAll();
+            }
+            TLConnectionStore.closeAll();
+        }
 	}
 
 }

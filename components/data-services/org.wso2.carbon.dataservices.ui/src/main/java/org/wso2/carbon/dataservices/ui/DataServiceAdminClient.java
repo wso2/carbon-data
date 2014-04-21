@@ -50,6 +50,10 @@ public class DataServiceAdminClient {
         }
     }
     
+    public String validateJSONMapping(String jsonMapping) throws RemoteException {
+        return stub.validateJSONMapping(jsonMapping);
+    }
+    
 	public String getDataServiceContents(String serviceId) throws RemoteException {
         return stub.getDataServiceContentAsString(serviceId);
 	}

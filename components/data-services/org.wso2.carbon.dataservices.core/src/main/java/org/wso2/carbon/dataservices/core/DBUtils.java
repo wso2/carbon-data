@@ -93,33 +93,6 @@ public class DBUtils {
     private static ScheduledExecutorService globalExecutorService = Executors
             .newSingleThreadScheduledExecutor();
 
-    /**
-     * thread local variable to track the status of batch processing
-     */
-    private static ThreadLocal<Boolean> isBatchProcessing = new ThreadLocal<Boolean>() {
-        protected synchronized Boolean initialValue() {
-            return false;
-        }
-    };
-
-    /**
-     * thread local variable to keep the current batch request size
-     */
-    private static ThreadLocal<Integer> batchRequestCount = new ThreadLocal<Integer>() {
-        protected synchronized Integer initialValue() {
-            return 0;
-        }
-    };
-
-    /**
-     * thread local variable to keep the current batch request number, 0 based
-     */
-    private static ThreadLocal<Integer> batchRequestNumber = new ThreadLocal<Integer>() {
-        protected synchronized Integer initialValue() {
-            return 0;
-        }
-    };
-
     private static HashMap<String, String> conversionTypes = null;
 
     private static HashMap<String, String> xsdSqlTypeMap = null;
@@ -156,6 +129,10 @@ public class DBUtils {
         conversionTypes.put(DBConstants.DataTypes.TIMESTAMP, "java.sql.Timestamp");
         conversionTypes.put(DBConstants.DataTypes.ANYURI, "java.net.URI");
         conversionTypes.put(DBConstants.DataTypes.STRUCT, "java.sql.Struct");
+        
+        conversionTypes.put(DBConstants.DataTypes.VARINT, "java.math.BigInteger");
+        conversionTypes.put(DBConstants.DataTypes.UUID, "java.lang.String");
+        conversionTypes.put(DBConstants.DataTypes.INETADDRESS, "java.lang.String");
 
         xsdSqlTypeMap = new HashMap<String, String>();
         xsdSqlTypeMap.put("string", DBConstants.DataTypes.STRING);
@@ -224,30 +201,6 @@ public class DBUtils {
             sqlType = DBConstants.DataTypes.STRING;
         }
         return sqlType;
-    }
-
-    public static boolean isBatchProcessing() {
-        return isBatchProcessing.get();
-    }
-
-    public static void setBatchProcessing(boolean val) {
-        isBatchProcessing.set(val);
-    }
-
-    public static int getBatchRequestCount() {
-        return batchRequestCount.get();
-    }
-
-    public static void setBatchRequestCount(int val) {
-        batchRequestCount.set(val);
-    }
-
-    public static int getBatchRequestNumber() {
-        return batchRequestNumber.get();
-    }
-
-    public static void setBatchRequestNumber(int val) {
-        batchRequestNumber.set(val);
     }
 
     public static String getCurrentContextUsername() {
@@ -581,7 +534,7 @@ public class DBUtils {
         } else {
             fault = new AxisFault(e.getMessage());
         }
-        fault.setDetail(DBUtils.createDSFaultOM(e.getMessage()));
+        fault.setDetail(DataServiceFault.extractFaultMessage(e));
         fault.setFaultCode(new QName(DBConstants.WSO2_DS_NAMESPACE,
                 DataServiceFault.extractFaultCode(e)));
         return fault;
@@ -675,7 +628,7 @@ public class DBUtils {
     	try {
 	    	int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
 	    	if (tenantId == -1) {
-                     throw new RuntimeException("Tenant id cannot be -1"); //TODO this has to be removed
+                     throw new RuntimeException("Tenant id cannot be -1");
 	        }
 	    	return tenantId;
     	} catch (NoClassDefFoundError e) { // Workaround for Unit Test failure 
@@ -742,9 +695,6 @@ public class DBUtils {
         }
         /* get the transaction manager from the well known JNDI names from the cache */
         txManager = DBDeployer.getCachedTransactionManager();
-        if (txManager == null) {
-            throw new DataServiceFault("Cannot find container managed TransactionManager");
-        }
         return txManager;
     }
 

@@ -72,8 +72,15 @@ public abstract class EventTrigger {
         this.targetTopic = targetTopic;
         this.endpointUrls = endpointUrls;
         if (!dataService.isServiceInactive()) {
-            this.registerSubscribers(DataServicesDSComponent.getEventBroker(), 
-            		this.getTargetTopic(), this.endpointUrls);
+            DataServicesDSComponent.registerSubscriptions(this);
+        }
+    }
+
+    public void processEventTriggerSubscriptions() {
+        try {
+            this.registerSubscribers(DataServicesDSComponent.getEventBroker(), this.getTargetTopic(), this.getEndpointUrls());
+        } catch (Exception e) {
+            log.error("Error in processing event trigger subscriptions: " + e.getMessage());
         }
     }
 

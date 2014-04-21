@@ -105,20 +105,13 @@ public class DataServiceFactory {
                 disableStreaming = Boolean.parseBoolean(disableStreamingStr);
             }
 
-            /* transaction management */
-            boolean enableDTP = false;
-            String enableDTPStr = dbsElement.getAttributeValue(new QName(DBSFields.ENABLE_DTP));
-            if (enableDTPStr != null) {
-                enableDTP = Boolean.parseBoolean(enableDTPStr);
-            }
-
             /* txManagerName property */
             String userTxJNDIName = dbsElement.getAttributeValue(
                     new QName(DBSFields.TRANSACTION_MANAGER_JNDI_NAME));
 
             dataService = new DataService(serviceName, description,
                     defaultNamespace, dsLocation, serviceStatus,
-                    batchRequestsEnabled, boxcarringEnabled, enableDTP,
+                    batchRequestsEnabled, boxcarringEnabled,
                     userTxJNDIName);
             
             /* set service namespace */
@@ -236,7 +229,13 @@ public class DataServiceFactory {
      * i.e. does not have a result.
      */
     private static boolean isBatchCompatible(CallableRequest request) {
-        return !request.getCallQueryGroup().getDefaultCallQuery().getQuery().hasResult();
+        if (request.getCallQueryGroup().getDefaultCallQuery().getWithParams().size() == 0) {
+            return false;
+        }
+        if (request.getCallQueryGroup().getDefaultCallQuery().getQuery().hasResult()) {
+            return false;
+        }
+        return true;
     }
 
 }

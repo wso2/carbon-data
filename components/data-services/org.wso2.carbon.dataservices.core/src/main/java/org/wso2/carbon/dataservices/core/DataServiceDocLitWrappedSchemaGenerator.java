@@ -273,7 +273,7 @@ public class DataServiceDocLitWrappedSchemaGenerator {
 				return;
 			}
 			activeElement = createAndAddToElement(cparams, activeElement,
-					result.getElementName(), result.getNamespace(), true, false, 
+					result.getElementName(), result.getNamespace(), true, false,
 					callQuery.isOptional());			
 		}
 		/* process result row */
@@ -405,8 +405,8 @@ public class DataServiceDocLitWrappedSchemaGenerator {
 	 * @return The newly added XML schema element
 	 */
 	private static XmlSchemaElement createAndAddToElement(CommonParams cparams,
-			XmlSchemaElement parentElement, String name, String namespace, boolean global, 
-			boolean isArrayElement, boolean optional) {		
+			XmlSchemaElement parentElement, String name, String namespace, boolean global,
+			boolean isArrayElement, boolean optional) {
 		XmlSchemaElement tmpElement = createElement(cparams, namespace, name, global);
 		XmlSchemaComplexType type = createComplexType(cparams, namespace, name, true);
 		tmpElement.setSchemaTypeName(type.getQName());
@@ -417,7 +417,7 @@ public class DataServiceDocLitWrappedSchemaGenerator {
         }
 		return tmpElement;
 	}
-	
+
 	private static void addToElement(CommonParams cparams,
 			XmlSchemaElement parentElement, XmlSchemaElement element, boolean elementRef, 
 			boolean isArrayElement, boolean optional) {
@@ -444,9 +444,41 @@ public class DataServiceDocLitWrappedSchemaGenerator {
 	private static void createAndStoreFaultElement(CommonParams cparams) {
 		XmlSchemaElement element = createElement(cparams, DBConstants.WSO2_DS_NAMESPACE,
 				DBConstants.DS_FAULT_ELEMENT, true);
-		element.setSchemaTypeName(Constants.XSD_STRING);
+        XmlSchemaComplexType type = createComplexType(cparams, DBConstants.WSO2_DS_NAMESPACE,
+                DBConstants.DS_FAULT_ELEMENT, false);
+        element.setType(type);
+        createAndAddSimpleStringElements(cparams, element,
+                DBConstants.FaultParams.CURRENT_PARAMS, DBConstants.FaultParams.CURRENT_REQUEST_NAME,
+                DBConstants.FaultParams.NESTED_EXCEPTION);
+        XmlSchemaElement dataServiceElement = createElement(cparams, DBConstants.WSO2_DS_NAMESPACE,
+                DBConstants.FaultParams.SOURCE_DATA_SERVICE, false);
+        XmlSchemaComplexType dataServiceComplexType = createComplexType(cparams, DBConstants.WSO2_DS_NAMESPACE,
+                DBConstants.FaultParams.SOURCE_DATA_SERVICE, false);
+        addToElement(cparams, element, dataServiceElement, false, false, false);
+        dataServiceElement.setType(dataServiceComplexType);
+        createAndAddSimpleStringElements(cparams, dataServiceElement,
+                DBConstants.FaultParams.LOCATION, DBConstants.FaultParams.DEFAULT_NAMESPACE,
+                DBConstants.FaultParams.DESCRIPTION, DBConstants.FaultParams.DATA_SERVICE_NAME);
+        createAndAddSimpleStringElements(cparams, element, DBConstants.FaultParams.DS_CODE);
 	}
-	
+
+    /**
+     * Creates a new Simple String type element with the given name and added to the given parent element.
+     * @param cparams The common parameters used in the schema generator
+     * @param parentElement The parent element to where the new element will be added
+     * @param elementNames The name of the elements to be added
+     */
+    private static void createAndAddSimpleStringElements(CommonParams cparams,
+                                                   XmlSchemaElement parentElement, String... elementNames) {
+        for (String elementName : elementNames) {
+            XmlSchemaElement tmpSchemaEl = createElement(cparams, DBConstants.WSO2_DS_NAMESPACE,
+                    elementName, false);
+            tmpSchemaEl.setNillable(false);
+            tmpSchemaEl.setSchemaTypeName(Constants.XSD_STRING);
+            addToElement(cparams, parentElement, tmpSchemaEl, false, false, false);
+        }
+    }
+
 	/**
 	 * Creates the default data services request status element, and stores it in the schema.
 	 * @param cparams The common parameters used in the schema generator

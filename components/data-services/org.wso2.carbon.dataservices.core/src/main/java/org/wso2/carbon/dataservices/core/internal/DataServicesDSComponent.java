@@ -22,6 +22,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
+import org.wso2.carbon.dataservices.core.DataServiceFault;
+import org.wso2.carbon.dataservices.core.description.event.EventTrigger;
 import org.wso2.carbon.event.core.EventBroker;
 import org.wso2.carbon.ndatasource.core.DataSourceService;
 import org.wso2.carbon.registry.core.service.RegistryService;
@@ -31,6 +33,9 @@ import org.wso2.carbon.transaction.manager.TransactionManagerDummyService;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.utils.Axis2ConfigurationContextObserver;
 import org.wso2.carbon.context.CarbonContext;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @scr.component name="dataservices.component" immediate="true"
@@ -68,6 +73,9 @@ public class DataServicesDSComponent {
     private static TenantRegistryLoader tenantRegLoader;
 
     private static Object dsComponentLock = new Object(); /* class level lock for controlling synchronized access to static variables */
+
+    /* this is to keep event trigger objects which are not registered for subscription*/
+    private static List<EventTrigger> eventTriggerList= new ArrayList<EventTrigger>();
 
     public DataServicesDSComponent() {
     }
@@ -152,6 +160,7 @@ public class DataServicesDSComponent {
                 log.debug("Setting the Event Broker Service");
             }
             DataServicesDSComponent.eventBroker = eventBroker;
+            processSubscriptionsForEventTriggers();
         }
     }
 
@@ -166,6 +175,24 @@ public class DataServicesDSComponent {
 
     public static EventBroker getEventBroker() {
         return eventBroker;
+    }
+
+    public static void registerSubscriptions(EventTrigger eventTrigger) throws DataServiceFault {
+        synchronized (dsComponentLock) {
+            if (DataServicesDSComponent.eventBroker == null) {
+                eventTriggerList.add(eventTrigger);
+            } else {
+                eventTrigger.processEventTriggerSubscriptions();
+            }
+        }
+    }
+
+    public static void processSubscriptionsForEventTriggers() {
+        if (eventTriggerList.size() > 0 && DataServicesDSComponent.eventBroker != null) {
+            for (EventTrigger trigger: eventTriggerList) {
+                trigger.processEventTriggerSubscriptions();
+            }
+        }
     }
 
     public static String getUsername() {

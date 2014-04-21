@@ -148,7 +148,7 @@ public class DSGenerator {
 		//String serviceName = dbName + DBConstants.DataServiceGenerator.SERVICE_NAME_SUFFIX;
 		DataService dataService = new DataService(serviceName,
 				DBConstants.DataServiceGenerator.SINGLE_SERVICE_DESCRIPTION,null, null,
-                DBConstants.DataServiceGenerator.ACTIVE, false, false, false, null);
+                DBConstants.DataServiceGenerator.ACTIVE, false, false, null);
 		this.setConfig(dataService, datasourceId);
 		if (DBUtils.isEmptyString(serviceNamespace)) {
 			dataService.setServiceNamespace(DBConstants.WSO2_DS_NAMESPACE);
@@ -208,7 +208,7 @@ public class DSGenerator {
 			String serviceName = tableName + DBConstants.DataServiceGenerator.SERVICE_NAME_SUFFIX;
 			DataService dataService = new DataService(serviceName,
 					DBConstants.DataServiceGenerator.MUTLIPLE_SERVICE_DESCRIPTION, null, null,
-                    DBConstants.DataServiceGenerator.ACTIVE, false, false, false, null);
+                    DBConstants.DataServiceGenerator.ACTIVE, false, false, null);
 			if (DBUtils.isEmptyString(serviceNamespace)) {
 				dataService.setServiceNamespace(DBConstants.WSO2_DS_NAMESPACE);
 			} else {

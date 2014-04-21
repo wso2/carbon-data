@@ -43,7 +43,7 @@ public class DSSXATransactionManager {
 	
 	public DSSXATransactionManager(TransactionManager userTx) {
 		if (userTx == null) {
-			throw new RuntimeException("TransactionManager cannot be null");
+			log.warn("TransactionManager is not available");
 		}
 		this.transactionManager = userTx;
 	}
@@ -54,28 +54,26 @@ public class DSSXATransactionManager {
 	
 	public void begin() throws DataServiceFault {
 		TransactionManager txManager = getTransactionManager();
+		if (txManager == null) {
+		    return;
+		}
 		try {
 			if (log.isDebugEnabled()) {
 				log.debug("DXXATransactionManager.begin()");
-			}			
-			if (this.hasNoActiveTransaction()) {
-				if (log.isDebugEnabled()) {
-				    log.debug("transactionManager.begin()");
-				}
-				txManager.begin();
-				this.beginTx.set(true);				
 			}
+			txManager.begin();
+			this.beginTx.set(true);				
 		} catch (Exception e) {
-			throw new DataServiceFault(e, "Error from transaction manager");
+			throw new DataServiceFault(e, "Error from transaction manager in "
+			        + "begin(): " + e.getMessage());
 		}
 	}
 	
 	public void commit() throws DataServiceFault {
-		/* if we didn't begin this transaction, don't commit it */
-		if (!this.beginTx.get()) {
-			return;
-		}
 		TransactionManager txManager = getTransactionManager();
+		if (txManager == null) {
+            return;
+        }
 		try {
 			if (log.isDebugEnabled()) {
 				log.debug("transactionManager.commit()");
@@ -83,31 +81,38 @@ public class DSSXATransactionManager {
 			txManager.commit();			
 		} catch (Exception e) {
 			throw new DataServiceFault(e, 
-					"Error from transaction manager when committing");
+					"Error from transaction manager when committing: " + e.getMessage());
 		} finally {
 			this.beginTx.set(false);
 		}
 	}
 	
-	public void rollback() throws DataServiceFault {
+	public void rollback() {
 		TransactionManager txManager = getTransactionManager();
+		if (txManager == null) {
+            return;
+        }
 		try {
-			if (!this.hasNoActiveTransaction()) {
-				if (log.isDebugEnabled()) {
-					log.debug("transactionManager.rollback()");
-				}
-				txManager.rollback();				
-			}
+			txManager.rollback();				
 		} catch (Exception e) {
-			throw new DataServiceFault(e, "Error from transaction manager when rollbacking");
+			log.warn("Error from transaction manager when "
+			        + "rollbacking: " + e.getMessage(), e);
 		} finally {
 			this.beginTx.set(false);
 		}
 	}
 	
-	public boolean hasNoActiveTransaction() {
+	public boolean isDTXInitiatedByUS() {
+	    return this.beginTx.get();
+	}
+	
+	public boolean isInDTX() {
+	    TransactionManager txManager = getTransactionManager();
+	    if (txManager == null) {
+            return false;
+        }
 		try {
-		    return this.getTransactionManager().getStatus() == Status.STATUS_NO_TRANSACTION;
+		    return txManager.getStatus() != Status.STATUS_NO_TRANSACTION;
 		} catch (Exception e) {
 			log.error("Error at 'hasNoActiveTransaction'", e);
 			return false;

@@ -230,18 +230,19 @@
         <option value="ORACLE_REF_CURSOR">ORACLE REF CURSOR</option>
         <% }
             if (sqlType.equals("BINARY")) { %>
-        %>
         <option value="BINARY" selected="selected">BINARY</option>
         <% } else { %>
         <option value="BINARY">BINARY</option>
         <% }
             if (sqlType.equals("BLOB")) { %>
-        %>
         <option value="BLOB" selected="selected">BLOB</option>
         <% } else { %>
         <option value="BLOB">BLOB</option>
-         <% }
-            if (sqlType.equals("STRUCT")) { %>
+        <% } if (sqlType.equals("CLOB")) { %>
+        <option value="CLOB" selected="selected">CLOB</option>
+        <% } else { %>
+        <option value="CLOB">CLOB</option>
+         <% } if (sqlType.equals("STRUCT")) { %>
         <option value="STRUCT" selected="selected">STRUCT</option>
         <% } else { %>
         <option value="STRUCT">STRUCT</option>
@@ -249,6 +250,18 @@
         <option value="ARRAY" selected="selected">ARRAY</option>
         <% } else { %>
         <option value="ARRAY">ARRAY</option>
+        <% }  if (sqlType.equals("UUID")) { %>
+        <option value="UUID" selected="selected">UUID</option>
+        <% } else { %>
+        <option value="UUID">UUID</option>
+        <% }  if (sqlType.equals("VARINT")) { %>
+        <option value="VARINT" selected="selected">VARINT</option>
+        <% } else { %>
+        <option value="VARINT">VARINT</option>
+        <% }  if (sqlType.equals("INETADDRESS")) { %>
+        <option value="INETADDRESS" selected="selected">INETADDRESS</option>
+        <% } else { %>
+        <option value="INETADDRESS">INETADDRESS</option>
         <% } if (sqlType.equals("QUERY_STRING")) { %>
         <option value="QUERY_STRING" selected="selected">QUERY_STRING</option>
         <% } else { %>

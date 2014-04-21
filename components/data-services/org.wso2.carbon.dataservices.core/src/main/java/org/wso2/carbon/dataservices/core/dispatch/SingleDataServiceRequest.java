@@ -60,34 +60,23 @@ public class SingleDataServiceRequest extends DataServiceRequest {
 	 */
 	@Override
 	public OMElement processRequest() throws DataServiceFault {
-		DataService dataService = this.getDataService();
-		boolean inTx = false;
-		/* not inside a nested transaction, i.e. boxcarring/batch-requests  */
-		if (!dataService.isInTransaction()) { 
-			/* an active transaction has already started by the transaction manager,
-			 * e.g. external JMS transaction */
-			if (dataService.isEnableXA() && !dataService.getDSSTxManager().hasNoActiveTransaction()) {
-				/* signal we are inside a transaction */
-				dataService.beginTransaction();
-				inTx = true;
-			}
-		}
 		try {
 			OMElement result = processSingleRequest();
-			if (inTx) {
-				/* build the result immediately, if we are in a transaction */
-				if (result != null) {
-					result = DBUtils.cloneAndReturnBuiltElement(result);
-				}
-				/* signal the end of transaction, this wont necessarily commit the 
-			 	* transaction, it will be done by the external transaction creator */
-				dataService.endTransaction();
-			}
+			if (result instanceof OMSourcedElementImpl) {
+                /* first pass for preprocessing */
+                DSOMDataSource dsomDS = (DSOMDataSource) ((OMSourcedElementImpl) result).getDataSource();
+                Query.resetQueryPreprocessing();
+                Query.setQueryPreprocessingInitial(true);
+                try {
+                    dsomDS.execute(null);
+                } catch (XMLStreamException e) {
+                    throw new DataServiceFault(e);
+                }
+                Query.setQueryPreprocessingInitial(false);
+                Query.setQueryPreprocessingSecondary(true);
+            }
 			return result;
 		} catch (DataServiceFault e) {
-			if (inTx && dataService.getDSSTxManager().hasNoActiveTransaction()) {
-			    dataService.rollbackTransaction();
-			}
 			throw e;
 		}
 	}

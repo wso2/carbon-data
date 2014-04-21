@@ -28,7 +28,6 @@ import org.wso2.carbon.dataservices.common.DBConstants.ServiceStatusValues;
 import org.wso2.carbon.dataservices.core.DBUtils;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
 import org.wso2.carbon.dataservices.core.DataServiceUser;
-import org.wso2.carbon.dataservices.core.boxcarring.TLConnectionStore;
 import org.wso2.carbon.dataservices.core.description.config.Config;
 import org.wso2.carbon.dataservices.core.description.event.EventTrigger;
 import org.wso2.carbon.dataservices.core.description.operation.Operation;
@@ -44,7 +43,6 @@ import org.wso2.carbon.event.core.subscription.Subscription;
 
 import javax.transaction.TransactionManager;
 import javax.xml.stream.XMLStreamWriter;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -151,20 +149,6 @@ public class DataService {
     private static ThreadLocal<DataServiceUser> currentUser = new ThreadLocal<DataServiceUser>();
 
     /**
-     * Thread local variable to track the status of active nested transactions
-     */
-    private static ThreadLocal<Integer> activeNestedTransactions = new ThreadLocal<Integer>() {
-        protected synchronized Integer initialValue() {
-            return 0;
-        }
-    };
-
-    /**
-     * flag to check if distributed transactions are enabled
-     */
-    private boolean enableXA;
-
-    /**
      * the JNDI name of the app server transaction manager
      */
     private String containerUserTxName;
@@ -186,7 +170,7 @@ public class DataService {
 
 	public DataService(String name, String description,
                        String defaultNamespace, String dsLocation, String serviceStatus,
-                       boolean batchRequestsEnabled, boolean boxcarringEnabled, boolean enableXA,
+                       boolean batchRequestsEnabled, boolean boxcarringEnabled,
                        String containerUserTxName) throws DataServiceFault {
         this.name = name;
         this.callableRequests = new HashMap<String, CallableRequest>();
@@ -202,7 +186,6 @@ public class DataService {
         this.serviceStatus = serviceStatus;
         this.batchRequestsEnabled = batchRequestsEnabled;
         this.boxcarringEnabled = boxcarringEnabled;
-        this.enableXA = enableXA;
         this.containerUserTxName = containerUserTxName;
 
         /* add operations related to boxcarring */
@@ -211,22 +194,16 @@ public class DataService {
         }
 
         /* initialize transaction manager */
-        if (this.isEnableXA()) {
-            initXA();
-        }
+        initXA();
         
         /* set tenant id */
         this.tenantId = DBUtils.getCurrentTenantId();
     }
 
     private void initXA() throws DataServiceFault {
-        try {
-            TransactionManager txManager = DBUtils.getContainerTransactionManager(
-                    this.getContainerUserTransactionName());
-            this.txManager = new DSSXATransactionManager(txManager);
-        } catch (Exception e) {
-            throw new DataServiceFault(e, "Cannot create XA transaction manager");
-        }
+        TransactionManager txManager = DBUtils.getContainerTransactionManager(
+                this.getContainerUserTransactionName());
+        this.txManager = new DSSXATransactionManager(txManager);
     }
 
     private void initBoxcarring() throws DataServiceFault {
@@ -290,70 +267,7 @@ public class DataService {
     public String getContainerUserTransactionName() {
         return containerUserTxName;
     }
-
-    public boolean isEnableXA() {
-        return enableXA;
-    }
-
-    public boolean isInTransaction() {
-        return activeNestedTransactions.get() > 0;
-    }
-
-    public void beginTransaction() throws DataServiceFault {
-        if (log.isDebugEnabled()) {
-            log.debug("beginTransaction()");
-        }
-        if (this.isEnableXA() && activeNestedTransactions.get() == 0) {
-            this.getDSSTxManager().begin();
-        }
-        activeNestedTransactions.set(activeNestedTransactions.get() + 1);
-    }
-
-    public void endTransaction() throws DataServiceFault {
-        if (log.isDebugEnabled()) {
-            log.debug("endTransaction()");
-        }
-        activeNestedTransactions.set(activeNestedTransactions.get() - 1);
-        /* commit all only if we are at the outer most transaction */
-        if (activeNestedTransactions.get() == 0) {
-            try {
-                if (this.isEnableXA()) {
-                    this.getDSSTxManager().commit();
-                } else {
-                    TLConnectionStore.commitAll();
-                }
-            } catch (SQLException e) {
-                log.error("endTransaction() EXCEPTION:" + e.getMessage(), e);
-                if (this.isEnableXA()) {
-                    this.getDSSTxManager().rollback();
-                } else {
-                    TLConnectionStore.rollbackAllAndClose();
-                }
-                throw new DataServiceFault(e, "Error in ending transaction");
-            }
-        } else if (activeNestedTransactions.get() < 0) {
-            activeNestedTransactions.set(0);
-        }
-    }
-
-    public void rollbackTransaction() throws DataServiceFault {
-        if (log.isDebugEnabled()) {
-            log.debug("rollbackTransaction()");
-        }
-        if (this.isEnableXA()) {
-            if (log.isDebugEnabled()) {
-                log.debug("this.getDSSTxManager().rollback()");
-            }
-            this.getDSSTxManager().rollback();
-        } else {
-            if (log.isDebugEnabled()) {
-                log.debug("TLConnectionStore.rollbackAllAndClose()");
-            }
-            TLConnectionStore.rollbackAllAndClose();
-        }
-        activeNestedTransactions.set(0);
-    }
-
+    
     /**
      * Cleanup operations done when undeploying the data service.
      */
@@ -638,6 +552,10 @@ public class DataService {
                 this.getDescription() : "N/A") + "\n");
         buff.append("Default Namespace: " + this.getDefaultNamespace() + "\n");
         return buff.toString();
+    }
+    
+    public boolean isInDTX() {
+        return this.getDSSTxManager().isInDTX();
     }
 
 }

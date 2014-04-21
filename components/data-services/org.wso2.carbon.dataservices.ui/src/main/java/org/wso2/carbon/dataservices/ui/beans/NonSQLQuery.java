@@ -24,6 +24,8 @@ public abstract class NonSQLQuery extends DataServiceConfigurationElement {
 	protected int startingRow;
 	
 	protected int maxRowCount;
+
+    protected int headerRow;
 	
 	protected String[] columnNames;
 	
@@ -33,6 +35,7 @@ public abstract class NonSQLQuery extends DataServiceConfigurationElement {
 		this.hasHeaders = false;
 		this.startingRow = 0;
 		this.maxRowCount = -1;
+        this.headerRow = 1;
 	}
 	
 	public boolean hasHeaders() {
@@ -66,6 +69,18 @@ public abstract class NonSQLQuery extends DataServiceConfigurationElement {
 			this.maxRowCount = Integer.valueOf(value).intValue();
 		}		
 	}
+
+    public int getHeaderRow() {
+        return headerRow;
+    }
+
+    public void setHeaderRow(String value) {
+        if(value == null || value.trim().length() == 0){
+            this.headerRow = 1;
+        }else{
+            this.headerRow = Integer.valueOf(value);
+        }
+    }
 	
 	public String[] getColumnNames() {
 		return columnNames;

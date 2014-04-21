@@ -22,6 +22,7 @@ import com.google.gdata.client.spreadsheet.SpreadsheetService;
 import com.google.gdata.data.spreadsheet.CellFeed;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
+
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
@@ -40,6 +41,7 @@ import org.wso2.carbon.dataservices.core.DBUtils;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
 import org.wso2.carbon.dataservices.core.description.config.SQLCarbonDataSourceConfig;
 import org.wso2.carbon.dataservices.core.description.config.GSpreadConfig;
+import org.wso2.carbon.dataservices.core.description.query.QueryFactory;
 import org.wso2.carbon.dataservices.core.engine.DataService;
 import org.wso2.carbon.dataservices.core.engine.DataServiceSerializer;
 import org.wso2.carbon.dataservices.core.script.DSGenerator;
@@ -482,6 +484,15 @@ public class DataServiceAdmin extends AbstractAdmin {
         pageable.setNumberOfPages(numberOfPages);
         pageable.set(returnList);
         return returnList;
+    }
+    
+    public String validateJSONMapping(String jsonMapping) {
+        try {
+            QueryFactory.getJSONResultFromText(jsonMapping);
+            return "";
+        } catch (DataServiceFault e) {
+            return e.getDsFaultMessage();
+        }
     }
     
 }

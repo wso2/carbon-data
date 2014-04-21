@@ -149,7 +149,11 @@ private boolean isFieldMandatory(String propertName) {
 		return true;
 	} else if (propertName.equals(DBConstants.JNDI.RESOURCE_NAME)) {
 		return true;
-	}  else if (propertName.equals(DBConstants.WebDatasource.WEB_CONFIG)) {
+	} else if (propertName.equals(DBConstants.MongoDB.SERVERS)) {
+      	return true;
+    } else if (propertName.equals(DBConstants.MongoDB.DATABASE)) {
+      	return true;
+    } else if (propertName.equals(DBConstants.WebDatasource.WEB_CONFIG)) {
 		return true;
 	}  else if (propertName.equals(DBConstants.WebDatasource.QUERY_VARIABLE)) {
 		return true;
@@ -157,7 +161,9 @@ private boolean isFieldMandatory(String propertName) {
 		return true;
 	} else if (propertName.equals(DBConstants.SPARQL.DATASOURCE)) {
 		return true;
-	} else {
+	} else if (propertName.equals(DBConstants.Cassandra.CASSANDRA_SERVERS)) {
+        return true;
+    } else {
 		return false;
 	}
 }
@@ -327,6 +333,9 @@ private Config addNotAvailableFunctions(Config config,String selectedType, HttpS
 		 if (config.getPropertyValue(DBConstants.CSV.HAS_HEADER) == null) {
 			 config.addProperty(DBConstants.CSV.HAS_HEADER, "");
 		 }
+		 if (config.getPropertyValue(DBConstants.CSV.HEADER_ROW) == null) {
+             config.addProperty(DBConstants.CSV.HEADER_ROW, "");
+         }
     } else if (DBConstants.DataSourceTypes.JNDI.equals(selectedType)) {
     	if (config.getPropertyValue(DBConstants.JNDI.INITIAL_CONTEXT_FACTORY) == null) {
 			 config.addProperty(DBConstants.JNDI.INITIAL_CONTEXT_FACTORY, "");
@@ -374,17 +383,141 @@ private Config addNotAvailableFunctions(Config config,String selectedType, HttpS
 			 config.addProperty(DBConstants.WebDatasource.WEB_CONFIG, "");
 		 }
     } else if (DBConstants.DataSourceTypes.CASSANDRA.equals(selectedType)) {
-        if (config.getPropertyValue(DBConstants.RDBMS.URL) == null) {
-            config.addProperty(DBConstants.RDBMS.URL, "");
+        if (config.getPropertyValue(DBConstants.Cassandra.CASSANDRA_SERVERS) == null) {
+            config.addProperty(DBConstants.Cassandra.CASSANDRA_SERVERS, "");
         }
-        if (config.getPropertyValue(DBConstants.RDBMS.USERNAME) == null) {
-            config.addProperty(DBConstants.RDBMS.USERNAME, "");
+        if (config.getPropertyValue(DBConstants.Cassandra.PORT) == null) {
+            config.addProperty(DBConstants.Cassandra.PORT, "");
         }
-        if (config.getPropertyValue(DBConstants.RDBMS.PASSWORD) == null) {
-            config.addProperty(DBConstants.RDBMS.PASSWORD, "");
+        if (config.getPropertyValue(DBConstants.Cassandra.CLUSTER_NAME) == null) {
+            config.addProperty(DBConstants.Cassandra.CLUSTER_NAME, "");
         }
-        if (config.getPropertyValue(DBConstants.RDBMS.DRIVER_CLASSNAME) == null) {
-            config.addProperty(DBConstants.RDBMS.DRIVER_CLASSNAME, "org.apache.cassandra.cql.jdbc.CassandraDriver");
+        if (config.getPropertyValue(DBConstants.Cassandra.COMPRESSION) == null) {
+            config.addProperty(DBConstants.Cassandra.COMPRESSION, "");
+        }
+        if (config.getPropertyValue(DBConstants.Cassandra.USERNAME) == null) {
+            config.addProperty(DBConstants.Cassandra.USERNAME, "");
+        }
+        if (config.getPropertyValue(DBConstants.Cassandra.PASSWORD) == null) {
+            config.addProperty(DBConstants.Cassandra.PASSWORD, "");
+        }
+        if (config.getPropertyValue(DBConstants.Cassandra.LOAD_BALANCING_POLICY) == null) {
+            config.addProperty(DBConstants.Cassandra.LOAD_BALANCING_POLICY, "");
+        }
+        if (config.getPropertyValue(DBConstants.Cassandra.ENABLE_JMX_REPORTING) == null) {
+            config.addProperty(DBConstants.Cassandra.ENABLE_JMX_REPORTING, "");
+        }
+        if (config.getPropertyValue(DBConstants.Cassandra.ENABLE_METRICS) == null) {
+            config.addProperty(DBConstants.Cassandra.ENABLE_METRICS, "");
+        }
+        if (config.getPropertyValue(DBConstants.Cassandra.LOCAL_CORE_CONNECTIONS_PER_HOST) == null) {
+            config.addProperty(DBConstants.Cassandra.LOCAL_CORE_CONNECTIONS_PER_HOST, "");
+        }
+        if (config.getPropertyValue(DBConstants.Cassandra.REMOTE_CORE_CONNECTIONS_PER_HOST) == null) {
+            config.addProperty(DBConstants.Cassandra.REMOTE_CORE_CONNECTIONS_PER_HOST, "");
+        }
+        if (config.getPropertyValue(DBConstants.Cassandra.LOCAL_MAX_CONNECTIONS_PER_HOST) == null) {
+            config.addProperty(DBConstants.Cassandra.LOCAL_MAX_CONNECTIONS_PER_HOST, "");
+        }
+        if (config.getPropertyValue(DBConstants.Cassandra.REMOTE_MAX_CONNECTIONS_PER_HOST) == null) {
+            config.addProperty(DBConstants.Cassandra.REMOTE_MAX_CONNECTIONS_PER_HOST, "");
+        }
+        if (config.getPropertyValue(DBConstants.Cassandra.LOCAL_MAX_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST) == null) {
+            config.addProperty(DBConstants.Cassandra.LOCAL_MAX_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST, "");
+        }
+        if (config.getPropertyValue(DBConstants.Cassandra.REMOTE_MAX_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST) == null) {
+            config.addProperty(DBConstants.Cassandra.REMOTE_MAX_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST, "");
+        }
+        if (config.getPropertyValue(DBConstants.Cassandra.LOCAL_MIN_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST) == null) {
+            config.addProperty(DBConstants.Cassandra.LOCAL_MIN_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST, "");
+        }
+        if (config.getPropertyValue(DBConstants.Cassandra.REMOTE_MIN_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST) == null) {
+            config.addProperty(DBConstants.Cassandra.REMOTE_MIN_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST, "");
+        }
+        if (config.getPropertyValue(DBConstants.Cassandra.PROTOCOL_VERSION) == null) {
+            config.addProperty(DBConstants.Cassandra.PROTOCOL_VERSION, "");
+        }
+        if (config.getPropertyValue(DBConstants.Cassandra.CONSISTENCY_LEVEL) == null) {
+            config.addProperty(DBConstants.Cassandra.CONSISTENCY_LEVEL, "");
+        }
+        if (config.getPropertyValue(DBConstants.Cassandra.FETCH_SIZE) == null) {
+            config.addProperty(DBConstants.Cassandra.FETCH_SIZE, "");
+        }
+        if (config.getPropertyValue(DBConstants.Cassandra.SERIAL_CONSISTENCY_LEVEL) == null) {
+            config.addProperty(DBConstants.Cassandra.SERIAL_CONSISTENCY_LEVEL, "");
+        }
+        if (config.getPropertyValue(DBConstants.Cassandra.RECONNECTION_POLICY) == null) {
+            config.addProperty(DBConstants.Cassandra.RECONNECTION_POLICY, "");
+        }
+        if (config.getPropertyValue(DBConstants.Cassandra.CONSTANT_RECONNECTION_POLICY_DELAY) == null) {
+            config.addProperty(DBConstants.Cassandra.CONSTANT_RECONNECTION_POLICY_DELAY, "");
+        }
+        if (config.getPropertyValue(DBConstants.Cassandra.EXPONENTIAL_RECONNECTION_POLICY_BASE_DELAY) == null) {
+            config.addProperty(DBConstants.Cassandra.EXPONENTIAL_RECONNECTION_POLICY_BASE_DELAY, "");
+        }
+        if (config.getPropertyValue(DBConstants.Cassandra.EXPONENTIAL_RECONNECTION_POLICY_MAX_DELAY) == null) {
+            config.addProperty(DBConstants.Cassandra.EXPONENTIAL_RECONNECTION_POLICY_MAX_DELAY, "");
+        }
+        if (config.getPropertyValue(DBConstants.Cassandra.RETRY_POLICY) == null) {
+            config.addProperty(DBConstants.Cassandra.RETRY_POLICY, "");
+        }
+        if (config.getPropertyValue(DBConstants.Cassandra.CONNECTION_TIMEOUT_MILLIS) == null) {
+            config.addProperty(DBConstants.Cassandra.CONNECTION_TIMEOUT_MILLIS, "");
+        }
+        if (config.getPropertyValue(DBConstants.Cassandra.KEEP_ALIVE) == null) {
+            config.addProperty(DBConstants.Cassandra.KEEP_ALIVE, "");
+        }
+        if (config.getPropertyValue(DBConstants.Cassandra.READ_TIMEOUT_MILLIS) == null) {
+            config.addProperty(DBConstants.Cassandra.READ_TIMEOUT_MILLIS, "");
+        }
+        if (config.getPropertyValue(DBConstants.Cassandra.RECEIVER_BUFFER_SIZE) == null) {
+            config.addProperty(DBConstants.Cassandra.RECEIVER_BUFFER_SIZE, "");
+        }
+        if (config.getPropertyValue(DBConstants.Cassandra.SEND_BUFFER_SIZE) == null) {
+            config.addProperty(DBConstants.Cassandra.SEND_BUFFER_SIZE, "");
+        }
+        if (config.getPropertyValue(DBConstants.Cassandra.REUSE_ADDRESS) == null) {
+            config.addProperty(DBConstants.Cassandra.REUSE_ADDRESS, "");
+        }
+        if (config.getPropertyValue(DBConstants.Cassandra.SO_LINGER) == null) {
+            config.addProperty(DBConstants.Cassandra.SO_LINGER, "");
+        }
+        if (config.getPropertyValue(DBConstants.Cassandra.TCP_NODELAY) == null) {
+            config.addProperty(DBConstants.Cassandra.TCP_NODELAY, "");
+        }
+        if (config.getPropertyValue(DBConstants.Cassandra.ENABLE_SSL) == null) {
+            config.addProperty(DBConstants.Cassandra.ENABLE_SSL, "");
+        }
+    } else if (DBConstants.DataSourceTypes.MONGODB.equals(selectedType)) {
+        if (config.getPropertyValue(DBConstants.MongoDB.SERVERS) == null) {
+            config.addProperty(DBConstants.MongoDB.SERVERS, "");
+        }
+        if (config.getPropertyValue(DBConstants.MongoDB.DATABASE) == null) {
+            config.addProperty(DBConstants.MongoDB.DATABASE, "");
+        }
+        if (config.getPropertyValue(DBConstants.MongoDB.WRITE_CONCERN) == null) {
+            config.addProperty(DBConstants.MongoDB.WRITE_CONCERN, "");
+        }
+        if (config.getPropertyValue(DBConstants.MongoDB.READ_PREFERENCE) == null) {
+            config.addProperty(DBConstants.MongoDB.READ_PREFERENCE, "");
+        }
+        if (config.getPropertyValue(DBConstants.MongoDB.AUTO_CONNECT_RETRY) == null) {
+            config.addProperty(DBConstants.MongoDB.AUTO_CONNECT_RETRY, "");
+        }
+        if (config.getPropertyValue(DBConstants.MongoDB.CONNECT_TIMEOUT) == null) {
+            config.addProperty(DBConstants.MongoDB.CONNECT_TIMEOUT, "");
+        }
+        if (config.getPropertyValue(DBConstants.MongoDB.MAX_WAIT_TIME) == null) {
+            config.addProperty(DBConstants.MongoDB.MAX_WAIT_TIME, "");
+        }
+        if (config.getPropertyValue(DBConstants.MongoDB.SOCKET_TIMEOUT) == null) {
+            config.addProperty(DBConstants.MongoDB.SOCKET_TIMEOUT, "");
+        }
+        if (config.getPropertyValue(DBConstants.MongoDB.CONNECTIONS_PER_HOST) == null) {
+            config.addProperty(DBConstants.MongoDB.CONNECTIONS_PER_HOST, "");
+        }
+        if (config.getPropertyValue(DBConstants.MongoDB.THREADS_ALLOWED_TO_BLOCK_CONN_MULTIPLIER) == null) {
+            config.addProperty(DBConstants.MongoDB.THREADS_ALLOWED_TO_BLOCK_CONN_MULTIPLIER, "");
         }
     } else if (DBConstants.DataSourceTypes.CUSTOM.equals(selectedType)) {
     	if (config.getPropertyValue(DBConstants.CustomDataSource.DATA_SOURCE_QUERY_CLASS) == null) {
@@ -406,7 +539,9 @@ private Config addNotAvailableFunctions(Config config,String selectedType, HttpS
             config.addProperty(DBConstants.CustomDataSource.DATA_SOURCE_PROPS, properties);
         }
     	if (config.getPropertyValue(DBConstants.CustomDataSource.DATA_SOURCE_PROPS) == null) {
-            config.addProperty(DBConstants.CustomDataSource.DATA_SOURCE_PROPS, "");
+    	    ArrayList<Property> property = new ArrayList<Property>();
+    	    config.removeProperty(DBConstants.CustomDataSource.DATA_SOURCE_PROPS);
+            config.addProperty(DBConstants.CustomDataSource.DATA_SOURCE_PROPS, property);
         }
     }
 	return config;
@@ -595,6 +730,7 @@ private String getSheetName(String gSpreadJDBCUrl) {
                     newConfig.addProperty(DBConstants.CSV.STARTING_ROW, "");
                     newConfig.addProperty(DBConstants.CSV.MAX_ROW_COUNT, "-1");
                     newConfig.addProperty(DBConstants.CSV.HAS_HEADER, "");
+                    newConfig.addProperty(DBConstants.CSV.HEADER_ROW, "");
                 } else if (DBConstants.DataSourceTypes.JNDI.equals(selectedType)) {
                     newConfig.addProperty(DBConstants.JNDI.INITIAL_CONTEXT_FACTORY, "");
                     newConfig.addProperty(DBConstants.JNDI.PROVIDER_URL, "");
@@ -616,15 +752,57 @@ private String getSheetName(String gSpreadJDBCUrl) {
                 } else if (DBConstants.DataSourceTypes.WEB.equals(selectedType)) {
                     newConfig.addProperty(DBConstants.WebDatasource.WEB_CONFIG, "");
                 } else if (DBConstants.DataSourceTypes.CASSANDRA.equals(selectedType)) {
-                    newConfig.addProperty(DBConstants.RDBMS.URL,"");
-                    newConfig.addProperty(DBConstants.RDBMS.USERNAME,"");
-                    newConfig.addProperty(DBConstants.RDBMS.PASSWORD,"");
-                    newConfig.addProperty(DBConstants.RDBMS.DRIVER_CLASSNAME, "org.apache.cassandra.cql.jdbc.CassandraDriver");
+                    newConfig.addProperty(DBConstants.Cassandra.CASSANDRA_SERVERS,"");
+                    newConfig.addProperty(DBConstants.Cassandra.PORT,"");
+                    newConfig.addProperty(DBConstants.Cassandra.CLUSTER_NAME,"");
+                    newConfig.addProperty(DBConstants.Cassandra.COMPRESSION,"");
+                    newConfig.addProperty(DBConstants.Cassandra.USERNAME, "");
+                    newConfig.addProperty(DBConstants.Cassandra.PASSWORD,"");
+                    newConfig.addProperty(DBConstants.Cassandra.LOAD_BALANCING_POLICY,"");
+                    newConfig.addProperty(DBConstants.Cassandra.ENABLE_JMX_REPORTING,"");
+                    newConfig.addProperty(DBConstants.Cassandra.ENABLE_METRICS, "");
+                    newConfig.addProperty(DBConstants.Cassandra.LOCAL_CORE_CONNECTIONS_PER_HOST,"");
+                    newConfig.addProperty(DBConstants.Cassandra.REMOTE_CORE_CONNECTIONS_PER_HOST,"");
+                    newConfig.addProperty(DBConstants.Cassandra.LOCAL_MAX_CONNECTIONS_PER_HOST,"");
+                    newConfig.addProperty(DBConstants.Cassandra.REMOTE_MAX_CONNECTIONS_PER_HOST,"");
+                    newConfig.addProperty(DBConstants.Cassandra.LOCAL_MAX_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST,"");
+                    newConfig.addProperty(DBConstants.Cassandra.REMOTE_MAX_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST,"");
+                    newConfig.addProperty(DBConstants.Cassandra.LOCAL_MIN_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST, "");
+                    newConfig.addProperty(DBConstants.Cassandra.REMOTE_MIN_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST, "");
+                    newConfig.addProperty(DBConstants.Cassandra.PROTOCOL_VERSION,"");
+                    newConfig.addProperty(DBConstants.Cassandra.CONSISTENCY_LEVEL,"");
+                    newConfig.addProperty(DBConstants.Cassandra.FETCH_SIZE, "");
+                    newConfig.addProperty(DBConstants.Cassandra.SERIAL_CONSISTENCY_LEVEL,"");
+                    newConfig.addProperty(DBConstants.Cassandra.RECONNECTION_POLICY, "");
+                    newConfig.addProperty(DBConstants.Cassandra.CONSTANT_RECONNECTION_POLICY_DELAY, "");
+                    newConfig.addProperty(DBConstants.Cassandra.EXPONENTIAL_RECONNECTION_POLICY_BASE_DELAY, "");
+                    newConfig.addProperty(DBConstants.Cassandra.EXPONENTIAL_RECONNECTION_POLICY_MAX_DELAY, "");
+                    newConfig.addProperty(DBConstants.Cassandra.RETRY_POLICY,"");
+                    newConfig.addProperty(DBConstants.Cassandra.CONNECTION_TIMEOUT_MILLIS,"");
+                    newConfig.addProperty(DBConstants.Cassandra.KEEP_ALIVE,"");
+                    newConfig.addProperty(DBConstants.Cassandra.READ_TIMEOUT_MILLIS, "");
+                    newConfig.addProperty(DBConstants.Cassandra.RECEIVER_BUFFER_SIZE,"");
+                    newConfig.addProperty(DBConstants.Cassandra.SEND_BUFFER_SIZE,"");
+                    newConfig.addProperty(DBConstants.Cassandra.REUSE_ADDRESS,"");
+                    newConfig.addProperty(DBConstants.Cassandra.SO_LINGER, "");
+                    newConfig.addProperty(DBConstants.Cassandra.TCP_NODELAY,"");
+                    newConfig.addProperty(DBConstants.Cassandra.ENABLE_SSL,"");
                 }  else if (DBConstants.DataSourceTypes.CUSTOM.equals(selectedType)) {
                 	ArrayList<Property> property = new ArrayList<Property>();
                     newConfig.addProperty(DBConstants.CustomDataSource.DATA_SOURCE_QUERY_CLASS,"");
                     newConfig.addProperty(DBConstants.CustomDataSource.DATA_SOURCE_TABULAR_CLASS,"");
                     newConfig.addProperty(DBConstants.CustomDataSource.DATA_SOURCE_PROPS,property);
+                }  else if (DBConstants.DataSourceTypes.MONGODB.equals(selectedType)) {
+                    newConfig.addProperty(DBConstants.MongoDB.SERVERS, "");
+                    newConfig.addProperty(DBConstants.MongoDB.DATABASE, "");
+                    newConfig.addProperty(DBConstants.MongoDB.WRITE_CONCERN, "");
+                    newConfig.addProperty(DBConstants.MongoDB.READ_PREFERENCE, "");
+                    newConfig.addProperty(DBConstants.MongoDB.AUTO_CONNECT_RETRY, "");
+                    newConfig.addProperty(DBConstants.MongoDB.CONNECT_TIMEOUT, "");
+                    newConfig.addProperty(DBConstants.MongoDB.MAX_WAIT_TIME, "");
+                    newConfig.addProperty(DBConstants.MongoDB.SOCKET_TIMEOUT, "");
+                    newConfig.addProperty(DBConstants.MongoDB.CONNECTIONS_PER_HOST, "");
+                    newConfig.addProperty(DBConstants.MongoDB.THREADS_ALLOWED_TO_BLOCK_CONN_MULTIPLIER, "");
                 }
 
             }
@@ -716,6 +894,7 @@ private String getSheetName(String gSpreadJDBCUrl) {
                     conf.addProperty(DBConstants.CSV.STARTING_ROW, "");
                     conf.addProperty(DBConstants.CSV.MAX_ROW_COUNT, "-1");
                     conf.addProperty(DBConstants.CSV.HAS_HEADER, "");
+                    conf.addProperty(DBConstants.CSV.HEADER_ROW, "");
 
                 } else if (DBConstants.DataSourceTypes.JNDI.equals(selectedType)) {
                     conf.addProperty(DBConstants.JNDI.INITIAL_CONTEXT_FACTORY, "");
@@ -734,10 +913,52 @@ private String getSheetName(String gSpreadJDBCUrl) {
                 } else if (DBConstants.DataSourceTypes.WEB.equals(selectedType)) {
                     conf.addProperty(DBConstants.WebDatasource.WEB_CONFIG, "");
                 } else if (DBConstants.DataSourceTypes.CASSANDRA.equals(selectedType)) {
-                    conf.addProperty(DBConstants.RDBMS.URL,"");
-                    conf.addProperty(DBConstants.RDBMS.USERNAME,"");
-                    conf.addProperty(DBConstants.RDBMS.PASSWORD,"");
-                    conf.addProperty(DBConstants.RDBMS.DRIVER_CLASSNAME,"org.apache.cassandra.cql.jdbc.CassandraDriver");
+                    conf.addProperty(DBConstants.Cassandra.CASSANDRA_SERVERS,"");
+                    conf.addProperty(DBConstants.Cassandra.PORT,"");
+                    conf.addProperty(DBConstants.Cassandra.CLUSTER_NAME,"");
+                    conf.addProperty(DBConstants.Cassandra.COMPRESSION,"");
+                    conf.addProperty(DBConstants.Cassandra.USERNAME, "");
+                    conf.addProperty(DBConstants.Cassandra.PASSWORD,"");
+                    conf.addProperty(DBConstants.Cassandra.LOAD_BALANCING_POLICY,"");
+                    conf.addProperty(DBConstants.Cassandra.ENABLE_JMX_REPORTING,"");
+                    conf.addProperty(DBConstants.Cassandra.ENABLE_METRICS, "");
+                    conf.addProperty(DBConstants.Cassandra.LOCAL_CORE_CONNECTIONS_PER_HOST,"");
+                    conf.addProperty(DBConstants.Cassandra.REMOTE_CORE_CONNECTIONS_PER_HOST,"");
+                    conf.addProperty(DBConstants.Cassandra.LOCAL_MAX_CONNECTIONS_PER_HOST,"");
+                    conf.addProperty(DBConstants.Cassandra.REMOTE_MAX_CONNECTIONS_PER_HOST,"");
+                    conf.addProperty(DBConstants.Cassandra.LOCAL_MAX_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST,"");
+                    conf.addProperty(DBConstants.Cassandra.REMOTE_MAX_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST,"");
+                    conf.addProperty(DBConstants.Cassandra.LOCAL_MIN_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST, "");
+                    conf.addProperty(DBConstants.Cassandra.REMOTE_MIN_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST, "");
+                    conf.addProperty(DBConstants.Cassandra.PROTOCOL_VERSION,"");
+                    conf.addProperty(DBConstants.Cassandra.CONSISTENCY_LEVEL,"");
+                    conf.addProperty(DBConstants.Cassandra.FETCH_SIZE, "");
+                    conf.addProperty(DBConstants.Cassandra.SERIAL_CONSISTENCY_LEVEL,"");
+                    conf.addProperty(DBConstants.Cassandra.RECONNECTION_POLICY, "");
+                    conf.addProperty(DBConstants.Cassandra.CONSTANT_RECONNECTION_POLICY_DELAY, "");
+                    conf.addProperty(DBConstants.Cassandra.EXPONENTIAL_RECONNECTION_POLICY_BASE_DELAY, "");
+                    conf.addProperty(DBConstants.Cassandra.EXPONENTIAL_RECONNECTION_POLICY_MAX_DELAY, "");
+                    conf.addProperty(DBConstants.Cassandra.RETRY_POLICY,"");
+                    conf.addProperty(DBConstants.Cassandra.CONNECTION_TIMEOUT_MILLIS,"");
+                    conf.addProperty(DBConstants.Cassandra.KEEP_ALIVE,"");
+                    conf.addProperty(DBConstants.Cassandra.READ_TIMEOUT_MILLIS, "");
+                    conf.addProperty(DBConstants.Cassandra.RECEIVER_BUFFER_SIZE,"");
+                    conf.addProperty(DBConstants.Cassandra.SEND_BUFFER_SIZE,"");
+                    conf.addProperty(DBConstants.Cassandra.REUSE_ADDRESS,"");
+                    conf.addProperty(DBConstants.Cassandra.SO_LINGER, "");
+                    conf.addProperty(DBConstants.Cassandra.TCP_NODELAY,"");
+                    conf.addProperty(DBConstants.Cassandra.ENABLE_SSL,"");
+                }  else if (DBConstants.DataSourceTypes.MONGODB.equals(selectedType)) {
+                    conf.addProperty(DBConstants.MongoDB.SERVERS, "");
+                    conf.addProperty(DBConstants.MongoDB.DATABASE, "");
+                    conf.addProperty(DBConstants.MongoDB.WRITE_CONCERN, "");
+                    conf.addProperty(DBConstants.MongoDB.READ_PREFERENCE, "");
+                    conf.addProperty(DBConstants.MongoDB.AUTO_CONNECT_RETRY, "");
+                    conf.addProperty(DBConstants.MongoDB.CONNECT_TIMEOUT, "");
+                    conf.addProperty(DBConstants.MongoDB.MAX_WAIT_TIME, "");
+                    conf.addProperty(DBConstants.MongoDB.SOCKET_TIMEOUT, "");
+                    conf.addProperty(DBConstants.MongoDB.CONNECTIONS_PER_HOST, "");
+                    conf.addProperty(DBConstants.MongoDB.THREADS_ALLOWED_TO_BLOCK_CONN_MULTIPLIER, "");
                 }
                 dataService.setConfig(conf);
             }
@@ -895,9 +1116,6 @@ private String getSheetName(String gSpreadJDBCUrl) {
             <input type="hidden" id="isXAType" name="isXAType" value="<%=isXAType%>"/>
             <input type="hidden" id="flag" name="flag" value="<%=flag%>"/>
             <input type="hidden" id="propertyCount" name="propertyCount" value="0"/>
-            <% if(dataSourceType.equals("Cassandra")) {%>
-                <input type="hidden" id="driverClassName" name="driverClassName" value="org.apache.cassandra.cql.jdbc.CassandraDriver" />
-            <% } %>
         </tr>
 
         <tr>
@@ -933,6 +1151,15 @@ private String getSheetName(String gSpreadJDBCUrl) {
                     } else {%>
                     <option value="Cassandra">Cassandra</option>
                     <%}%>
+
+                    <%
+                        if (dataSourceType.equals("MongoDB")) {
+                    %>
+                    <option value="MongoDB" selected="selected">MongoDB</option>
+                    <%
+                    } else {%>
+                    <option value="MongoDB">MongoDB</option>
+                     <%}%>
 
 
                     <%
@@ -1355,7 +1582,7 @@ private String getSheetName(String gSpreadJDBCUrl) {
                 	</table>
                 </td>
             </tr>
-        <%} else if (propertyName.equals(CustomDataSource.DATA_SOURCE_PROPS)){ 
+        <%} else if (propertyName.equals(DBConstants.CustomDataSource.DATA_SOURCE_PROPS)){
         		Iterator<Property> iterator = ((ArrayList<Property>)property.getValue()).iterator();
              	while (iterator.hasNext()) {
                 	Property availableProperty = iterator.next();
@@ -1406,6 +1633,8 @@ private String getSheetName(String gSpreadJDBCUrl) {
     <% if (!(propertyName.equals("rdf_datasource")
             ||propertyName.equals("excel_datasource")
             ||propertyName.equals("csv_datasource")
+            ||propertyName.equals(DBConstants.MongoDB.SERVERS)
+            ||propertyName.equals(DBConstants.Cassandra.CASSANDRA_SERVERS)
     		||propertyName.equals(RDBMS.DRIVER_CLASSNAME)
     		||propertyName.equals(RDBMS.URL)
     		||propertyName.equals(RDBMS.USERNAME)
@@ -1482,6 +1711,269 @@ private String getSheetName(String gSpreadJDBCUrl) {
             <option value="false">false</option>
             <% } %>
         </select>
+        <% } else if (propertyName.equals(DBConstants.MongoDB.AUTO_CONNECT_RETRY) || propertyName.equals(DBConstants.Cassandra.ENABLE_JMX_REPORTING)
+                  || propertyName.equals(DBConstants.Cassandra.ENABLE_METRICS) || propertyName.equals(DBConstants.Cassandra.KEEP_ALIVE)
+                  || propertyName.equals(DBConstants.Cassandra.REUSE_ADDRESS) || propertyName.equals(DBConstants.Cassandra.TCP_NODELAY)
+                  || propertyName.equals(DBConstants.Cassandra.ENABLE_SSL))
+                  { %>
+        <select id="<%=propertyName%>" name="<%=propertyName%>">
+            <% if (propertyValue.equals("")) { %>
+            <option value="" selected="selected">--SELECT--</option>
+            <% } else { %>
+            <option value="">--SELECT--</option>
+            <% } %>
+
+            <% if (propertyValue.equals("true")) { %>
+            <option value="true" selected="selected">true</option>
+            <% } else { %>
+            <option value="true">true</option>
+            <% } %>
+
+            <% if (propertyValue.equals("false")) { %>
+            <option value="false" selected="selected">false</option>
+            <% } else { %>
+            <option value="false">false</option>
+            <% } %>
+        </select>
+        <%  } else if (propertyName.equals(DBConstants.MongoDB.WRITE_CONCERN)) { %>
+            <select id="<%=propertyName%>" name="<%=propertyName%>">
+                <% if (propertyValue.equals("")) { %>
+                <option value="" selected="selected">--SELECT--</option>
+                <% } else { %>
+                <option value="">--SELECT--</option>
+                <% } %>
+                <% if (propertyValue.equals("FSYNC_SAFE")) { %>
+                <option value="FSYNC_SAFE" selected="selected">FSYNC_SAFE</option>
+                <% } else { %>
+                <option value="FSYNC_SAFE">FSYNC_SAFE</option>
+                <% } %>
+                <% if (propertyValue.equals("NONE")) { %>
+                <option value="NONE" selected="selected">NONE</option>
+                <% } else { %>
+                <option value="NONE">NONE</option>
+                <% } %>
+                <% if (propertyValue.equals("NORMAL")) { %>
+                <option value="NORMAL" selected="selected">NORMAL</option>
+                <% } else { %>
+                <option value="NORMAL">NORMAL</option>
+                <% } %>
+                <% if (propertyValue.equals("REPLICAS_SAFE")) { %>
+                <option value="REPLICAS_SAFE" selected="selected">REPLICAS_SAFE</option>
+                <% } else { %>
+                <option value="REPLICAS_SAFE">REPLICAS_SAFE</option>
+                <% } %>
+                <% if (propertyValue.equals("SAFE")) { %>
+                <option value="SAFE" selected="selected">SAFE</option>
+                <% } else { %>
+                <option value="SAFE">SAFE</option>
+                <% } %>
+                <% if (propertyValue.equals("STRICT")) { %>
+                <option value="STRICT" selected="selected">STRICT</option>
+                <% } else { %>
+                <option value="STRICT">STRICT</option>
+                <% } %>
+            </select>
+            <%  } else if (propertyName.equals(DBConstants.MongoDB.READ_PREFERENCE)) { %>
+            <select id="<%=propertyName%>" name="<%=propertyName%>">
+                <% if (propertyValue.equals("")) { %>
+                <option value="" selected="selected">--SELECT--</option>
+                <% } else { %>
+                <option value="">--SELECT--</option>
+                <% } %>
+                <% if (propertyValue.equals("PRIMARY")) { %>
+                <option value="PRIMARY" selected="selected">PRIMARY</option>
+                <% } else { %>
+                <option value="PRIMARY">PRIMARY</option>
+                <% } %>
+                <% if (propertyValue.equals("SECONDARY")) { %>
+                <option value="SECONDARY" selected="selected">SECONDARY</option>
+                <% } else { %>
+                <option value="SECONDARY">SECONDARY</option>
+                <% } %>
+            </select>
+            <%  } else if (propertyName.equals(DBConstants.Cassandra.COMPRESSION)) { %>
+            <select id="<%=propertyName%>" name="<%=propertyName%>">
+                <% if (propertyValue.equals("")) { %>
+                <option value="" selected="selected">--SELECT--</option>
+                <% } else { %>
+                <option value="">--SELECT--</option>
+                <% } %>
+                <% if (propertyValue.equals("LZ4")) { %>
+                <option value="LZ4" selected="selected">LZ4</option>
+                <% } else { %>
+                <option value="LZ4">LZ4</option>
+                <% } %>
+                <% if (propertyValue.equals("NONE")) { %>
+                <option value="NONE" selected="selected">NONE</option>
+                <% } else { %>
+                <option value="NONE">NONE</option>
+                <% } %>
+                <% if (propertyValue.equals("SNAPPY")) { %>
+                <option value="SNAPPY" selected="selected">SNAPPY</option>
+                <% } else { %>
+                <option value="SNAPPY">SNAPPY</option>
+                <% } %>
+            </select>
+            <%  } else if (propertyName.equals(DBConstants.Cassandra.LOAD_BALANCING_POLICY)) { %>
+            <select id="<%=propertyName%>" name="<%=propertyName%>">
+                <% if (propertyValue.equals("")) { %>
+                <option value="" selected="selected">--SELECT--</option>
+                <% } else { %>
+                <option value="">--SELECT--</option>
+                <% } %>
+                <% if (propertyValue.equals("RoundRobinPolicy")) { %>
+                <option value="RoundRobinPolicy" selected="selected">RoundRobinPolicy</option>
+                <% } else { %>
+                <option value="RoundRobinPolicy">RoundRobinPolicy</option>
+                <% } %>
+                <% if (propertyValue.equals("LatencyAwarePolicy")) { %>
+                <option value="LatencyAwarePolicy" selected="selected">LatencyAwarePolicy</option>
+                <% } else { %>
+                <option value="LatencyAwarePolicy">LatencyAwarePolicy</option>
+                <% } %>
+                <% if (propertyValue.equals("TokenAwarePolicy")) { %>
+                <option value="TokenAwarePolicy" selected="selected">TokenAwarePolicy</option>
+                <% } else { %>
+                <option value="TokenAwarePolicy">TokenAwarePolicy</option>
+                <% } %>
+            </select>
+            <%  } else if (propertyName.equals(DBConstants.Cassandra.CONSISTENCY_LEVEL) || propertyName.equals(DBConstants.Cassandra.SERIAL_CONSISTENCY_LEVEL)) { %>
+            <select id="<%=propertyName%>" name="<%=propertyName%>">
+                <% if (propertyValue.equals("")) { %>
+                <option value="" selected="selected">--SELECT--</option>
+                <% } else { %>
+                <option value="">--SELECT--</option>
+                <% } %>
+                <% if (propertyValue.equals("ALL")) { %>
+                <option value="ALL" selected="selected">ALL</option>
+                <% } else { %>
+                <option value="ALL">ALL</option>
+                <% } %>
+                <% if (propertyValue.equals("ANY")) { %>
+                <option value="ANY" selected="selected">ANY</option>
+                <% } else { %>
+                <option value="ANY">ANY</option>
+                <% } %>
+                <% if (propertyValue.equals("EACH_QUORUM")) { %>
+                <option value="EACH_QUORUM" selected="selected">EACH_QUORUM</option>
+                <% } else { %>
+                <option value="EACH_QUORUM">EACH_QUORUM</option>
+                <% } %>
+                <% if (propertyValue.equals("LOCAL_ONE")) { %>
+                <option value="LOCAL_ONE" selected="selected">LOCAL_ONE</option>
+                <% } else { %>
+                <option value="LOCAL_ONE">LOCAL_ONE</option>
+                <% } %>
+                <% if (propertyValue.equals("LOCAL_QUORUM")) { %>
+                <option value="LOCAL_QUORUM" selected="selected">LOCAL_QUORUM</option>
+                <% } else { %>
+                <option value="LOCAL_QUORUM">LOCAL_QUORUM</option>
+                <% } %>
+                <% if (propertyValue.equals("LOCAL_SERIAL")) { %>
+                <option value="LOCAL_SERIAL" selected="selected">LOCAL_SERIAL</option>
+                <% } else { %>
+                <option value="LOCAL_SERIAL">LOCAL_SERIAL</option>
+                <% } %>
+                <% if (propertyValue.equals("ONE")) { %>
+                <option value="ONE" selected="selected">ONE</option>
+                <% } else { %>
+                <option value="ONE">ONE</option>
+                <% } %>
+                <% if (propertyValue.equals("QUORUM")) { %>
+                <option value="QUORUM" selected="selected">QUORUM</option>
+                <% } else { %>
+                <option value="QUORUM">QUORUM</option>
+                <% } %>
+                <% if (propertyValue.equals("SERIAL")) { %>
+                <option value="SERIAL" selected="selected">SERIAL</option>
+                <% } else { %>
+                <option value="SERIAL">SERIAL</option>
+                <% } %>
+                <% if (propertyValue.equals("THREE")) { %>
+                <option value="THREE" selected="selected">THREE</option>
+                <% } else { %>
+                <option value="THREE">THREE</option>
+                <% } %>
+                <% if (propertyValue.equals("TWO")) { %>
+                <option value="TWO" selected="selected">TWO</option>
+                <% } else { %>
+                <option value="TWO">TWO</option>
+                <% } %>
+            </select>
+            <%  } else if (propertyName.equals(DBConstants.Cassandra.PROTOCOL_VERSION)) { %>
+            <select id="<%=propertyName%>" name="<%=propertyName%>">
+                <% if (propertyValue.equals("")) { %>
+                <option value="" selected="selected">--SELECT--</option>
+                <% } else { %>
+                <option value="">--SELECT--</option>
+                <% } %>
+                <% if (propertyValue.equals("1")) { %>
+                <option value="1" selected="selected">1</option>
+                <% } else { %>
+                <option value="1">1</option>
+                <% } %>
+                <% if (propertyValue.equals("2")) { %>
+                <option value="2" selected="selected">2</option>
+                <% } else { %>
+                <option value="2">2</option>
+                <% } %>
+            </select>
+            <%  } else if (propertyName.equals(DBConstants.Cassandra.RECONNECTION_POLICY)) { %>
+            <select id="<%=propertyName%>" name="<%=propertyName%>">
+                <% if (propertyValue.equals("")) { %>
+                <option value="" selected="selected">--SELECT--</option>
+                <% } else { %>
+                <option value="">--SELECT--</option>
+                <% } %>
+                <% if (propertyValue.equals("ConstantReconnectionPolicy")) { %>
+                <option value="ConstantReconnectionPolicy" selected="selected">ConstantReconnectionPolicy</option>
+                <% } else { %>
+                <option value="ConstantReconnectionPolicy">ConstantReconnectionPolicy</option>
+                <% } %>
+                <% if (propertyValue.equals("ExponentialReconnectionPolicy")) { %>
+                <option value="ExponentialReconnectionPolicy" selected="selected">ExponentialReconnectionPolicy</option>
+                <% } else { %>
+                <option value="ExponentialReconnectionPolicy">ExponentialReconnectionPolicy</option>
+                <% } %>
+            </select>
+            <%  } else if (propertyName.equals(DBConstants.Cassandra.RETRY_POLICY)) { %>
+            <select id="<%=propertyName%>" name="<%=propertyName%>">
+                <% if (propertyValue.equals("")) { %>
+                <option value="" selected="selected">--SELECT--</option>
+                <% } else { %>
+                <option value="">--SELECT--</option>
+                <% } %>
+                <% if (propertyValue.equals("DefaultRetryPolicy")) { %>
+                <option value="DefaultRetryPolicy" selected="selected">DefaultRetryPolicy</option>
+                <% } else { %>
+                <option value="DefaultRetryPolicy">DefaultRetryPolicy</option>
+                <% } %>
+                <% if (propertyValue.equals("DowngradingConsistencyRetryPolicy")) { %>
+                <option value="DowngradingConsistencyRetryPolicy" selected="selected">DowngradingConsistencyRetryPolicy</option>
+                <% } else { %>
+                <option value="DowngradingConsistencyRetryPolicy">DowngradingConsistencyRetryPolicy</option>
+                <% } %>
+                <% if (propertyValue.equals("FallthroughRetryPolicy")) { %>
+                <option value="FallthroughRetryPolicy" selected="selected">FallthroughRetryPolicy</option>
+                <% } else { %>
+                <option value="FallthroughRetryPolicy">FallthroughRetryPolicy</option>
+                <% } %>
+                <% if (propertyValue.equals("LoggingDefaultRetryPolicy")) { %>
+                <option value="LoggingDefaultRetryPolicy" selected="selected">LoggingDefaultRetryPolicy</option>
+                <% } else { %>
+                <option value="LoggingDefaultRetryPolicy">LoggingDefaultRetryPolicy</option>
+                <% } %>
+                <% if (propertyValue.equals("LoggingDowngradingConsistencyRetryPolicy")) { %>
+                <option value="LoggingDowngradingConsistencyRetryPolicy" selected="selected">LoggingDowngradingConsistencyRetryPolicy</option>
+                <% } else { %>
+                <option value="LoggingDowngradingConsistencyRetryPolicy">LoggingDowngradingConsistencyRetryPolicy</option>
+                <% } %>
+                <% if (propertyValue.equals("LoggingFallthroughRetryPolicy")) { %>
+                <option value="LoggingFallthroughRetryPolicy" selected="selected">LoggingFallthroughRetryPolicy</option>
+                <% } else { %>
+                <option value="LoggingFallthroughRetryPolicy">LoggingFallthroughRetryPolicy</option>
+                <% } %>
+            </select>
         <% } else if (propertyName.equals("gspread_visibility")) { %>
 	        <%if (!useQueryMode) { %>
 		        <select id="<%=propertyName%>" name="<%=propertyName%>" onchange="javascript:gspreadVisibiltyOnChange(this,document);return false;">
@@ -1535,19 +2027,9 @@ private String getSheetName(String gSpreadJDBCUrl) {
 	            
                 </tr>
                		<%} else {  %>
-                  <%  if(!(dataSourceType.equals("Cassandra") && propertyName.equals(RDBMS.DRIVER_CLASSNAME))) {%>
-                           <% if((dataSourceType.equals("Cassandra") && propertyName.equals(RDBMS.URL))) {
-                               String cassandraServerUrl = propertyValue;
-                               if (propertyValue != null && !propertyValue.equals("")) {
-                                   cassandraServerUrl = propertyValue.substring(DBConstants.CASSANDRA.CASSANDRA_URL_PREFIX.length());
-                               } else if(ds.equals("edit")) {
-                                   cassandraServerUrl = "[machine-name/ip]:[port]/[keySpace]";
-                               }
-                           %>
-                           <td><input type="text" size="50" id="<%=propertyName%>" name="<%=propertyName%>" value="<%=cassandraServerUrl%>" /></td>
-                  <% }else { %>
+
                            <td><input type="text" size="50" id="<%=propertyName%>" name="<%=propertyName%>" value="<%=propertyValue%>" /></td>
-                    <% } } } %>
+                    <% } %>
 
 
                  <% } else if (flag.equals("edit") && useQueryMode){ %>
@@ -1700,9 +2182,9 @@ private String getSheetName(String gSpreadJDBCUrl) {
         <td id="gov_reg" ><a onclick="showResourceTree('<%=propertyName%>', setValueGov, '/_system/governance')" style="background-image:url(images/registry_picker.gif);" class="icon-link" href="#" > Govenance Registry </a></td>
 
         <% } else {
-        	if(propertyName.equals("gspread_password") || propertyName.equals("jndi_password")) {%>
+        	if(propertyName.equals("gspread_password") || propertyName.equals("jndi_password") || propertyName.equals(DBConstants.Cassandra.PASSWORD)) {%>
         	
-        	<%if ((propertyName.equals("gspread_password") && !useQueryMode)) { %>
+        	<%if ((propertyName.equals("gspread_password") && !useQueryMode) || propertyName.equals("jndi_password") || propertyName.equals(DBConstants.Cassandra.PASSWORD)) { %>
 		        <%if(useSecretAlias) {%>
 			               <input type="text" size="50" id="pwdalias" name="pwdalias" value="<%=propertyValue%>">
 			               <input type="password" size="50" id="<%=propertyName%>" name="<%=propertyName%>" value="<%=propertyValue%>" style="display:none"/>
@@ -1730,6 +2212,11 @@ private String getSheetName(String gSpreadJDBCUrl) {
            	   					<td><a onclick="showResourceTree('<%=propertyName%>', setValueGov, '/_system/governance')" style="background-image:url(images/registry_picker.gif);" class="icon-link" href="#"> Govenance Registry </a></td>
                              </tr>
                         <%} %>
+        <%} else if (propertyName.equals(DBConstants.MongoDB.SERVERS) || propertyName.equals(DBConstants.Cassandra.CASSANDRA_SERVERS)) {%>
+                <tr>
+                <td><fmt:message key="<%=propertyName%>"/><%=(isFieldMandatory(propertyName)?"<font color=\"red\">*</font>":"")%></td>
+                <td><input type="text" size="50" id="<%=propertyName%>" name="<%=propertyName%>" value="<%=propertyValue%>" /></td>
+                </tr>
        <%} else if (propertyName.equals(RDBMS.DATASOURCE_PROPS)){}
        else if (propertyName.equals(CustomDataSource.DATA_SOURCE_PROPS)){}
        else if (!(propertyName.equals(DBConstants.RDBMS.DEFAULT_TX_ISOLATION)
@@ -2060,7 +2547,7 @@ private String getSheetName(String gSpreadJDBCUrl) {
 <table id="buttonTable" class="styledLeft noBorders" cellspacing="0" width="100%">
 <tr>
     <td class="buttonRow" colspan="2">
-        <%if ("RDBMS".equals(dataSourceType) || ("Cassandra".equals(dataSourceType))) {%>
+        <%if ("RDBMS".equals(dataSourceType)) {%>
          <div id="connectionTestMsgDiv" style="display: none;"></div>
         <input class="button" type="button" value="<fmt:message key="datasource.test.connection"/>"
                onclick="testConnection();return false;"/>
@@ -2077,25 +2564,10 @@ private String getSheetName(String gSpreadJDBCUrl) {
             }
 
             function testConnection() {
-                var driver;
-                var jdbcUrl;
-                var userName;
-                var password;
-                if(!document.getElementById('datasourceType').options[document.getElementById('datasourceType').selectedIndex].value == 'Cassandra'
-                        && document.getElementById("xaType").options[document.getElementById("xaType").selectedIndex].value == 'xaType') {
-                    driver = document.getElementById('<%=RDBMS.DATASOURCE_CLASSNAME%>').value;
-                    jdbcUrl = document.getElementById('URL').value;
-                    userName = document.getElementById('User').value;
-                    password = document.getElementById('Password').value;
-                } else{
-                    driver = document.getElementById('<%=RDBMS.DRIVER_CLASSNAME%>').value;
-                    jdbcUrl = document.getElementById('<%=RDBMS.URL%>').value;
-                    if(document.getElementById('datasourceType').options[document.getElementById('datasourceType').selectedIndex].value == 'Cassandra') {
-                        jdbcUrl = "jdbc:cassandra://"+document.getElementById('<%=RDBMS.URL%>').value;
-                    }
-                    userName = document.getElementById('<%=RDBMS.USERNAME%>').value;
-                    password = document.getElementById('<%=RDBMS.PASSWORD%>').value;
-                }
+                var driver = document.getElementById('<%=RDBMS.DRIVER_CLASSNAME%>').value;
+                var jdbcUrl = document.getElementById('<%=RDBMS.URL%>').value;
+                var userName = document.getElementById('<%=RDBMS.USERNAME%>').value;
+                var password = document.getElementById('<%=RDBMS.PASSWORD%>').value;
 
 
                 var useAlias = document.getElementById('useSecretAliasValue').value;

@@ -93,11 +93,6 @@ public class DSOMDataSource implements OMDataSource {
 	public void execute(XMLStreamWriter xmlWriter)
 			throws XMLStreamException {
 		try {
-			/* wrap the XMLStreamWriter with our own implementation to do some delayed 
-			 * data writing to the wire */
-            if (xmlWriter != null) {
- 			    xmlWriter = new DSWrappedXMLStreamWriter(xmlWriter);
-            }
 			this.getDataService().invoke(xmlWriter, this.getOpName(), this.getParams());
 			/* flush the stream, if there's a result */
 			if (xmlWriter != null) {

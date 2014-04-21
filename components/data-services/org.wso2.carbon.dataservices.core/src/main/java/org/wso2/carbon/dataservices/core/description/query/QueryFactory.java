@@ -20,6 +20,9 @@ package org.wso2.carbon.dataservices.core.description.query;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.wso2.carbon.dataservices.common.DBConstants;
 import org.wso2.carbon.dataservices.common.DBConstants.*;
 import org.wso2.carbon.dataservices.core.DBUtils;
@@ -36,6 +39,7 @@ import org.wso2.carbon.dataservices.core.validation.standard.*;
 import javax.sql.DataSource;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
@@ -71,11 +75,15 @@ public class QueryFactory {
         	query = createRdfFileQuery(dataService, queryEl);
         } else if (DataSourceTypes.SPARQL.equals(sourceType)) {
         	query = createSparqlEndpointQuery(dataService, queryEl);
-		} else if (DataSourceTypes.WEB.equals(sourceType)) {
+		} else if (DataSourceTypes.MONGODB.equals(sourceType)) {
+            query = createMongoQuery(dataService, queryEl);
+        } else if (DataSourceTypes.WEB.equals(sourceType)) {
 			query = createWebQuery(dataService, queryEl);
 		} else if (DataSourceTypes.CUSTOM_QUERY.equals(sourceType)) {
 			query = createCustomQuery(dataService, queryEl);
-		} else {
+		} else if (DataSourceTypes.CASSANDRA.equals(sourceType)) {
+            query = createCassandraQuery(dataService, queryEl);
+        } else {
 			throw new DataServiceFault("Invalid configType: " + 
 					sourceType + " in :- \n" + queryEl);
 		}		
@@ -161,6 +169,29 @@ public class QueryFactory {
 				extractAdvancedProps(queryEl), inputNamespace);
 		return query;
 	}
+
+    private static MongoQuery createMongoQuery(DataService dataService,
+                                                                 OMElement queryEl) throws DataServiceFault {
+        String queryId, configId, expression, inputNamespace;
+        EventTrigger[] eventTriggers;
+        Result result;
+        try {
+            queryId = getQueryId(queryEl);
+            configId = getConfigId(queryEl);
+            expression = ((OMElement) queryEl.getChildrenWithLocalName(
+                    DBSFields.EXPRESSION).next()).getText();
+            eventTriggers = getEventTriggers(dataService, queryEl);
+            result = getResultFromQueryElement(dataService, queryEl);
+            inputNamespace = extractQueryInputNamespace(dataService, result, queryEl);
+        } catch (Exception e) {
+            throw new DataServiceFault(e, "Error in parsing Mongo query element");
+        }
+        MongoQuery query = new MongoQuery(dataService, queryId, configId, expression,
+                getQueryParamsFromQueryElement(queryEl), result,
+                eventTriggers[0], eventTriggers[1],
+                extractAdvancedProps(queryEl), inputNamespace);
+        return query;
+    }
     
 	/**
 	 * This method returns the input and output event triggers in a query.
@@ -403,6 +434,37 @@ public class QueryFactory {
 				extractAdvancedProps(queryEl), inputNamespace);
 		return query;
 	}
+	
+	private static CassandraQuery createCassandraQuery(DataService dataService,
+            OMElement queryEl) throws DataServiceFault {
+        String queryId, configId, inputNamespace, queryExpr;
+        EventTrigger[] eventTriggers;
+        Result result;
+        try {
+            queryId = getQueryId(queryEl);
+            configId = getConfigId(queryEl);
+            queryExpr = getCassandraQueryExpression(queryEl);
+            eventTriggers = getEventTriggers(dataService, queryEl);
+            result = getResultFromQueryElement(dataService, queryEl);
+            inputNamespace = extractQueryInputNamespace(dataService, result, queryEl);
+        } catch (Exception e) {
+            throw new DataServiceFault(e, "Error in parsing Cassandra query "
+                    + "element: " + queryEl.toString() + "\n - " + e.getMessage());
+        }
+        CassandraQuery query = new CassandraQuery(dataService, queryId, queryExpr,
+                getQueryParamsFromQueryElement(queryEl), result, configId,
+                eventTriggers[0], eventTriggers[1],
+                extractAdvancedProps(queryEl), inputNamespace);
+        return query;
+    }
+	
+	private static String getCassandraQueryExpression(OMElement queryEl) throws DataServiceFault {
+	    OMElement el = queryEl.getFirstChildWithName(new QName(DBSFields.EXPRESSION));
+	    if (el == null) {
+	        throw new DataServiceFault("A Cassandra query must contain a 'expression' element");
+	    }
+	    return el.getText();
+	}
 
 	private static CustomQueryBasedDSQuery createCustomQuery(DataService dataService,
             OMElement queryEl) throws DataServiceFault {
@@ -452,7 +514,7 @@ public class QueryFactory {
     private static ExcelQuery createExcelQuery(DataService dataService,
 			OMElement queryEl) throws DataServiceFault {
 		String queryId, configId, workbookName, inputNamespace;
-		int startingRow, maxRowCount;
+		int startingRow, maxRowCount, headerRow;
 		boolean hasHeader;
 		EventTrigger[] eventTriggers;
 		Result result;
@@ -486,6 +548,14 @@ public class QueryFactory {
 			} else {
 				hasHeader = false;
 			}
+
+            OMElement tmpHeaderRow = excelEl.getFirstChildWithName(
+                    new QName(DBConstants.Excel.HEADER_ROW));
+            if (tmpHeaderRow != null) {
+                headerRow = Integer.parseInt(tmpHeaderRow.getText());
+            } else {
+                headerRow = 1;
+            }
 			
 			eventTriggers = getEventTriggers(dataService, queryEl);
 			
@@ -496,7 +566,7 @@ public class QueryFactory {
 		}
 		ExcelQuery query = new ExcelQuery(dataService, queryId,
 				getQueryParamsFromQueryElement(queryEl), configId,
-				workbookName, hasHeader, startingRow, maxRowCount, result,
+				workbookName, hasHeader, startingRow, headerRow, maxRowCount, result,
 				eventTriggers[0], eventTriggers[1],
 				extractAdvancedProps(queryEl), inputNamespace);
 		return query;
@@ -505,7 +575,7 @@ public class QueryFactory {
 	private static GSpreadQuery createGSpreadQuery(DataService dataService,
 			OMElement queryEl) throws DataServiceFault {
 		String queryId, configId, inputNamespace;
-		int worksheetNumber, startingRow, maxRowCount;
+		int worksheetNumber, startingRow, maxRowCount, headerRow;
 		boolean hasHeader;
 		EventTrigger[] eventTriggers;
 		Result result;
@@ -541,6 +611,14 @@ public class QueryFactory {
 			} else {
 				hasHeader = false;
 			}
+
+            OMElement tmpHeaderRow = gspreadEl.getFirstChildWithName(
+                    new QName(DBConstants.GSpread.HEADER_ROW));
+            if (tmpHeaderRow != null) {
+                headerRow = Integer.parseInt(tmpHeaderRow.getText());
+            } else {
+                headerRow = 1;
+            }
 			
 			eventTriggers = getEventTriggers(dataService, queryEl);
 			
@@ -551,7 +629,7 @@ public class QueryFactory {
 		}
 		GSpreadQuery query = new GSpreadQuery(dataService, queryId,
 				getQueryParamsFromQueryElement(queryEl), configId,
-				worksheetNumber, hasHeader, startingRow, maxRowCount, result,
+				worksheetNumber, hasHeader, startingRow, headerRow, maxRowCount, result,
 				eventTriggers[0], eventTriggers[1],
 				extractAdvancedProps(queryEl), inputNamespace);
 		return query;
@@ -568,34 +646,21 @@ public class QueryFactory {
 		if (namespace == null || namespace.trim().length() == 0) {
 			namespace = dataService.getDefaultNamespace();
 		}
-		
-		String element = resEl.getAttributeValue(new QName(DBSFields.ELEMENT));
-		String rowName = resEl.getAttributeValue(new QName(DBSFields.ROW_NAME));
 
         String xsltPath = resEl.getAttributeValue(new QName(DBSFields.XSLT_PATH));
 
         String outputType = resEl.getAttributeValue(new QName(DBSFields.OUTPUT_TYPE));
         int resultType = DBConstants.ResultTypes.XML;
-        if (outputType == null || outputType.trim().length() == 0 ||
-                outputType.equals(DBSFields.RESULT_TYPE_XML)) {
-        	 resultType = DBConstants.ResultTypes.XML;
-        } else if (outputType.equals(DBSFields.RESULT_TYPE_RDF)){
-		     resultType = DBConstants.ResultTypes.RDF;
-		}
+        if (outputType == null || outputType.trim().length() == 0 || outputType.equals(
+                DBSFields.RESULT_TYPE_XML)) {
+            resultType = DBConstants.ResultTypes.XML;
+        } else if (outputType.equals(DBSFields.RESULT_TYPE_RDF)) {
+            resultType = DBConstants.ResultTypes.RDF;
+        } else if (outputType.equals(DBSFields.RESULT_TYPE_JSON)) {
+            resultType = DBConstants.ResultTypes.JSON;
+        }
         
-        if (resultType == DBConstants.ResultTypes.RDF){
-        	element = DBConstants.DBSFields.RDF;
-		}
-        	
-        if (resultType == DBConstants.ResultTypes.RDF){
-        	rowName = DBConstants.DBSFields.RDF_DESCRIPTION;
-		}
-        
-		Result result = new Result(element, rowName, namespace, xsltPath, resultType);
-		if (resultType == DBConstants.ResultTypes.RDF) {
-			String rdfBaseURI = resEl.getAttributeValue(new QName(DBSFields.RDF_BASE_URI));
-			result.setRDFBaseURI(rdfBaseURI);
-		}
+		Result result = new Result(xsltPath, resultType);
 		
 		boolean useColumnNumbers = false;
         String useColumnNumbersStr = resEl.getAttributeValue(new QName(DBSFields.USE_COLUMN_NUMBERS));
@@ -611,17 +676,275 @@ public class QueryFactory {
         }
         result.setEscapeNonPrintableChar(escapeNonPrintableChar);
 		
-		/* create default wrapping output element group for the result */
-		OMElement groupEl = createElement(DBSFields.ELEMENT);
-		addRHSChildrenToLHS(groupEl, resEl);
-		
-		/* create output element group and set it to the result */
-		OutputElementGroup defGroup = createOutputElementGroup(dataService, groupEl, 
-				namespace, result, 0, false);
-		result.setDefaultElementGroup(defGroup);
+        if (result.getResultType() == ResultTypes.XML) {
+            populateXMLResult(result, dataService, resEl, namespace);
+        } else if (result.getResultType() == ResultTypes.RDF) {
+            populateRDFResult(result, dataService, resEl, namespace);
+        } else if (result.getResultType() == ResultTypes.JSON) {
+            populateJSONResult(result, dataService, resEl, calculateJSONXMLQueryNS(
+                    namespace, queryEl.getAttributeValue(new QName(DBSFields.ID))));
+        }
 		
 		return result;
 	}
+	
+	private static String calculateJSONXMLQueryNS(String originalNS, String queryName) {
+	    if (!originalNS.endsWith("/")) {
+	        originalNS += "/";
+	    }
+	    return originalNS + queryName;
+	}
+	
+	private static void populateRDFResult(Result result, DataService dataService, OMElement resEl,
+	        String namespace) throws DataServiceFault {
+	    result.setElementName(DBConstants.DBSFields.RDF);
+	    result.setRowName(DBConstants.DBSFields.RDF_DESCRIPTION);
+	    result.setNamespace(namespace);
+	    String rdfBaseURI = resEl.getAttributeValue(new QName(DBSFields.RDF_BASE_URI));
+        result.setRDFBaseURI(rdfBaseURI);
+        /* create default wrapping output element group for the result */
+        OMElement groupEl = createElement(DBSFields.ELEMENT);
+        addRHSChildrenToLHS(groupEl, resEl);
+        /* create output element group and set it to the result */
+        OutputElementGroup defGroup = createOutputElementGroup(dataService, groupEl, 
+                namespace, result, 0, false);
+        result.setDefaultElementGroup(defGroup);
+	}
+	
+    private static void populateXMLResult(Result result, DataService dataService, OMElement resEl,
+            String namespace) throws DataServiceFault {
+        result.setElementName(resEl.getAttributeValue(new QName(DBSFields.ELEMENT)));
+        result.setRowName(resEl.getAttributeValue(new QName(DBSFields.ROW_NAME)));
+        result.setNamespace(namespace);
+        /* create default wrapping output element group for the result */
+        OMElement groupEl = createElement(DBSFields.ELEMENT);
+        addRHSChildrenToLHS(groupEl, resEl);
+        /* create output element group and set it to the result */
+        OutputElementGroup defGroup = createOutputElementGroup(dataService, groupEl, 
+                namespace, result, 0, false);
+        result.setDefaultElementGroup(defGroup);
+    }
+    
+    private static class JSONCallQueryParamsInfo {
+        
+        private List<String[]> withParams = new ArrayList<String[]>();
+        
+        public JSONCallQueryParamsInfo(String value) throws DataServiceFault {
+            value = value.trim();
+            String[] wpTokens = value.split(",");
+            for (String wp : wpTokens) {
+                this.processWP(wp);
+            }
+        }
+        
+        private void processWP(String wp) throws DataServiceFault {
+            String[] tokens = wp.split("->");
+            if (tokens.length != 2) {
+                throw new DataServiceFault("The nested query call parameters should be separated "
+                        + "by a single '->', found: " + wp);
+            }
+            tokens[0] = tokens[0].trim();
+            tokens[1] = tokens[1].trim();
+            if (!tokens[0].startsWith("$")) {
+                throw new DataServiceFault("The nested query call parameter LHS should be a reference to an existing column/query-param, "
+                        + "which should start with a $, found: " + tokens[0]);
+            }
+            this.withParams.add(new String[] { tokens[0].substring(1), tokens[1] });
+        }
+        
+        public List<String[]> getWithParams() {
+            return withParams;
+        }
+        
+    }
+    
+    private static class ResultEntryColumnInfo {
+                
+        private String name;
+        
+        private String dataType;
+        
+        private String requiredRoles;
+        
+        public ResultEntryColumnInfo(String value) throws DataServiceFault {
+            // {"name":"$jack(type:integer;requiredRoles:admin,role1)"
+            value = value.trim();
+            int index1 = value.indexOf('(');
+            if (!value.startsWith("$")) {
+                throw new DataServiceFault("A result entry column value must start with "
+                        + "$, found: " + value);
+            }
+            if (index1 == -1) {
+                this.name = value.substring(1);
+            } else {
+                this.name = value.substring(1, index1);
+                int index2 = value.lastIndexOf(")");
+                if (index2 == -1) {
+                    throw new DataServiceFault("A result entry column value with options must end "
+                            + "with ')', found: " + value);
+                }
+                String options = value.substring(index1 + 1, index2);
+                String[] optionsTokens = options.split(";");
+                for (String optionsToken : optionsTokens) {
+                    this.processOptionsToken(optionsToken);
+                }
+            }
+        }
+        
+        private void processOptionsToken(String optionsToken) throws DataServiceFault {
+            String[] tokens = optionsToken.split(":");
+            if (tokens.length != 2) {
+                throw new DataServiceFault("An option section must be separate by a single ':', "
+                        + "found: " + optionsToken);
+            }
+            String name = tokens[0].trim();
+            String value = tokens[1].trim();
+            if (DBSFields.REQUIRED_ROLES.equals(name)) {
+                this.requiredRoles = value;
+            } else if (DBSFields.TYPE.equals(name)) {
+                this.dataType = value;
+            } else {
+                throw new DataServiceFault("Unrecognized option type '" + name + "', "
+                        + "found: " + name);
+            }
+        }
+        
+        public String getName() {
+            return name;
+        }
+        
+        public String getRequiredRoles() {
+            return requiredRoles;
+        }
+        
+        public String getDataType() {
+            return dataType;
+        }
+        
+    }
+    
+    private static ResultEntryColumnInfo extractJSONResultColumnInfo(
+            String value) throws DataServiceFault {
+        return new ResultEntryColumnInfo(value);
+    }
+    
+    private static JSONCallQueryParamsInfo extractJSONCallQueryParamInfo(
+            String value) throws DataServiceFault {
+        return new JSONCallQueryParamsInfo(value);
+    }
+    
+    private static void addJSONMappingResultRecord(JSONObject obj, 
+            OMElement parentEl) throws DataServiceFault {
+        Object item;
+        for (String name : JSONObject.getNames(obj)) {
+            try {
+                item = obj.get(name);
+            } catch (JSONException e) {
+                throw new DataServiceFault(e, "Unexpected JSON parsing error: " + e.getMessage());
+            }
+            if (name.startsWith("@")) {
+                processJSONMappingCallQuery(name.substring(1), item, parentEl);
+            } else {
+                processJSONMappingResultColumn(name, item, parentEl);
+            }
+        }
+    }
+    
+    private static void processJSONMappingCallQuery(String name, Object item, 
+            OMElement parentEl) throws DataServiceFault {
+        OMElement cqEl = createElement(DBSFields.CALL_QUERY);
+        cqEl.addAttribute(DBSFields.HREF, name, null);
+        parentEl.addChild(cqEl);
+        JSONCallQueryParamsInfo info = extractJSONCallQueryParamInfo(item.toString());
+        OMElement wpEl;
+        for (String[] wp : info.getWithParams()) {
+            wpEl = createElement(DBSFields.WITH_PARAM);
+            wpEl.addAttribute(DBSFields.NAME, wp[0], null);
+            wpEl.addAttribute(DBSFields.QUERY_PARAM, wp[1], null);
+            cqEl.addChild(wpEl);
+        }
+    }
+    
+    private static void processJSONMappingResultColumn(String name, Object item, 
+            OMElement parentEl) throws DataServiceFault {
+        OMElement childEl = createElement(DBSFields.ELEMENT);
+        parentEl.addChild(childEl);
+        childEl.addAttribute(DBSFields.NAME, name, null);
+        if (item instanceof JSONObject) {
+            addJSONMappingResultRecord((JSONObject) item, childEl);
+        } else if (item instanceof JSONArray) {
+            throw new DataServiceFault("A JSON Array cannot be contained in the result records");
+        } else {
+            ResultEntryColumnInfo info = extractJSONResultColumnInfo(item.toString());
+            childEl.addAttribute(DBSFields.COLUMN, info.getName(), null);
+            if (info.getDataType() != null) {
+                childEl.addAttribute(DBSFields.XSD_TYPE, info.getDataType(), null);
+            }
+            if (info.getRequiredRoles() != null) {
+                childEl.addAttribute(DBSFields.REQUIRED_ROLES, info.getRequiredRoles(), null);
+            }
+        }
+    }
+    
+    public static OMElement getJSONResultFromText(String jsonMapping) throws DataServiceFault {
+        try {
+            OMElement resultEl = createElement(DBSFields.RESULT);
+            JSONObject resultObj = new JSONObject(jsonMapping);
+            String[] topLevelNames = JSONObject.getNames(resultObj);
+            if (topLevelNames == null || topLevelNames.length != 1) {
+                throw new DataServiceFault("There must be exactly 1 top level object in the JSON mapping, "
+                        + "found " + (topLevelNames != null ? topLevelNames.length : 0));
+            }
+            String wrapperName = topLevelNames[0];
+            String rowName = null;
+            Object rootObj = resultObj.get(wrapperName);
+            if (rootObj instanceof JSONArray) {
+                throw new DataServiceFault("The top level object cannot be an array");
+            } else if (rootObj instanceof JSONObject) {
+                String[] secondLevelNames = JSONObject.getNames((JSONObject) rootObj);
+                if (secondLevelNames.length == 1) {
+                    Object obj = ((JSONObject) rootObj).get(secondLevelNames[0]);
+                    if (obj instanceof JSONArray) {
+                        rowName = secondLevelNames[0];
+                        JSONArray array = (JSONArray) obj;
+                        if (array.length() != 1) {
+                            throw new DataServiceFault("The JSON array should be of size 1, found " + 
+                                    array.length());
+                        }
+                        obj = array.get(0);
+                        if (!(obj instanceof JSONObject)) {
+                            throw new DataServiceFault("The JSON array element must be a JSON Object");
+                        }
+                        addJSONMappingResultRecord((JSONObject) obj, resultEl);
+                    } else {
+                        addJSONMappingResultRecord((JSONObject) rootObj, resultEl);
+                    }
+                } else {
+                    addJSONMappingResultRecord((JSONObject) rootObj, resultEl);
+                }
+            } else {
+                throw new DataServiceFault("The top level object cannot be a simple type");
+            }
+            resultEl.addAttribute(DBSFields.ELEMENT, wrapperName, null);
+            if (rowName != null) {
+                resultEl.addAttribute(DBSFields.ROW_NAME, rowName, null);
+            }
+            return resultEl;
+        } catch (DataServiceFault e) {
+            throw e;
+        } catch (Exception e) {
+            throw new DataServiceFault(e, "Error in parsing JSON result mapping: " + e.getMessage());
+        }
+    }
+    
+    private static void populateJSONResult(Result result, DataService dataService,
+            OMElement resultEl, String namespace) throws DataServiceFault {
+        /* create the XML mapping from the JSON mapping */
+        resultEl = getJSONResultFromText(resultEl.getText());
+        result.setResultType(ResultTypes.XML);
+        /* process the XML mapping */
+        populateXMLResult(result, dataService, resultEl, namespace);
+    }
 	
 	private static OMElement createElement(String name) {
 		OMFactory factory = DBUtils.getOMFactory();
@@ -756,24 +1079,24 @@ public class QueryFactory {
 			validators.add(ArrayTypeValidator.getInstance());
 		}
 		/* add specific validators as requested */
-		OMElement valEl = paramEl.getFirstChildWithName(new QName("validateLongRange"));
+		OMElement valEl = paramEl.getFirstChildWithName(new QName(DBSFields.VALIDATE_LONG_RANGE));
 		if (valEl != null) {
 			validators.add(getLongRangeValidator(valEl));
 		}
-		valEl = paramEl.getFirstChildWithName(new QName("validateDoubleRange"));
+		valEl = paramEl.getFirstChildWithName(new QName(DBSFields.VALIDATE_DOUBLE_RANGE));
 		if (valEl != null) {
 			validators.add(getDoubleRangeValidator(valEl));
 		}
-		valEl = paramEl.getFirstChildWithName(new QName("validateLength"));
+		valEl = paramEl.getFirstChildWithName(new QName(DBSFields.VALIDATE_LENGTH));
 		if (valEl != null) {
 			validators.add(getLengthValidator(valEl));
 		}
-		valEl = paramEl.getFirstChildWithName(new QName("validatePattern"));
+		valEl = paramEl.getFirstChildWithName(new QName(DBSFields.VALIDATE_PATTERN));
 		if (valEl != null) {
 			validators.add(getPatternValidator(valEl));
 		}
 		/* custom validator */
-		valEl = paramEl.getFirstChildWithName(new QName("validateCustom"));
+		valEl = paramEl.getFirstChildWithName(new QName(DBSFields.VALIDATE_CUSTOM));
 		if (valEl != null) {
 			validators.add(getCustomValidator(valEl));
 		}
@@ -783,12 +1106,12 @@ public class QueryFactory {
 	private static LongRangeValidator getLongRangeValidator(OMElement valEl) {
 		long minimum = 0, maximum = 0;
 		boolean hasMin = false, hasMax = false;
-		String minStr = valEl.getAttributeValue(new QName("minimum"));
+		String minStr = valEl.getAttributeValue(new QName(DBSFields.MINIMUM));
 		if (minStr != null) {
 			minimum = Long.parseLong(minStr);
 			hasMin = true;
 		}
-		String maxStr = valEl.getAttributeValue(new QName("maximum"));
+		String maxStr = valEl.getAttributeValue(new QName(DBSFields.MAXIMUM));
 		if (maxStr != null) {
 			maximum = Long.parseLong(maxStr);
 			hasMax = true;
@@ -800,12 +1123,12 @@ public class QueryFactory {
 	private static DoubleRangeValidator getDoubleRangeValidator(OMElement valEl) {
 		double minimum = 0.0, maximum = 0.0;
 		boolean hasMin = false, hasMax = false;
-		String minStr = valEl.getAttributeValue(new QName("minimum"));
+		String minStr = valEl.getAttributeValue(new QName(DBSFields.MINIMUM));
 		if (minStr != null) {
 			minimum = Double.parseDouble(minStr);
 			hasMin = true;
 		}
-		String maxStr = valEl.getAttributeValue(new QName("maximum"));
+		String maxStr = valEl.getAttributeValue(new QName(DBSFields.MAXIMUM));
 		if (maxStr != null) {
 			maximum = Double.parseDouble(maxStr);
 			hasMax = true;
@@ -817,12 +1140,12 @@ public class QueryFactory {
 	private static LengthValidator getLengthValidator(OMElement valEl) {
 		int minimum = 0, maximum = 0;
 		boolean hasMin = false, hasMax = false;
-		String minStr = valEl.getAttributeValue(new QName("minimum"));
+		String minStr = valEl.getAttributeValue(new QName(DBSFields.MINIMUM));
 		if (minStr != null) {
 			minimum = Integer.parseInt(minStr);
 			hasMin = true;
 		}
-		String maxStr = valEl.getAttributeValue(new QName("maximum"));
+		String maxStr = valEl.getAttributeValue(new QName(DBSFields.MAXIMUM));
 		if (maxStr != null) {
 			maximum = Integer.parseInt(maxStr);
 			hasMax = true;
@@ -832,14 +1155,14 @@ public class QueryFactory {
 	}
 	
 	private static PatternValidator getPatternValidator(OMElement valEl) {
-		String regEx = valEl.getAttributeValue(new QName("pattern"));
+		String regEx = valEl.getAttributeValue(new QName(DBSFields.PATTERN));
 		PatternValidator validator = new PatternValidator(regEx);
 		return validator;
 	}
 	
 	@SuppressWarnings("unchecked")
 	private static Validator getCustomValidator(OMElement valEl) throws DataServiceFault {
-		String className = valEl.getAttributeValue(new QName("class"));
+		String className = valEl.getAttributeValue(new QName(DBSFields.CLASS));
 		try {
 		    Class<Validator> clazz = (Class<Validator>) Class.forName(className);
 		    return clazz.newInstance();
@@ -1070,6 +1393,5 @@ public class QueryFactory {
 		WithParam withParam = new CallQuery.WithParam(name, originalParam, param, paramType);
 		return withParam;
 	}
-
 
 }

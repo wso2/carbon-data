@@ -25,6 +25,7 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
+
 import org.apache.axis2.databinding.utils.ConverterUtil;
 import org.wso2.carbon.dataservices.common.DBConstants;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
@@ -32,6 +33,7 @@ import org.wso2.carbon.dataservices.core.description.event.EventTrigger;
 import org.wso2.carbon.dataservices.core.engine.*;
 
 import javax.xml.stream.XMLStreamWriter;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;

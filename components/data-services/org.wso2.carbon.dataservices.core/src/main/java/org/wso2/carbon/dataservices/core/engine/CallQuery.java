@@ -61,11 +61,11 @@ public class CallQuery extends OutputElement {
 
 	public void init() throws DataServiceFault {
 		this.query = this.getDataService().getQuery(this.getQueryId());
-        this.setNamespace(this.getQuery().getNamespace());
 		if (this.query == null) {
-			throw new DataServiceFault(
-					"Query with the query id: '" + this.getQueryId() + "' cannot be found");
-		}
+            throw new DataServiceFault(
+                    "Query with the query id: '" + this.getQueryId() + "' cannot be found");
+        }
+        this.setNamespace(this.getQuery().getNamespace());
 	}
 	
 	public Map<String, WithParam> getWithParams() {

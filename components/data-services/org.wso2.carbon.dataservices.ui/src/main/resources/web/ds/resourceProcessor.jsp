@@ -28,11 +28,13 @@
     String description = request.getParameter("resourceDesc");
     String isExistingResource = request.getParameter("existingResource");
     String oldResourcePath = request.getParameter("oldResourcePath");
+    String oldResourceMethod = request.getParameter("oldResourceMethod");
     String action = request.getParameter("action");
     String enableStreaming = request.getParameter("enableStreaming");
     String returnRequestStatusStr = request.getParameter("returnRequestStatus");
     action  = (action == null) ? "" : action;
     oldResourcePath = (oldResourcePath == null) ? "" : oldResourcePath;
+    oldResourceMethod = (oldResourceMethod == null) ? "" : oldResourceMethod;
 
     Query query = dataService.getQuery(queryId);
     Param[] params = null;
@@ -80,7 +82,7 @@
             dataService.addResource(resource);
         }else if(isExistingResource.equals("true")){
             //edit resource
-            resource = dataService.getResource(oldResourcePath);
+            resource = dataService.getResource(oldResourcePath, oldResourceMethod);
             if(resource != null){
                 if(action.equals("remove")){
                     dataService.removeResource(resource);

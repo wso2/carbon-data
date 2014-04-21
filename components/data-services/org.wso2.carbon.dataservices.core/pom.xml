@@ -145,6 +145,14 @@
             <scope>system</scope>
             <systemPath>${basedir}/src/test/resources/lib/ojdbc6.jar</systemPath>
         </dependency>
+        <dependency>
+            <groupId>org.mongodb.wso2</groupId>
+            <artifactId>mongo-java-driver</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.datastax.cassandra.wso2</groupId>
+            <artifactId>cassandra-driver-core</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

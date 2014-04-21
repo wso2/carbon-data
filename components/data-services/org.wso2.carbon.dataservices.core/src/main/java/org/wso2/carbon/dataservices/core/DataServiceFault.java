@@ -18,10 +18,19 @@
  */
 package org.wso2.carbon.dataservices.core;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.axiom.om.OMAbstractFactory;
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMFactory;
+import org.apache.axiom.om.OMNamespace;
+import org.apache.axiom.om.OMText;
+import org.wso2.carbon.dataservices.common.DBConstants;
 import org.wso2.carbon.dataservices.common.DBConstants.FaultCodes;
 import org.wso2.carbon.dataservices.core.engine.DataService;
 import org.wso2.carbon.dataservices.core.engine.ParamValue;
@@ -58,6 +67,11 @@ public class DataServiceFault extends Exception {
 	 * The current parameters of the current operation/resource, if available.
 	 */
 	private Map<String, ParamValue> currentParams;
+
+    /**
+     * This map contains all the properties related to data services fault message
+     */
+    private Map<String, Object> propertyMap = new HashMap<String, Object>();
 	
 	public DataServiceFault(Exception nestedException, String code, String dsFaultMessage) {
 		super(nestedException);
@@ -67,6 +81,49 @@ public class DataServiceFault extends Exception {
 			this.code = extractFaultCode(nestedException);
 		}
 	}
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static OMElement extractFaultMessage(Throwable throwable) {
+        if (throwable instanceof DataServiceFault) {
+            if (throwable.getCause() instanceof XMLStreamException) {
+                return extractFaultMessage(((XMLStreamException) throwable.getCause()).getNestedException());
+            }
+            OMFactory fac = OMAbstractFactory.getOMFactory();
+            OMElement root = fac.createOMElement(new QName(
+                    DBConstants.WSO2_DS_NAMESPACE, DBConstants.DS_FAULT_ELEMENT));
+            OMNamespace ns = root.getNamespace();
+            for (Map.Entry<String, Object> rootEntry : ((DataServiceFault) throwable).getPropertyMap().entrySet()) {
+                OMElement keyElement = fac.createOMElement(rootEntry.getKey(), ns);
+                if (rootEntry.getValue() instanceof Map) {
+                    for (Map.Entry dataServiceEntry : (Set<Map.Entry>) ((Map) rootEntry.getValue()).entrySet()) {
+                        OMElement dataServiceKeyElement = fac.createOMElement(
+                                dataServiceEntry.getKey().toString(), ns);
+                        OMText dataServiceValueElement = fac.createOMText(
+                                dataServiceKeyElement, dataServiceEntry.getValue().toString());
+                        dataServiceKeyElement.addChild(dataServiceValueElement);
+                        keyElement.addChild(dataServiceKeyElement);
+                    }
+                } else {
+                    OMText valueElement = fac.createOMText(
+                            keyElement, rootEntry.getValue().toString());
+                    keyElement.addChild(valueElement);
+                }
+                root.addChild(keyElement);
+            }
+            return root;
+        } else if (throwable instanceof XMLStreamException) {
+            return extractFaultMessage(((XMLStreamException) throwable).getNestedException());
+        } else if (throwable != null) {
+            Throwable cause = throwable.getCause();
+            if (cause != null) {
+                return extractFaultMessage(cause);
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
 	
 	public static String extractFaultCode(Throwable throwable) {
 		if (throwable instanceof DataServiceFault) {
@@ -124,19 +181,30 @@ public class DataServiceFault extends Exception {
 		}
 		if (this.getCode() != null) {
 			buff.append("DS Code: " + this.getCode() + "\n");
+            getPropertyMap().put(DBConstants.FaultParams.DS_CODE, this.getCode());
 		}
 		if (this.getSourceDataService() != null) {
 			buff.append("Source Data Service:-\n");
 			buff.append(this.getSourceDataService().toString());
+            Map<String, String> sourcePropertyMap = new HashMap<String, String>();
+            sourcePropertyMap.put(DBConstants.FaultParams.DATA_SERVICE_NAME, this.getSourceDataService().getName());
+            sourcePropertyMap.put(DBConstants.FaultParams.LOCATION, this.getSourceDataService().getRelativeDsLocation());
+            sourcePropertyMap.put(DBConstants.FaultParams.DESCRIPTION, this.getSourceDataService().getDescription() != null ?
+                    this.getSourceDataService().getDescription() : "N/A");
+            sourcePropertyMap.put(DBConstants.FaultParams.DEFAULT_NAMESPACE, this.getSourceDataService().getDefaultNamespace());
+            getPropertyMap().put(DBConstants.FaultParams.SOURCE_DATA_SERVICE, sourcePropertyMap);
 		}
 		if (this.getCurrentRequestName() != null) {
 			buff.append("Current Request Name: " + this.getCurrentRequestName() + "\n");
+            getPropertyMap().put(DBConstants.FaultParams.CURRENT_REQUEST_NAME, this.getCurrentRequestName());
 		}
 		if (this.getCurrentParams() != null) {
 			buff.append("Current Params: " + this.getCurrentParams() + "\n");
+            getPropertyMap().put(DBConstants.FaultParams.CURRENT_PARAMS, this.getCurrentParams().toString());
 		}
 		if (this.getCause() != null) {			
 			buff.append("Nested Exception:-\n" + this.getCause() + "\n");
+            getPropertyMap().put(DBConstants.FaultParams.NESTED_EXCEPTION, this.getCause().toString());
 		}
 		return buff.toString();
 	}
@@ -168,6 +236,9 @@ public class DataServiceFault extends Exception {
 
 	public void setSourceDataService(DataService sourceDataService) {
 		this.sourceDataService = sourceDataService;
-	}	
-	
+	}
+
+    public Map<String, Object> getPropertyMap() {
+        return propertyMap;
+    }
 }

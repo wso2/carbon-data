@@ -48,8 +48,6 @@ public class Data extends DataServiceConfigurationElement{
     private boolean boxcarring;
     
 	private boolean enableXA;
-
-    private boolean enableDTP;
 	
 	private boolean isUseAppServerTS;
 	
@@ -183,15 +181,6 @@ public class Data extends DataServiceConfigurationElement{
     public void setBoxcarring(boolean boxcarring) {
         this.boxcarring = boxcarring;
     }
-
-    public boolean isDTP() {
-        return enableDTP;
-    }
-
-    public void setDTP(boolean enableDTP) {
-        this.enableDTP = enableDTP;
-    }
-
 
     public boolean isUseColumnNumbers() {
         return useColumnNumbers;
@@ -555,6 +544,8 @@ public class Data extends DataServiceConfigurationElement{
         excelQuery.setStartingRow(startingRow.getText());
         OMElement maxRowCount =  excelEle.getFirstChildWithName(new QName("maxrowcount"));
         excelQuery.setMaxRowCount(maxRowCount.getText());
+        OMElement headerRow =  excelEle.getFirstChildWithName(new QName("headerrow"));
+        excelQuery.setHeaderRow(headerRow.getText());
         query.setExcel(excelQuery);
 		return query;
 	}
@@ -572,6 +563,8 @@ public class Data extends DataServiceConfigurationElement{
         gspreadQuery.setMaxRowCount(Integer.parseInt(maxRowCount.getText()));
         OMElement hasHeaders = gspreadEl.getFirstChildWithName(new QName("hasheader"));
         gspreadQuery.setHasHeaders(hasHeaders.getText());
+        OMElement headerRow = gspreadEl.getFirstChildWithName(new QName("headerrow"));
+        gspreadQuery.setHeaderRow(Integer.parseInt(headerRow.getText()));
     	query.setGSpread(gspreadQuery);
 		return query;
 	}
@@ -763,6 +756,9 @@ public class Data extends DataServiceConfigurationElement{
         OMAttribute useColumnNoAttrib = resultEle.getAttribute(new QName("useColumnNumbers"));
         OMAttribute escapeNonPrintableCharAttrib = resultEle.getAttribute(new QName("escapeNonPrintableChar"));
 		Result result = new Result();
+		
+		result.setTextMapping(resultEle.getText());
+		
 		if (outputTypeAttrib != null) {
 			result.setOutputType(outputTypeAttrib.getAttributeValue());
 		}
@@ -948,11 +944,6 @@ public class Data extends DataServiceConfigurationElement{
 			setBoxcarring(Boolean.parseBoolean(enableBoxcarring.getAttributeValue()));
 		}
 
-        /* enable DTP property */
-		OMAttribute enableDTP = dsXml.getAttribute(new QName("enableDTP"));
-		if (enableDTP != null) {
-			setDTP(Boolean.parseBoolean(enableDTP.getAttributeValue()));
-		}
 		/* disable streaming property */
 		OMAttribute disableStreaming = dsXml.getAttribute(new QName("disableStreaming"));
 		if (disableStreaming != null) {
@@ -1177,11 +1168,11 @@ public class Data extends DataServiceConfigurationElement{
     /**
 	 * Returns resource object containing passed resource name.
 	 */
-	public Resource getResource(String resourcePath) {
+	public Resource getResource(String resourcePath, String resourceMethod) {
 		Iterator<Resource> itrOperations = this.getResources().iterator();
 		while (itrOperations.hasNext()) {
 			Resource resource = itrOperations.next();
-			if (resource.getPath().equals(resourcePath)) {
+			if (resource.getPath().equals(resourcePath) && resource.getMethod().equals(resourceMethod)) {
 				return resource;
 			}
 		}
@@ -1274,13 +1265,6 @@ public class Data extends DataServiceConfigurationElement{
         	dataEl.addAttribute("enableBoxcarring", String.valueOf(this.isBoxcarring()), null);
         }
 
-        if (this.isDTP()) {
-        	dataEl.addAttribute("enableDTP", String.valueOf(this.isDTP()), null);
-            if (this.getTxManagerName() != null  && this.getTxManagerName().trim().length() > 0) {
-                dataEl.addAttribute("txManagerJNDIName", String.valueOf(this.getTxManagerName().trim()), null);
-			}
-        }
-        
         if (this.isDisableStreaming()) {
         	dataEl.addAttribute("disableStreaming", String.valueOf(this.isDisableStreaming()), null);
         }

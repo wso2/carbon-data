@@ -66,13 +66,20 @@ public class SparqlEndpointQuery extends SparqlQueryBase {
 		return QueryExecutionFactory.sparqlService(this.getConfig().getSparqlEndpoint(), this.getQuery());
 	}
 
+	@Override
     public void processQuery(XMLStreamWriter xmlWriter,
 			InternalParamCollection params, int queryLevel) throws DataServiceFault {
 		try {
-			QueryExecution qe = this.getQueryExecution();
-
-			/* execute query as a select query */
-			ResultSet results = qe.execSelect();
+		    ResultSet results = (ResultSet) Query.getAndRemoveQueryPreprocessObject("results");
+		    if (results == null) {
+    		    QueryExecution qe = this.getQueryExecution();
+    		    /* execute query as a select query */
+    		    results = qe.execSelect();
+    		    if (Query.isQueryPreprocessInitial()) {
+    		        Query.setQueryPreprocessedObject("results", results);
+    		        return;
+    		    }
+		    }
 			DataEntry dataEntry;
 			while (results.hasNext()) {
 				dataEntry = this.getDataEntryFromRS(results);

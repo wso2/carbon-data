@@ -342,6 +342,26 @@
                 <artifactId>cassandra-jdbc</artifactId>
                 <version>${cassandra-jdbc.driver.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.mongodb.wso2</groupId>
+                <artifactId>mongo-java-driver</artifactId>
+                <version>${mongo-java-driver.wso2.version.data-services}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.wso2</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${jackson-core.wso2.version.data-services}</version>
+            </dependency>
+            <dependency>
+                <groupId>de.undercouch.wso2</groupId>
+                <artifactId>bson4jackson</artifactId>
+                <version>${bson4jackson.wso2.version.data-services}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.datastax.cassandra.wso2</groupId>
+                <artifactId>cassandra-driver-core</artifactId>
+                <version>${cassandra-java-driver.wso2.version.data-services}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -532,6 +552,10 @@
         <jboss-transaction-api.version>1.0.0.Final</jboss-transaction-api.version>
         <ojdbc.version.data-services>6</ojdbc.version.data-services>
         <cassandra-jdbc.driver.version>1.2.5.wso2v1</cassandra-jdbc.driver.version>
+        <mongo-java-driver.wso2.version.data-services>2.11.4.wso2v1</mongo-java-driver.wso2.version.data-services>
+        <jackson-core.wso2.version.data-services>2.3.2.wso2v1</jackson-core.wso2.version.data-services>
+        <bson4jackson.wso2.version.data-services>2.3.1.wso2v1</bson4jackson.wso2.version.data-services>
+        <cassandra-java-driver.wso2.version.data-services>2.0.1.wso2v1</cassandra-java-driver.wso2.version.data-services>
         <commons-dbcp.wso2.version.data-services>1.4.0.wso2v1</commons-dbcp.wso2.version.data-services>
         <commons-pool.wso2.version.data-services>1.5.6.wso2v1</commons-pool.wso2.version.data-services>
 

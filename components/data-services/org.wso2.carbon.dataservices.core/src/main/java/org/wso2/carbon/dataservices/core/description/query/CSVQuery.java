@@ -61,9 +61,17 @@ public class CSVQuery extends Query {
 	public void runQuery(XMLStreamWriter xmlWriter, InternalParamCollection params, int queryLevel) 
 			throws DataServiceFault {
 		CSVReader reader = null;
+		boolean isError = false;
 		try {
-			reader = this.getConfig().createCSVReader();
-			String[] record = null;
+		    reader = (CSVReader) Query.getAndRemoveQueryPreprocessObject("reader");
+		    if (reader == null) {
+			    reader = this.getConfig().createCSVReader();
+			    if (Query.isQueryPreprocessInitial()) {
+			        Query.setQueryPreprocessedObject("reader", reader);
+			        return;
+			    }
+		    }
+			String[] record;
 		    int maxCount = this.getConfig().getMaxRowCount();
 		    int i = 0;
 		    DataEntry dataEntry;
@@ -82,9 +90,10 @@ public class CSVQuery extends Query {
 		    	i++;
 		    }
 		} catch (Exception e) {
+		    isError = true;
 			throw new DataServiceFault(e, "Error in CSVQuery.runQuery.");
 		} finally {
-			if (reader != null) {
+			if (reader != null && (!Query.isQueryPreprocessInitial() || isError)) {
 				try {
 				    reader.close();
 				} catch (Exception e) {

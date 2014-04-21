@@ -22,15 +22,11 @@ import java.util.Queue;
 
 public class WhereAnalyzer extends KeyWordAnalyzer {
 
-    private Queue<String> tokens;
-
     public WhereAnalyzer(Queue<String> tokens) {
-        this.tokens = tokens;
     }
 
     @Override
     public void analyseStatement() {
-
     }
 
 }

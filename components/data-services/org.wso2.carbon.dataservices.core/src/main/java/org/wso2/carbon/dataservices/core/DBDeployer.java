@@ -43,6 +43,7 @@ import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.dataservices.common.DBConstants;
 import org.wso2.carbon.dataservices.common.DBConstants.DBSFields;
+import org.wso2.carbon.dataservices.common.DBConstants.ResultTypes;
 import org.wso2.carbon.dataservices.core.description.operation.Operation;
 import org.wso2.carbon.dataservices.core.description.query.Query;
 import org.wso2.carbon.dataservices.core.description.resource.Resource;
@@ -66,6 +67,7 @@ import javax.transaction.TransactionManager;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+
 import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.net.MalformedURLException;
@@ -727,10 +729,11 @@ public class DBDeployer extends AbstractDeployer {
 				continue;
 			}
 			if (query.getResult() != null) {
-				if (DBUtils.isEmptyString(query.getResult().getElementName())) {
+				if (query.getResult().getResultType() != ResultTypes.JSON &&
+				        DBUtils.isEmptyString(query.getResult().getElementName())) {
 					throw new DataServiceFault("The request '" + request.getRequestName()
 							+ "' contains the query with id '" + query.getQueryId()
-							+ "' contains a result with no element wrapper.");
+							+ "' contains an XML result with no element wrapper.");
 				}
 			}
 		}

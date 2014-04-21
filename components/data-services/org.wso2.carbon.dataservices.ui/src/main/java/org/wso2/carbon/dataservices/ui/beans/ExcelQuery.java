@@ -95,6 +95,10 @@ public class ExcelQuery extends NonSQLQuery {
     	OMElement maxRowEl = fac.createOMElement("maxrowcount", null);
     	maxRowEl.setText(String.valueOf(this.getMaxRowCount()));
     	excelEl.addChild(maxRowEl);
+
+        OMElement headerRowEl = fac.createOMElement("headerrow", null);
+        headerRowEl.setText(String.valueOf(this.getHeaderRow()));
+        excelEl.addChild(headerRowEl);
     	
     	return excelEl;
     }

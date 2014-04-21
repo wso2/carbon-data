@@ -39,7 +39,6 @@
     String serviceNamespace = request.getParameter("serviceNamespace");
     String txManagerClass = request.getParameter("txManagerClass");
     String txManagerJNDIName = request.getParameter("txManagerJNDIName");
-    String enableDT = request.getParameter("enableDT");
     String flag = request.getParameter("flag");
     String enableStreaming = request.getParameter("enableStreaming");
     String txManagerCleanupMethod = request.getParameter("txManagerCleanupMethod");
@@ -55,12 +54,6 @@
             dataService.setBatchRequest(true);
         } else {
             dataService.setBatchRequest(false);
-        }
-        if (enableDT != null && enableDT.trim().length() > 0) {
-            //dataService.se
-            dataService.setDTP(true);
-        } else {
-            dataService.setDTP(false);
         }
         if (isUseAppServerTS != null && isUseAppServerTS.trim().length() > 0) {
             dataService.setIsUseAppServerTS(Boolean.parseBoolean(isUseAppServerTS));

@@ -46,7 +46,8 @@ public class DBInOnlyMessageReceiver extends RawXMLINOnlyMessageReceiver {
 	public void invokeBusinessLogic(MessageContext msgContext) throws AxisFault {
 		try {
 			DataServiceProcessor.dispatch(msgContext);
-		} catch(Exception e) {			
+		} catch(Exception e) {	
+		    e.printStackTrace();
 			log.error("Error in in-only message receiver", e);
 			msgContext.setProperty(Constants.FAULT_NAME, DBConstants.DS_FAULT_NAME);
 			throw DBUtils.createAxisFault(e);

@@ -26,6 +26,11 @@ import java.util.List;
 
 public class Result extends DataServiceConfigurationElement {
 
+    /*
+     * mappings such as JSON
+     */
+    private String textMapping;
+    
 	/*
 	 * represents element attribute of
 	 * result element
@@ -424,11 +429,21 @@ public class Result extends DataServiceConfigurationElement {
 		this.xsltPath = xsltPath;
 	}
 
+	public void setTextMapping(String textMapping) {
+	    this.textMapping = textMapping;
+	}
+	
+	public String getTextMapping() {
+	    return textMapping;
+	}
+	
 	public Result() {
 	}
 
 	@SuppressWarnings("unchecked")
 	public Result(OMElement result) {
+	    this.textMapping = result.getText();
+	    
 		String wrapperElementName = result.getAttributeValue(new QName("element"));
 		String rowElementName = result.getAttributeValue(new QName("rowName"));
 		String outputType = result.getAttributeValue(new QName("outputType"));
@@ -536,6 +551,12 @@ public class Result extends DataServiceConfigurationElement {
 		for (CallQueryGroup callQueryGroup : this.getCallQueryGroups()) {
 			resEl.addChild(callQueryGroup.buildXML());
 		}
+		
+		if (this.getOutputType().equals("json")) {
+		    String textMapping = this.getTextMapping();
+		    resEl.setText(textMapping == null ? "" : textMapping);
+		}
+		
 		return resEl;
 	}
 

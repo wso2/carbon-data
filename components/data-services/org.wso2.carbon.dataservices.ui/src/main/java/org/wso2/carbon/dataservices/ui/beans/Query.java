@@ -20,6 +20,7 @@ import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.impl.llom.OMTextImpl;
+import org.wso2.carbon.dataservices.common.DBConstants.DBSFields;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamConstants;
@@ -459,10 +460,11 @@ public class Query extends DataServiceConfigurationElement {
 				queryEl.addChild(sqlDialect.buildXML());
 			}
 		}
-		if (this.getResult() != null
-				&& (this.getResult().getAttributes().size() > 0
-						|| this.getResult().getElements().size() > 0 || this.getResult()
-						.getCallQueryGroups().size() > 0 || this.getResult().getComplexElements().size() > 0)) {
+		if ((this.getResult() != null)
+				&& (((this.getResult().getAttributes().size() > 0
+						|| this.getResult().getElements().size() > 0 || this.getResult().getCallQueryGroups().size() > 0 
+						|| this.getResult().getComplexElements().size() > 0)) 
+						|| (DBSFields.RESULT_TYPE_JSON.equals(this.getResult().getOutputType()) && this.getResult().getTextMapping().trim().length() > 0))) {
 			queryEl.addChild(this.getResult().buildXML());
 		}
 		if (this.getParams() != null) {

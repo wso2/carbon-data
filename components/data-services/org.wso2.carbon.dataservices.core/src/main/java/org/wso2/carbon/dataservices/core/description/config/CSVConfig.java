@@ -48,6 +48,8 @@ public class CSVConfig extends Config {
 
     private int startingRow;
 
+    private int headerRow;
+
     private int maxRowCount;
 
     private boolean hasHeader;
@@ -81,6 +83,13 @@ public class CSVConfig extends Config {
             this.hasHeader = Boolean.parseBoolean(tmpHasHeader);
         } else {
             this.hasHeader = false;
+        }
+
+        String tmpHeaderRow = this.getProperty(DBConstants.CSV.HEADER_ROW);
+        if (tmpHeaderRow != null) {
+            this.headerRow = Integer.parseInt(tmpHeaderRow);
+        } else {
+            this.headerRow = 1;
         }
         
         try {
@@ -136,9 +145,8 @@ public class CSVConfig extends Config {
 
         CSVReader reader = null;
         try {
-            reader = this.createCSVReader(0);
-            String[] header = reader.readNext();
-            return header;
+            reader = this.createCSVReader(this.getHeaderRow() - 1);
+            return reader.readNext();
         } finally {
             if (reader != null) {
                 try {
@@ -168,6 +176,10 @@ public class CSVConfig extends Config {
 
     public int getStartingRow() {
         return startingRow;
+    }
+
+    public int getHeaderRow() {
+        return headerRow;
     }
 
     public Map<Integer, String> getColumnMappings() {

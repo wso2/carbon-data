@@ -150,9 +150,12 @@ public abstract class SQLConfig extends Config {
 		
 	protected void initSQLDataSource() throws SQLException, DataServiceFault {
 		Connection conn = this.createConnection();
-		/* check if we have JDBC batch update support */
-		this.jdbcBatchUpdateSupport = conn.getMetaData().supportsBatchUpdates();
-		conn.close();
+		try {
+		    /* check if we have JDBC batch update support */
+		    this.jdbcBatchUpdateSupport = conn.getMetaData().supportsBatchUpdates();
+		} finally {
+		    conn.close();
+		}
 	}
 		
 	public abstract DataSource getDataSource() throws DataServiceFault;
@@ -184,15 +187,17 @@ public abstract class SQLConfig extends Config {
 			} else {
 			    conn = ds.getConnection();
 			}
-			if (this.getDataService().isEnableXA() && this.getDataService().isInTransaction() &&
-					conn instanceof XAConnection) {
+			if (conn instanceof XAConnection) {
 				try {
 					Transaction tx = this.getDataService().getDSSTxManager().
 							getTransactionManager().getTransaction();
-					XAResource xaResource = ((XAConnection) conn).getXAResource();
-					if (!isXAResourceEnlisted(xaResource)) {
-						tx.enlistResource(xaResource);
-						addToEnlistedXADataSources(xaResource);
+					/* add only if there is a transaction */
+					if (tx != null) { 
+					    XAResource xaResource = ((XAConnection) conn).getXAResource();
+					    if (!isXAResourceEnlisted(xaResource)) {
+						    tx.enlistResource(xaResource);
+						    addToEnlistedXADataSources(xaResource);
+					    }
 					}
 				} catch (IllegalStateException e) {
 					// ignore: can be because we are trying to enlist again

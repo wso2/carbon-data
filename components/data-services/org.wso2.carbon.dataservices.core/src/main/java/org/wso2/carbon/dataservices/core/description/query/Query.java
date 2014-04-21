@@ -27,8 +27,10 @@ import org.wso2.carbon.dataservices.common.DBConstants.QueryParamTypes;
 import org.wso2.carbon.dataservices.common.DBConstants.QueryTypes;
 import org.wso2.carbon.dataservices.core.DBUtils;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
+import org.wso2.carbon.dataservices.core.TLConnectionStore;
 import org.wso2.carbon.dataservices.core.boxcarring.TLParamStore;
 import org.wso2.carbon.dataservices.core.description.event.EventTrigger;
+import org.wso2.carbon.dataservices.core.dispatch.DispatchStatus;
 import org.wso2.carbon.dataservices.core.engine.*;
 import org.wso2.carbon.dataservices.core.validation.ValidationContext;
 import org.wso2.carbon.dataservices.core.validation.ValidationException;
@@ -37,7 +39,9 @@ import org.wso2.carbon.dataservices.core.validation.Validator;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -72,6 +76,27 @@ public abstract class Query extends XMLWriterHelper {
 	
 	private boolean useColumnNumbers;
 	
+	private static ThreadLocal<Map<String, Object>> queryPreprocessObjects = new ThreadLocal<Map<String,Object>>() {
+	    @Override
+	    public Map<String, Object> initialValue() {
+	        return new HashMap<String, Object>();
+	    }
+	};
+	
+	private static ThreadLocal<Boolean> queryPreprocessInitial = new ThreadLocal<Boolean>() {
+	    @Override
+        public Boolean initialValue() {
+            return false;
+        }
+	};
+	
+	private static ThreadLocal<Boolean> queryPreprocessSecondary = new ThreadLocal<Boolean>() {
+        @Override
+        public Boolean initialValue() {
+            return false;
+        }
+    };
+			
 	public Query(DataService dataService, String queryId,
 			List<QueryParam> queryParams, Result result, String configId,
 			EventTrigger inputEventTrigger, EventTrigger outputEventTrigger, 
@@ -246,17 +271,46 @@ public abstract class Query extends XMLWriterHelper {
 		this.preprocessParams(params);
 		/* validate params */
 		this.validateParams(params);
-        /* If xmlWriter null; that mean this is parameter validation call*/
-        if (xmlWriter == null) {
-            return;
-        }
 
 		/* extract parameters, to be used internally in queries */
 		InternalParamCollection internalParams = this.extractParams(params);
 		/* process input events */
 		this.processInputEvents(internalParams);
-		/* write the content */
-		this.runQuery(xmlWriter, internalParams, queryLevel);
+		boolean error = true;
+        try {
+            /* write the content */
+            this.runQuery(xmlWriter, internalParams, queryLevel);
+            error = false;
+            /* handle transaction finalizing logic */
+        } finally {
+            if (queryLevel == 0 && !Query.isQueryPreprocessInitial()) {
+                /* we are at the end of the outer most query, i.e. in nested query situations,
+                 * and we are not in the data pre-fetching state */
+                this.finalizeTx(error);
+            }
+        }
+	}
+	
+	private void finalizeTx(boolean error) {
+	    if (DispatchStatus.isInBatchBoxcarring()) {
+	        return;
+	    }
+        if (error) {
+            if (this.getDataService().isInDTX()) {
+                TLConnectionStore.rollbackNonXAConns();
+                TLConnectionStore.closeAll();
+            } else {
+                TLConnectionStore.rollbackAll();
+                TLConnectionStore.closeAll();
+            }
+        } else {
+	        if (this.getDataService().isInDTX()) {
+	            TLConnectionStore.commitNonXAConns();
+	        } else {
+	            TLConnectionStore.commitAll();
+	        }
+	        TLConnectionStore.closeAll();
+        }
 	}
 	
 	private OMElement createOMElementFromInputParams(InternalParamCollection params) {
@@ -363,6 +417,36 @@ public abstract class Query extends XMLWriterHelper {
 					iParam.getName().toLowerCase(), iParam.getValue(), DBSFields.QUERY_PARAM));
 		}
 		return pc;
+	}
+	
+	public static void setQueryPreprocessingInitial(boolean state) {
+	    queryPreprocessInitial.set(state);
+	}
+	
+	public static void setQueryPreprocessingSecondary(boolean state) {
+        queryPreprocessSecondary.set(state);
+    }
+	
+	public static boolean isQueryPreprocessInitial() {
+	    return queryPreprocessInitial.get();
+	}
+	
+	public static boolean isQueryPreprocessSecondary() {
+        return queryPreprocessSecondary.get();
+    }
+	
+	public static Object getAndRemoveQueryPreprocessObject(String name) {
+	    return queryPreprocessObjects.get().remove(name);
+	}
+	
+	public static void setQueryPreprocessedObject(String name, Object value) {
+	    queryPreprocessObjects.get().put(name, value);
+	}
+	
+	public static void resetQueryPreprocessing() {
+	    queryPreprocessObjects.get().clear();
+	    setQueryPreprocessingInitial(false);
+	    setQueryPreprocessingSecondary(false);
 	}
 	
 }

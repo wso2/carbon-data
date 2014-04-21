@@ -98,6 +98,26 @@ public final class DBConstants {
     }
 
     /**
+     * Parameters in the fault message
+     */
+    public static final class FaultParams {
+
+        private FaultParams() {
+            throw new AssertionError();
+        }
+
+        public static String CURRENT_PARAMS= "current_params";
+        public static String CURRENT_REQUEST_NAME = "current_request_name";
+        public static String NESTED_EXCEPTION = "nested_exception";
+        public static String SOURCE_DATA_SERVICE = "source_data_service";
+        public static String LOCATION = "location";
+        public static String DEFAULT_NAMESPACE = "default_namespace";
+        public static String DESCRIPTION = "description";
+        public static String DATA_SERVICE_NAME = "data_service_name";
+        public static String DS_CODE = "ds_code";
+    }
+
+    /**
      * Autocommit values.
      */
     public enum AutoCommit {
@@ -146,6 +166,9 @@ public final class DBConstants {
         public static final String STRUCT = "STRUCT";
         public static final String ARRAY = "ARRAY";
         public static final String QUERY_STRING = "QUERY_STRING";
+        public static final String VARINT = "VARINT";
+        public static final String UUID = "UUID";
+        public static final String INETADDRESS = "INETADDRESS";
     }
 
     /**
@@ -221,6 +244,7 @@ public final class DBConstants {
 
         public static final int RDF = 0x01;
         public static final int XML = 0x02;
+        public static final int JSON = 0x03;
 
     }
 
@@ -258,6 +282,7 @@ public final class DBConstants {
         public static final String CARBON = "CARBON_DATASOURCE";
         public static final String WEB = "WEB_CONFIG";
         public static final String CASSANDRA = "Cassandra";
+        public static final String MONGODB = "MongoDB";
         public static final String CUSTOM = "CUSTOM";
         public static final String CUSTOM_TABULAR = "CUSTOM_TABULAR";
         public static final String CUSTOM_QUERY = "CUSTOM_QUERY";
@@ -434,17 +459,6 @@ public final class DBConstants {
         public static final String TRANSACTION_UNKNOWN = "TRANSACTION_UNKNOWN";
     }
 
-    /**
-        * Constants related to CASSANDRA data source.
-        */
-       public static final class CASSANDRA {
-
-           private CASSANDRA() {
-               throw new AssertionError();
-           }
-
-           public static final String CASSANDRA_URL_PREFIX = "jdbc:cassandra://";
-       }
     
     /**
      * Constants related to JNDI data source.
@@ -481,6 +495,7 @@ public final class DBConstants {
         public static final String MAX_ROW_COUNT = "maxrowcount";
         public static final String HAS_HEADER = "hasheader";
         public static final String SHEET_NAME = "sheetName";
+        public static final String HEADER_ROW = "headerrow";
     }
 
     /**
@@ -498,6 +513,90 @@ public final class DBConstants {
         public static final String HAS_HEADER = "csv_hasheader";
         public static final String DATASOURCE = "csv_datasource";
         public static final String COLUMN_SEPERATOR = "columnseperator";
+        public static final String HEADER_ROW = "csv_headerrow";
+    }
+    
+    /**
+     * Constants related to Cassandra data source.
+     */
+    public static final class Cassandra {
+
+        private Cassandra() {
+            throw new AssertionError();
+        }
+
+        /* string (multiple values with comma separated) */
+        public static final String CASSANDRA_SERVERS = "cassandraServers";
+        /* integer */
+        public static final String PORT = "port";
+        /* string */
+        public static final String CLUSTER_NAME = "clusterName";
+        /* "LZ4", "SNAPPY", "NONE" */
+        public static final String COMPRESSION = "compression";
+        /* string */
+        public static final String USERNAME = "username";
+        /* string */
+        public static final String PASSWORD = "password";
+        /* "RoundRobinPolicy", "LatencyAwareRoundRobinPolicy", "TokenAwareRoundRobinPolicy" */
+        public static final String LOAD_BALANCING_POLICY = "loadBalancingPolicy";
+        /* boolean */
+        public static final String ENABLE_JMX_REPORTING = "enableJMXReporting";
+        /* boolean */
+        public static final String ENABLE_METRICS = "enableMetrics";
+        /* inter */
+        public static final String LOCAL_CORE_CONNECTIONS_PER_HOST = "localCoreConnectionsPerHost";
+        /* integer */
+        public static final String REMOTE_CORE_CONNECTIONS_PER_HOST = "remoteCoreConnectionsPerHost";
+        /* integer */
+        public static final String LOCAL_MAX_CONNECTIONS_PER_HOST = "localMaxConnectionsPerHost";
+        /* integer */
+        public static final String REMOTE_MAX_CONNECTIONS_PER_HOST = "remoteMaxConnectionsPerHost";
+        /* integer */
+        public static final String LOCAL_MAX_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST = "localMaxSimultaneousRequestsPerConnectionThreshold";
+        /* integer */
+        public static final String REMOTE_MAX_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST = "remoteMaxSimultaneousRequestsPerConnectionThreshold";
+        /* integer */
+        public static final String LOCAL_MIN_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST = "localMinSimultaneousRequestsPerConnectionThreshold";
+        /* integer */
+        public static final String REMOTE_MIN_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST = "remoteMinSimultaneousRequestsPerConnectionThreshold";
+        /* integer */
+        public static final String PROTOCOL_VERSION = "protocolVersion";
+        /* "ALL", "ANY", "EACH_QUORUM", "LOCAL_ONE", "LOCAL_QUORUM", "LOCAL_SERIAL", "ONE", "QUORUM", "SERIAL", "THREE", "TWO" */
+        public static final String CONSISTENCY_LEVEL = "consistencyLevel";
+        /* integer */
+        public static final String FETCH_SIZE = "fetchSize";
+        /* "ALL", "ANY", "EACH_QUORUM", "LOCAL_ONE", "LOCAL_QUORUM", "LOCAL_SERIAL", "ONE", "QUORUM", "SERIAL", "THREE", "TWO" */
+        public static final String SERIAL_CONSISTENCY_LEVEL = "serialConsistencyLevel";
+        /* "ConstantReconnectionPolicy", "ExponentialReconnectionPolicy",  */
+        public static final String RECONNECTION_POLICY = "reconnectionPolicy";
+        /* long */
+        public static final String CONSTANT_RECONNECTION_POLICY_DELAY = "constantReconnectionPolicyDelay";
+        /* long */
+        public static final String EXPONENTIAL_RECONNECTION_POLICY_BASE_DELAY = "exponentialReconnectionPolicyBaseDelay";
+        /* long */
+        public static final String EXPONENTIAL_RECONNECTION_POLICY_MAX_DELAY = "exponentialReconnectionPolicyMaxDelay";
+        /* "DefaultRetryPolicy", "DowngradingConsistencyRetryPolicy", "FallthroughRetryPolicy", 
+         * "LoggingDefaultRetryPolicy", "LoggingDowngradingConsistencyRetryPolicy", "LoggingFallthroughRetryPolicy" */
+        public static final String RETRY_POLICY = "retryPolicy";
+        /* integer */
+        public static final String CONNECTION_TIMEOUT_MILLIS = "connectionTimeoutMillis";
+        /* boolean */
+        public static final String KEEP_ALIVE = "keepAlive";
+        /* integer */
+        public static final String READ_TIMEOUT_MILLIS = "readTimeoutMillis";
+        /* integer */
+        public static final String RECEIVER_BUFFER_SIZE = "receiverBufferSize";
+        /* boolean */
+        public static final String REUSE_ADDRESS = "reuseAddress";
+        /* integer */
+        public static final String SEND_BUFFER_SIZE = "sendBufferSize";
+        /* integer */
+        public static final String SO_LINGER = "soLinger";
+        /* boolean */
+        public static final String TCP_NODELAY = "tcpNoDelay";
+        /* boolean */
+        public static final String ENABLE_SSL = "enableSSL";
+        
     }
 
     /**
@@ -514,6 +613,51 @@ public final class DBConstants {
         public static final String STARTING_ROW = "startingrow";
         public static final String MAX_ROW_COUNT = "maxrowcount";
         public static final String HAS_HEADER = "hasheader";
+        public static final String HEADER_ROW = "headerrow";
+    }
+
+    /**
+     * Constants related to MongoDB data source.
+     */
+    public static final class MongoDB {
+
+        private MongoDB() {
+            throw new AssertionError();
+        }
+
+        public static final String SERVERS = "mongoDB_servers";
+        public static final String DATABASE = "mongoDB_database";
+        public static final String WRITE_CONCERN = "mongoDB_write_concern";
+        public static final String READ_PREFERENCE = "mongoDB_read_preference";
+        public static final String AUTO_CONNECT_RETRY = "mongoDB_autoConnectRetry";
+        public static final String CONNECT_TIMEOUT = "mongoDB_connectTimeout";
+        public static final String MAX_WAIT_TIME = "mongoDB_maxWaitTime";
+        public static final String SOCKET_TIMEOUT = "mongoDB_socketTimeout";
+        public static final String CONNECTIONS_PER_HOST = "mongoDB_connectionsPerHost";
+        public static final String THREADS_ALLOWED_TO_BLOCK_CONN_MULTIPLIER = "mongoDB_threadsAllowedToBlockForConnectionMultiplier";
+        public static final String RESULT_COLUMN_NAME = "Document";
+
+        public static class MongoOperationLabels {
+
+            public static final String COUNT = "count";
+            public static final String DROP = "drop";
+            public static final String FIND = "find";
+            public static final String FIND_ONE = "findOne";
+            public static final String INSERT = "insert";
+            public static final String REMOVE = "remove";
+            public static final String UPDATE = "update";
+
+        }
+
+        public static enum MongoOperation {
+            COUNT,
+            DROP,
+            FIND,
+            FIND_ONE,
+            INSERT,
+            REMOVE,
+            UPDATE
+        }
     }
 
     /**
@@ -621,6 +765,7 @@ public final class DBConstants {
         public static final String RDF_BASE_URI = "rdfBaseURI";
         public static final String RESULT_TYPE_RDF = "rdf";
         public static final String RESULT_TYPE_XML = "xml";
+        public static final String RESULT_TYPE_JSON = "json";
         public static final String TYPE = "type";
         public static final String SQL_TYPE = "sqlType";
         public static final String PARAM = "param";

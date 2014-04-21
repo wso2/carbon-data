@@ -25,6 +25,7 @@ import org.apache.axiom.om.OMFactory;
 import org.apache.axis2.context.MessageContext;
 import org.wso2.carbon.dataservices.common.DBConstants;
 import org.wso2.carbon.dataservices.core.dispatch.DataServiceRequest;
+import org.wso2.carbon.dataservices.core.dispatch.DispatchStatus;
 import org.wso2.carbon.dataservices.core.engine.DataService;
 
 import javax.xml.namespace.QName;
@@ -35,6 +36,7 @@ import javax.xml.namespace.QName;
 public class DataServiceProcessor {
 
 	public static OMElement dispatch(MessageContext msgContext) throws DataServiceFault {
+	    DispatchStatus.clearRequestStatus();
 		DataServiceRequest request = DataServiceRequest.createDataServiceRequest(msgContext);
 		OMElement result = request.dispatch();
 		if (result == null) {

@@ -60,6 +60,22 @@
             <artifactId>guava</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.mongodb.wso2</groupId>
+            <artifactId>mongo-java-driver</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.wso2</groupId>
+            <artifactId>jackson-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.undercouch.wso2</groupId>
+            <artifactId>bson4jackson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.datastax.cassandra.wso2</groupId>
+            <artifactId>cassandra-driver-core</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.apache.poi.wso2</groupId>
             <artifactId>poi</artifactId>
         </dependency>
@@ -148,6 +164,10 @@
                                 <bundleDef>com.google.gdata.wso2:gdata-core</bundleDef>
                                 <bundleDef>com.google.gdata.wso2:gdata-spreadsheet</bundleDef>
                                 <bundleDef>com.google.guava.wso2:guava</bundleDef>
+                                <bundleDef>org.mongodb.wso2:mongo-java-driver</bundleDef>
+                                <bundleDef>com.fasterxml.jackson.wso2:jackson-core</bundleDef>
+                                <bundleDef>de.undercouch.wso2:bson4jackson</bundleDef>
+                                <bundleDef>com.datastax.cassandra.wso2:cassandra-driver-core</bundleDef>
                                 <bundleDef>org.apache.poi.wso2:poi</bundleDef>
                                 <bundleDef>org.apache.poi.wso2:poi-ooxml</bundleDef>
                                 <bundleDef>org.apache.poi.wso2:ooxml-spreadsheet-schemas</bundleDef>

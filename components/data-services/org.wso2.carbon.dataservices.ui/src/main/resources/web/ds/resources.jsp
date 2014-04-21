@@ -70,14 +70,14 @@
             <tr>
                 <td><%=path%></td>
 				<td><%=query%></td>
-                <input type="hidden" value="<%=resourceMethod%>" id="resourceMethod" name="resourceMethod" />
+                <input type="hidden" value="<%=resourceMethod%>" id="<%=resourceMethod%>" name="<%=resourceMethod%>" />
                 <input type="hidden" value="<%=path%>" id="<%=path%>" name="<%=path%>" />
                 <td>
                     <%
-                        String editURI = "addResource.jsp?action=edit&resourcePath="+resource.getPath()+"&disableStreaming="+disableStreaming;                        
+                        String editURI = "addResource.jsp?action=edit&resourcePath="+resource.getPath()+"&resourceMethod="+resource.getMethod()+"&disableStreaming="+disableStreaming;
                     %>                    
                     <a class="icon-link" style="background-image:url(../admin/images/edit.gif);" href="<%=editURI%>"><fmt:message key="edit.resource" /></a>
-					<a class="icon-link" style="background-image:url(../admin/images/delete.gif);" onclick="deleteResources(document.getElementById('<%=path%>').value);" href="#"><fmt:message key="delete.resource" /></a>
+					<a class="icon-link" style="background-image:url(../admin/images/delete.gif);" onclick="deleteResources(document.getElementById('<%=path%>').value, document.getElementById('<%=resourceMethod%>').value);" href="#"><fmt:message key="delete.resource" /></a>
 				</td>
             </tr>
              <%

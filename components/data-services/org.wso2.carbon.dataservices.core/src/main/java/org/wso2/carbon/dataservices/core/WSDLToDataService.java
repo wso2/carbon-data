@@ -194,7 +194,7 @@ public class WSDLToDataService {
 		DataService dataService = new DataService(
 				extractServiceNameFromHeirachicalName(axisService.getName()), 
 				null, null, null, DBConstants.ServiceStatusValues.INACTIVE, 
-				false, false, false, null);
+				false, false, null);
 		
 		/* add dummy config */
 		String dummyConfigId = DBConstants.DEFAULT_CONFIG_ID;

@@ -29,6 +29,8 @@ public class GSpreadQuery extends DataServiceConfigurationElement {
 
     private boolean hasHeaders;
 
+    private int headerRow;
+
     public int getMaxRowCount() {
 		return maxRowCount;
 	}
@@ -61,6 +63,14 @@ public class GSpreadQuery extends DataServiceConfigurationElement {
         this.hasHeaders = Boolean.parseBoolean(value);
 	}
 
+    public int getHeaderRow() {
+        return headerRow;
+    }
+
+    public void setHeaderRow(int headerRow) {
+        this.headerRow = headerRow;
+    }
+
 	public OMElement buildXML() {
     	OMFactory fac = OMAbstractFactory.getOMFactory();
     	OMElement gspreadEl = fac.createOMElement("gspread", null);
@@ -80,6 +90,10 @@ public class GSpreadQuery extends DataServiceConfigurationElement {
         OMElement hasHeaderEl = fac.createOMElement("hasheader", null);
     	hasHeaderEl.setText(String.valueOf(this.hasHeaders()));
     	gspreadEl.addChild(hasHeaderEl);
+
+        OMElement headerRowEl = fac.createOMElement("headerrow", null);
+        headerRowEl.setText(String.valueOf(this.getHeaderRow()));
+        gspreadEl.addChild(headerRowEl);
     	
     	return gspreadEl;
     }

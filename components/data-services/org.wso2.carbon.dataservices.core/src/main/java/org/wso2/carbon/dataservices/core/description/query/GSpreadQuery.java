@@ -22,6 +22,7 @@ import com.google.gdata.data.spreadsheet.CellEntry;
 import com.google.gdata.data.spreadsheet.CellFeed;
 import com.google.gdata.data.spreadsheet.WorksheetEntry;
 import com.google.gdata.data.spreadsheet.WorksheetFeed;
+
 import org.wso2.carbon.dataservices.core.DBUtils;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
 import org.wso2.carbon.dataservices.core.description.config.GSpreadConfig;
@@ -29,6 +30,7 @@ import org.wso2.carbon.dataservices.core.description.event.EventTrigger;
 import org.wso2.carbon.dataservices.core.engine.*;
 
 import javax.xml.stream.XMLStreamWriter;
+
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
@@ -48,10 +50,12 @@ public class GSpreadQuery extends Query {
 	private int maxRowCount;
 	
 	private boolean hasHeader;
+
+    private int headerRow;
 		
 	public GSpreadQuery(DataService dataService, String queryId,
 			List<QueryParam> queryParams, String configId, int worksheetNumber,
-			boolean hasHeader, int startingRow, int maxRowCount, Result result,
+			boolean hasHeader, int startingRow, int headerRow, int maxRowCount, Result result,
 			EventTrigger inputEventTrigger, EventTrigger outputEventTrigger,
 			Map<String, String> advancedProperties, String inputNamespace)
 			throws DataServiceFault {
@@ -65,6 +69,7 @@ public class GSpreadQuery extends Query {
 		}
 		this.worksheetNumber = worksheetNumber;
 		this.hasHeader = hasHeader;
+        this.headerRow = headerRow;
 		this.startingRow = startingRow;
 		this.maxRowCount = maxRowCount;
 	}
@@ -72,7 +77,11 @@ public class GSpreadQuery extends Query {
 	public boolean isHasHeader() {
 		return hasHeader;
 	}
-	
+
+    public int getHeaderRow() {
+        return headerRow;
+    }
+
 	public GSpreadConfig getConfig() {
 		return config;
 	}
@@ -112,7 +121,7 @@ public class GSpreadQuery extends Query {
 		}
 		String[] header = new String[grs.getColumnCount()];
 		for (int i = 0; i < header.length; i++) {
-			header[i] = grs.getValueAt(1, i + 1);
+			header[i] = grs.getValueAt(this.getHeaderRow(), i + 1);
 		}
 		return header;
 	}
@@ -121,7 +130,14 @@ public class GSpreadQuery extends Query {
 			throws DataServiceFault {
 		try {
 			/* get the data */
-			GSpreadResultSet grs = this.retrieveData();
+			GSpreadResultSet grs = (GSpreadResultSet) Query.getAndRemoveQueryPreprocessObject("grs");
+			if (grs == null) {
+			    grs = this.retrieveData();
+			    if (Query.isQueryPreprocessInitial()) {
+			        Query.setQueryPreprocessedObject("grs", grs);
+			        return;
+			    }
+			}
 			/* if no data, return. */
 			if (grs.getRowCount() == 0) {
 				return;
@@ -160,7 +176,7 @@ public class GSpreadQuery extends Query {
 	private String getPosStringFromId(String id) {
 		return id.substring(id.lastIndexOf("/") + 1);
 	}
-	
+
     private static class GSpreadResultSet {
 		
 		private HashMap<String, String> dataMap = null;

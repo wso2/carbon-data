@@ -586,6 +586,10 @@ public class DBDeployer extends AbstractDeployer {
 		// Create a default HTTP Binding operation
 		AxisBindingOperation httpBindingOperation = createDefaultHTTPBindingOperation(
 				axisOperation, httpLocation, method, httpBinding);
+		
+		if(httpLocation.startsWith("/")){
+            httpLocation = httpLocation.substring(1);
+        }
 
         Pattern httpLocationPattern = WSDLUtil.getConstantFromHTTPLocationForResource(httpLocation, method);
         this.httpLocationTableForResource.put(httpLocationPattern, axisOperation);

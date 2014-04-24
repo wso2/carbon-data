@@ -507,8 +507,8 @@
                 </property>
             </activation>
             <modules>
-                <module>components/service-mgt</module>
-                <module>components/webapp-mgt</module>
+                <module>components/data-services</module>
+                <module>components/dbconsole</module>
             </modules>
         </profile>
         <profile>
@@ -520,8 +520,8 @@
                 </property>
             </activation>
             <modules>
-                <module>components/service-mgt</module>
-                <module>components/webapp-mgt</module>
+                <module>components/data-services</module>
+                <module>components/dbconsole</module>
             </modules>
         </profile>
     </profiles>

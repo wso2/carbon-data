@@ -36,10 +36,11 @@ public class Resource extends CallableRequest {
 	private ResourceID resourceId;
 	
 	public Resource(DataService dataService, ResourceID resourceId, String description,
-			CallQueryGroup callQueryGroup, boolean disableStreamingRequest,
+			CallQueryGroup callQueryGroup, boolean batchRequest, Resource parentResource, boolean disableStreamingRequest,
 			boolean disableStreamingEffective) {
 		super(generateRequestName(resourceId.getPath(), resourceId.getMethod()), description,
-				callQueryGroup, false, disableStreamingRequest, disableStreamingEffective);
+				callQueryGroup, batchRequest, parentResource, disableStreamingRequest, 
+				disableStreamingEffective);
 		this.dataService = dataService;
 		this.resourceId = resourceId;
 	}

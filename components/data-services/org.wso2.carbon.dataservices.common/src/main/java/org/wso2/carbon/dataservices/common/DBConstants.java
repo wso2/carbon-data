@@ -527,6 +527,8 @@ public final class DBConstants {
 
         /* string (multiple values with comma separated) */
         public static final String CASSANDRA_SERVERS = "cassandraServers";
+        /* string */
+        public static final String KEYSPACE = "keyspace";
         /* integer */
         public static final String PORT = "port";
         /* string */

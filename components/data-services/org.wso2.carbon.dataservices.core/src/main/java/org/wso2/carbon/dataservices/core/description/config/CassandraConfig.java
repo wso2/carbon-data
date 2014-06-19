@@ -18,8 +18,6 @@
  */
 package org.wso2.carbon.dataservices.core.description.config;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import org.wso2.carbon.dataservices.common.DBConstants;
@@ -53,15 +51,28 @@ public class CassandraConfig extends Config {
     
     private Cluster cluster;
     
-    private List<Session> sessions;
+    private Session session;
+    
+    private boolean nativeBatchRequestsSupported;
         
     public CassandraConfig(DataService dataService, String configId, 
             Map<String, String> properties) throws DataServiceFault {
         super(dataService, configId, DataSourceTypes.CASSANDRA, properties);
         Builder builder = Cluster.builder();
         this.populateSettings(builder, properties);
+        String keyspace = properties.get(DBConstants.Cassandra.KEYSPACE);        
         this.cluster = builder.build();
-        this.sessions = new ArrayList<Session>();
+        if (keyspace != null && keyspace.trim().length() > 0) {
+            this.session = this.cluster.connect(keyspace);
+        } else {
+            this.session = this.cluster.connect();
+        }
+        this.nativeBatchRequestsSupported = this.session.getCluster().
+                getConfiguration().getProtocolOptions().getProtocolVersion() > 1;
+    }
+    
+    public boolean isNativeBatchRequestsSupported() {
+        return nativeBatchRequestsSupported;
     }
     
     private Builder populateLoadBalancingProp(Map<String, String> properties, Builder builder) throws DataServiceFault {
@@ -285,9 +296,7 @@ public class CassandraConfig extends Config {
         return builder;
     }
     
-    public synchronized Session createSession() {
-        Session session = this.cluster.connect();
-        this.sessions.add(session);
+    public Session getSession() {
         return session;
     }
     
@@ -298,9 +307,7 @@ public class CassandraConfig extends Config {
 
     @Override
     public synchronized void close() {
-        for (Session session : this.sessions) {
-            session.close();
-        }
+        this.session.close();
         this.cluster.close();
     }
 

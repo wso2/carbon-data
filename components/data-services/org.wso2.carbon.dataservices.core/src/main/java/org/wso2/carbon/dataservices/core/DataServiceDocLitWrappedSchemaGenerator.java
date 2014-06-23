@@ -60,7 +60,9 @@ public class DataServiceDocLitWrappedSchemaGenerator {
 		List<List<Operation>> allOps = extractOperations(dataservice);
 		List<Operation> normalOperations = allOps.get(0);
 		List<Operation> batchOperations = allOps.get(1);
-		List<Resource> resources = extractResources(dataservice);
+		List<List<Resource>> allResources = extractResources(dataservice);
+		List<Resource> normalResources = allResources.get(0);
+        List<Resource> batchResources = allResources.get(1);
 		
 		/* create the fault element */
 		createAndStoreFaultElement(cparams);
@@ -79,10 +81,14 @@ public class DataServiceDocLitWrappedSchemaGenerator {
 		for (Operation batchOp : batchOperations) {
 			processRequest(cparams, batchOp);
 		}
-		/* process resources */
-		for (Resource resource : resources) {
+		/* process normal resources */
+		for (Resource resource : normalResources) {
 			processRequest(cparams, resource);
 		}
+		/* process batch resources */
+        for (Resource resource : batchResources) {
+            processRequest(cparams, resource);
+        }
 				
 		/* set the schema */
 		axisService.addSchema(cparams.getSchemaMap().values());
@@ -125,12 +131,12 @@ public class DataServiceDocLitWrappedSchemaGenerator {
                 /* set element type */
                 inputElement.setType(inputComplexType);
                 /* batch requests */
-                if (request instanceof Operation && ((Operation) request).isBatchRequest()) {
+                if (request.isBatchRequest()) {
                     XmlSchemaElement nestedEl = new XmlSchemaElement();
-                    Operation parentOp = ((Operation) request).getParentOperation();
-                    if (parentOp != null) {
+                    CallableRequest parentReq = request.getParentRequest();
+                    if (parentReq != null) {
                         nestedEl.setRefName(cparams.getRequestInputElementMap().get(
-                                parentOp.getRequestName()));
+                                parentReq.getRequestName()));
                         nestedEl.setMaxOccurs(Long.MAX_VALUE);
                         addElementToComplexTypeSequence(cparams, inputComplexType,
                                 query.getInputNamespace(),
@@ -712,14 +718,24 @@ public class DataServiceDocLitWrappedSchemaGenerator {
 	/**
 	 * Extracts all the resources in the data service.
 	 * @param dataservice The data service which contains the resources
-	 * @return The list of resources
+	 * @return [0] - Normal resource list, [1] - Batch resources list
 	 */
-	private static List<Resource> extractResources(DataService dataservice) {
-		List<Resource> resources = new ArrayList<Resource>();
+	private static List<List<Resource>> extractResources(DataService dataservice) {
+	    List<Resource> normalResources = new ArrayList<Resource>();
+        List<Resource> batchResources = new ArrayList<Resource>();
+        Resource tmpRes;
 		for (ResourceID rid : dataservice.getResourceIds()) {
-			resources.add(dataservice.getResource(rid));
+		    tmpRes = dataservice.getResource(rid);
+		    if (tmpRes.isBatchRequest()) {
+		        batchResources.add(tmpRes);
+		    } else {
+		        normalResources.add(tmpRes);
+		    }
 		}
-		return resources;
+		List<List<Resource>> allResourses = new ArrayList<List<Resource>>();
+        allResourses.add(normalResources);
+        allResourses.add(batchResources);
+        return allResourses;
 	}
 	
 	/**

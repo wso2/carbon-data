@@ -61,11 +61,11 @@ public class SingleDataServiceRequest extends DataServiceRequest {
 	@Override
 	public OMElement processRequest() throws DataServiceFault {
 		try {
+            Query.resetQueryPreprocessing();
 			OMElement result = processSingleRequest();
 			if (result instanceof OMSourcedElementImpl) {
                 /* first pass for preprocessing */
                 DSOMDataSource dsomDS = (DSOMDataSource) ((OMSourcedElementImpl) result).getDataSource();
-                Query.resetQueryPreprocessing();
                 Query.setQueryPreprocessingInitial(true);
                 try {
                     dsomDS.execute(null);

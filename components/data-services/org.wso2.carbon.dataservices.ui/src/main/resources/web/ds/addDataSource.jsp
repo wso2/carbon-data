@@ -386,6 +386,9 @@ private Config addNotAvailableFunctions(Config config,String selectedType, HttpS
         if (config.getPropertyValue(DBConstants.Cassandra.CASSANDRA_SERVERS) == null) {
             config.addProperty(DBConstants.Cassandra.CASSANDRA_SERVERS, "");
         }
+        if (config.getPropertyValue(DBConstants.Cassandra.KEYSPACE) == null) {
+            config.addProperty(DBConstants.Cassandra.KEYSPACE, "");
+        }
         if (config.getPropertyValue(DBConstants.Cassandra.PORT) == null) {
             config.addProperty(DBConstants.Cassandra.PORT, "");
         }
@@ -753,6 +756,7 @@ private String getSheetName(String gSpreadJDBCUrl) {
                     newConfig.addProperty(DBConstants.WebDatasource.WEB_CONFIG, "");
                 } else if (DBConstants.DataSourceTypes.CASSANDRA.equals(selectedType)) {
                     newConfig.addProperty(DBConstants.Cassandra.CASSANDRA_SERVERS,"");
+                    newConfig.addProperty(DBConstants.Cassandra.KEYSPACE,"");
                     newConfig.addProperty(DBConstants.Cassandra.PORT,"");
                     newConfig.addProperty(DBConstants.Cassandra.CLUSTER_NAME,"");
                     newConfig.addProperty(DBConstants.Cassandra.COMPRESSION,"");
@@ -914,6 +918,7 @@ private String getSheetName(String gSpreadJDBCUrl) {
                     conf.addProperty(DBConstants.WebDatasource.WEB_CONFIG, "");
                 } else if (DBConstants.DataSourceTypes.CASSANDRA.equals(selectedType)) {
                     conf.addProperty(DBConstants.Cassandra.CASSANDRA_SERVERS,"");
+                    conf.addProperty(DBConstants.Cassandra.KEYSPACE,"");
                     conf.addProperty(DBConstants.Cassandra.PORT,"");
                     conf.addProperty(DBConstants.Cassandra.CLUSTER_NAME,"");
                     conf.addProperty(DBConstants.Cassandra.COMPRESSION,"");
@@ -2607,7 +2612,7 @@ private String getSheetName(String gSpreadJDBCUrl) {
                 var useAlias = document.getElementById('useSecretAliasValue').value;
                                 
                 if (useAlias == 'true') {
-                	if (document.getElementById('pwdalias') != null) {
+               	if (document.getElementById('pwdalias') != null) {
                 		var pwdalias = document.getElementById('pwdalias').value;
                 	}
                 	var url = 'connection_gspreadtest_ajaxprocessor.jsp?userName=' + encodeURIComponent(userName) + '&password=' + encodeURIComponent(password) + '&visibility=' + encodeURIComponent(visibility) + '&documentURL=' + encodeURIComponent(documentURL)+ '&passwordAlias=' + passwordAlias;

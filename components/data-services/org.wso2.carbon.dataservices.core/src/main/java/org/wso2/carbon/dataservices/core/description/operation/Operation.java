@@ -34,24 +34,14 @@ public class Operation extends CallableRequest {
 	private DataService dataService;
 	
 	private String name;
-	
-	private Operation parentOperation;
-	
+		
 	public Operation(DataService dataService, String name, String description, 
 			CallQueryGroup callQueryGroup, boolean batchRequest, Operation parentOperation,
 			boolean disableStreamingRequest, boolean disableStreamingEffective) {
-		super(name, description, callQueryGroup, batchRequest, disableStreamingRequest,
-				disableStreamingEffective);
+		super(name, description, callQueryGroup, batchRequest, parentOperation, 
+		        disableStreamingRequest, disableStreamingEffective);
 		this.dataService = dataService;
 		this.name = name;
-		this.parentOperation = parentOperation;
-	}
-	
-	/**
-	 * This method returns the parent operation, provided that this is a batch operation.
-	 */
-	public Operation getParentOperation() {
-		return parentOperation;
 	}
 
 	public DataService getDataService() {

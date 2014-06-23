@@ -21,6 +21,7 @@ package org.wso2.carbon.dataservices.core.engine;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.wso2.carbon.dataservices.core.DataServiceFault;
+import org.wso2.carbon.dataservices.core.description.operation.Operation;
 
 /**
  * This class represents an entity which can be called to carry out a specific execution 
@@ -47,19 +48,29 @@ public abstract class CallableRequest {
 	 */
 	private boolean returnRequestStatus;
 	
+	private CallableRequest parentRequest;
+	
 	/**
 	 * Creates a callable request with the given request name and a call query.
 	 */
 	public CallableRequest(String requestName, String description, CallQueryGroup callQueryGroup, 
-			boolean batchRequest, boolean disableStreamingRequest, 
+			boolean batchRequest, CallableRequest parentRequest, boolean disableStreamingRequest, 
 			boolean disableStreamingEffective) {
 		this.requestName = requestName;
 		this.description = description;
 		this.callQueryGroup = callQueryGroup;
 		this.batchRequest = batchRequest;
+		this.parentRequest = parentRequest;
 		this.disableStreamingRequest = disableStreamingRequest;
 		this.disableStreamingEffective = disableStreamingEffective;
 	}
+	
+	/**
+     * This method returns the parent request, provided that this is a batch request.
+     */
+    public CallableRequest getParentRequest() {
+        return parentRequest;
+    }
 	
 	public boolean isReturnRequestStatus() {
 		return returnRequestStatus;

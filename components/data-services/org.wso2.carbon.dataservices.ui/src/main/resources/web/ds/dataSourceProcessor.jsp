@@ -151,6 +151,7 @@
     String carbonDatasourceName = request.getParameter(DBConstants.CarbonDatasource.NAME);
 
     String cassandraServers = request.getParameter(DBConstants.Cassandra.CASSANDRA_SERVERS);
+    String cassandraKeySpace = request.getParameter(DBConstants.Cassandra.KEYSPACE);
     String cassandraPort = request.getParameter(DBConstants.Cassandra.PORT);
     String cassandraClusterName = request.getParameter(DBConstants.Cassandra.CLUSTER_NAME);
     String cassandraCompression = request.getParameter(DBConstants.Cassandra.COMPRESSION);
@@ -532,6 +533,7 @@
                     updateConfiguration(dsConfig, DBConstants.WebDatasource.WEB_CONFIG, webConfig);
                 } else if (DBConstants.DataSourceTypes.CASSANDRA.equals(datasourceType)) {
                     updateConfiguration(dsConfig, DBConstants.Cassandra.CASSANDRA_SERVERS, cassandraServers);
+                    updateConfiguration(dsConfig, DBConstants.Cassandra.KEYSPACE, cassandraKeySpace);
                     updateConfiguration(dsConfig, DBConstants.Cassandra.PORT, cassandraPort);
                     updateConfiguration(dsConfig, DBConstants.Cassandra.CLUSTER_NAME, cassandraClusterName);
                     updateConfiguration(dsConfig, DBConstants.Cassandra.COMPRESSION, cassandraCompression);

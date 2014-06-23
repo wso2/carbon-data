@@ -67,13 +67,9 @@ public class CassandraQuery extends Query {
     private CassandraConfig config;
     
     private PreparedStatement statement;
-    
-    private Session session;
-    
+        
     private String query;
-    
-    private boolean nativeBatchRequestsSupported;
-    
+        
     /**
      * thread local variable to keep a batch statement in batch processing
      */
@@ -107,20 +103,11 @@ public class CassandraQuery extends Query {
     }
     
     public Session getSession() {
-        if (this.session == null) {
-            synchronized (this) {
-                if (this.session == null) {
-                    this.session = this.config.createSession();
-                    this.nativeBatchRequestsSupported = this.session.getCluster().
-                            getConfiguration().getProtocolOptions().getProtocolVersion() > 1;
-                }
-            }
-        }
-        return this.session;
+        return this.config.getSession();
     }
     
     public boolean isNativeBatchRequestsSupported() {
-        return nativeBatchRequestsSupported;
+        return this.config.isNativeBatchRequestsSupported();
     }
 
     private BoundStatement bindParams(InternalParamCollection params) throws DataServiceFault {

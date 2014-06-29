@@ -844,9 +844,11 @@ public class SQLQuery extends Query implements BatchRequestParticipant {
                 }
             } else {
                 rs = (ResultSet) Query.getAndRemoveQueryPreprocessObject("rs");
-                if (initial) {
+                if (rs == null) {
                     rs = stmt.executeQuery();
-                    Query.setQueryPreprocessedObject("rs", rs);
+                    if (initial) {
+                        Query.setQueryPreprocessedObject("rs", rs);
+                    }
                 }
                 if (!initial) {
                     DataEntry dataEntry;
@@ -947,16 +949,20 @@ public class SQLQuery extends Query implements BatchRequestParticipant {
                     /* if there's a ref cursor, get the result set */
                     if (this.hasRefCursor()) {
                         rs = (ResultSet) Query.getAndRemoveQueryPreprocessObject("rs");
-                        if (initial) {
+                        if (rs == null) {
                             rs = (ResultSet) stmt.getObject(this.getCurrentRefCursor().getOrdinal());
-                            Query.setQueryPreprocessedObject("rs", rs);
+                            if (initial) {
+                                Query.setQueryPreprocessedObject("rs", rs);
+                            }
                         }
                     }
                 } else {
                     rs = (ResultSet) Query.getAndRemoveQueryPreprocessObject("rs");
-                    if (initial) {
+                    if (rs == null) {
                         rs = this.getFirstRSOfStoredProc(stmt);
-                        Query.setQueryPreprocessedObject("rs", rs);
+                        if (initial) {
+                            Query.setQueryPreprocessedObject("rs", rs);
+                        }
                     }
                 }
 

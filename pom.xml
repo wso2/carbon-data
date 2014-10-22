@@ -164,11 +164,6 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.dataservices.common</artifactId>
-                <version>${carbon.platform.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.dataservices.sql.driver</artifactId>
                 <version>${carbon.platform.version}</version>
             </dependency>
@@ -331,11 +326,6 @@
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.ui.menu.tools</artifactId>
                 <version>${carbon.platform.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache-extras.cassandra-jdbc.wso2</groupId>
-                <artifactId>cassandra-jdbc</artifactId>
-                <version>${cassandra-jdbc.driver.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache-extras.cassandra-jdbc.wso2</groupId>

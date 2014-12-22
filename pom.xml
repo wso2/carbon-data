@@ -325,7 +325,7 @@
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.ui.menu.tools</artifactId>
-                <version>${carbon.platform.version}</version>
+                <version>${carbon.kernel.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache-extras.cassandra-jdbc.wso2</groupId>
@@ -559,6 +559,7 @@
         <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
 
         <!-- Carbon platform version comes here-->
+        <carbon.kernel.version>4.3.0</carbon.kernel.version>
         <carbon.platform.version>4.3.0-SNAPSHOT</carbon.platform.version>
         <carbon.platform.package.export.version>4.3.0-SNAPSHOT</carbon.platform.package.export.version>
         <carbon.platform.package.import.version.range>[4.3.0.SNAPSHOT, 4.4.0)

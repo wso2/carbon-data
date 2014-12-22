@@ -278,8 +278,6 @@
     <!-- Transport Outs -->
     <!-- ================================================= -->
 
-    <transportSender name="tcp"
-                     class="org.apache.axis2.transport.tcp.TCPTransportSender"/>
     <transportSender name="local"
                      class="org.apache.axis2.transport.local.LocalTransportSender"/>
     <transportSender name="http"

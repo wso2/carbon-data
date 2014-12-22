@@ -164,11 +164,6 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.dataservices.common</artifactId>
-                <version>${carbon.platform.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.dataservices.sql.driver</artifactId>
                 <version>${carbon.platform.version}</version>
             </dependency>
@@ -330,12 +325,7 @@
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.ui.menu.tools</artifactId>
-                <version>${carbon.platform.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache-extras.cassandra-jdbc.wso2</groupId>
-                <artifactId>cassandra-jdbc</artifactId>
-                <version>${cassandra-jdbc.driver.version}</version>
+                <version>${carbon.kernel.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache-extras.cassandra-jdbc.wso2</groupId>
@@ -528,10 +518,10 @@
 
     <properties>
         <axis2.osgi.version.range.data-services>${axis2.osgi.version.range}</axis2.osgi.version.range.data-services>
-        <orbit.version.axis2>1.6.1.wso2v11-SNAPSHOT</orbit.version.axis2>
+        <orbit.version.axis2>1.6.1.wso2v11</orbit.version.axis2>
         <orbit.version.h2.engine>1.2.140.wso2v3</orbit.version.h2.engine>
 
-        <axis2.osgi.version.range>[1.6.1.wso2v11-SNAPSHOT, 1.7.0)</axis2.osgi.version.range>
+        <axis2.osgi.version.range>[1.6.1.wso2v11, 1.7.0)</axis2.osgi.version.range>
         <imp.pkg.version.javax.servlet>[2.6.0, 3.0.0)</imp.pkg.version.javax.servlet>
 
 
@@ -562,13 +552,14 @@
         <previous.version>4.2.0</previous.version>
         <version.jettison>1.3.4</version.jettison>
         <wso2carbon.version>4.3.0-SNAPSHOT</wso2carbon.version>
-        <orbit.version.axiom>1.2.11.wso2v5-SNAPSHOT</orbit.version.axiom>
+        <orbit.version.axiom>1.2.11.wso2v5</orbit.version.axiom>
 
         <axis2.wso2.version.aar.plugin>1.6.2</axis2.wso2.version.aar.plugin>
 
         <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
 
         <!-- Carbon platform version comes here-->
+        <carbon.kernel.version>4.3.0</carbon.kernel.version>
         <carbon.platform.version>4.3.0-SNAPSHOT</carbon.platform.version>
         <carbon.platform.package.export.version>4.3.0-SNAPSHOT</carbon.platform.package.export.version>
         <carbon.platform.package.import.version.range>[4.3.0.SNAPSHOT, 4.4.0)

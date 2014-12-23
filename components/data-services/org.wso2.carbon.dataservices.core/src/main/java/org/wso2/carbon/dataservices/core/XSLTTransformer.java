@@ -54,14 +54,8 @@ public class XSLTTransformer {
             DataServiceFault, IOException {
         this.xsltPath = xsltPath;
         TransformerFactory tFactory = TransformerFactory.newInstance();
-        if (!(xsltPath.startsWith(DBConstants.CONF_REGISTRY_PATH_PREFIX) ||
-                xsltPath.startsWith(DBConstants.GOV_REGISTRY_PATH_PREFIX))) {
-            this.transformer = tFactory.newTransformer(
-                    new StreamSource(DBUtils.getInputStreamFromPath(this.getXsltPath())));
-        } else {
-        	this.transformer = tFactory.newTransformer(new StreamSource(
+        this.transformer = tFactory.newTransformer(new StreamSource(
         			DBUtils.getInputStreamFromPath(this.getXsltPath())));
-        }
         this.xmlInputFactory = DBUtils.getXMLInputFactory();
     }
 

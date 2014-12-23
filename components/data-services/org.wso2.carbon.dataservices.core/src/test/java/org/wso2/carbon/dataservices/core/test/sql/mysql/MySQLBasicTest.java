@@ -39,10 +39,6 @@ public class MySQLBasicTest extends AbstractBasicServiceTest {
 		this.basicSelectWithAttributes();
 	}
 	
-	public void testMySQLBasicCallQueryMerge() {
-		this.basicCallQueryMerge();
-	}
-	
 	public void testMySQLBasicArrayInputTypes() {
 		this.basicArrayInputTypes();
 	}

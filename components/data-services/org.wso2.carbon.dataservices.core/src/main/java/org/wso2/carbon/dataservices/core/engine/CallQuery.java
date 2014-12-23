@@ -28,6 +28,7 @@ import org.wso2.carbon.dataservices.core.DBUtils;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
 import org.wso2.carbon.dataservices.core.description.query.Query;
 
+import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import java.util.Arrays;
@@ -171,14 +172,30 @@ public class CallQuery extends OutputElement {
     @Override
     protected void executeElement(XMLStreamWriter xmlWriter, ExternalParamCollection params,
                                   int queryLevel, boolean escapeNonPrintableChar) throws DataServiceFault {
-         /* handle default values */
-        this.processDefaultValues(params);
-		/* convert/filter params according to the WithParams */
-		Map<String, ParamValue> qparams = extractParams(params);
-		/* execute query */
-		this.getQuery().execute(xmlWriter, qparams, queryLevel);
-		/* clear temp values */
-		params.clearTempValues();
+
+        try {
+			/* start write result wrapper */
+            if (this.isHasResult()) {
+                this.startWrapperElement(xmlWriter, this.getNamespace(), this.getResultWrapper(),
+                        this.getQuery().getResult().getResultType());
+            }
+
+			 /* handle default values */
+            this.processDefaultValues(params);
+		    /* convert/filter params according to the WithParams */
+            Map<String, ParamValue> qparams = extractParams(params);
+		    /* execute query */
+            this.getQuery().execute(xmlWriter, qparams, queryLevel);
+		    /* clear temp values */
+            params.clearTempValues();
+
+			/* end write result wrapper */
+            if (this.isHasResult() && this.getResultWrapper() != null) {
+                this.endElement(xmlWriter);
+            }
+        } catch (XMLStreamException e) {
+            throw new DataServiceFault(e, "Error in CallQueryGroup.execute");
+        }
     }
 
     /**
@@ -274,5 +291,21 @@ public class CallQuery extends OutputElement {
 		}
 		
 	}
+
+    public boolean isHasResult() {
+        return this.getQuery().hasResult();
+    }
+
+    public String getResultWrapper() {
+        String resultWrapper = null;
+        if (this.isHasResult()) {
+            resultWrapper = this.getQuery().getResult().getElementName();
+				    /* if empty element, set it to null */
+            if (resultWrapper != null && resultWrapper.trim().length() == 0) {
+                resultWrapper = null;
+            }
+        }
+        return resultWrapper;
+    }
 	
 }

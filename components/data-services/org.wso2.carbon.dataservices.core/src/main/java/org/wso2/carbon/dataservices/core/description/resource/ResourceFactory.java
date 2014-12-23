@@ -27,7 +27,7 @@ import org.wso2.carbon.dataservices.common.DBConstants.DBSFields;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
 import org.wso2.carbon.dataservices.core.description.query.QueryFactory;
 import org.wso2.carbon.dataservices.core.description.resource.Resource.ResourceID;
-import org.wso2.carbon.dataservices.core.engine.CallQueryGroup;
+import org.wso2.carbon.dataservices.core.engine.CallQuery;
 import org.wso2.carbon.dataservices.core.engine.DataService;
 
 /**
@@ -50,12 +50,11 @@ public class ResourceFactory {
 			description = descEl.getText();
 		}
 		
-		CallQueryGroup callQueryGroup = null;
-		List<CallQueryGroup> cqGroups = QueryFactory.createCallQueryGroups(dataService, 
-				resEl.getChildrenWithName(new QName(DBSFields.CALL_QUERY)), 
-				resEl.getChildrenWithName(new QName(DBSFields.CALL_QUERY_GROUP)));
-		if (cqGroups.size() > 0) {
-			callQueryGroup = cqGroups.get(0);
+		CallQuery callQuery = null;
+		List<CallQuery> callQueries = QueryFactory.createCallQueries(dataService,
+				resEl.getChildrenWithName(new QName(DBSFields.CALL_QUERY)));
+		if (callQueries.size() > 0) {
+			callQuery = callQueries.get(0);
 		}
 		ResourceID resourceId = new ResourceID(path, method);
 		
@@ -67,7 +66,7 @@ public class ResourceFactory {
 		}
 		boolean disableStreamingEffective = disableStreamingRequest | dataService.isDisableStreaming();
 		
-		Resource resource = new Resource(dataService, resourceId, description, callQueryGroup, false, null, 
+		Resource resource = new Resource(dataService, resourceId, description, callQuery, false, null,
 				disableStreamingRequest, disableStreamingEffective);
 		
 	    String returnReqStatusStr = resEl.getAttributeValue(

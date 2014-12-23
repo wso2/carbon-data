@@ -25,6 +25,7 @@ public class DSTaskConstants {
 	public static final String DATA_TASK_CLASS_NAME = "DATA_TASK_CLASS_NAME";
     public static final String DATA_SERVICE_OBJECT = "org.wso2.ws.dataservice.dataservice.obj";
     public static final String DATA_SERVICE_TASK_TYPE = "DATA_SERVICE_TASK";
+    public static final String TASK_NAME = "DATA_SERVICE_TASK_NAME";
     public static final String AXIS2_SERVICE_TYPE = "serviceType";
     public static final String DB_SERVICE_TYPE = "data_service";
     public static final String DBS_FILE_EXTENSION = "dbs";

@@ -19,7 +19,9 @@ import org.apache.axiom.om.OMElement;
 import org.wso2.carbon.dataservices.core.test.DataServiceBaseTestCase;
 import org.wso2.carbon.dataservices.core.test.util.TestUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -113,6 +115,50 @@ public class AbstractAdvancedStoredProcServiceTest extends DataServiceBaseTestCa
 			fail(e.getMessage());
 		}
 
+    }
+
+
+    /**
+     * Test with oracle Ref-Cursors and varray type. This test used to verify the
+     * issue reported in https://wso2.org/jira/browse/DS-985
+     */
+    protected void storedProcWithRefCursorsVarrays() {
+        TestUtils.showMessage(this.epr + " - storedProcWithRefCursors&Varrays");
+        try {
+            for (int i = 0; i <= 5; i++) {
+                List<List<String>> params = new ArrayList<List<String>>();
+                params.add(this.getList("id", "" + i));
+                params.add(this.getList("name", "Group" + i));
+                params.add(this.getList("city", "San Francisco"));
+                params.add(this.getList("member", "member1"));
+                params.add(this.getList("member", "member2"));
+                params.add(this.getList("member", "member3"));
+                OMElement result = TestUtils.callOperationWithArray(this.epr,
+                        "stored_procedure_with_ref_cursors_varray_op", params);
+                String groupName = TestUtils.getFirstValue(result,
+                        "/Groups/Group/Name", TestUtils.DEFAULT_DS_WS_NAMESPACE);
+                assertTrue(groupName.equals("Group" + i));
+            }
+
+            for (int i = 0; i <= 5; i++) {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("id", "" + i) ;
+                TestUtils.callUpdateOperation(this.epr,
+                        "delete_groups_op", params);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
+
+    }
+
+    private List<String> getList(String name, String val) {
+        List<String> list = new ArrayList<String>();
+        list.add(name);
+        list.add(val);
+        return list;
     }
 	
 }

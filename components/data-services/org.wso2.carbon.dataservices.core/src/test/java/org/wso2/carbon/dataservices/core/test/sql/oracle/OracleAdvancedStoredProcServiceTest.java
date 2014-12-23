@@ -24,4 +24,9 @@ public class OracleAdvancedStoredProcServiceTest extends AbstractAdvancedStoredP
         this.storedProcWithRefCursors();
     }
 
+    public void testStoredProcWithRefCursorsVarrays() {
+        this.storedProcWithRefCursorsVarrays();
+    }
+
+
 }

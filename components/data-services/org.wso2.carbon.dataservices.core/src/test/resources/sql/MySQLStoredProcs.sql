@@ -15,6 +15,12 @@ CREATE PROCEDURE get103CustomerLim(OUT custNo INTEGER, OUT custName VARCHAR(50))
 	    SET custNo=103;
         SELECT customerName INTO custName FROM Customers WHERE customerNumber=custNo;      
     END //
+
+CREATE PROCEDURE addCustomerInfo(OUT custNo INTEGER, OUT custName VARCHAR(50), OUT contLastName VARCHAR(50), OUT contFirstName VARCHAR(50))
+    BEGIN
+	    INSERT INTO Customers (customerNumber, customerName, contactLastName, contactFirstName,	phone, addressLine1, addressLine2, city, state, postalCode, country, salesRepEmployeeNumber, creditLimit)
+        VALUES (custNo, custName, contLastName, contLastName, '07-98 9556', 'Erling Skakkes gate 77', NULL,'Stavern',NULL,'4110','Norway',1504,81700.0);
+    END //
     
 CREATE PROCEDURE get103CustomerFull(OUT custNo INTEGER, OUT custName VARCHAR(50))
     BEGIN

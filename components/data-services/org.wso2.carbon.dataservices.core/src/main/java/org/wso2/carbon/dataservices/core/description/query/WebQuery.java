@@ -74,19 +74,19 @@ public class WebQuery extends Query {
     }
 
     @SuppressWarnings("unchecked")
-    public void runQuery(XMLStreamWriter xmlWriter, InternalParamCollection params,
+    public Object runPreQuery(InternalParamCollection params,
                                      int queryLevel)
             throws DataServiceFault {
-        Variable scrapedOutput = (Variable) Query.getAndRemoveQueryPreprocessObject("scrapedOutput");
-        if (scrapedOutput == null) {
-            scrapedOutput = this.getConfig().getScrapedResult(getScraperVariable());
-            if (Query.isQueryPreprocessInitial()) {
-                Query.setQueryPreprocessedObject(scraperVariable, "scrapedOutput");
-                return;
-            }
-        }
+        return this.getConfig().getScrapedResult(getScraperVariable());
+    }
+
+    @SuppressWarnings("unchecked")
+    public void runPostQuery(Object result, XMLStreamWriter xmlWriter,
+                InternalParamCollection params, int queryLevel) throws DataServiceFault {
+
+        Variable scrapedOutput = (Variable) result;
         try {
-            OMElement resultEl = AXIOMUtil.stringToOM(scrapedOutput.toString());
+            OMElement resultEl = AXIOMUtil.stringToOM(scrapedOutput != null ? scrapedOutput.toString() : null);
             OMElement entryEl, fieldEl;
             DataEntry dataEntry;
             boolean useColumnNumbers = this.isUsingColumnNumbers();
@@ -97,8 +97,8 @@ public class WebQuery extends Query {
                 i = 1;
                 for (Iterator<OMElement> fieldItr = entryEl.getChildElements(); fieldItr.hasNext();) {
                     fieldEl = fieldItr.next();
-                    dataEntry.addValue(useColumnNumbers ? Integer.toString(i) : 
-                    	fieldEl.getLocalName(), new ParamValue(fieldEl.getText()));
+                    dataEntry.addValue(useColumnNumbers ? Integer.toString(i) :
+                            fieldEl.getLocalName(), new ParamValue(fieldEl.getText()));
                     i++;
                 }
                 this.writeResultEntry(xmlWriter, dataEntry, params, queryLevel);

@@ -33,7 +33,7 @@ public class OutputElementGroup extends OutputElement {
 
     private List<StaticOutputElement> elementEntries;
 
-    private List<CallQueryGroup> callQueryGroupEntries;
+    private List<CallQuery> callQueryEntries;
 
     private List<OutputElementGroup> elementGroupEntries;
 
@@ -59,14 +59,14 @@ public class OutputElementGroup extends OutputElement {
         super(name, namespace, requiredRoles, arrayName);
         this.allElements = new ArrayList<OutputElement>();
         this.elementEntries = new ArrayList<StaticOutputElement>();
-        this.callQueryGroupEntries = new ArrayList<CallQueryGroup>();
+        this.callQueryEntries = new ArrayList<CallQuery>();
         this.elementGroupEntries = new ArrayList<OutputElementGroup>();
         this.attributeEntries = new ArrayList<StaticOutputElement>();
     }
 
     public void init() throws DataServiceFault {
-        for (CallQueryGroup cqGroup : this.getCallQueryGroupEntries()) {
-            cqGroup.init();
+        for (CallQuery callQuery : this.getCallQueryEntries()) {
+            callQuery.init();
         }
         for (OutputElementGroup groups : this.getOutputElementGroupEntries()) {
             groups.init();
@@ -174,9 +174,9 @@ public class OutputElementGroup extends OutputElement {
         this.getAllElements().add(el);
     }
 
-    public void addCallQueryGroupEntry(CallQueryGroup callQueryGroup) {
-        this.getCallQueryGroupEntries().add(callQueryGroup);
-        this.getAllElements().add(callQueryGroup);
+    public void addCallQueryEntry(CallQuery callQuery) {
+        this.getCallQueryEntries().add(callQuery);
+        this.getAllElements().add(callQuery);
     }
 
     public void addOutputElementGroupEntry(OutputElementGroup outputElementGroup) {
@@ -192,8 +192,8 @@ public class OutputElementGroup extends OutputElement {
         return elementEntries;
     }
 
-    public List<CallQueryGroup> getCallQueryGroupEntries() {
-        return callQueryGroupEntries;
+    public List<CallQuery> getCallQueryEntries() {
+        return callQueryEntries;
     }
 
     public List<OutputElementGroup> getOutputElementGroupEntries() {

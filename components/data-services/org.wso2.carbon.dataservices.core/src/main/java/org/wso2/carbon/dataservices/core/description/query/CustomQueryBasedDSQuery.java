@@ -82,42 +82,40 @@ public class CustomQueryBasedDSQuery extends Query {
 	}
 	
 	@Override
-	public void runQuery(XMLStreamWriter xmlWriter,
-			InternalParamCollection params, int queryLevel)
+	public Object runPreQuery(InternalParamCollection params, int queryLevel)
 			throws DataServiceFault {
 		try {
-		    QueryResult result = (QueryResult) Query.getAndRemoveQueryPreprocessObject("result");
-		    if (result == null) {
-		        CustomQueryBasedDS dataSource = this.getConfig().getDataSource();
-    		    result = dataSource.executeQuery(this.getExpression(), 
-    		    		new ArrayList<InternalParam>(params.getParams()));
-    		    if (Query.isQueryPreprocessInitial()) {
-    		        Query.setQueryPreprocessedObject("result", result);
-    		        return;
-    		    }
-		    }
-		    DataEntry dataEntry;
-		    DataRow currentRow;
-		    List<DataColumn> columns = result.getDataColumns();
-		    String[] columnMappings = this.createColumnsMappings(columns);
-		    int count = columns.size();
-		    boolean useColumnNumbers = this.isUsingColumnNumbers();
-		    String columnName;
-		    String tmpVal;
-		    while (result.hasNext()) {
-		    	dataEntry = new DataEntry();
-		    	currentRow = result.next();
-		    	for (int i = 0; i < count; i++) {
-		    		columnName = useColumnNumbers ? Integer.toString(i + 1) : columnMappings[i];
-		    		tmpVal = currentRow.getValueAt(columnName);
-		    		dataEntry.addValue(columnName, new ParamValue(tmpVal));
-		    	}
-		    	this.writeResultEntry(xmlWriter, dataEntry, params, queryLevel);
-		    }
+            CustomQueryBasedDS dataSource = this.getConfig().getDataSource();
+            return dataSource.executeQuery(this.getExpression(),
+                    new ArrayList<InternalParam>(params.getParams()));
 		} catch (Exception e) {
 			throw new DataServiceFault(e, 
 					"Error in CustomQueryBasedDSQuery.runQuery: " + e.getMessage());
 		}
 	}
+
+    @Override
+    public void runPostQuery(Object result, XMLStreamWriter xmlWriter,
+                             InternalParamCollection params, int queryLevel) throws DataServiceFault {
+        QueryResult queryResult = (QueryResult) result;
+        DataEntry dataEntry;
+        DataRow currentRow;
+        List<DataColumn> columns = queryResult.getDataColumns();
+        String[] columnMappings = this.createColumnsMappings(columns);
+        int count = columns.size();
+        boolean useColumnNumbers = this.isUsingColumnNumbers();
+        String columnName;
+        String tmpVal;
+        while (queryResult.hasNext()) {
+            dataEntry = new DataEntry();
+            currentRow = queryResult.next();
+            for (int i = 0; i < count; i++) {
+                columnName = useColumnNumbers ? Integer.toString(i + 1) : columnMappings[i];
+                tmpVal = currentRow.getValueAt(columnName);
+                dataEntry.addValue(columnName, new ParamValue(tmpVal));
+            }
+            this.writeResultEntry(xmlWriter, dataEntry, params, queryLevel);
+        }
+    }
 
 }

@@ -155,7 +155,12 @@ public class SQLCarbonDataSourceConfig extends SQLConfig {
 			return null;
 		}
 		try {
-			return dataSourceService.getDataSource(dsName).getDSMInfo().getDefinition().getType();
+            CarbonDataSource carbonDataSource = dataSourceService.getDataSource(dsName);
+            if (carbonDataSource == null) {
+                log.error("Carbon datasource [" + dsName + "] is null");
+                return null;
+            }
+            return carbonDataSource.getDSMInfo().getDefinition().getType();
 		} catch (Exception e) {
 			log.error("Error retrieving data source type, returning empty type: " + 
 		            e.getMessage(), e);

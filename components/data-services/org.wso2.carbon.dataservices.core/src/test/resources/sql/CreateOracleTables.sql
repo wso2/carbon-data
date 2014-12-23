@@ -43,6 +43,15 @@ CREATE TABLE Offices(
 
 ALTER TABLE Offices ADD CONSTRAINT offices_pk PRIMARY KEY (officeCode );
 
+CREATE TABLE Groups (
+     GroupNum NUMBER,
+     Name VARCHAR2(10),
+     City VARCHAR2(20),
+     Members mem_array_type
+);
+
+ALTER TABLE Groups ADD CONSTRAINT groups_pk PRIMARY KEY (GroupNum);
+
 CREATE TABLE Products(
 	productCode VARCHAR2(15),
 	productName VARCHAR2(70),

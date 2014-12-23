@@ -35,6 +35,41 @@
       </result>
    </query>
 
+   <!-- Query to insert Customer data with the given Info -->
+      <query id="insert_customer_query">
+         <sql>CALL addCustomerInfo(?,?,?,?)</sql>
+         <param name="customerNumber" sqlType="INTEGER" />
+         <param name="customerName" sqlType="STRING" />
+         <param name="contactLastName" sqlType="STRING" />
+         <param name="contactFirstName" sqlType="STRING" />
+         <result element="Customers" rowName="Customer">
+            <element name="customerNumber" column="customerNumber" />
+         </result>
+      </query>
+
+   <operation name="stored_procedure_with_wrong_result_set">
+      <call-query href="insert_customer_query">
+         <with-param name="customerNumber" query-param="customerNumber" />
+         <with-param name="customerName" query-param="customerName" />
+         <with-param name="contactLastName" query-param="contactLastName" />
+         <with-param name="contactFirstName" query-param="contactFirstName" />
+      </call-query>
+   </operation>
+
+   <operation name="select_op_count">
+      <call-query href="select_query_count">
+          <with-param name="customerNumber" query-param="customerNumber" />
+      </call-query>
+   </operation>
+
+   <query id="select_query_count">
+       <sql>SELECT COUNT(*) as customerCount FROM Customers WHERE customerNumber=:customerNumber</sql>
+       <param name="customerNumber" sqlType="INTEGER" />
+       <result element="Customers" rowName="CustomerCount">
+           <element name="customerCount" column="customerCount" xsdType="integer" />
+       </result>
+   </query>
+
    <operation name="payment_info_op">
       <call-query href="select_payment_query">
       </call-query>

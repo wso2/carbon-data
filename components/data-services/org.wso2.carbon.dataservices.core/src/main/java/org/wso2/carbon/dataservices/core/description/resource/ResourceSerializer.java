@@ -45,7 +45,7 @@ public class ResourceSerializer {
 			desEl.setText(description);
 			resEl.addChild(desEl);
 		}
-		QuerySerializer.serializeCallQueryGroup(resource.getCallQueryGroup(), resEl, fac);
+		QuerySerializer.serializeCallQuery(resource.getCallQuery(), resEl, fac);
 		return resEl;
 	}
 	

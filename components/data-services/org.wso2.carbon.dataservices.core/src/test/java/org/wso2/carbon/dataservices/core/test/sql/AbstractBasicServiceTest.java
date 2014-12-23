@@ -16,10 +16,7 @@
 package org.wso2.carbon.dataservices.core.test.sql;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-
-import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
 import org.wso2.carbon.dataservices.core.test.DataServiceBaseTestCase;
@@ -112,29 +109,6 @@ public abstract class AbstractBasicServiceTest extends DataServiceBaseTestCase {
 			assertTrue(TestUtils.validateResultStructure(result, TestUtils.PAYMENTS_WITH_DATETIME_XSD_PATH));
 			
 		}catch(Exception e){
-			e.printStackTrace();
-			fail(e.getMessage());
-		}
-	}
-
-	/**
-	 * Test to merge data from several call-query statements in an operation
-	 */
-	@SuppressWarnings("unchecked")
-	protected void basicCallQueryMerge() {
-		TestUtils.showMessage(this.epr + " - basicCallQueryMerge");
-		try {
-			OMElement result = TestUtils.callOperation(this.epr,
-					"basic_merge_op", null);
-			assertTrue(TestUtils.validateResultStructure(result, TestUtils.CUSTOMER_XSD_PATH));
-			int c = 0;
-			Iterator<OMElement> elItr = result.getChildrenWithName(new QName("Customer"));
-			while (elItr.hasNext()) {
-				assertNotNull(elItr.next());
-				c++;
-			}
-			assertTrue(c == 5);
-		} catch (Exception e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}

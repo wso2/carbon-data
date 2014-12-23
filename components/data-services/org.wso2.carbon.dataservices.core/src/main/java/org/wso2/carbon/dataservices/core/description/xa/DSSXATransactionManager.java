@@ -36,8 +36,8 @@ public class DSSXATransactionManager {
 	private ThreadLocal<Boolean> beginTx = new ThreadLocal<Boolean>() {
 		protected Boolean initialValue() { 
 			return false; 
-		};
-	};
+		}
+    };
 	
 	public TransactionManager transactionManager;
 	

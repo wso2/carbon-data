@@ -18,6 +18,7 @@
  */
 package org.wso2.carbon.dataservices.core;
 
+import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.axiom.soap.SOAP11Constants;
@@ -35,10 +36,11 @@ import org.apache.axis2.i18n.Messages;
 import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.axis2.wsdl.WSDLConstants;
 import org.apache.axis2.wsdl.WSDLUtil;
+import org.apache.neethi.Policy;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.neethi.PolicyEngine;
 import org.apache.ws.commons.schema.utils.NamespaceMap;
-import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.dataservices.common.DBConstants;
@@ -56,8 +58,6 @@ import org.wso2.carbon.dataservices.core.jmx.DataServiceInstanceMBean;
 import org.wso2.carbon.ndatasource.common.DataSourceConstants;
 import org.wso2.carbon.ndatasource.common.DataSourceException;
 import org.wso2.carbon.ndatasource.core.DataSourceManager;
-import org.wso2.carbon.user.core.UserStoreException;
-import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.utils.CarbonUtils;
 
 import javax.management.MBeanServer;
@@ -66,7 +66,6 @@ import javax.naming.InitialContext;
 import javax.transaction.TransactionManager;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 
 import java.io.*;
 import java.lang.management.ManagementFactory;
@@ -129,23 +128,6 @@ public class DBDeployer extends AbstractDeployer {
 	 */
 	public void deploy(DeploymentFileData deploymentFileData)
 			throws DeploymentException {
-		try {
-            RealmService realmService = DataServicesDSComponent.getRealmService();
-            if (realmService != null) {
-                try {
-                	PrivilegedCarbonContext.getThreadLocalCarbonContext().setUserRealm(
-                            realmService.getBootstrapRealm());
-				} catch (UserStoreException e) {
-					throw new DeploymentException(e);
-				}
-            }
-            PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(
-                    CarbonConstants.REGISTRY_SYSTEM_USERNAME);
-		} catch (Error e) {
-			/* during unit tests, this may occur */
-			log.warn("Init error at DBDeployer.deploy()", e);
-		}
-
         /* If there's already a faulty service corresponding to this particular service,
            remove it */
         if (isFaultyService(deploymentFileData)) {
@@ -164,6 +146,7 @@ public class DBDeployer extends AbstractDeployer {
 		String errorMessage = null;
 		/* Axis2 service to be deployed */
 		AxisService service = null;
+
 		try {
 			/* In the context of dataservices one service group will only contain one dataservice.
             *  Hence assigning the service group as the service group name */
@@ -187,7 +170,7 @@ public class DBDeployer extends AbstractDeployer {
                     deploymentFileData.getFile().toURI().toURL(), deploymentFileData,
                     this.axisConfig);
 
-
+            service = this.handleSecurityProxy(deploymentFileData, service);
 			/* restore original service active value */
 			service.setActive(serviceActive);
 
@@ -254,10 +237,7 @@ public class DBDeployer extends AbstractDeployer {
         String faultyServiceFilePath = deploymentFileData.getFile().getAbsolutePath();
         AxisService faultyService = CarbonUtils.getFaultyService(faultyServiceFilePath,
                 this.configCtx);
-        if (faultyService != null) {
-            return true;
-        }
-        return false;
+        return faultyService != null;
     }
 
     private String getServiceNameFromDSContents(File file) throws Exception {
@@ -526,7 +506,7 @@ public class DBDeployer extends AbstractDeployer {
 		if (index > -1) {
 			opName = opName.substring(index + 1);
 		}
-		boolean hasResult = operation.getCallQueryGroup().isHasResult()
+		boolean hasResult = operation.getCallQuery().isHasResult()
 				|| operation.isReturnRequestStatus();
 		String description = operation.getDescription();
 		return createAxisOperation(requestName, opName, HTTPConstants.HTTP_METHOD_POST, hasResult,
@@ -546,7 +526,7 @@ public class DBDeployer extends AbstractDeployer {
 		String path = resourceId.getPath();
 		String requestName = resource.getRequestName();
 		String description = resource.getDescription();
-		boolean hasResult = resource.getCallQueryGroup().isHasResult()
+		boolean hasResult = resource.getCallQuery().isHasResult()
 				|| resource.isReturnRequestStatus();
 		return createAxisOperation(requestName, path, method, hasResult, soap11Binding,
 				soap12Binding, httpBinding, description);
@@ -559,7 +539,7 @@ public class DBDeployer extends AbstractDeployer {
 			String method, boolean hasResult,
 			AxisBinding soap11Binding, AxisBinding soap12Binding, AxisBinding httpBinding,
 			String description) {
-		AxisOperation axisOperation = null;
+		AxisOperation axisOperation;
 		if (hasResult) {
 			axisOperation = new InOutAxisOperation(new QName(operationName));
 			DBInOutMessageReceiver inoutMsgReceiver = new DBInOutMessageReceiver();
@@ -666,16 +646,15 @@ public class DBDeployer extends AbstractDeployer {
 	 */
 	private void validateRequestCallQuery(DataService dataService) throws DataServiceFault {
 		for (CallableRequest cr : dataService.getCallableRequests().values()) {
-			for (CallQuery callQuery : cr.getCallQueryGroup().getCallQueries()) {
-				if (callQuery.getQuery() == null) {
-					DataServiceFault dsf = new DataServiceFault("Invalid DBS",
-							"Call query with id: " + callQuery.getQueryId() +
-							" doesn't exist as referenced by the operation/resource: " +
-							cr.getRequestName());
-					dsf.setSourceDataService(dataService);
-					throw dsf;
-				}
-			}
+			CallQuery callQuery = cr.getCallQuery();
+            if (callQuery.getQuery() == null) {
+                DataServiceFault dsf = new DataServiceFault("Invalid DBS",
+                        "Call query with id: " + callQuery.getQueryId() +
+                        " doesn't exist as referenced by the operation/resource: " +
+                        cr.getRequestName());
+                dsf.setSourceDataService(dataService);
+                throw dsf;
+            }
 		}
 	}
 
@@ -686,31 +665,30 @@ public class DBDeployer extends AbstractDeployer {
 	 */
 	private void validateRequestQueryParams(DataService dataService) throws DataServiceFault {
 		for (CallableRequest cr : dataService.getCallableRequests().values()) {
-			for (CallQuery callQuery : cr.getCallQueryGroup().getCallQueries()) {
-				Query query = callQuery.getQuery();
-				for (WithParam withParam : callQuery.getWithParams().values()) {
-					boolean found = false;
-					for (QueryParam queryParam : query.getQueryParams()) {
-						if (withParam.getName().equals(queryParam.getName())) {
-							found = true;
-							break;
-						}
-					}
-					if (found) {
-						/* param found, move onto next 'with-param' */
-						continue;
-					} else {
-					    /* the param is not found in the query, throw an exception */
-						DataServiceFault dsf = new DataServiceFault("Invalid DBS",
-								"with-param with name: " + withParam.getName()
-										+ " doesn't exist in query with id: " + query.getQueryId()
-										+ " as referenced by the operation/resource: "
-										+ cr.getRequestName());
-						dsf.setSourceDataService(dataService);
-						throw dsf;
-					}
-				}
-			}
+			CallQuery callQuery = cr.getCallQuery();
+            Query query = callQuery.getQuery();
+            for (WithParam withParam : callQuery.getWithParams().values()) {
+                boolean found = false;
+                for (QueryParam queryParam : query.getQueryParams()) {
+                    if (withParam.getName().equals(queryParam.getName())) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (found) {
+                    /* param found, move onto next 'with-param' */
+                    continue;
+                } else {
+                    /* the param is not found in the query, throw an exception */
+                    DataServiceFault dsf = new DataServiceFault("Invalid DBS",
+                            "with-param with name: " + withParam.getName()
+                                    + " doesn't exist in query with id: " + query.getQueryId()
+                                    + " as referenced by the operation/resource: "
+                                    + cr.getRequestName());
+                    dsf.setSourceDataService(dataService);
+                    throw dsf;
+                }
+            }
 		}
 	}
 
@@ -719,12 +697,7 @@ public class DBDeployer extends AbstractDeployer {
 	 */
 	private void validateRequestQueryResults(DataService dataService) throws DataServiceFault {
 		for (CallableRequest request : dataService.getCallableRequests().values()) {
-			CallQueryGroup cqGroup = request.getCallQueryGroup();
-			if (cqGroup == null) {
-				/* we are not validating these here */
-				continue;
-			}
-			CallQuery callQuery = cqGroup.getDefaultCallQuery();
+			CallQuery callQuery = request.getCallQuery();
 			if (callQuery == null) {
 				continue;
 			}
@@ -1086,34 +1059,17 @@ public class DBDeployer extends AbstractDeployer {
 	 * if so, the AxisService representing the data service is applied the instructions from its
 	 * "services.xml".
 	 */
-	private AxisService handleServicesXML(String dbsPath, AxisServiceGroup axisServiceGroup,
-			AxisService axisService) throws DataServiceFault {
+	private AxisService handleTransports(DeploymentFileData file, AxisService axisService) throws DataServiceFault {
 		try {
-			String serviceXMLPath = dbsPath.substring(0, dbsPath.length() - 4) +
-							DBConstants.DBS_SERVICES_XML_SUFFIX;
-			File servicesXMLFile = new File(serviceXMLPath);
-			if (servicesXMLFile.exists()) {
-				XMLStreamReader parser = DBUtils.getXMLInputFactory().createXMLStreamReader(
-						new FileInputStream(servicesXMLFile));
-				StAXOMBuilder builder = new StAXOMBuilder(parser);
-				OMElement documentElement =  builder.getDocumentElement();
-				if (documentElement.getLocalName().equals(DBConstants.AXIS2_SERVICE_GROUP)) {
-					HashMap<String, AxisService> wsdlServices = new HashMap<String, AxisService>();
-					wsdlServices.put(axisService.getName(), axisService);
-					ServiceGroupBuilder sgb = new ServiceGroupBuilder(documentElement,
-							wsdlServices, this.getConfigContext());
-					axisService = sgb.populateServiceGroup(axisServiceGroup).get(0);
-				} else if (documentElement.getLocalName().equals(DBConstants.AXIS2_SERVICE)) {
-					ServiceBuilder sb = new ServiceBuilder(this.getConfigContext(),
-							axisService);
-					axisService = sb.populateService(documentElement);
-				} else {
-					throw new DataServiceFault("services xml file: " + serviceXMLPath +
-							" is not valid, cannot find the 'service' or 'serviceGroup' element");
-				}
-			}
+            StAXOMBuilder builder = new StAXOMBuilder(new FileInputStream(file.getFile().getAbsoluteFile()));
+            OMElement documentElement =  builder.getDocumentElement();
+            OMAttribute transports = documentElement.getAttribute(new QName(DBSFields.TRANSPORTS));
+            if (transports != null) {
+                String [] transportArr = transports.getAttributeValue().split(" ");
+                axisService.setExposedTransports(Arrays.asList(transportArr));
+            }
 		} catch (Exception e) {
-			throw new DataServiceFault(e, "Error in processing services.xml");
+			throw new DataServiceFault(e, "Error in processing transports info");
 		}
 		return axisService;
 	}
@@ -1129,9 +1085,31 @@ public class DBDeployer extends AbstractDeployer {
 		axisService.setParent(axisServiceGroup);
 		axisService.setClassLoader(axisConfig.getServiceClassLoader());
         /* handle services.xml, if exists */
-		this.handleServicesXML(currentFile.getAbsolutePath(), axisServiceGroup, axisService);
+		this.handleTransports(currentFile, axisService);
 		return axisService;
 	}
+
+    private AxisService handleSecurityProxy(DeploymentFileData file, AxisService axisService) throws DataServiceFault{
+        try {
+            StAXOMBuilder builder = new StAXOMBuilder(new FileInputStream(file.getFile().getAbsoluteFile()));
+            OMElement documentElement =  builder.getDocumentElement();
+            OMElement enableSecElement= documentElement.getFirstChildWithName(new QName(DBSFields.ENABLESEC));
+            if (enableSecElement != null) {
+                axisService.engageModule(this.configCtx.getAxisConfiguration().getModule(
+                        DBConstants.SECURITY_MODULE_NAME), this.configCtx.getAxisConfiguration());
+            }
+            OMElement policyElement= documentElement.getFirstChildWithName(new QName(DBSFields.POLICY));
+            if (policyElement != null) {
+                String policyKey = policyElement.getAttributeValue(new QName(DBSFields.POLICY_KEY));
+                Policy policy = PolicyEngine.getPolicy(
+                        DBUtils.getInputStreamFromPath(policyKey));
+                axisService.getPolicySubject().attachPolicy(policy);
+            }
+        }catch (Exception e) {
+            throw new DataServiceFault(e, "Error in processing security policy");
+        }
+        return axisService;
+    }
 
     @SuppressWarnings("unchecked")
 	private void secureVaultResolve(OMElement dbsElement) {

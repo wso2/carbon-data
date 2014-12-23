@@ -40,10 +40,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Represents a query in a data service.
@@ -75,28 +72,28 @@ public abstract class Query extends XMLWriterHelper {
 	private boolean preBuildResult;
 	
 	private boolean useColumnNumbers;
-	
-	private static ThreadLocal<Map<String, Object>> queryPreprocessObjects = new ThreadLocal<Map<String,Object>>() {
+
+	private static ThreadLocal<Object> queryPreprocessObjects = new ThreadLocal<Object>() {
 	    @Override
-	    public Map<String, Object> initialValue() {
-	        return new HashMap<String, Object>();
+	    public Object initialValue() {
+	        return new Object();
 	    }
 	};
-	
+
 	private static ThreadLocal<Boolean> queryPreprocessInitial = new ThreadLocal<Boolean>() {
 	    @Override
         public Boolean initialValue() {
             return false;
         }
 	};
-	
+
 	private static ThreadLocal<Boolean> queryPreprocessSecondary = new ThreadLocal<Boolean>() {
         @Override
         public Boolean initialValue() {
             return false;
         }
     };
-			
+
 	public Query(DataService dataService, String queryId,
 			List<QueryParam> queryParams, Result result, String configId,
 			EventTrigger inputEventTrigger, EventTrigger outputEventTrigger, 
@@ -236,13 +233,12 @@ public abstract class Query extends XMLWriterHelper {
 	}
 
 	private ValidationContext createValidationContext(Map<String, ParamValue> params) {
-		ValidationContext context = new ValidationContext(params);
-		return context;
+		return new ValidationContext(params);
 	}
 	
 	private void validateParams(Map<String, ParamValue> params) throws DataServiceFault {
 		try {
-			ParamValue value = null;
+			ParamValue value;
 			ValidationContext context = this.createValidationContext(params);
 			for (QueryParam queryParam : this.getQueryParams()) {
 				value = params.get(queryParam.getName());
@@ -259,37 +255,54 @@ public abstract class Query extends XMLWriterHelper {
 
 	public void execute(XMLStreamWriter xmlWriter, Map<String, ParamValue> params, 
 			int queryLevel) throws DataServiceFault {
-		if (this.hasResult()) {
-			/* set required roles in result */
-			if (DataService.getCurrentUser() != null) {
-				this.getResult().applyUserRoles(DataService.getCurrentUser().getUserRoles());
-			} else {
-				this.getResult().applyUserRoles(null);
-			}
-		}
 		/* pre-process parameters as needed */
 		this.preprocessParams(params);
-		/* validate params */
-		this.validateParams(params);
-
 		/* extract parameters, to be used internally in queries */
 		InternalParamCollection internalParams = this.extractParams(params);
-		/* process input events */
-		this.processInputEvents(internalParams);
 		boolean error = true;
+        Object result;
         try {
+            boolean initial = Query.isQueryPreprocessInitial();
+            boolean secondary = Query.isQueryPreprocessSecondary();
             /* write the content */
-            this.runQuery(xmlWriter, internalParams, queryLevel);
+            if (initial) {
+                /* validate params */
+                this.validateParams(params);
+                /* check user role based content filtering */
+                this.processContentFiltering();
+                /* process input events */
+                this.processInputEvents(internalParams);
+                result = this.runPreQuery(internalParams, queryLevel);
+                Query.addQueryPreprocessedObject(result);
+            }
+            if (secondary) {
+                /* required for nested query processing, nested queries
+                 * must execute both phases at once */
+                Query.setQueryPreprocessingInitial(true);
+                result = Query.getAndRemoveQueryPreprocessObject();
+                this.runPostQuery(result, xmlWriter, internalParams, queryLevel);
+            }
             error = false;
-            /* handle transaction finalizing logic */
         } finally {
-            if (queryLevel == 0 && !Query.isQueryPreprocessInitial()) {
+            if (error || (queryLevel == 0 && isQueryPreprocessSecondary())
+                    || (isQueryPreprocessInitial() && !this.hasResult())) {
                 /* we are at the end of the outer most query, i.e. in nested query situations,
                  * and we are not in the data pre-fetching state */
                 this.finalizeTx(error);
             }
         }
 	}
+
+    private void processContentFiltering() throws DataServiceFault {
+        if (this.hasResult()) {
+			/* set required roles in result */
+            if (DataService.getCurrentUser() != null) {
+                this.getResult().applyUserRoles(DataService.getCurrentUser().getUserRoles());
+            } else {
+                this.getResult().applyUserRoles(null);
+            }
+        }
+    }
 	
 	private void finalizeTx(boolean error) {
 	    if (DispatchStatus.isInBatchBoxcarring()) {
@@ -363,8 +376,15 @@ public abstract class Query extends XMLWriterHelper {
 	 * This method must be implemented by concrete implementations of this class,
 	 * to provide the logic to execute the query.
 	 */
-	public abstract void runQuery(XMLStreamWriter xmlWriter, InternalParamCollection params, 
+	public abstract Object runPreQuery(InternalParamCollection params,
 			int queryLevel) throws DataServiceFault;
+
+    /**
+     * This method must be implemented by concrete implementations of this class,
+     * to provide the logic to execute the query.
+     */
+    public abstract void runPostQuery(Object result, XMLStreamWriter xmlWriter, InternalParamCollection params,
+                                  int queryLevel) throws DataServiceFault;
 	
 	/**
 	 * writes an result entry to the output.
@@ -418,33 +438,33 @@ public abstract class Query extends XMLWriterHelper {
 		}
 		return pc;
 	}
-	
+
 	public static void setQueryPreprocessingInitial(boolean state) {
 	    queryPreprocessInitial.set(state);
 	}
-	
+
 	public static void setQueryPreprocessingSecondary(boolean state) {
         queryPreprocessSecondary.set(state);
     }
-	
+
 	public static boolean isQueryPreprocessInitial() {
 	    return queryPreprocessInitial.get();
 	}
-	
+
 	public static boolean isQueryPreprocessSecondary() {
         return queryPreprocessSecondary.get();
     }
-	
-	public static Object getAndRemoveQueryPreprocessObject(String name) {
-	    return queryPreprocessObjects.get().remove(name);
+
+	public static Object getAndRemoveQueryPreprocessObject() {
+        return queryPreprocessObjects.get();
 	}
-	
-	public static void setQueryPreprocessedObject(String name, Object value) {
-	    queryPreprocessObjects.get().put(name, value);
+
+	public static void addQueryPreprocessedObject(Object value) {
+	    queryPreprocessObjects.set(value);
 	}
-	
+
 	public static void resetQueryPreprocessing() {
-	    queryPreprocessObjects.get().clear();
+	    queryPreprocessObjects.set(new Object());
 	    setQueryPreprocessingInitial(false);
 	    setQueryPreprocessingSecondary(false);
 	}

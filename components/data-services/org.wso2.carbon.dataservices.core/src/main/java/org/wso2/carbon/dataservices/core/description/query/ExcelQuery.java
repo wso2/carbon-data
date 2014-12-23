@@ -158,41 +158,40 @@ public class ExcelQuery extends Query {
         return workbookName;
     }
 
-    public void runQuery(XMLStreamWriter xmlWriter, InternalParamCollection params, int queryLevel)
+    public Object runPreQuery(InternalParamCollection params, int queryLevel)
             throws DataServiceFault {
         try {
-            Sheet sheet = (Sheet) Query.getAndRemoveQueryPreprocessObject("sheet");
-            if (sheet == null) {
-                Workbook wb = this.getConfig().createWorkbook();
-                sheet = wb.getSheet(this.getWorkbookName());
-                if (Query.isQueryPreprocessInitial()) {
-                    Query.setQueryPreprocessedObject("sheet", sheet);
-                    return;
-                }
-            }
-            int maxCount = this.getMaxRowCount();
-            int i = this.getStartingRow() - 1;
-            int count = 0;
-            DataEntry dataEntry;
-            String[] record;
-            Map<Integer, String> columnsMap = this.getColumnMappings();
-            boolean useColumnNumbers = this.isUsingColumnNumbers();
-            while ((record = this.extractRowData(sheet.getRow(i))) != null) {
-                if (maxCount != -1 && count >= maxCount) {
-                    break;
-                }
-                dataEntry = new DataEntry();
-                for (int j = 0; j < record.length; j++) {
-                    dataEntry.addValue(useColumnNumbers ? Integer.toString(i + 1) :
-                            columnsMap.get(j + 1), new ParamValue(record[j]));
-                }
-                this.writeResultEntry(xmlWriter, dataEntry, params, queryLevel);
-                i++;
-                count++;
-            }
+            Workbook wb = this.getConfig().createWorkbook();
+            return wb.getSheet(this.getWorkbookName());
         } catch (Exception e) {
             throw new DataServiceFault(e, "Error in ExcelQuery.runQuery.");
         }
     }
 
+    @Override
+    public void runPostQuery(Object result, XMLStreamWriter xmlWriter,
+                             InternalParamCollection params, int queryLevel) throws DataServiceFault {
+        Sheet sheet = (Sheet) result;
+        int maxCount = this.getMaxRowCount();
+        int i = this.getStartingRow() - 1;
+        int count = 0;
+        DataEntry dataEntry;
+        String[] record;
+        Map<Integer, String> columnsMap = this.getColumnMappings();
+        boolean useColumnNumbers = this.isUsingColumnNumbers();
+        while ((record = this.extractRowData(sheet.getRow(i))) != null) {
+            if (maxCount != -1 && count >= maxCount) {
+                break;
+            }
+            dataEntry = new DataEntry();
+            for (int j = 0; j < record.length; j++) {
+                dataEntry.addValue(useColumnNumbers ? Integer.toString(j + 1) :
+                        columnsMap.get(j + 1), new ParamValue(record[j]));
+            }
+            this.writeResultEntry(xmlWriter, dataEntry, params, queryLevel);
+            i++;
+            count++;
+
+        }
+    }
 }

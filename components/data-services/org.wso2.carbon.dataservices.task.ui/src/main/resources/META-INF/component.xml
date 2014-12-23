@@ -27,7 +27,7 @@
             <order>32</order>
             <style-class>monitor</style-class>
             <icon>../ds_task/images/tasks-icon.gif</icon>
-            <require-permission>/permission/admin/configure/dataservices/tasks</require-permission>
+            <require-permission>/permission/admin/manage/add/service</require-permission>
         </menu>
     </menus>
 </component>

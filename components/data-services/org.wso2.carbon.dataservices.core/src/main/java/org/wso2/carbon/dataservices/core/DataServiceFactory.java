@@ -31,7 +31,6 @@ import org.wso2.carbon.dataservices.core.description.resource.Resource.ResourceI
 import org.wso2.carbon.dataservices.core.description.resource.ResourceFactory;
 import org.wso2.carbon.dataservices.core.engine.CallableRequest;
 import org.wso2.carbon.dataservices.core.engine.DataService;
-import org.wso2.carbon.dataservices.core.engine.Result;
 import org.wso2.securevault.SecretResolver;
 import org.wso2.securevault.SecretResolverFactory;
 import org.wso2.securevault.SecurityConstants;
@@ -166,15 +165,6 @@ public class DataServiceFactory {
 
             /* init the data service object */
             dataService.init();
-
-            for (String opName : dataService.getOperationNames()) {
-                Result result = dataService.getOperation(opName).getCallQueryGroup()
-                        .getDefaultCallQuery().getQuery().getResult();
-                if (result != null && result.getResultType() == DBConstants.ResultTypes.RDF) {
-                    throw new DataServiceFault("Cannot create operation "
-                            + dataService.getOperation(opName) + "for the result output type RDF");
-                }
-            }
             
             /* add necessary equivalent batch requests for the above defined operations/resources */
             if (dataService.isBatchRequestsEnabled()) {
@@ -210,7 +200,7 @@ public class DataServiceFactory {
                         operation.getDataService(),
                         operation.getName() + DBConstants.BATCH_OPERATON_NAME_SUFFIX,
                         "batch operation for '" + operation.getName() + "'",
-                        operation.getCallQueryGroup(), true,
+                        operation.getCallQuery(), true,
                         operation, operation.isDisableStreamingRequest(),
                         operation.isDisableStreamingEffective());
                 batchOp.setReturnRequestStatus(operation.isReturnRequestStatus());
@@ -243,7 +233,7 @@ public class DataServiceFactory {
                 Resource batchRes = new Resource(
                         resource.getDataService(), batchResId,
                         "batch resource for [" + resId.getMethod() + ":" + resId.getPath() + "]",
-                        resource.getCallQueryGroup(), true, resource,
+                        resource.getCallQuery(), true, resource,
                         resource.isDisableStreamingRequest(),
                         resource.isDisableStreamingEffective());
                 batchRes.setReturnRequestStatus(resource.isReturnRequestStatus());
@@ -269,13 +259,10 @@ public class DataServiceFactory {
      * i.e. does not have a result.
      */
     private static boolean isBatchCompatible(CallableRequest request) {
-        if (request.getCallQueryGroup().getDefaultCallQuery().getWithParams().size() == 0) {
+        if (request.getCallQuery().getWithParams().size() == 0) {
             return false;
         }
-        if (request.getCallQueryGroup().getDefaultCallQuery().getQuery().hasResult()) {
-            return false;
-        }
-        return true;
+        return !request.getCallQuery().getQuery().hasResult();
     }
 
 }

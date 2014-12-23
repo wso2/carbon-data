@@ -53,6 +53,10 @@
     boolean batchRequest = false;
     boolean enableStreaming = true;
     boolean finishButton = false;
+    boolean enableHTTP = true;
+    boolean enableHTTPS = true;
+    boolean enableLocal = true;
+    boolean enableJMS = false;
     String txManagerJNDIName = "";
     String protectedTokens = "";
     String passwordProvider = "";
@@ -81,6 +85,10 @@
                 //useAppServerTS = dataService.isUseAppServerTS();
                 batchRequest = dataService.isBatchRequest();
                 enableStreaming = !dataService.isDisableStreaming();
+                enableHTTP = dataService.isEnableHTTP();
+                enableHTTPS = dataService.isEnableHTTPS();
+                enableLocal = dataService.isEnableLocal();
+                enableJMS = dataService.isEnableJMS();
                 //txManagerCleanupMethod = dataService.getTxManagerCleanupMethod();
             }
             //TO DO: need to fix breadcrum issue
@@ -115,6 +123,10 @@
                 data.setServiceHierarchy(detailedServiceName);
                 //txManagerCleanupMethod = data.getTxManagerCleanupMethod();
                 enableStreaming = !data.isDisableStreaming();
+                enableHTTP = data.isEnableHTTP();
+                enableHTTPS = data.isEnableHTTPS();
+                enableLocal = data.isEnableLocal();
+                enableJMS = data.isEnableJMS();
                 request.getSession().setAttribute("dataService", data);
             }
 
@@ -132,6 +144,7 @@
                     .addError("Error occurred while saving data service configuration.");
             request.setAttribute(CarbonError.ID, carbonError);
             String errorMsg = e.getLocalizedMessage();
+            e.printStackTrace();
 %>
 <script type="text/javascript">
     location.href = "dsErrorPage.jsp?errorMsg=<%=errorMsg%>";
@@ -153,6 +166,10 @@
             batchRequest = dataService.isBatchRequest();
             enableStreaming = !dataService.isDisableStreaming();
             boxcarring = dataService.isBoxcarring();
+            enableHTTP = dataService.isEnableHTTP();
+            enableHTTPS = dataService.isEnableHTTPS();
+            enableLocal = dataService.isEnableLocal();
+            enableJMS = dataService.isEnableJMS();
         } else {
             serviceName = "";
             request.getSession().setAttribute("dataService", null);
@@ -273,6 +290,54 @@
                         </table>
                     </td>
                 </tr>
+
+                <tr>
+                    <td class="middle-header" colspan="2"><fmt:message
+                            key="transport.setting.configurations"/></td>
+                </tr>
+
+                <tr>
+                    <td colspan="2">
+                        <table>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" id="enableHTTP"
+                                           name="enableHTTP"  <%=(enableHTTP) ? "checked=\"checked\"" : ""%>
+                                           value=<%=enableHTTP%>></td>
+                                </td>
+                                <td align="left"><label for="enableHTTP"><fmt:message
+                                        key="enable.http"/></label></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" id="enableHTTPS"
+                                           name="enableHTTPS"  <%=(enableHTTPS) ? "checked=\"checked\"" : ""%>
+                                           value=<%=enableHTTPS%>></td>
+                                </td>
+                                <td align="left"><label for="enableHTTPS"><fmt:message
+                                        key="enable.https"/></label></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" id="enableLocal"
+                                           name="enableLocal"  <%=(enableLocal) ? "checked=\"checked\"" : ""%>
+                                           value=<%=enableLocal%>></td>
+                                </td>
+                                <td align="left"><label for="enableLocal"><fmt:message
+                                        key="enable.local"/></label></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" id="enableJMS"
+                                           name="enableJMS"  <%=(enableJMS) ? "checked=\"checked\"" : ""%>
+                                           value=<%=enableJMS%>></td>
+                                </td>
+                                <td align="left"><label for="enableJMS"><fmt:message
+                                        key="enable.jms"/></label></td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
                 
                 <tr id="txManager">
                     <td>
@@ -317,7 +382,7 @@
         var advancedConfigFields = document.getElementById('txManagerNameRow');
         if (advancedConfigFields.style.display == 'none') {
             // symbolMax.setAttribute('style','background-image:url(images/minus.gif);');
-            symbolMax.innerHTML = 'Hive Advanced Distributed Transactions Settings';
+            symbolMax.innerHTML = 'Hide Advanced Distributed Transactions Settings';
             advancedConfigFields.style.display = '';
         } else {
             //symbolMax.setAttribute('style','background-image:url(images/plus.gif);');

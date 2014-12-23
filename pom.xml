@@ -352,6 +352,16 @@
                 <artifactId>cassandra-driver-core</artifactId>
                 <version>${cassandra-java-driver.wso2.version.data-services}</version>
             </dependency>
+            <dependency>
+                <groupId>org.xerial.snappy.wso2</groupId>
+                <artifactId>snappy-java</artifactId>
+                <version>${snappy.java.version.data-services}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.jpountz.lz4.wso2</groupId>
+                <artifactId>lz4</artifactId>
+                <version>${lz4.version.data-services}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -545,7 +555,9 @@
         <mongo-java-driver.wso2.version.data-services>2.11.4.wso2v1</mongo-java-driver.wso2.version.data-services>
         <jackson-core.wso2.version.data-services>2.3.2.wso2v1</jackson-core.wso2.version.data-services>
         <bson4jackson.wso2.version.data-services>2.3.1.wso2v1</bson4jackson.wso2.version.data-services>
-        <cassandra-java-driver.wso2.version.data-services>2.0.1.wso2v1</cassandra-java-driver.wso2.version.data-services>
+        <cassandra-java-driver.wso2.version.data-services>2.1.1.wso2v1</cassandra-java-driver.wso2.version.data-services>
+        <snappy.java.version.data-services>1.1.1.6.wso2v1</snappy.java.version.data-services>
+        <lz4.version.data-services>1.2.0.wso2v1</lz4.version.data-services>
         <commons-dbcp.wso2.version.data-services>1.4.0.wso2v1</commons-dbcp.wso2.version.data-services>
         <commons-pool.wso2.version.data-services>1.5.6.wso2v1</commons-pool.wso2.version.data-services>
 

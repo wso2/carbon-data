@@ -56,6 +56,8 @@ public class DSGenerator {
 
 	private static final String IDENTITY_COLUMN = "Identity";
 
+    private static final String IS_AUTOINCREMENT = "YES";
+
 	private static Log log = LogFactory.getLog(DSGenerator.class);
 
 	private DataService generatedService;
@@ -417,9 +419,9 @@ public class DSGenerator {
 
     private boolean isAutoIncrementField(ResultSet columnNames) throws SQLException {
     	try {
-			Boolean autoIncr = columnNames.getBoolean(AUTOINCREMENT_COLUMN);
-			if (autoIncr != null) {
-				return autoIncr;
+            String autoIncrString = columnNames.getString(AUTOINCREMENT_COLUMN);
+			if (IS_AUTOINCREMENT.equalsIgnoreCase(autoIncrString)) {
+				return true;
 			}
 		} catch (SQLException ignore) {
 			// ignore
@@ -461,13 +463,10 @@ public class DSGenerator {
 		String OpName = DBConstants.DataServiceGenerator.INSERT_ + tableName + DBConstants.DataServiceGenerator._OPERATION;
 		CallQuery callQuery = new CallQuery(dataServiceObject, queryId,
 				paramMap, requiredRoles);
-		List<CallQuery> callQueries = new ArrayList<CallQuery>();
-		callQueries.add(callQuery);
-		CallQueryGroup callQueryGroup = new CallQueryGroup(callQueries);
 		// batchRequest=false
 		// parentOperation=null
 		Operation op = new Operation(dataServiceObject, OpName, null,
-				callQueryGroup, false, null, false, false);
+				callQuery, false, null, false, false);
 		dataServiceObject.addOperation(op);
 		dataServiceObject.addQuery(this.getInsertQuery(paramList, queryId,
 				tableName, dataServiceObject, metaData, dbName, schema));
@@ -501,13 +500,10 @@ public class DSGenerator {
 		String OpName = DBConstants.DataServiceGenerator.UPDATE_  + tableName + DBConstants.DataServiceGenerator._OPERATION;
 		CallQuery callQuery = new CallQuery(dataServiceObject, queryId,
 				paramMap, requiredRoles);
-		List<CallQuery> callQueries = new ArrayList<CallQuery>();
-		callQueries.add(callQuery);
-		CallQueryGroup callQueryGroup = new CallQueryGroup(callQueries);
 		// batchRequest=false
 		// parentOperation=null
 		Operation operation = new Operation(dataServiceObject, OpName, null,
-				callQueryGroup, false, null, false, false);
+				callQuery, false, null, false, false);
 		dataServiceObject.addOperation(operation);
 		dataServiceObject.addQuery(this
 				.getUpdateQuery(paramList, pKey, queryId, tableName,
@@ -540,13 +536,10 @@ public class DSGenerator {
 		String OpName = DBConstants.DataServiceGenerator.DELETE_ + tableName + DBConstants.DataServiceGenerator._OPERATION;
 		CallQuery callQuery = new CallQuery(dataServiceObject, queryId,
 				paramMap, requiredRoles);
-		List<CallQuery> callQueries = new ArrayList<CallQuery>();
-		callQueries.add(callQuery);
-		CallQueryGroup callQueryGroup = new CallQueryGroup(callQueries);
 		// batchRequest=false
 		// parentOperation=null
 		Operation operation = new Operation(dataServiceObject, OpName, null,
-				callQueryGroup, false, null, false, false);
+				callQuery, false, null, false, false);
 		dataServiceObject.addOperation(operation);
 		dataServiceObject.addQuery(this
 				.getDeleteQuery(paramList, pKey, queryId, tableName,
@@ -587,13 +580,10 @@ public class DSGenerator {
 		String OpName = DBConstants.DataServiceGenerator.SELECT_WITH_KEY + tableName + DBConstants.DataServiceGenerator._OPERATION;
 		CallQuery callQuery = new CallQuery(dataServiceObject, queryId,
 				paramMap, requiredRoles);
-		List<CallQuery> callQueries = new ArrayList<CallQuery>();
-		callQueries.add(callQuery);
-		CallQueryGroup callQueryGroup = new CallQueryGroup(callQueries);
 		// batchRequest=false
 		// parentOperation=null
 		Operation operation = new Operation(dataServiceObject, OpName, null,
-				callQueryGroup, false, null, false, false);
+				callQuery, false, null, false, false);
 		dataServiceObject.addOperation(operation);
 		dataServiceObject.addQuery(this
 				.getSelectWithKeyQuery(paramList, pKey, queryId, tableName,
@@ -633,13 +623,10 @@ public class DSGenerator {
 				.append(tableName).append(DBConstants.DataServiceGenerator._OPERATION).toString();
 		CallQuery callQuery = new CallQuery(dataServiceObject, queryId,
 				paramMap, requiredRoles);
-		List<CallQuery> callQueries = new ArrayList<CallQuery>();
-		callQueries.add(callQuery);
-		CallQueryGroup callQueryGroup = new CallQueryGroup(callQueries);
 		// batchRequest=false
 		// parentOperation=null
 		Operation operation = new Operation(dataServiceObject, OpName, null,
-				callQueryGroup, false, null, false, false);
+				callQuery, false, null, false, false);
 		dataServiceObject.addOperation(operation);
 		dataServiceObject.addQuery(this.getSelectAllQuery(paramList, queryId,
 				tableName, dataServiceObject, metaData, dbName, schema,colomNames));
@@ -745,7 +732,7 @@ public class DSGenerator {
 			while (rs.next()) {
 				int type = rs.getInt(DBConstants.DataServiceGenerator.DATA_TYPE);
 				if ((-1 == type) || (-16 == type) || (-15 == type)
-						|| (2009 == type)) {
+						|| (2009 == type) || (1111 == type)) {
 					type = 1;
 				}
 				sqlType = DSSqlTypes.getDefinedTypes().get(type);
@@ -776,7 +763,7 @@ public class DSGenerator {
 			String columnName = columnNames.getString(DBConstants.DataServiceGenerator.COLUMN_NAME);
 			int typeInt = columnNames.getInt("DATA_TYPE");
 			if ((-1 == typeInt) || (-16 == typeInt) || (-15 == typeInt)
-					|| (2009 == typeInt)) {
+					|| (2009 == typeInt) || (1111 == typeInt)) {
 				typeInt = 1;
 			}
 			String type = DSSqlTypes.getQNameType(typeInt);

@@ -31,10 +31,6 @@ public class H2InputMappingServiceTest extends AbstractInputMappingServiceTest {
     	this.inputMappings2();
 	}
     
-    public void testH2InputMappingsCallQueryMerge() {
-    	this.inputMappingsCallQueryMerge();
-    }
-    
     public void testH2InputMappingsWithDefValue() {
         this.inputMappingsWithDefValue();
     }

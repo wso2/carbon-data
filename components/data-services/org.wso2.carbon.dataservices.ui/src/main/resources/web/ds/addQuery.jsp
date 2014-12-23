@@ -27,12 +27,11 @@
 <%@ page import="org.wso2.carbon.CarbonConstants" %>
 <%@ page import="org.wso2.carbon.utils.ServerConstants" %>
 <%@ page import="org.wso2.carbon.dataservices.ui.DataServiceAdminClient" %>
-<jsp:include page="../resources/resources-i18n-ajaxprocessor.jsp"/>
-<jsp:include page="../dialog/display_messages.jsp"/>
 <fmt:bundle basename="org.wso2.carbon.dataservices.ui.i18n.Resources">
 <%--script type="text/javascript" src="../ajax/js/prototype.js"></script--%>
 <script type="text/javascript" src="../resources/js/resource_util.js"></script>
-<%--<jsp:useBean id="dataService" class="org.wso2.carbon.dataservices.ui.beans.Data" scope="session"></jsp:useBean>--%>
+<jsp:include page="../resources/resources-i18n-ajaxprocessor.jsp"/>
+<jsp:include page="../dialog/display_messages.jsp"/>
 <link rel="stylesheet" type="text/css" href="../resources/css/registry.css"/>
 
 <carbon:breadcrumb
@@ -910,7 +909,7 @@ window.onload=function() {
     <td>
         <table class="normal">
 
-            <tr>
+            <tr id="returnGeneratedKeysRow" style="<%=!(datasourceType.equals("CSV"))?"":"display:none"%>">
                 <%--<td><label><fmt:message key="datasources.return.generated.keys"/></label></td>--%>
                      <%--<td><select id="returnGeneratedKeys" name="returnGeneratedKeys" onchange="document.dataForm.action='queryProcessor.jsp?setReturnGeneratedKeys=true&flag=ReturnRowChanged';document.dataForm.submit();">--%>
 				        <%--<% if(returnGeneratedKeys){ %>--%>
@@ -1114,7 +1113,7 @@ window.onload=function() {
         Iterator itrElements = elements.iterator();
         Iterator itrResources = resources.iterator();
         useColumnNumbers = Boolean.parseBoolean(result.getUseColumnNumbers());
-        if (itrElements.hasNext()) {
+        if (itrElements.hasNext() || itrResources.hasNext()) {
 %>
 <thead>
 <tr>
@@ -1325,6 +1324,8 @@ window.onload=function() {
     <input type="hidden" id="<%=resource.getName()%>" name="<%=resource.getName()%>"
            value="<%=resource.getName()%>"/>
     <td><%=resource.getName()%>
+    </td>
+    <td>rdf-ref-uri
     </td>
     <td><%=resource.getRdfRefURI()%>
     </td>
@@ -1538,9 +1539,12 @@ window.onload=function() {
 </tr>
 <tr>
     <td>
-        <a href="javascript: document.dataForm.action = 'queryProcessor.jsp?flag=event';document.dataForm.submit();"
-           class="icon-link" style="background-image: url(images/event-sources.gif);"><fmt:message
-                key="manage.events"/></a>
+
+        <a href="#" id="manageEvents"
+                           onclick="var validated=validateFieldsForEvents();if(validated){document.dataForm.action='queryProcessor.jsp?flag=event';document.dataForm.submit();}return validated;"
+                           class="icon-link"
+                           style="background-image: url(images/event-sources.gif);"><fmt:message
+                                key="manage.events"/></a>
     </td>
 </tr>
 

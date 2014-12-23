@@ -462,7 +462,7 @@
                 } else if (con.getDataSourceType().equals("WEB_CONFIG")) {
                     query.setScraperVariable(scraperVariable);
                 } else if (con.getDataSourceType().equals("Cassandra")) {
-                    query.setSql(cql);
+                    query.setExpression(cassandraExpression);
                 } else if (con.getDataSourceType().equals("CUSTOM")) {
                 	if (customDSType.equals(DBConstants.DataSourceTypes.CUSTOM_QUERY)) {
                 		query.setExpression(expression);

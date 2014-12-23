@@ -116,9 +116,8 @@ public class DataServiceDocLitWrappedSchemaGenerator {
 			throws DataServiceFault {
 		String requestName = request.getRequestName(); 
 		AxisOperation axisOp = cparams.getAxisService().getOperation(new QName(requestName));
-		CallQueryGroup cqGroup = request.getCallQueryGroup();
-		CallQuery defCallQuery = cqGroup.getDefaultCallQuery();
-		Query query = defCallQuery.getQuery();
+		CallQuery callQuery = request.getCallQuery();
+		Query query = callQuery.getQuery();
 		AxisMessage inMessage = axisOp.getMessage(WSDLConstants.MESSAGE_LABEL_IN_VALUE);
 		if (inMessage != null) {
                 inMessage.setName(requestName + Java2WSDLConstants.MESSAGE_SUFFIX);
@@ -148,10 +147,10 @@ public class DataServiceDocLitWrappedSchemaGenerator {
                 } else {
                     /* normal requests */
                     XmlSchemaElement tmpEl;
-                    Map<String, WithParam> withParams = defCallQuery.getWithParams();
+                    Map<String, WithParam> withParams = callQuery.getWithParams();
                     WithParam tmpWithParam;
                     /* create elements for individual parameters */
-                    if (defCallQuery.getWithParams().size() > 0) {
+                    if (callQuery.getWithParams().size() > 0) {
                         for (QueryParam queryParam : query.getQueryParams()) {
                             if (DBConstants.QueryTypes.IN.equals(queryParam.getType())
                                     || DBConstants.QueryTypes.INOUT.equals(queryParam.getType())) {
@@ -217,8 +216,8 @@ public class DataServiceDocLitWrappedSchemaGenerator {
 	 */
 	private static void processRequestOutput(CommonParams cparams, CallableRequest request)
 			throws DataServiceFault {
-		CallQuery defCQ = request.getCallQueryGroup().getDefaultCallQuery();
-		if (!(defCQ.getQuery().hasResult() || request.isReturnRequestStatus())) {
+		CallQuery callQuery = request.getCallQuery();
+		if (!(callQuery.getQuery().hasResult() || request.isReturnRequestStatus())) {
 			return;
 		}
 		
@@ -233,7 +232,7 @@ public class DataServiceDocLitWrappedSchemaGenerator {
 			return;
 		}
 		
-		Result result = defCQ.getQuery().getResult();
+		Result result = callQuery.getQuery().getResult();
 		if (result.isXsAny() || result.getResultType() == ResultTypes.RDF) {
 			outMessage.setElementQName(new QName(DBConstants.WSO2_DS_NAMESPACE,
 					DBConstants.DATA_SERVICE_RESPONSE_WRAPPER_ELEMENT));
@@ -248,7 +247,7 @@ public class DataServiceDocLitWrappedSchemaGenerator {
 		dummyType.setName(DUMMY_NAME);
 		dummyParentElement.setType(dummyType);
 		/* lets do it */
-		processCallQuery(cparams, dummyParentElement, defCQ);
+		processCallQuery(cparams, dummyParentElement, callQuery);
 		/* extract the element and set it to the message */
 		XmlSchemaElement resultEl = (XmlSchemaElement) ((XmlSchemaSequence) dummyType.getParticle())
 				.getItems().getItem(0);
@@ -346,9 +345,9 @@ public class DataServiceDocLitWrappedSchemaGenerator {
 			if (outEl instanceof StaticOutputElement) {
 				tmpStaticEl = (StaticOutputElement) outEl;
 				processStaticOutputElement(cparams, activeElement, tmpStaticEl);
-			} else if (outEl instanceof CallQueryGroup) {
+			} else if (outEl instanceof CallQuery) {
 				processCallQuery(cparams, activeElement, 
-						((CallQueryGroup) outEl).getDefaultCallQuery());
+						((CallQuery) outEl));
 			} else if (outEl instanceof OutputElementGroup) {
 				processElementGroup(cparams, activeElement, (OutputElementGroup) outEl);
 			}

@@ -195,29 +195,30 @@ public class CassandraQuery extends Query {
     }
     
     @Override
-    public void runQuery(XMLStreamWriter xmlWriter, InternalParamCollection params, int queryLevel)
+    public Object runPreQuery(InternalParamCollection params, int queryLevel)
             throws DataServiceFault {
-        ResultSet rs = (ResultSet) Query.getAndRemoveQueryPreprocessObject("rs");
-        if (rs == null && !Query.isQueryPreprocessSecondary()) {
-            this.checkAndCreateStatement();
-            if (DispatchStatus.isBatchRequest() && this.isNativeBatchRequestsSupported()) {
-                /* handle batch requests */
-                if (DispatchStatus.isFirstBatchRequest()) {
-                    this.batchStatement.set(new BatchStatement());
-                }
-                this.batchStatement.get().add(this.bindParams(params));
-                if (DispatchStatus.isLastBatchRequest()) {
-                    this.getSession().execute(this.batchStatement.get());
-                }
-            } else {
-                rs = this.getSession().execute(this.bindParams(params));
-                if (Query.isQueryPreprocessInitial()) {
-                    Query.setQueryPreprocessedObject("rs", rs);
-                    return;
-                }
+        ResultSet rs = null;
+        this.checkAndCreateStatement();
+        if (DispatchStatus.isBatchRequest() && this.isNativeBatchRequestsSupported()) {
+            /* handle batch requests */
+            if (DispatchStatus.isFirstBatchRequest()) {
+                this.batchStatement.set(new BatchStatement());
             }
+            this.batchStatement.get().add(this.bindParams(params));
+            if (DispatchStatus.isLastBatchRequest()) {
+                this.getSession().execute(this.batchStatement.get());
+            }
+        } else {
+            rs = this.getSession().execute(this.bindParams(params));
         }
-        if (this.hasResult() && rs != null) {
+        return rs;
+    }
+
+    @Override
+    public void runPostQuery(Object result, XMLStreamWriter xmlWriter,
+                             InternalParamCollection params, int queryLevel) throws DataServiceFault {
+        ResultSet rs = (ResultSet) result;
+        if (this.hasResult()) {
             Iterator<Row> itr = rs.iterator();
             Row row;
             DataEntry dataEntry;
@@ -229,7 +230,7 @@ public class CassandraQuery extends Query {
             }
         }
     }
-    
+
     private DataEntry getDataEntryFromRow(Row row, ColumnDefinitions defs) throws DataServiceFault {
         boolean useColumnNumbers = this.isUsingColumnNumbers();
         DataType columnType;

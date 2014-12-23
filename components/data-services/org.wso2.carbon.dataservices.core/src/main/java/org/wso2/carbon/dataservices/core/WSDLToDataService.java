@@ -231,13 +231,13 @@ public class WSDLToDataService {
 					dataService.getServiceNamespace()));
 			/* operation */
 			dataService.addOperation(new Operation(dataService, operationName, null, 
-					getOperationCallQueryGroupFromQueryParams(dataService, queryId, queryParams), 
+					getOperationCallQueryFromQueryParams(dataService, queryId, queryParams),
 					false, null, false, false));
 		}
 		return dataService;
 	}
 	
-	private static CallQueryGroup getOperationCallQueryGroupFromQueryParams(DataService dataService, String queryId, 
+	private static CallQuery getOperationCallQueryFromQueryParams(DataService dataService, String queryId,
 			List<QueryParam> queryParams) throws DataServiceFault {
 		Map<String, WithParam> withParams = new HashMap<String, WithParam>();
 		for (QueryParam qp : queryParams) {
@@ -245,11 +245,7 @@ public class WSDLToDataService {
 					new WithParam(qp.getName(), qp.getName(), 
 					qp.getName(), DBConstants.DBSFields.QUERY_PARAM));
 		}
-		CallQuery callQuery = new CallQuery(dataService, queryId, withParams, new HashSet<String>());
-		List<CallQuery> callQueries = new ArrayList<CallQuery>();
-		callQueries.add(callQuery);
-		CallQueryGroup callQueryGroup = new CallQueryGroup(callQueries);
-		return callQueryGroup;
+		return new CallQuery(dataService, queryId, withParams, new HashSet<String>());
 	}
 	
 	private static AxisMessage getAxisMessageFromOperation(

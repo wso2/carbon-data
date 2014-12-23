@@ -115,7 +115,6 @@ public class ParserUtil {
         delimiters.add(Constants.RIGHT_BRACE);
         delimiters.add(Constants.RIGHT_BRACKET);
         delimiters.add(Constants.HYPHEN);
-        delimiters.add(Constants.UNDERSCORE);
         delimiters.add(Constants.NEW_LINE);
         delimiters.add(Constants.RETURN);
         //delimiters.add(Constants.WHITE_SPACE);

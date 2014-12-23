@@ -278,7 +278,7 @@ public class DataServiceAdmin extends AbstractAdmin {
 			key = GSpreadConfig.extractKey(documentURL);
 		} catch (DataServiceFault e) {
 			String message = "Invalid documentURL:" + documentURL;
-			log.warn(message);
+			log.error(message, e);
 			return message;
 		}
 		

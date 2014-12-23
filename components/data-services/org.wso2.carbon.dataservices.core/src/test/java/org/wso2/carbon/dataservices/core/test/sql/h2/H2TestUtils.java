@@ -93,4 +93,17 @@ public class H2TestUtils {
 
         }
 
+    public static void addCustomerInfo(Connection conn,
+                                          int customerNumber, String customerName, String contactLastName, String contactFirstName) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement("INSERT INTO Customers (customerNumber, customerName, contactLastName, contactFirstName, phone, " +
+                "addressLine1, addressLine2, city, state, postalCode, country, salesRepEmployeeNumber, creditLimit)" +
+                "VALUES (?, ?, ?, ?, '07-98 9556', 'Erling Skakkes gate 77', NULL," +
+                "'Stavern',NULL,'4110','Norway',1504,81700.0);");
+        stmt.setInt(1, customerNumber);
+        stmt.setString(2, customerName);
+        stmt.setString(3, contactLastName);
+        stmt.setString(4, contactFirstName);
+        stmt.executeUpdate();
+
+    }
 }

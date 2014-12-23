@@ -38,24 +38,24 @@ public class TLConnectionStore {
 		}
 	};
 	
-	private static String generateDataServiceConnectionMapId(String confidId, String user) {
+	private static String generateDataServiceConnectionMapId(String confidId, String user, int queryLevel) {
 		String userSuffix;
 		if (user != null) {
 			userSuffix = " # " + user; 
 		} else {
 			userSuffix = " # #NULL#";
 		}
-		return confidId + userSuffix;
+		return confidId + userSuffix + " # " + queryLevel;
 	}
 	
-	public static void addConnection(String configId, String user, DataServiceConnection connection) {
+	public static void addConnection(String configId, String user, int queryLevel, DataServiceConnection connection) {
 		Map<String, DataServiceConnection> conns = tlCons.get();
-		conns.put(generateDataServiceConnectionMapId(configId, user), connection);
+		conns.put(generateDataServiceConnectionMapId(configId, user, queryLevel), connection);
 	}
 	
-	public static DataServiceConnection getConnection(String configId, String user) {
+	public static DataServiceConnection getConnection(String configId, String user, int queryLevel) {
 		Map<String, DataServiceConnection> conns = tlCons.get();
-		return conns.get(generateDataServiceConnectionMapId(configId, user));
+		return conns.get(generateDataServiceConnectionMapId(configId, user, queryLevel));
 	}
 	
 	public static void commitAll() {

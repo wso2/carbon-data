@@ -58,11 +58,17 @@ public abstract class SparqlQueryBase extends Query {
 	}
 
 	@Override
-	public void runQuery(XMLStreamWriter xmlWriter,
-			InternalParamCollection params, int queryLevel)
+	public Object runPreQuery(InternalParamCollection params, int queryLevel)
 			throws DataServiceFault {
-		this.processQuery(xmlWriter, params, queryLevel);
+		return this.processPreQuery(params, queryLevel);
 	}
+
+    @Override
+    public void runPostQuery(Object result, XMLStreamWriter xmlWriter,
+                              InternalParamCollection params, int queryLevel)
+            throws DataServiceFault {
+        this.processPostQuery(result, xmlWriter, params, queryLevel);
+    }
 
 	public RDFNode convertTypeLiteral(Model model, InternalParam param)
 			throws DataServiceFault {
@@ -177,11 +183,13 @@ public abstract class SparqlQueryBase extends Query {
 		return dataEntry;
 	}
 	
-	public abstract void processQuery(XMLStreamWriter xmlWriter,
-			InternalParamCollection params, int queryLevel) throws DataServiceFault ;
+	public abstract Object processPreQuery(InternalParamCollection params, int queryLevel) throws DataServiceFault ;
+
+    public abstract void processPostQuery(Object result, XMLStreamWriter xmlWriter,
+                                           InternalParamCollection params, int queryLevel) throws DataServiceFault ;
 	/**
 	 * Gets the Query string
-	 * @return
+	 * @return  String
 	 */
 	public String getQuery() {
 		return query;
@@ -189,7 +197,7 @@ public abstract class SparqlQueryBase extends Query {
 	
 	/**
 	 * Gets a Query Execution for the query
-	 * @return
+	 * @return QueryExecution
 	 * @throws DataServiceFault 
 	 * @throws IOException 
 	 */
@@ -197,7 +205,7 @@ public abstract class SparqlQueryBase extends Query {
 	
 	/**
 	 * Gets the model used to validate input parameters
-	 * @return
+	 * @return Model
 	 */
 	public Model getModelForValidation()
 	{

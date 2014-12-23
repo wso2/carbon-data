@@ -50,6 +50,14 @@ public class Data extends DataServiceConfigurationElement{
 	private boolean enableXA;
 	
 	private boolean isUseAppServerTS;
+
+    private boolean enableHTTP;
+
+    private boolean enableHTTPS;
+
+    private boolean enableLocal;
+
+    private boolean enableJMS;
 	
 	private String txManagerJNDIName;
 	
@@ -180,6 +188,38 @@ public class Data extends DataServiceConfigurationElement{
 
     public void setBoxcarring(boolean boxcarring) {
         this.boxcarring = boxcarring;
+    }
+
+    public boolean isEnableHTTP() {
+        return enableHTTP;
+    }
+
+    public void setEnableHTTP(boolean enableHTTP) {
+        this.enableHTTP = enableHTTP;
+    }
+
+    public boolean isEnableHTTPS() {
+        return enableHTTPS;
+    }
+
+    public void setEnableHTTPS(boolean enableHTTPS) {
+        this.enableHTTPS = enableHTTPS;
+    }
+
+    public boolean isEnableLocal() {
+        return enableLocal;
+    }
+
+    public void setEnableLocal(boolean enableLocal) {
+        this.enableLocal = enableLocal;
+    }
+
+    public boolean isEnableJMS() {
+        return enableJMS;
+    }
+
+    public void setEnableJMS(boolean enableJMS) {
+        this.enableJMS = enableJMS;
     }
 
     public boolean isUseColumnNumbers() {
@@ -545,7 +585,9 @@ public class Data extends DataServiceConfigurationElement{
         OMElement maxRowCount =  excelEle.getFirstChildWithName(new QName("maxrowcount"));
         excelQuery.setMaxRowCount(maxRowCount.getText());
         OMElement headerRow =  excelEle.getFirstChildWithName(new QName("headerrow"));
-        excelQuery.setHeaderRow(headerRow.getText());
+        if (headerRow != null) {
+            excelQuery.setHeaderRow(headerRow.getText());
+        }
         query.setExcel(excelQuery);
 		return query;
 	}
@@ -564,7 +606,9 @@ public class Data extends DataServiceConfigurationElement{
         OMElement hasHeaders = gspreadEl.getFirstChildWithName(new QName("hasheader"));
         gspreadQuery.setHasHeaders(hasHeaders.getText());
         OMElement headerRow = gspreadEl.getFirstChildWithName(new QName("headerrow"));
-        gspreadQuery.setHeaderRow(Integer.parseInt(headerRow.getText()));
+        if (headerRow != null) {
+            gspreadQuery.setHeaderRow(Integer.parseInt(headerRow.getText()));
+        }
     	query.setGSpread(gspreadQuery);
 		return query;
 	}
@@ -791,6 +835,7 @@ public class Data extends DataServiceConfigurationElement{
 		 */
 		ComplexElement resultComplexEl = this.getComplexElement(resultEle);
 		result.setElements(resultComplexEl.getElements());
+		result.setResources(resultComplexEl.getResources());
 		result.setAttributes(resultComplexEl.getAttributes());
 		result.setCallQueryGroups(resultComplexEl.getCallQueryGroups());
 		result.setComplexElements(resultComplexEl.getComplexElements());
@@ -991,6 +1036,17 @@ public class Data extends DataServiceConfigurationElement{
 		if (serviceStatus != null) {
 			setStatus(serviceStatus.getAttributeValue());
 		}
+
+        /* available transports */
+        OMAttribute transportsConfig = dsXml.getAttribute(new QName("transports"));
+        if (transportsConfig != null) {
+            String allTransportStr = transportsConfig.getAttributeValue();
+            List<String> transportList = Arrays.asList(allTransportStr.split(" "));
+            setEnableHTTP(transportList.contains("http"));
+            setEnableHTTPS(transportList.contains("https"));
+            setEnableLocal(transportList.contains("local"));
+            setEnableJMS(transportList.contains("jms"));
+        }
 		
 		/* xmlns:svns property for using securevault */
 		OMNamespace secureVaultNamespace = dsXml.findNamespaceURI("svns");
@@ -1267,6 +1323,28 @@ public class Data extends DataServiceConfigurationElement{
 
         if (this.isDisableStreaming()) {
         	dataEl.addAttribute("disableStreaming", String.valueOf(this.isDisableStreaming()), null);
+        }
+
+        List <String> transports = new ArrayList<String>();
+        if (this.isEnableHTTP()) {
+            transports.add("http");
+        }
+        if (this.isEnableHTTPS()) {
+            transports.add("https");
+        }
+        if (this.isEnableLocal()) {
+            transports.add("local");
+        }
+        if (this.isEnableJMS()) {
+            transports.add("jms");
+        }
+        if (transports.size() > 0) {
+            String transportStr = "";
+            for (String trn : transports) {
+                transportStr = transportStr + " " + trn;
+            }
+            transportStr = transportStr.substring(1, transportStr.length());
+            dataEl.addAttribute("transports", transportStr, null);
         }
         
 //		if (this.isEnableXA()) {

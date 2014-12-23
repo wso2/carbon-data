@@ -21,7 +21,7 @@ package org.wso2.carbon.dataservices.core.description.operation;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.wso2.carbon.dataservices.core.DataServiceFault;
-import org.wso2.carbon.dataservices.core.engine.CallQueryGroup;
+import org.wso2.carbon.dataservices.core.engine.CallQuery;
 import org.wso2.carbon.dataservices.core.engine.CallableRequest;
 import org.wso2.carbon.dataservices.core.engine.DataService;
 import org.wso2.carbon.dataservices.core.engine.ExternalParamCollection;
@@ -34,11 +34,11 @@ public class Operation extends CallableRequest {
 	private DataService dataService;
 	
 	private String name;
-		
+
 	public Operation(DataService dataService, String name, String description, 
-			CallQueryGroup callQueryGroup, boolean batchRequest, Operation parentOperation,
+			CallQuery callQuery, boolean batchRequest, Operation parentOperation,
 			boolean disableStreamingRequest, boolean disableStreamingEffective) {
-		super(name, description, callQueryGroup, batchRequest, parentOperation, 
+		super(name, description, callQuery, batchRequest, parentOperation,
 		        disableStreamingRequest, disableStreamingEffective);
 		this.dataService = dataService;
 		this.name = name;
@@ -58,7 +58,7 @@ public class Operation extends CallableRequest {
 	 */
 	public void execute(XMLStreamWriter xmlWriter, ExternalParamCollection params) 
 			throws DataServiceFault {
-		this.getCallQueryGroup().execute(xmlWriter, params, 0, false);
+		this.getCallQuery().execute(xmlWriter, params, 0, false);
 	}
 	
 }

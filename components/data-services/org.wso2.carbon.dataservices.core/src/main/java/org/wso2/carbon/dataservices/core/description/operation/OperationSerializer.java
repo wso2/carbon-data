@@ -42,7 +42,7 @@ public class OperationSerializer {
 			desEl.setText(description);
 			opEl.addChild(desEl);
 		}
-		QuerySerializer.serializeCallQueryGroup(operation.getCallQueryGroup(), opEl, fac);
+		QuerySerializer.serializeCallQuery(operation.getCallQuery(), opEl, fac);
 		return opEl;
 	}
 	

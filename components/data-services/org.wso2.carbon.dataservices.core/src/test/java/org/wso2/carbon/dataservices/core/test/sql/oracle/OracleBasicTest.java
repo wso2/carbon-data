@@ -24,10 +24,6 @@ public class OracleBasicTest extends AbstractBasicServiceTest {
 		this.basicSelectWithAttributesForDateTime();
 	}
 	
-	public void testOracleBasicCallQueryMerge() {
-		this.basicCallQueryMerge();
-	}
-	
 	public void testOracleBasicArrayInputTypes() {
 		this.basicArrayInputTypes();
 	}

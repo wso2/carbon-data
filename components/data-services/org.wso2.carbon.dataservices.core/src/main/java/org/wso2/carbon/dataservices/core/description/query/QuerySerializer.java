@@ -207,8 +207,8 @@ public class QuerySerializer {
 			/* normal elements */
 			if (oe instanceof StaticOutputElement) {
 			    serializeStaticOutputElement((StaticOutputElement) oe, resEl, fac);
-			} else if (oe instanceof CallQueryGroup) { /* call queries */
-				serializeCallQueryGroup((CallQueryGroup) oe, resEl, fac);
+			} else if (oe instanceof CallQuery) { /* call queries */
+				serializeCallQuery((CallQuery) oe, resEl, fac);
 			}
 		}
 		queryEl.addChild(resEl);
@@ -248,32 +248,24 @@ public class QuerySerializer {
 		return builder.toString();
 	}
 	
-	public static void serializeCallQueryGroup(CallQueryGroup cqGroup, 
+	public static void serializeCallQuery(CallQuery callQuery,
 			OMElement parentEl, OMFactory fac) {
-		List<CallQuery> callQueries = cqGroup.getCallQueries();
-		if (callQueries.size() > 1) {
-			OMElement tmpEl = fac.createOMElement(new QName(DBSFields.CALL_QUERY_GROUP));
-			parentEl.addChild(tmpEl);
-			parentEl = tmpEl;
-		}
 		OMElement callQueryEl, withParamEl;
 		Set<String> requiredRoles;
-		for (CallQuery callQuery : callQueries) {
-			callQueryEl = fac.createOMElement(new QName(DBSFields.CALL_QUERY));
-			callQueryEl.addAttribute(DBSFields.HREF, callQuery.getQueryId(), null);
-			requiredRoles = callQuery.getRequiredRoles();
-			if (requiredRoles != null && requiredRoles.size() > 0) {
-				callQueryEl.addAttribute(DBSFields.REQUIRED_ROLES, 
-						getRequiredRolesString(requiredRoles), null);
-			}
-			for (WithParam withParam : callQuery.getWithParams().values()) {
-				withParamEl = fac.createOMElement(new QName(DBSFields.WITH_PARAM));
-				withParamEl.addAttribute(DBSFields.NAME, withParam.getName(), null);
-				withParamEl.addAttribute(withParam.getParamType(), withParam.getParam(), null);
-				callQueryEl.addChild(withParamEl);
-			}
-			parentEl.addChild(callQueryEl);
-		}
+        callQueryEl = fac.createOMElement(new QName(DBSFields.CALL_QUERY));
+        callQueryEl.addAttribute(DBSFields.HREF, callQuery.getQueryId(), null);
+        requiredRoles = callQuery.getRequiredRoles();
+        if (requiredRoles != null && requiredRoles.size() > 0) {
+            callQueryEl.addAttribute(DBSFields.REQUIRED_ROLES,
+                    getRequiredRolesString(requiredRoles), null);
+        }
+        for (WithParam withParam : callQuery.getWithParams().values()) {
+            withParamEl = fac.createOMElement(new QName(DBSFields.WITH_PARAM));
+            withParamEl.addAttribute(DBSFields.NAME, withParam.getName(), null);
+            withParamEl.addAttribute(withParam.getParamType(), withParam.getParam(), null);
+            callQueryEl.addChild(withParamEl);
+        }
+        parentEl.addChild(callQueryEl);
 	}
 	
 	private static void serializeQueryParams(List<QueryParam> queryParams, 

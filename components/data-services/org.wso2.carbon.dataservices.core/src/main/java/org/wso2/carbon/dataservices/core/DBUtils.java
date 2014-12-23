@@ -133,6 +133,7 @@ public class DBUtils {
         conversionTypes.put(DBConstants.DataTypes.VARINT, "java.math.BigInteger");
         conversionTypes.put(DBConstants.DataTypes.UUID, "java.lang.String");
         conversionTypes.put(DBConstants.DataTypes.INETADDRESS, "java.lang.String");
+        conversionTypes.put(DBConstants.DataTypes.CLOB, "java.lang.String");
 
         xsdSqlTypeMap = new HashMap<String, String>();
         xsdSqlTypeMap.put("string", DBConstants.DataTypes.STRING);

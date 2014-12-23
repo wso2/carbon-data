@@ -21,7 +21,7 @@ package org.wso2.carbon.dataservices.core.description.resource;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.wso2.carbon.dataservices.core.DataServiceFault;
-import org.wso2.carbon.dataservices.core.engine.CallQueryGroup;
+import org.wso2.carbon.dataservices.core.engine.CallQuery;
 import org.wso2.carbon.dataservices.core.engine.CallableRequest;
 import org.wso2.carbon.dataservices.core.engine.DataService;
 import org.wso2.carbon.dataservices.core.engine.ExternalParamCollection;
@@ -36,10 +36,10 @@ public class Resource extends CallableRequest {
 	private ResourceID resourceId;
 	
 	public Resource(DataService dataService, ResourceID resourceId, String description,
-			CallQueryGroup callQueryGroup, boolean batchRequest, Resource parentResource, boolean disableStreamingRequest,
+			CallQuery callQuery, boolean batchRequest, Resource parentResource, boolean disableStreamingRequest,
 			boolean disableStreamingEffective) {
 		super(generateRequestName(resourceId.getPath(), resourceId.getMethod()), description,
-				callQueryGroup, batchRequest, parentResource, disableStreamingRequest, 
+				callQuery, batchRequest, parentResource, disableStreamingRequest,
 				disableStreamingEffective);
 		this.dataService = dataService;
 		this.resourceId = resourceId;
@@ -64,7 +64,7 @@ public class Resource extends CallableRequest {
 	public void execute(XMLStreamWriter xmlWriter, 
 			ExternalParamCollection params) 
 			throws DataServiceFault {
-		this.getCallQueryGroup().execute(xmlWriter, params, 0, false);
+		this.getCallQuery().execute(xmlWriter, params, 0, false);
 	}
 	
 	/**

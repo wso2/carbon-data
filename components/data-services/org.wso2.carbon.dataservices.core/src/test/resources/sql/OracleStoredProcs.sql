@@ -104,5 +104,18 @@ PROCEDURE getCustomersByNumber(custNo IN INTEGER, my_ref_cursor OUT SYS_REFCURSO
    END getCustomersByNumber;
 /
 ------
+CREATE OR REPLACE
+PROCEDURE addAndGetMemberGroup(groupNum IN NUMBER, name IN VARCHAR2, city IN VARCHAR2,
+member IN mem_array_type, groupNameRef OUT SYS_REFCURSOR ) AS
+BEGIN
+    INSERT into Groups (GroupNum, Name, City, Members)  values (groupNum, name, city, member);
+	OPEN groupNameRef FOR
+	    SELECT Name
+	    FROM Groups
+	    WHERE GroupNum = groupNum;
+END;
+/
+
+------
 
 

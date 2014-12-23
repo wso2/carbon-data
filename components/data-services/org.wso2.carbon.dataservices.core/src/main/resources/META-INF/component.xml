@@ -25,12 +25,5 @@
             </deployer>
     </deployers>
 
-    <ManagementPermissions>
-        <ManagementPermission>
-            <DisplayName>Configure DataServices</DisplayName>
-            <ResourceId>/permission/admin/configure/dataservices</ResourceId>
-        </ManagementPermission>
-    </ManagementPermissions>
-
 </component>
 

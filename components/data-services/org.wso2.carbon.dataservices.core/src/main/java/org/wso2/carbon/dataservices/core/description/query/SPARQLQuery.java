@@ -63,13 +63,18 @@ public class SPARQLQuery extends Query {
 	}
 
 	@Override
-	public void runQuery(XMLStreamWriter xmlWriter,
-			InternalParamCollection params, int queryLevel)
+	public Object runPreQuery(InternalParamCollection params, int queryLevel)
 			throws DataServiceFault {
-		this.processQuery(xmlWriter, params, queryLevel);
+		return this.processPreQuery(params, queryLevel);
 	}
 
-	private RDFNode convertTypeLiteral(Model model, InternalParam param)
+    @Override
+    public void runPostQuery(Object result, XMLStreamWriter xmlWriter,
+                             InternalParamCollection params, int queryLevel) throws DataServiceFault {
+        this.processPostQuery(result, xmlWriter, params, queryLevel);
+    }
+
+    private RDFNode convertTypeLiteral(Model model, InternalParam param)
 			throws DataServiceFault {
 		String value = param.getValue().getScalarValue();
 		String type = param.getSqlType();
@@ -183,36 +188,39 @@ public class SPARQLQuery extends Query {
 	}
 	
 	
-	private void processQuery(XMLStreamWriter xmlWriter,
-			InternalParamCollection params, int queryLevel) throws DataServiceFault {
+	private Object processPreQuery(InternalParamCollection params, int queryLevel) throws DataServiceFault {
 		try {
-		    ResultSet results = (ResultSet) Query.getAndRemoveQueryPreprocessObject("results");
-		    if (results == null) {
-    			QuerySolutionMap queryMap = new QuerySolutionMap();
-    			Model model = this.getConfig().createRDFModel();
-    			/* process the query params */
-    			for (InternalParam param : params.getParams()) {
-    				/* set parameters to the querry map */
-    				queryMap.add(param.getName(), convertTypeLiteral(model, param));
-    			}
-    			QueryExecution qe = QueryExecutionFactory.create(this.getQuery(), model);
-    			qe.setInitialBinding(queryMap) ;
-    			/* execute querry as a select querry */
-    			results = qe.execSelect();
-    			if (Query.isQueryPreprocessInitial()) {
-    			    Query.setQueryPreprocessedObject("results", results);
-    			    return;
-    			}
-		    }
-			DataEntry dataEntry;
-			while (results.hasNext()) {
-				dataEntry = this.getDataEntryFromRS(results);
-				this.writeResultEntry(xmlWriter, dataEntry, params, queryLevel);
-			}
+		    ResultSet results;
+            QuerySolutionMap queryMap = new QuerySolutionMap();
+            Model model = this.getConfig().createRDFModel();
+            /* process the query params */
+            for (InternalParam param : params.getParams()) {
+                /* set parameters to the querry map */
+                queryMap.add(param.getName(), convertTypeLiteral(model, param));
+            }
+            QueryExecution qe = QueryExecutionFactory.create(this.getQuery(), model);
+            qe.setInitialBinding(queryMap) ;
+            /* execute querry as a select querry */
+            results = qe.execSelect();
+            return results;
 		} catch (Exception e) {
 			throw new DataServiceFault(e, "Error in 'SPARQLQuery.processQuery'");
 		}
 	}
+
+    private void processPostQuery(Object result, XMLStreamWriter xmlWriter,
+                                   InternalParamCollection params, int queryLevel) throws DataServiceFault {
+        try {
+            ResultSet results = (ResultSet) result;
+            DataEntry dataEntry;
+            while (results != null && results.hasNext()) {
+                dataEntry = this.getDataEntryFromRS(results);
+                this.writeResultEntry(xmlWriter, dataEntry, params, queryLevel);
+            }
+        } catch (Exception e) {
+            throw new DataServiceFault(e, "Error in 'SPARQLQuery.processQuery'");
+        }
+    }
 
 	public String getQuery() {
 		return query;

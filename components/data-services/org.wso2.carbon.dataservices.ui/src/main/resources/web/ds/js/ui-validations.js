@@ -221,6 +221,26 @@ function validateQueryId(obj){
     
   }
 
+function validateFieldsForEvents(obj){
+    var queryId = document.getElementById('queryId').value;
+    var reWhiteSpace = new RegExp("^[a-zA-Z0-9_]+$");
+    var dataSourceId = document.getElementById('datasource').value;
+    if(queryId == ''){
+        CARBON.showWarningDialog('Query Id is mandatory');
+        return  false;
+    }
+    // Validate for alphanumeric characters and underscores
+    if (!reWhiteSpace.test(queryId)) {
+        CARBON.showWarningDialog("Alphanumeric characters and underscores are only allowed in the Query Id");
+        return false;
+    }
+    if(dataSourceId == '#'){
+        CARBON.showWarningDialog('Select the data source');
+        return  false;
+    }
+    return true;
+}
+
 function validateClickOnReturnGeneratedKeys() {
     var query = document.getElementById('sql').value;
     if (query != '') {
@@ -525,6 +545,7 @@ function showTables(obj, document) {
     var cassandra = 'none';
     var CustomQuery = 'none';
     var mongoDB = 'none';
+    var csv = '';
 
     if (datasourceType == 'RDBMS' || datasourceType == 'JNDI' || datasourceType == 'CARBON_DATASOURCE') {
         rdbmsNjndi = '';
@@ -582,6 +603,9 @@ function showTables(obj, document) {
     if(datasourceType == 'WEB_CONFIG') {
         webConfig = '';
     }
+    if (datasourceType == 'CSV') {
+        csv = 'none';
+    }
 
     document.getElementById('RDBMSnJNDIRow').style.display = rdbmsNjndi;
     /*document.getElementById('advancedQueryConfigs').style.display = rdbmsNjndi;*/
@@ -598,6 +622,7 @@ function showTables(obj, document) {
     document.getElementById('CASSANDRARow').style.display = cassandra;
     document.getElementById('CustomQueryRow').style.display = CustomQuery;
     document.getElementById('MongoDBQueryRow').style.display = mongoDB;
+    document.getElementById('returnGeneratedKeysRow').style.display = csv;
     //document.getElementById('autoResponseRow').style.display = autoResponse;
     
 }

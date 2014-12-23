@@ -210,8 +210,14 @@ public class DataService {
         /* add empty query, begin_boxcar, abort_boxcar */
         this.addQuery(new Query(this, DBConstants.EMPTY_QUERY_ID,
                 new ArrayList<QueryParam>(), null, null, null, null, null, this.getDefaultNamespace()) {
-            public void runQuery(XMLStreamWriter xmlWriter,
-                                             InternalParamCollection params, int queryLevel) {
+            public Object runPreQuery(InternalParamCollection params, int queryLevel) {
+                return null;
+            }
+
+            @Override
+            public void runPostQuery(Object result, XMLStreamWriter xmlWriter,
+                                     InternalParamCollection params, int queryLevel) throws DataServiceFault {
+
             }
         });
         /* empty query for end_boxcar */
@@ -222,8 +228,14 @@ public class DataService {
         this.addQuery(new Query(this, DBConstants.EMPTY_END_BOXCAR_QUERY_ID,
                 new ArrayList<QueryParam>(), endBoxcarResult, null, null, null, null,
                 this.getDefaultNamespace()) {
-            public void runQuery(XMLStreamWriter xmlWriter,
-                                             InternalParamCollection params, int queryLevel) {
+            public Object runPreQuery(InternalParamCollection params, int queryLevel) {
+                return null;
+            }
+
+            @Override
+            public void runPostQuery(Object result, XMLStreamWriter xmlWriter,
+                                     InternalParamCollection params, int queryLevel) throws DataServiceFault {
+
             }
         });
         /* operations */
@@ -238,7 +250,7 @@ public class DataService {
     public void init() throws DataServiceFault {
         /* init callable requests */
         for (CallableRequest callableRequest : this.getCallableRequests().values()) {
-            callableRequest.getCallQueryGroup().init();
+            callableRequest.getCallQuery().init();
         }
         /* init queries */
         for (Query query : this.getQueries().values()) {
@@ -511,19 +523,19 @@ public class DataService {
     }
 
     public String getResultWrapperForRequest(String requestName) {
-        return this.getCallableRequest(requestName).getCallQueryGroup().getResultWrapper();
+        return this.getCallableRequest(requestName).getCallQuery().getResultWrapper();
     }
 
     /**
      * Returns the namespace for the given request name.
      */
     public String getNamespaceForRequest(String requestName) {
-        CallQueryGroup cqGroup = this.getCallableRequest(requestName).getCallQueryGroup();
-        return cqGroup.getNamespace();
+        CallQuery callQuery = this.getCallableRequest(requestName).getCallQuery();
+        return callQuery.getNamespace();
     }
 
     public boolean hasResultForRequest(String requestName) {
-        return this.getCallableRequest(requestName).getCallQueryGroup().isHasResult();
+        return this.getCallableRequest(requestName).getCallQuery().isHasResult();
     }
 
     public boolean isReturningRequestStatus(String requestName) {

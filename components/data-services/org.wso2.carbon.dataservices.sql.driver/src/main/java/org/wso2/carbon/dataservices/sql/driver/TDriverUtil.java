@@ -26,15 +26,20 @@ import com.google.gdata.util.ServiceException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.dataservices.sql.driver.internal.SQLDriverDSComponent;
 import org.wso2.carbon.dataservices.sql.driver.parser.Constants;
 import org.wso2.carbon.dataservices.sql.driver.processor.reader.DataTable;
 import org.wso2.carbon.dataservices.sql.driver.query.ColumnInfo;
 import org.wso2.carbon.dataservices.sql.driver.query.ParamInfo;
 import org.wso2.carbon.dataservices.sql.driver.query.QueryFactory;
+import org.wso2.carbon.registry.core.Registry;
+import org.wso2.carbon.registry.core.Resource;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.registry.core.service.RegistryService;
+import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -45,6 +50,8 @@ import java.util.List;
 public class TDriverUtil {
 
     private static List<String> driverProperties = new ArrayList<String>();
+    public static final java.lang.String GOV_REGISTRY_PATH_PREFIX = "gov:";
+    public static final java.lang.String CONF_REGISTRY_PATH_PREFIX = "conf:";
 
     static {
         driverProperties.add(Constants.DRIVER_PROPERTIES.FILE_PATH);
@@ -237,5 +244,92 @@ public class TDriverUtil {
             }
         }
     }
-    
+
+    /**
+     * Creates and returns an InputStream from the file path / http location given.
+     *
+     * @throws IOException, SQLException
+     * @see java.io.InputStream
+     */
+    public static InputStream getInputStreamFromPath(String path) throws IOException, SQLException {
+        InputStream ins;
+        if (path.startsWith("http://")) {
+            /* This is a url file path */
+            URL url = new URL(path);
+            ins = url.openStream();
+        } else if (isRegistryPath(path)) {
+            try {
+                RegistryService registryService = SQLDriverDSComponent.getRegistryService();
+                if (registryService == null) {
+                    throw new SQLException("DBUtils.getInputStreamFromPath(): Registry service is not available");
+                }
+                Registry registry;
+                if (path.startsWith(CONF_REGISTRY_PATH_PREFIX)) {
+                    if (path.length() > CONF_REGISTRY_PATH_PREFIX.length()) {
+                        path = path.substring(CONF_REGISTRY_PATH_PREFIX.length());
+                        registry = registryService.getConfigSystemRegistry(getCurrentTenantId());
+                    } else {
+                        throw new SQLException("Empty configuration registry path given");
+                    }
+                } else {
+                    if (path.length() > GOV_REGISTRY_PATH_PREFIX.length()) {
+                        path = path.substring(GOV_REGISTRY_PATH_PREFIX.length());
+                        registry = registryService.getGovernanceSystemRegistry(getCurrentTenantId());
+                    } else {
+                        throw new SQLException("Empty governance registry path given");
+                    }
+                }
+                if (registry.resourceExists(path)) {
+                    Resource serviceResource = registry.get(path);
+                    ins = serviceResource.getContentStream();
+                } else {
+                    throw new SQLException(
+                            "The given XSLT resource path at '" + path + "' does not exist");
+                }
+            } catch (RegistryException e) {
+                throw new SQLException(e);
+            }
+        } else {
+            File file = new File(path);
+            if (path.startsWith("." + File.separator) || path.startsWith(".." + File.separator)) {
+                /* this is a relative path */
+                path = file.getAbsolutePath();
+            }
+            /* local file */
+            ins = new FileInputStream(path);
+        }
+        return ins;
+    }
+
+    public static boolean isRegistryPath(String path) {
+        if (path.startsWith(CONF_REGISTRY_PATH_PREFIX) || path.startsWith(GOV_REGISTRY_PATH_PREFIX)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the best effort way of finding the current tenant id,
+     * even if this is not in a current message request, i.e. deploying services.
+     * Assumption: when tenants other than the super tenant is activated,
+     * the registry service must be available. So, the service deployment and accessing the registry,
+     * will happen in the same thread, without the callbacks being used.
+     *
+     * @return The tenant id
+     */
+    public static int getCurrentTenantId() {
+        try {
+            int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+            if (tenantId == -1) {
+                throw new RuntimeException("Tenant id cannot be -1");
+            }
+            return tenantId;
+        } catch (NoClassDefFoundError e) { // Workaround for Unit Test failure
+            return MultitenantConstants.SUPER_TENANT_ID;
+        } catch (ExceptionInInitializerError e) {
+            return MultitenantConstants.SUPER_TENANT_ID;
+        }
+    }
+
 }

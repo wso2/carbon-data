@@ -95,7 +95,7 @@ public class DataServiceInstance implements DataServiceInstanceMBean {
 	public String getQueryIdFromOperationName(String operationName) {
 		Operation op = this.getDataService().getOperation(operationName);
 		if (op != null) {
-			return op.getCallQueryGroup().getDefaultCallQuery().getQueryId();
+			return op.getCallQuery().getQueryId();
 		} else {
 			return null;
 		}

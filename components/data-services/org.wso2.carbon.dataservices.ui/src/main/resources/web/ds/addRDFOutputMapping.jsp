@@ -197,7 +197,7 @@
 </div>
 <div id="omElementRowId" style="<%=(mappingType.equals("query")) ? "display:none":""%>">
    
-        <table class="normal">
+        <table class="normal" style="<%=rdfRefURI == null || rdfRefURI.equals("") ? "" : "display:none"%>">
         <tr>
         <td>  
   		 <table>
@@ -400,27 +400,28 @@
             List<RDFResource> resources = result.getResources();
             List<Attribute> attributes = result.getAttributes();
             List<CallQuery> callQueries = result.getCallQueries();
-            if (elements.size() != 0 ) {
-                if (elements != null) {
-                    Iterator itrElements = elements.iterator();
-                    if (itrElements.hasNext()) {
+            if (elements.size() != 0 || resources.size() !=0) {
 %>
 
-<thead>
+    <thead>
     <tr>
-    <th><b><fmt:message key="dataservices.element.name"/></b></th>
-    <th><b><fmt:message key="data.services.datasource.type"/></b></th>
-    <th><b><fmt:message key="dataservice.datasource.column.name"/></b></th>
-    <th><b><fmt:message key="data.services.mapping.type"/></b></th>
-    <th><b><fmt:message key="data.services.user.roles"/></b></th>
-    <th><b><fmt:message key="data.services.xsdType"/></b></th>
-    <th><b><fmt:message key="dataservices.output.mapping.export.name"/></b></th>
-    <th><b><fmt:message key="dataservices.output.mapping.export.type"/></b></th>
-    <th><b><fmt:message key="actions1"/></b></th>
-</tr>
-</thead>
- <tbody>
-<%
+        <th><b><fmt:message key="dataservices.element.name"/></b></th>
+        <th><b><fmt:message key="data.services.datasource.type"/></b></th>
+        <th><b><fmt:message key="dataservice.datasource.column.name"/></b></th>
+        <th><b><fmt:message key="data.services.mapping.type"/></b></th>
+        <th><b><fmt:message key="data.services.user.roles"/></b></th>
+        <th><b><fmt:message key="data.services.xsdType"/></b></th>
+        <th><b><fmt:message key="dataservices.output.mapping.export.name"/></b></th>
+        <th><b><fmt:message key="dataservices.output.mapping.export.type"/></b></th>
+        <th><b><fmt:message key="actions1"/></b></th>
+    </tr>
+    </thead>
+    <tbody>
+    <%
+
+    if (elements != null) {
+                    Iterator itrElements = elements.iterator();
+                    if (itrElements.hasNext()) {
     }
     while (itrElements.hasNext()) {
         Element element = (Element) itrElements.next();

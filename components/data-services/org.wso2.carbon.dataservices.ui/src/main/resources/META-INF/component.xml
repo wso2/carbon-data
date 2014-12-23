@@ -27,7 +27,7 @@
             <order>30</order>
             <style-class>monitor</style-class>
             <icon>../data_service/images/data-services.gif</icon>
-            <require-permission>/permission/admin/configure/dataservices</require-permission>
+            <require-permission>/permission/admin/manage/add/service</require-permission>
         </menu>
 
         <menu>
@@ -40,9 +40,9 @@
             <order>5</order>
             <style-class>manage</style-class>
             <icon>../data_service/images/data-services-create.gif</icon>
-            <require-permission>/permission/admin/configure/dataservices</require-permission>
+            <require-permission>/permission/admin/manage/add/service</require-permission>
         </menu>
-        
+
         <menu>
             <id>ds_generate_menu</id>
             <i18n-key>dataservices.generate.menu.text</i18n-key>
@@ -53,9 +53,9 @@
             <order>5</order>
             <style-class>monitor</style-class>
             <icon>../data_service/images/dbsimport.gif</icon>
-            <require-permission>/permission/admin/configure/dataservices</require-permission>
+            <require-permission>/permission/admin/manage/add/service</require-permission>
         </menu>
-        
+
         <menu>
             <id>ds_upload_menu</id>
             <i18n-key>dataservices.upload.menu.text</i18n-key>
@@ -66,21 +66,9 @@
             <order>10</order>
             <style-class>monitor</style-class>
             <icon>../data_service/images/data-services-upload.gif</icon>
-            <require-permission>/permission/admin/configure/dataservices</require-permission>
+            <require-permission>/permission/admin/manage/add/service</require-permission>
         </menu>
 
-      <!--  <menu>
-            <id>ds_contract_first_menu</id>
-            <i18n-key>dataservices.contract.first.menu.text</i18n-key>
-            <i18n-bundle>org.wso2.carbon.dataservices.ui.i18n.Resources</i18n-bundle>
-            <parent-menu>ds_menu</parent-menu>
-            <link>../ds/uploadWsdl.jsp</link>
-            <region>region1</region>
-            <order>30</order>
-            <style-class>monitor</style-class>
-            <icon>../data_service/images/data-services-uploadWSDL.gif</icon>
-            <require-permission>/permission/admin/configure/dataservices</require-permission>
-        </menu> -->
 
     </menus>
     <FileUploadConfig>

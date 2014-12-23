@@ -42,6 +42,10 @@ public class H2StoredProcedureServiceTest extends AbstractStoredProcedureService
 	public void testStoredProcNested3() {
 		this.storedProcNested3();
 	}
+
+    public void testStoredProccWithWrongResult() {
+        this.storedProcWithWrongResultSet();
+    }
 	
 	public void testH2StoredFuncNoParams() {
 		this.storedFuncNoParams();

@@ -42,8 +42,12 @@ public class MySQLStoredProcedureServiceTest extends AbstractStoredProcedureServ
 	public void testStoredProcNested3() {
 		this.storedProcNested3();
 	}
-	
-	public void testMySQLStoredFuncNoParams() {
+
+    public void testMySQLStoredProccWithWrongResult() {
+        this.storedProcWithWrongResultSet();
+    }
+
+    public void testMySQLStoredFuncNoParams() {
 		this.storedFuncNoParams();
 	}
 	

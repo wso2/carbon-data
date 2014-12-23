@@ -216,7 +216,8 @@
     if (datasourceId != null) {
     	dsConfig = dataService.getConfig(datasourceId);
     }
-    if (cancelButton != null && dsConfig != null && !backupConfigProps.isEmpty()) {
+    if (cancelButton != null && (datasourceId == null || datasourceId.trim().length() == 0 || datasourceType == null || datasourceType.trim().length() == 0)) {
+    } else if (cancelButton != null && dsConfig != null && !backupConfigProps.isEmpty()) {
    		dsConfig.setProperties((ArrayList<Property>) backupConfigProps);
     } else if (datasourceId != null) {
         if (flag.equals("") && dsConfig != null) {

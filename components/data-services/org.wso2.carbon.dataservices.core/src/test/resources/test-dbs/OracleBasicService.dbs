@@ -117,15 +117,6 @@
 		</result>
 	</query>
 
-	<operation name="basic_merge_op">
-		<call-query-group>
-			<call-query href="basic_merge_query1">
-			</call-query>
-			<call-query href="basic_merge_query2">
-			</call-query>
-		</call-query-group>
-	</operation>
-
 	<!-- Array types -->
 	<query id="testArrayTypes" useConfig="default">
 		<sql>select customerNumber,customerName,contactLastName,phone,city

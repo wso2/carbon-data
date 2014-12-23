@@ -42,6 +42,10 @@
     String flag = request.getParameter("flag");
     String enableStreaming = request.getParameter("enableStreaming");
     String txManagerCleanupMethod = request.getParameter("txManagerCleanupMethod");
+    String enableHTTP = request.getParameter("enableHTTP");
+    String enableHTTPS = request.getParameter("enableHTTPS");
+    String enableLocal = request.getParameter("enableLocal");
+    String enableJMS = request.getParameter("enableJMS");
     boolean finishEnable = false;
     String forwardTo;
     try {
@@ -90,6 +94,26 @@
         if (txManagerCleanupMethod != null) {
         	dataService.setTxManagerCleanupMethod(txManagerCleanupMethod);
         }
+        if (enableHTTP != null && enableHTTP.trim().length() > 0) {
+            dataService.setEnableHTTP(true);
+        } else {
+            dataService.setEnableHTTP(false);
+        }
+        if (enableHTTPS != null && enableHTTPS.trim().length() > 0) {
+            dataService.setEnableHTTPS(true);
+        } else {
+            dataService.setEnableHTTPS(false);
+        }
+        if (enableLocal != null && enableLocal.trim().length() > 0) {
+            dataService.setEnableLocal(true);
+        } else {
+            dataService.setEnableLocal(false);
+        }
+        if (enableJMS != null && enableJMS.trim().length() > 0) {
+            dataService.setEnableJMS(true);
+        } else {
+            dataService.setEnableJMS(false);
+        }
         description = (description == null) ? "" : description;
         txManagerCleanupMethod = (txManagerCleanupMethod == null) ? "" : txManagerCleanupMethod;
         serviceNamespace = (serviceNamespace == null) ? "" : serviceNamespace;
@@ -97,6 +121,10 @@
         txManagerJNDIName = (txManagerJNDIName == null) ? "" : txManagerJNDIName;
         protectedTokens = (protectedTokens == null) ? "" : protectedTokens;
         passwordProvider = (passwordProvider == null) ? "" : passwordProvider;
+        enableHTTP = (enableHTTP == null) ? "" : enableHTTP;
+        enableHTTPS = (enableHTTPS == null) ? "" : enableHTTPS;
+        enableLocal = (enableLocal == null) ? "" : enableLocal;
+        enableJMS = (enableJMS == null) ? "" : enableJMS;
         forwardTo = "dataSources.jsp?ordinal=1";
         %>
     <script type="text/javascript">

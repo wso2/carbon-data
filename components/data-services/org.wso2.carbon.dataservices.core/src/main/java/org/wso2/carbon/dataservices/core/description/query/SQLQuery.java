@@ -76,8 +76,6 @@ public class SQLQuery extends Query implements BatchRequestParticipant {
 
     private List<String> namedParamNames;
 
-    private QueryParam currentRefCursor;
-
     private boolean hasRefCursor;
 
     private String sql;
@@ -119,6 +117,12 @@ public class SQLQuery extends Query implements BatchRequestParticipant {
     private boolean forceJDBCBatchReqs;
 
     /**
+     * thread local variable to keep the ordinal of the ref cursor if there is any
+     */
+
+    private static ThreadLocal<Integer> currentRefCursorOrdinal = new ThreadLocal<Integer>();
+
+    /**
      * thread local variable to keep a PreparedStatement in batch processing
      */
     private ThreadLocal<PreparedStatement> batchPreparedStatement = new ThreadLocal<PreparedStatement>() {
@@ -144,6 +148,14 @@ public class SQLQuery extends Query implements BatchRequestParticipant {
                     + this.getConfigId());
         }
         this.init();
+    }
+
+    public static int getCurrentRefCursorOrdinal() {
+        return currentRefCursorOrdinal.get();
+    }
+
+    public static void setCurrentRefCursorOrdinal(int ordinal) {
+        currentRefCursorOrdinal.set(ordinal);
     }
 
     public void init() throws DataServiceFault {
@@ -514,7 +526,6 @@ public class SQLQuery extends Query implements BatchRequestParticipant {
     private void checkRefCursor(List<QueryParam> queryParams) {
         for (QueryParam queryParam : queryParams) {
             if (queryParam.getSqlType().equals(DBConstants.DataTypes.ORACLE_REF_CURSOR)) {
-                this.currentRefCursor = queryParam;
                 this.hasRefCursor = true;
                 return;
             }
@@ -708,15 +719,15 @@ public class SQLQuery extends Query implements BatchRequestParticipant {
      * 
      * @see Connection
      */
-    private Connection createConnection() throws DataServiceFault {
+    private Connection createConnection(int queryLevel) throws DataServiceFault {
         try {
             String[] creds = this.lookupConnectionCredentials();
             Connection connection;
-            DataServiceConnection dsCon = TLConnectionStore.getConnection(this.getConfigId(), creds[0]);
+            DataServiceConnection dsCon = TLConnectionStore.getConnection(this.getConfigId(), creds[0], queryLevel);
             if (dsCon == null) {
                 connection = this.getConfig().createConnection(creds[0], creds[1]);
                 dsCon = new SQLDataServicesConnection(connection);
-                TLConnectionStore.addConnection(this.getConfigId(), creds[0], dsCon);
+                TLConnectionStore.addConnection(this.getConfigId(), creds[0], queryLevel, dsCon);
             } else {
                 connection = ((SQLDataServicesConnection) dsCon).getJDBCConnection();
             }
@@ -785,35 +796,19 @@ public class SQLQuery extends Query implements BatchRequestParticipant {
         }
     }
 
-    private void processNormalQuery(XMLStreamWriter xmlWriter, InternalParamCollection params,
+    private Object processPreNormalQuery(InternalParamCollection params,
             int queryLevel) throws DataServiceFault {
-        Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         boolean isError = false;
-        boolean initial = Query.isQueryPreprocessInitial();
-        boolean execute = false;
         try {
-            conn = (Connection) Query.getAndRemoveQueryPreprocessObject("conn");
-            stmt = (PreparedStatement) Query.getAndRemoveQueryPreprocessObject("stmt");
-            if (conn == null) {
-                execute = true;
-                conn = this.createConnection();
-                stmt = this.createProcessedPreparedStatement(SQLQuery.DS_QUERY_TYPE_NORMAL, params,
-                        conn);
-                if (initial) {
-                    Query.setQueryPreprocessedObject("conn", conn);
-                    Query.setQueryPreprocessedObject("stmt", stmt);
-                }
-            }
-            
+            Connection conn = this.createConnection(queryLevel);
+            stmt = this.createProcessedPreparedStatement(SQLQuery.DS_QUERY_TYPE_NORMAL, params, conn);
             /* check if this is a batch request */
             if (this.isJDBCFirstBatchRequest()) {
-                if (execute) {
-                    this.setBatchPreparedStatement(stmt);
-                    /* add this to cleanup this query after batch request */
-                    BatchDataServiceRequest.addParticipant(this);
-                }
+                this.setBatchPreparedStatement(stmt);
+                /* add this to cleanup this query after batch request */
+                BatchDataServiceRequest.addParticipant(this);
             }
             /* if updating/inserting stuff, go inside here */
             if (!this.hasResult() || (this.hasResult() && this.isReturnGeneratedKeys())) {
@@ -821,53 +816,97 @@ public class SQLQuery extends Query implements BatchRequestParticipant {
                 if (this.isJDBCBatchRequest()) {
                     /* if this is the last one, execute the full batch */
                     if (this.isJDBCLastBatchRequest()) {
-                        if (execute) {
-                            stmt.executeBatch();
-                        }
+                        stmt.executeBatch();
+                    }
+                } else {
+                    /* normal update operation */
+                    stmt.executeUpdate();
+                }
+            } else {
+                rs = stmt.executeQuery();
+            }
+            return new QueryResultInfo(stmt, rs);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            isError = true;
+            throw new DataServiceFault(e, FaultCodes.DATABASE_ERROR,
+                    "Error in 'SQLQuery.processPreNormalQuery': " + e.getMessage());
+        } finally {
+            if (isError) {
+                this.releaseResources(rs, this.isStatementClosable(isError) ? stmt : null);
+            }
+        }
+    }
+
+    private void processPostNormalQuery(Object result, XMLStreamWriter xmlWriter, InternalParamCollection params,
+                                    int queryLevel) throws DataServiceFault {
+        QueryResultInfo resultInfo = (QueryResultInfo) result;
+        PreparedStatement stmt = (PreparedStatement) resultInfo.getStatement();
+        ResultSet rs = resultInfo.getResultSet();
+        boolean isError = false;
+        try {
+            /* check if this is a batch request */
+            if (this.isJDBCFirstBatchRequest()) {
+                this.setBatchPreparedStatement(stmt);
+                /* add this to cleanup this query after batch request */
+                BatchDataServiceRequest.addParticipant(this);
+            }
+            /* if updating/inserting stuff, go inside here */
+            if (!this.hasResult() || (this.hasResult() && this.isReturnGeneratedKeys())) {
+                /* if we are in the middle of a batch request, don't execute it */
+                if (this.isJDBCBatchRequest()) {
+                    /* if this is the last one, execute the full batch */
+                    if (this.isJDBCLastBatchRequest()) {
                         if (this.isReturnGeneratedKeys()) {
                             /* handle generated keys, i.e. SQL INSERT etc.. */
-                            if (!initial) {
-                                this.writeOutGeneratedKeys(stmt, xmlWriter, params, queryLevel);
-                            }
+                            this.writeOutGeneratedKeys(stmt, xmlWriter, params, queryLevel);
                         }
                     }
                 } else {
                     /* normal update operation */
-                    if (execute) {
-                        stmt.executeUpdate();
-                    }
                     if (this.isReturnGeneratedKeys()) {
-                        if (!initial) {
-                            this.writeOutGeneratedKeys(stmt, xmlWriter, params, queryLevel);
-                        }
+                        this.writeOutGeneratedKeys(stmt, xmlWriter, params, queryLevel);
                     }
                 }
             } else {
-                rs = (ResultSet) Query.getAndRemoveQueryPreprocessObject("rs");
-                if (rs == null) {
-                    rs = stmt.executeQuery();
-                    if (initial) {
-                        Query.setQueryPreprocessedObject("rs", rs);
-                    }
-                }
-                if (!initial) {
-                    DataEntry dataEntry;
-                    while (rs.next()) {
-                        dataEntry = this.getDataEntryFromRS(new ResultSetWrapper(rs));
-                        this.writeResultEntry(xmlWriter, dataEntry, params, queryLevel);
-                    }
+                DataEntry dataEntry;
+                while (rs.next()) {
+                    dataEntry = this.getDataEntryFromRS(new ResultSetWrapper(rs));
+                    this.writeResultEntry(xmlWriter, dataEntry, params, queryLevel);
                 }
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             isError = true;
             throw new DataServiceFault(e, FaultCodes.DATABASE_ERROR,
-                    "Error in 'SQLQuery.processNormalQuery'");
+                    "Error in 'SQLQuery.processPostNormalQuery': " + e.getMessage());
         } finally {
-            if (!initial || isError) {
-                this.releaseResources(rs, this.isStatementClosable(isError) ? stmt : null);
-            }
+            this.releaseResources(rs, this.isStatementClosable(isError) ? stmt : null);
         }
+    }
+
+    /**
+     * This class contains the query results from the first execution phase.
+     */
+    private class QueryResultInfo {
+
+        private Statement statement;
+
+        private ResultSet resultSet;
+
+        public QueryResultInfo(PreparedStatement statement, ResultSet resultSet) {
+            this.statement = statement;
+            this.resultSet = resultSet;
+        }
+
+        public Statement getStatement() {
+            return statement;
+        }
+
+        public ResultSet getResultSet() {
+            return resultSet;
+        }
+
     }
 
     private boolean isRSClosed(ResultSet rs) throws SQLException {
@@ -884,58 +923,30 @@ public class SQLQuery extends Query implements BatchRequestParticipant {
         }
     }
 
-    private void processStoredProcQuery(XMLStreamWriter xmlWriter, InternalParamCollection params,
+    private Object processPreStoredProcQuery(InternalParamCollection params,
             int queryLevel) throws DataServiceFault {
-        Connection conn = null;
         boolean isError = false;
         CallableStatement stmt = null;
         ResultSet rs = null;
-        boolean initial = Query.isQueryPreprocessInitial();
-        boolean execute = false;
         try {
-            conn = (Connection) Query.getAndRemoveQueryPreprocessObject("conn");
-            stmt = (CallableStatement) Query.getAndRemoveQueryPreprocessObject("stmt");
-            if (conn == null) {
-                execute = true;
-                conn = this.createConnection();
-                stmt = (CallableStatement) this.createProcessedPreparedStatement(
-                        SQLQuery.DS_QUERY_TYPE_STORED_PROC, params, conn);
-                if (initial) {
-                    Query.setQueryPreprocessedObject("conn", conn);
-                    Query.setQueryPreprocessedObject("stmt", stmt);
-                }
-            }
+            Connection conn = this.createConnection(queryLevel);
+            stmt = (CallableStatement) this.createProcessedPreparedStatement(
+                    SQLQuery.DS_QUERY_TYPE_STORED_PROC, params, conn);
             /* check if this is a batch request */
             if (this.isJDBCFirstBatchRequest()) {
-                if (execute) {
-                    this.setBatchPreparedStatement(stmt);
-                    /* add this to cleanup this query after batch request */
-                    BatchDataServiceRequest.addParticipant(this);
-                }
+                this.setBatchPreparedStatement(stmt);
+                /* add this to cleanup this query after batch request */
+                BatchDataServiceRequest.addParticipant(this);
             }
             if (!this.hasResult() || (this.hasResult() && this.isReturnGeneratedKeys())) {
                 /* if we are in the middle of a batch request, don't execute it */
                 if (this.isJDBCBatchRequest()) {
                     /* if this is the last one, execute the full batch */
                     if (this.isJDBCLastBatchRequest()) {
-                        if (execute) {
-                            stmt.executeBatch();
-                        }
-                        if (this.isReturnGeneratedKeys()) {
-                            if (!initial) {
-                                this.writeOutGeneratedKeys(stmt, xmlWriter, params, queryLevel);
-                            }
-                        }
+                        stmt.executeBatch();
                     }
                 } else {
-                    if (execute) {
-                        stmt.executeUpdate();
-                    }
-                    if (this.isReturnGeneratedKeys()) {
-                        if (!initial) {
-                            this.writeOutGeneratedKeys(stmt, xmlWriter, params, queryLevel);
-                        }
-                    }
+                    stmt.executeUpdate();
                 }
             } else {
                 /*
@@ -943,66 +954,77 @@ public class SQLQuery extends Query implements BatchRequestParticipant {
                  * result set
                  */
                 if (this.isResultOnlyOutParams()) {
-                    if (execute) {
-                        stmt.execute();
-                    }
+                    stmt.execute();
                     /* if there's a ref cursor, get the result set */
                     if (this.hasRefCursor()) {
-                        rs = (ResultSet) Query.getAndRemoveQueryPreprocessObject("rs");
-                        if (rs == null) {
-                            rs = (ResultSet) stmt.getObject(this.getCurrentRefCursor().getOrdinal());
-                            if (initial) {
-                                Query.setQueryPreprocessedObject("rs", rs);
-                            }
+                        rs = (ResultSet) stmt.getObject(getCurrentRefCursorOrdinal());
+                    }
+                } else {
+                    rs = this.getFirstRSOfStoredProc(stmt);
+                }
+            }
+            return new QueryResultInfo(stmt, rs);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            isError = true;
+            throw new DataServiceFault(e, FaultCodes.DATABASE_ERROR,
+                    "Error in 'SQLQuery.processStoredProcQuery': " + e.getMessage());
+        } finally {
+            if (isError) {
+                this.releaseResources(rs, this.isStatementClosable(isError) ? stmt : null);                
+            }
+        }
+    }
+
+    private void processPostStoredProcQuery(Object result, XMLStreamWriter xmlWriter,
+                                            InternalParamCollection params, int queryLevel) throws DataServiceFault {
+        QueryResultInfo resultInfo = (QueryResultInfo) result;
+        boolean isError = false;
+        CallableStatement stmt = (CallableStatement) resultInfo.getStatement();
+        ResultSet rs = resultInfo.getResultSet();
+        try {
+            /* check if this is a batch request */
+            if (!this.hasResult() || (this.hasResult() && this.isReturnGeneratedKeys())) {
+                /* if we are in the middle of a batch request, don't execute it */
+                if (this.isJDBCBatchRequest()) {
+                    /* if this is the last one, execute the full batch */
+                    if (this.isJDBCLastBatchRequest()) {
+                        if (this.isReturnGeneratedKeys()) {
+                            this.writeOutGeneratedKeys(stmt, xmlWriter, params, queryLevel);
                         }
                     }
                 } else {
-                    rs = (ResultSet) Query.getAndRemoveQueryPreprocessObject("rs");
-                    if (rs == null) {
-                        rs = this.getFirstRSOfStoredProc(stmt);
-                        if (initial) {
-                            Query.setQueryPreprocessedObject("rs", rs);
-                        }
+                    if (this.isReturnGeneratedKeys()) {
+                        this.writeOutGeneratedKeys(stmt, xmlWriter, params, queryLevel);
                     }
                 }
-
-                if (!initial) {
-                    if (rs == null || this.isRSClosed(rs) || !rs.next()) {
-                        if (this.hasOutParams()) {
-                            DataEntry outParamDataEntry = this.getDataEntryFromOutParams(stmt);
-                            if (outParamDataEntry != null) {
-                                this.writeResultEntry(xmlWriter, outParamDataEntry, params, queryLevel);
-                            }
+            } else {
+                if (rs == null || this.isRSClosed(rs) || !rs.next()) {
+                    if (this.hasOutParams()) {
+                        DataEntry outParamDataEntry = this.getDataEntryFromOutParams(stmt);
+                        if (outParamDataEntry != null) {
+                            this.writeResultEntry(xmlWriter, outParamDataEntry, params, queryLevel);
+                        }
+                    }
+                } else {
+                    if (this.hasOutParams()) {
+                        /* if someone mixes up OUT parameters with normal
+                         * results, this will effectively turn off streaming */
+                        List<DataEntry> entries = this.getAllDataEntriesFromRS(rs, true);
+                        /* result sets must be processed before extracting out
+                         * params */
+                        DataEntry outParamDataEntry = this.getDataEntryFromOutParams(stmt);
+                        for (DataEntry dataEntry : entries) {
+                            this.mergeDataEntries(dataEntry, outParamDataEntry);
+                            this.writeResultEntry(xmlWriter, dataEntry, params, queryLevel);
                         }
                     } else {
-                        if (this.hasOutParams()) {
-                            /*
-                             * so if someone mixes up OUT parameters with normal
-                             * results, this will effectively turn off streaming
-                             */
-                            if (!initial) {
-                                List<DataEntry> entries = this.getAllDataEntriesFromRS(rs, true);
-                                /*
-                                 * result sets must be processed before extracting out
-                                 * params
-                                 */
-                                DataEntry outParamDataEntry = this.getDataEntryFromOutParams(stmt);
-                                for (DataEntry dataEntry : entries) {
-                                    this.mergeDataEntries(dataEntry, outParamDataEntry);
-                                    this.writeResultEntry(xmlWriter, dataEntry, params, queryLevel);
-                                }
-                            }
-                        } else {
-                            /*
-                             * do-while loop since, 'rs.next()' has already been
-                             * called once
-                             */
-                            DataEntry dataEntry;
-                            do {
-                                dataEntry = this.getDataEntryFromRS(new ResultSetWrapper(rs));
-                                this.writeResultEntry(xmlWriter, dataEntry, params, queryLevel);
-                            } while (rs.next());
-                        }
+                        /* do-while loop since, 'rs.next()' has already been called once */
+                        DataEntry dataEntry;
+                        do {
+                            dataEntry = this.getDataEntryFromRS(new ResultSetWrapper(rs));
+                            this.writeResultEntry(xmlWriter, dataEntry, params, queryLevel);
+                        } while (rs.next());
                     }
                 }
             }
@@ -1010,11 +1032,9 @@ public class SQLQuery extends Query implements BatchRequestParticipant {
             log.error(e.getMessage(), e);
             isError = true;
             throw new DataServiceFault(e, FaultCodes.DATABASE_ERROR,
-                    "Error in 'SQLQuery.processStoredProcQuery'");
+                    "Error in 'SQLQuery.processStoredProcQuery': " + e.getMessage());
         } finally {
-            if (!initial || isError) {
-                this.releaseResources(rs, this.isStatementClosable(isError) ? stmt : null);                
-            }
+            this.releaseResources(rs, this.isStatementClosable(isError) ? stmt : null);
         }
     }
 
@@ -1415,12 +1435,6 @@ public class SQLQuery extends Query implements BatchRequestParticipant {
              */
             if (value != null && (value.getValueType() == ParamValue.PARAM_VALUE_ARRAY)) {
                 count = (value.getArrayValue()).size();
-                if (this.hasRefCursor()) {
-                    int currentRefCursorOrdinal = this.getCurrentRefCursor().getOrdinal();
-                    if (i < currentRefCursorOrdinal) {
-                        this.getCurrentRefCursor().setOrdinal(currentRefCursorOrdinal + count - 1);
-                    }
-                }
             } else {
                 count = 1;
             }
@@ -1777,6 +1791,7 @@ public class SQLQuery extends Query implements BatchRequestParticipant {
     private void setOracleRefCusor(PreparedStatement sqlQuery, int i) throws SQLException,
             DataServiceFault {
         ((CallableStatement) sqlQuery).registerOutParameter(i + 1, ORACLE_REF_CURSOR_TYPE);
+        setCurrentRefCursorOrdinal(i + 1);
     }
 
     /**
@@ -2275,21 +2290,29 @@ public class SQLQuery extends Query implements BatchRequestParticipant {
         }
     }
 
-    public QueryParam getCurrentRefCursor() {
-        return currentRefCursor;
-    }
-
     public boolean hasRefCursor() {
         return hasRefCursor;
     }
 
-    public void runQuery(XMLStreamWriter xmlWriter, InternalParamCollection params, int queryLevel)
+    public Object runPreQuery(InternalParamCollection params, int queryLevel)
             throws DataServiceFault {
         int type = this.getQueryType();
         if (type == SQLQuery.DS_QUERY_TYPE_NORMAL) {
-            this.processNormalQuery(xmlWriter, params, queryLevel);
+            return this.processPreNormalQuery(params, queryLevel);
         } else if (type == SQLQuery.DS_QUERY_TYPE_STORED_PROC) {
-            this.processStoredProcQuery(xmlWriter, params, queryLevel);
+            return this.processPreStoredProcQuery(params, queryLevel);
+        } else {
+            throw new DataServiceFault("Unsupported query type: " + type);
+        }
+    }
+
+    public void runPostQuery(Object result, XMLStreamWriter xmlWriter, InternalParamCollection params, int queryLevel)
+            throws DataServiceFault {
+        int type = this.getQueryType();
+        if (type == SQLQuery.DS_QUERY_TYPE_NORMAL) {
+            this.processPostNormalQuery(result, xmlWriter, params, queryLevel);
+        } else if (type == SQLQuery.DS_QUERY_TYPE_STORED_PROC) {
+            this.processPostStoredProcQuery(result, xmlWriter, params, queryLevel);
         } else {
             throw new DataServiceFault("Unsupported query type: " + type);
         }

@@ -42,7 +42,7 @@
 	</service>
 	
 	        
-    <parameter name="AuthorizationAction" locked="true">/permission/admin/configure/dataservices</parameter>
+    <parameter name="AuthorizationAction" locked="true">/permission/admin/manage/add/service</parameter>
     <parameter name="adminService" locked="true">true</parameter>
     <parameter name="hiddenService" locked="true">true</parameter>
 </serviceGroup>

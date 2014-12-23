@@ -80,10 +80,10 @@ public class SQLDataServicesConnection implements DataServiceConnection {
         return jdbcConn;
     }
 
-    private boolean getAutoCommit(Connection conn) throws SQLException {
+    private boolean getAutoCommit(Connection conn) {
         try {
             return conn.getAutoCommit();
-        } catch (SQLFeatureNotSupportedException ignore) {
+        } catch (SQLException ignore) {
             /* some databases does not support this, if so, that means it is
              * similar to being always in autoCommit=true mode */
             return true;

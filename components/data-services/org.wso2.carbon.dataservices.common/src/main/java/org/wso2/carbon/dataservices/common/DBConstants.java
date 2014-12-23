@@ -80,6 +80,7 @@ public final class DBConstants {
     public static final String SECUREVAULT_NAMESPACE = "http://org.wso2.securevault/configuration";
     public static final String DATA_SERVICE_RESPONSE_WRAPPER_ELEMENT = "DATA_SERVICE_RESPONSE";
     public static final String SQL_DRIVER_CLASS_NAME = "org.wso2.carbon.dataservices.sql.driver.TDriver";
+    public static final String SECURITY_MODULE_NAME = "rampart";
         
     /**
      * Codes to be used as fault codes.
@@ -740,6 +741,10 @@ public final class DBConstants {
         }
 
         public static final String DATA = "data";
+        public static final String TRANSPORTS = "transports";
+        public static final String POLICY = "policy";
+        public static final String POLICY_KEY = "key";
+        public static final String ENABLESEC = "enableSec";
         public static final String CONFIG = "config";
         public static final String QUERY = "query";
         public static final String OPERATION = "operation";

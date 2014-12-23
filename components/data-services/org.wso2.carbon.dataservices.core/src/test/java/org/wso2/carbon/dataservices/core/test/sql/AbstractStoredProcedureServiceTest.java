@@ -170,6 +170,34 @@ public abstract class AbstractStoredProcedureServiceTest extends
 			fail(e.getMessage());
 		}
 	}
+
+    /**
+     * Test with a result set in config of the stored procedure
+     * but does not return anything. i.e Insert query
+     */
+    protected void storedProcWithWrongResultSet() {
+        TestUtils.showMessage(this.epr + " - storedProcWithWrongResultSet");
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("customerNumber", "5005");
+        params.put("customerName", "Will<&''\"\"&>Smith");
+        params.put("contactLastName", "&Silva");
+        params.put("contactFirstName", "Kelvin");
+        try {
+            TestUtils.callOperation(this.epr,
+                    "stored_procedure_with_wrong_result_set", params);
+            Map<String, String> params1 = new HashMap<String, String>();
+            params1.put("customerNumber", "5005");
+            OMElement result = TestUtils.callOperation(this.epr,
+                    "select_op_count", params1);
+            String val = TestUtils.getFirstValue(result,
+                    "/Customers/CustomerCount/customerCount",
+                    TestUtils.DEFAULT_DS_WS_NAMESPACE);
+            assertTrue(Integer.parseInt(val) == 1);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
+    }
 	
 	/**
 	 * Test with a stored function call with no params.

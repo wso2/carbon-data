@@ -90,18 +90,6 @@
          <element name="checkNumber" column="checkNumber" />
       </result>
    </query>
-   
-   <operation name="select_input_mappings_merge_op">
-      <call-query-group>
-         <call-query href="select_input_mappings_merge_query1">
-            <with-param name="customerNumber" query-param="customerNumber" />
-            <with-param name="paymentDate" query-param="paymentDate"/>
-         </call-query>   
-         <call-query href="select_input_mappings_merge_query2">
-            <with-param name="customerNumber" query-param="customerNumber" />
-         </call-query>
-      </call-query-group>                                       
-   </operation>
 
    <!-- Input parameters with default values -->
    <query id="select_input_mappings_with_def_value">

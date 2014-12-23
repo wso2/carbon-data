@@ -46,7 +46,7 @@ public class GSpreadConfig extends Config {
 
 	private static final Log log = LogFactory.getLog(GSpreadConfig.class);
 	
-	public static final String BASE_WORKSHEET_URL = "http://spreadsheets.google.com/feeds/worksheets/";
+	public static final String BASE_WORKSHEET_URL = "https://spreadsheets.google.com/feeds/worksheets/";
 	
 	public static final String BASE_REGISTRY_AUTH_TOKEN_PATH = "/repository/components/org.wso2.carbon.dataservices.core/services/";
 	
@@ -84,17 +84,38 @@ public class GSpreadConfig extends Config {
 			throw new DataServiceFault(e, message);
 		}
 		String extractedQuery = documentURI.getQuery();
-		int i1 = extractedQuery.lastIndexOf("key=");
-		int i2 = extractedQuery.indexOf("&", i1);
-		if (i2 < 0) {
+        if (extractedQuery == null) {
+            String message = "Error Generating Query for given Document:" + documentURL;
+            log.warn(message);
+            throw new DataServiceFault(message);
+        }
+        int i1 = extractedQuery.lastIndexOf("key=");
+        int i2 = extractedQuery.indexOf("&", i1);
+        if (i1 == -1) {
+            return getKeyForNewSpreadsheetURLFormat(documentURL);
+        } else if (i2 < 0) {
 			return extractedQuery.substring(i1 + 4);
 		} else {
 			return extractedQuery.substring(i1 + 4, i2);
 		}
 	}
-	
+
+    private static String getKeyForNewSpreadsheetURLFormat(String documentURI) throws DataServiceFault {
+        String [] params = documentURI.split("/");
+        String resultKey = null;
+        for (int i = 0; i < params.length; i++) {
+            if ("d".equals(params[i])) {
+                resultKey = params[i+1];
+            }
+        }
+        if (resultKey == null) {
+            throw new DataServiceFault("Invalid URL format");
+        }
+        return resultKey;
+    }
+
 	public String generateWorksheetFeedURL() {
-		return GSpreadConfig.BASE_WORKSHEET_URL + key + "/" + 
+		return GSpreadConfig.BASE_WORKSHEET_URL + key + "/" +
 				this.getVisibility() + "/basic";
 	}
 

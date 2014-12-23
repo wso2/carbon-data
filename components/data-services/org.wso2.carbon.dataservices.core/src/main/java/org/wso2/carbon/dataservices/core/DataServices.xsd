@@ -150,19 +150,12 @@
            	</xs:element>
            		<xs:element name="operation" maxOccurs="unbounded" minOccurs="0">
                			<xs:complexType>
-                   			<xs:choice>
-                       				<xs:element ref="call-query" maxOccurs="1" minOccurs="1"/>
-                       				<xs:element name="call-query-group" maxOccurs="1" minOccurs="0">
-                           				<xs:complexType>
-                               					<xs:sequence>
-                                     					<xs:element ref="call-query" maxOccurs="unbounded" minOccurs="1"/>
-                               					</xs:sequence>
-                           				</xs:complexType>
-                       				</xs:element>
-                   			</xs:choice>
+                            <xs:sequence>
+                                <xs:element ref="call-query" maxOccurs="1" minOccurs="1"/>
+                            </xs:sequence>
                    			<xs:attribute name="name" type="xs:string" use="required"/>
-		   			<xs:attribute name="disableStreaming" type="xs:boolean" use="optional"/>
-					<xs:attribute name="returnRequestStatus" type="xs:boolean" use="optional"/>
+                            <xs:attribute name="disableStreaming" type="xs:boolean" use="optional"/>
+                            <xs:attribute name="returnRequestStatus" type="xs:boolean" use="optional"/>
                			</xs:complexType>
            		</xs:element>
            		<xs:element name="resource" maxOccurs="unbounded" minOccurs="0">

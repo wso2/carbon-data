@@ -47,7 +47,7 @@ public class TExcelConnection extends TConnection {
     private Workbook createConnectionToExcelDocument(String filePath) throws SQLException {
         Workbook workbook;
         try {
-            InputStream fin = new FileInputStream(new File(filePath));
+            InputStream fin = TDriverUtil.getInputStreamFromPath(filePath);
             workbook = new HSSFWorkbook(fin);
         } catch (FileNotFoundException e) {
             throw new SQLException("Could not locate the EXCEL datasource in the provided " +

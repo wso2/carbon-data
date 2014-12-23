@@ -62,11 +62,13 @@ public class SingleDataServiceRequest extends DataServiceRequest {
 	public OMElement processRequest() throws DataServiceFault {
 		try {
             Query.resetQueryPreprocessing();
+            Query.setQueryPreprocessingInitial(true);
+            Query.setQueryPreprocessingSecondary(false);
 			OMElement result = processSingleRequest();
 			if (result instanceof OMSourcedElementImpl) {
                 /* first pass for preprocessing */
                 DSOMDataSource dsomDS = (DSOMDataSource) ((OMSourcedElementImpl) result).getDataSource();
-                Query.setQueryPreprocessingInitial(true);
+                Query.setQueryPreprocessingSecondary(false);
                 try {
                     dsomDS.execute(null);
                 } catch (XMLStreamException e) {
@@ -74,6 +76,22 @@ public class SingleDataServiceRequest extends DataServiceRequest {
                 }
                 Query.setQueryPreprocessingInitial(false);
                 Query.setQueryPreprocessingSecondary(true);
+                Query defQuery = this.getDataService().getCallableRequest(
+                        this.getRequestName()).getCallQuery().getQuery();
+                /*
+                * Checks if the result has to be pre-built, because in situations like having an
+                * output-event-trigger, for XPath expression evaluations, the following operation
+                * must be done, or it wont work.
+                */
+                if (defQuery.isPreBuildResult()) {
+                    result = DBUtils.cloneAndReturnBuiltElement(result);
+                }
+
+                /* do XSLT transformation if available */
+                result = this.executeXsltTranformation(result, defQuery);
+
+                /* process events */
+                this.processOutputEvents(result, defQuery);
             }
 			return result;
 		} catch (DataServiceFault e) {
@@ -91,26 +109,8 @@ public class SingleDataServiceRequest extends DataServiceRequest {
 		if (dataService.hasResultForRequest(this.getRequestName())) {
 			String resultWrapper = dataService.getResultWrapperForRequest(requestName);
 			String ns = dataService.getNamespaceForRequest(requestName);
-			OMElement responseElement = new OMSourcedElementImpl(new QName(ns,
+			return new OMSourcedElementImpl(new QName(ns,
 					resultWrapper), DBUtils.getOMFactory(), ds);
-			Query defQuery = dataService.getCallableRequest(
-					requestName).getCallQueryGroup().getDefaultCallQuery().getQuery();
-			/*
-			 * Checks if the result has to be pre-built, because in situations like having an
-			 * output-event-trigger, for XPath expression evaluations, the following operation
-			 * must be done, or it wont work. 
-			 */
-			if (defQuery.isPreBuildResult()) {
-				responseElement = DBUtils.cloneAndReturnBuiltElement(responseElement);
-			}
-			
-			/* do XSLT transformation if available */
-			responseElement = this.executeXsltTranformation(responseElement, defQuery);
-			
-			/* process events */
-			this.processOutputEvents(responseElement, defQuery);
-			
-			return responseElement;
 		} else { /* if no response i.e. in-only, execute the request now */
 			try {
 				ds.executeInOnly();

@@ -79,6 +79,22 @@
         }
     }
 
+    public void setResourceValues(List<RDFResource> resList, String resName, String rdfRefURI,
+                                  String dataServiceResourceName, String requiredRoles, String xsdType ) {
+        for (RDFResource rdfResource : resList) {
+            if (rdfResource.getName().equals(resName)) {
+
+                rdfResource.setRdfRefURI(rdfRefURI);
+                rdfResource.setName(dataServiceResourceName);
+                //if (!requiredRoles.equals("")) {
+                rdfResource.setRequiredRoles(requiredRoles);
+                //}
+                rdfResource.setxsdType(xsdType);
+                break;
+            }
+        }
+    }
+
     public void setAttributeValues(List<Attribute> attributeList, String attributeName,
                                    String dsType, String dsValue, String reqRoles, String exportName,
                                    String expType, String xsdType, String dataServiceOMElementName,
@@ -180,6 +196,10 @@
     /* this is to handle both column and query-param values */
     if (dataSourceValue == null || "".equals(dataSourceValue)) {
     	dataSourceValue = request.getParameter("datasourceValue2");
+    }
+    /* this is to handle rdf element datasourceValue */
+    if (dataSourceValue == null || "".equals(dataSourceValue)) {
+        dataSourceValue = request.getParameter("datasourceValue");
     }
     String elementNamespace = request.getParameter("txtDataServiceElementNamespace");
     String rdfRefURI = request.getParameter("txtrdfRefURI");
@@ -529,17 +549,21 @@
                                 res.removeResource(dataServiceResourceName);
                             }
                         } else {
-                            rdfResource.setRdfRefURI(rdfRefURI);
-                            rdfResource.setName(dataServiceResourceName);
-                            //if (!requiredRoles.equals("")) {
+                            if (editMappingType != null && (!editMappingType.equals(""))) {
+                                setResourceValues(resources,edit,rdfRefURI,dataServiceResourceName,requiredRoles,xsdType);
+                            } else {
+                                rdfResource.setRdfRefURI(rdfRefURI);
+                                rdfResource.setName(dataServiceResourceName);
+                                //if (!requiredRoles.equals("")) {
                                 rdfResource.setRequiredRoles(requiredRoles);
-                            //}
-                            rdfResource.setxsdType(xsdType);
-                            resources.add(rdfResource);
-                            res.setResources(resources);
-                            res.setElementLocalNames(dsOMElementName);
-                            res.setDisplayColumnNames(dsOMElementColumnName);
-                            res.setResultSetColumnNames(dsOMElementColumnName);
+                                //}
+                                rdfResource.setxsdType(xsdType);
+                                resources.add(rdfResource);
+                                res.setResources(resources);
+                                res.setElementLocalNames(dsOMElementName);
+                                res.setDisplayColumnNames(dsOMElementColumnName);
+                                res.setResultSetColumnNames(dsOMElementColumnName);
+                            }
                         }
                     } else {
                         // Adding first rdf-resource

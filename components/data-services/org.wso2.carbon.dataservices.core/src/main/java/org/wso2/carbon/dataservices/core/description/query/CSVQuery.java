@@ -58,42 +58,18 @@ public class CSVQuery extends Query {
 		return config;
 	}
 	
-	public void runQuery(XMLStreamWriter xmlWriter, InternalParamCollection params, int queryLevel) 
+	public Object runPreQuery(InternalParamCollection params, int queryLevel)
 			throws DataServiceFault {
 		CSVReader reader = null;
 		boolean isError = false;
 		try {
-		    reader = (CSVReader) Query.getAndRemoveQueryPreprocessObject("reader");
-		    if (reader == null) {
-			    reader = this.getConfig().createCSVReader();
-			    if (Query.isQueryPreprocessInitial()) {
-			        Query.setQueryPreprocessedObject("reader", reader);
-			        return;
-			    }
-		    }
-			String[] record;
-		    int maxCount = this.getConfig().getMaxRowCount();
-		    int i = 0;
-		    DataEntry dataEntry;
-		    Map<Integer, String> columnsMap = this.getConfig().getColumnMappings();
-		    boolean useColumnNumbers = this.isUsingColumnNumbers();			
-		    while ((record = reader.readNext()) != null) {
-		    	if (maxCount != -1 && i >= maxCount) {
-		    		break;
-		    	}
-		    	dataEntry = new DataEntry();
-		    	for (int j = 0; j < record.length; j++) {
-		    		dataEntry.addValue(useColumnNumbers ? Integer.toString(j + 1) : 
-		    			columnsMap.get(j + 1), new ParamValue(record[j]));
-		    	}
-		    	this.writeResultEntry(xmlWriter, dataEntry, params, queryLevel);
-		    	i++;
-		    }
+            reader = this.getConfig().createCSVReader();
+            return reader;
 		} catch (Exception e) {
 		    isError = true;
 			throw new DataServiceFault(e, "Error in CSVQuery.runQuery.");
 		} finally {
-			if (reader != null && (!Query.isQueryPreprocessInitial() || isError)) {
+			if (reader != null && isError) {
 				try {
 				    reader.close();
 				} catch (Exception e) {
@@ -102,5 +78,44 @@ public class CSVQuery extends Query {
 			}
 		}
 	}
-	
+
+    @Override
+    public void runPostQuery(Object result, XMLStreamWriter xmlWriter,
+                             InternalParamCollection params, int queryLevel) throws DataServiceFault {
+        CSVReader reader = null;
+        boolean isError = false;
+        try {
+            reader = (CSVReader) result;
+            String[] record;
+            int maxCount = this.getConfig().getMaxRowCount();
+            int i = 0;
+            DataEntry dataEntry;
+            Map<Integer, String> columnsMap = this.getConfig().getColumnMappings();
+            boolean useColumnNumbers = this.isUsingColumnNumbers();
+            while ((record = reader.readNext()) != null) {
+                if (maxCount != -1 && i >= maxCount) {
+                    break;
+                }
+                dataEntry = new DataEntry();
+                for (int j = 0; j < record.length; j++) {
+                    dataEntry.addValue(useColumnNumbers ? Integer.toString(j + 1) :
+                            columnsMap.get(j + 1), new ParamValue(record[j]));
+                }
+                this.writeResultEntry(xmlWriter, dataEntry, params, queryLevel);
+                i++;
+            }
+        } catch (Exception e) {
+            isError = true;
+            throw new DataServiceFault(e, "Error in CSVQuery.runQuery.");
+        } finally {
+            if (reader != null || isError) {
+                try {
+                    reader.close();
+                } catch (Exception e) {
+                    log.error("Error in closing CSV reader", e);
+                }
+            }
+        }
+    }
+
 }

@@ -29,10 +29,7 @@ import org.wso2.carbon.dataservices.core.engine.DataService;
 import org.wso2.carbon.dataservices.core.engine.ParamValue;
 import org.wso2.carbon.dataservices.core.tools.DSTools;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This class represents a context class used in data tasks.
@@ -40,6 +37,8 @@ import java.util.Map;
 public class DataTaskContext {
 	
 	private AxisConfiguration axisConfig;
+
+    private Map<String, String> dataTaskProperties;
 			
 	public DataTaskContext(int tid) {
 		this.axisConfig = DSTaskUtils.lookupAxisConfig(tid);
@@ -135,5 +134,12 @@ public class DataTaskContext {
 			throw new DataServiceFault("Invalid credentials for user '" + username + "'");
 		}
 	}
-	
+
+    public Map<String, String> getDataTaskProperties() {
+        return dataTaskProperties;
+    }
+
+    public void setDataTaskProperties(Map<String, String> dataTaskProperties) {
+        this.dataTaskProperties = dataTaskProperties;
+    }
 }

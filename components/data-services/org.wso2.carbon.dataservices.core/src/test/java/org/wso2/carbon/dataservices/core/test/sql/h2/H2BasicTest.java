@@ -38,10 +38,6 @@ public class H2BasicTest extends AbstractBasicServiceTest {
 	public void testH2BasicSelectWithAttributes() {
 		this.basicSelectWithAttributes();
 	}
-	
-	public void testH2BasicCallQueryMerge() {
-		this.basicCallQueryMerge();
-	}
 
 	public void testH2BasicArrayInputTypes() {
 		this.basicArrayInputTypes();

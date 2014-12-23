@@ -65,36 +65,35 @@ public class RdfFileQuery extends SparqlQueryBase {
 		return QueryExecutionFactory.create(this.getQuery(), this.config.createRDFModel());
 	}
 
-    public void processQuery(XMLStreamWriter xmlWriter,
-			InternalParamCollection params, int queryLevel) throws DataServiceFault {
+    public Object processPreQuery(InternalParamCollection params, int queryLevel) throws DataServiceFault {
 		try {
-		    ResultSet results = (ResultSet) Query.getAndRemoveQueryPreprocessObject("results");
-		    if (results == null) {
-    			QuerySolutionMap queryMap = new QuerySolutionMap();
-    			Model model = this.getModelForValidation();
-    			/* process the query params */
-    			for (InternalParam param : params.getParams()) {
-    				/* set parameters to the query map */
-    				queryMap.add(param.getName(), convertTypeLiteral(model, param));
-    			}
-    			QueryExecution qe = this.getQueryExecution();
-                qe.setInitialBinding(queryMap) ;
-    
-    			/* execute query as a select query */
-    			results = qe.execSelect();
-    			if (Query.isQueryPreprocessInitial()) {
-    			    Query.setQueryPreprocessedObject("results", results);
-    			    return;
-    			}
-		    }
-			DataEntry dataEntry;
-			while (results.hasNext()) {
-				dataEntry = this.getDataEntryFromRS(results);
-				this.writeResultEntry(xmlWriter, dataEntry, params, queryLevel);
-			}
+		    ResultSet results;
+            QuerySolutionMap queryMap = new QuerySolutionMap();
+            Model model = this.getModelForValidation();
+            /* process the query params */
+            for (InternalParam param : params.getParams()) {
+                /* set parameters to the query map */
+                queryMap.add(param.getName(), convertTypeLiteral(model, param));
+            }
+            QueryExecution qe = this.getQueryExecution();
+            qe.setInitialBinding(queryMap) ;
+
+            /* execute query as a select query */
+            results = qe.execSelect();
+    	    return results;
 		} catch (Exception e) {
 			throw new DataServiceFault(e, "Error in 'SparqlQueryBase.processQuery'");
 		}
 	}
 
+    @Override
+    public void processPostQuery(Object result, XMLStreamWriter xmlWriter,
+                             InternalParamCollection params, int queryLevel) throws DataServiceFault {
+        ResultSet results = (ResultSet) result;
+        DataEntry dataEntry;
+        while (results != null && results.hasNext()) {
+            dataEntry = this.getDataEntryFromRS(results);
+            this.writeResultEntry(xmlWriter, dataEntry, params, queryLevel);
+        }
+    }
 }

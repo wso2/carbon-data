@@ -971,7 +971,8 @@ public class QueryFactory {
 			/* if the element only has a name, it must be an element group */ 
 			return (el.getAttributeValue(new QName(DBSFields.COLUMN)) == null
 					&& el.getAttributeValue(new QName(DBSFields.QUERY_PARAM)) == null 
-					&& el.getAttributeValue(new QName(DBSFields.VALUE)) == null);
+					&& el.getAttributeValue(new QName(DBSFields.VALUE)) == null
+                    && el.getAttributeValue(new QName(DBSFields.RDF_REF_URI)) == null);
 		}
 		return false;
 	}
@@ -992,7 +993,6 @@ public class QueryFactory {
 		QName elQName = new QName(DBSFields.ELEMENT);
 		QName attrQName = new QName(DBSFields.ATTRIBUTE);
 		QName cqQName = new QName(DBSFields.CALL_QUERY);
-		QName cqgQName = new QName(DBSFields.CALL_QUERY_GROUP);		
 		Iterator<OMElement> resElItr = groupEl.getChildElements();
 		OMElement el;
 		boolean targetOptionalOverride = (level == 0) && (parentResult.getRowName() == null || "".equals(parentResult.getRowName()));
@@ -1009,14 +1009,8 @@ public class QueryFactory {
                         resultType, targetOptionalOverride));
 			} else if (el.getQName().equals(cqQName)) {
 				CallQuery callQuery = createCallQuery(dataService, el, targetOptionalOverride);
-				List<CallQuery> list = new ArrayList<CallQuery>();
-				list.add(callQuery);
-				CallQueryGroup cqg = new CallQueryGroup(list);
-				elGroup.addCallQueryGroupEntry(cqg);
-				cqg.setOptionalOverride(targetOptionalOverride);
-			} else if (el.getQName().equals(cqgQName)) {
-				CallQueryGroup cqg = createCallQueryGroup(dataService, el, targetOptionalOverride);
-				elGroup.addCallQueryGroupEntry(cqg);
+				elGroup.addCallQueryEntry(callQuery);
+				callQuery.setOptionalOverride(targetOptionalOverride);
 			}
 		}
 		elGroup.setOptionalOverride(optionalOverrideCurrent);
@@ -1286,52 +1280,16 @@ public class QueryFactory {
 	 * Create a collection of call queries with the given call query element.
 	 */
 	@SuppressWarnings("unchecked")
-	public static List<CallQueryGroup> createCallQueryGroups(
-			DataService dataService, Iterator<OMElement> callQueryElItr,
-			Iterator<OMElement> callQueryGroupElItr) throws DataServiceFault {
-		List<CallQueryGroup> cqGroupList = new ArrayList<CallQueryGroup>();		
-		CallQuery callQuery = null;
-		CallQueryGroup cqGroup = null;
-		List<CallQuery> cqList = null;
+	public static List<CallQuery> createCallQueries(
+			DataService dataService, Iterator<OMElement> callQueryElItr) throws DataServiceFault {
+		List<CallQuery> callQueryList = new ArrayList<CallQuery>();
+		CallQuery callQuery;
 		/* extract single call-queries */
 		while (callQueryElItr.hasNext()) {
 			callQuery = createCallQuery(dataService, callQueryElItr.next(), false);
-			cqList = new ArrayList<CallQuery>();
-			cqList.add(callQuery);
-			cqGroup = new CallQueryGroup(cqList);
-			cqGroupList.add(cqGroup);
+			callQueryList.add(callQuery);
 		}
-		/* extract call-query groups */
-		Iterator<OMElement> tmpCqElItr = null;
-		while (callQueryGroupElItr.hasNext()) {
-			tmpCqElItr = callQueryGroupElItr.next().getChildrenWithName(
-					new QName(DBSFields.CALL_QUERY));
-			cqList = new ArrayList<CallQuery>();			
-			while (tmpCqElItr.hasNext()) {
-				callQuery = createCallQuery(dataService, tmpCqElItr.next(), false);
-				cqList.add(callQuery);				
-			}			
-			cqGroup = new CallQueryGroup(cqList);
-			cqGroupList.add(cqGroup);
-		}			
-		return cqGroupList;
-	}
-	
-	@SuppressWarnings("unchecked")
-	private static CallQueryGroup createCallQueryGroup(DataService dataservice,
-			OMElement el, boolean optionalOverride) throws DataServiceFault {
-		Iterator<OMElement> tmpCqElItr = el.getChildrenWithName(new QName("call-query"));
-		CallQueryGroup cqGroup;
-		List<CallQuery> cqList;
-		CallQuery callQuery;
-		cqList = new ArrayList<CallQuery>();
-		while (tmpCqElItr.hasNext()) {
-			callQuery = createCallQuery(dataservice, tmpCqElItr.next(), false);
-			cqList.add(callQuery);
-		}
-		cqGroup = new CallQueryGroup(cqList);
-		cqGroup.setOptionalOverride(optionalOverride);
-		return cqGroup;
+		return callQueryList;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -1362,7 +1320,7 @@ public class QueryFactory {
 		return callQuery;
 	}
 	
-	public static CallQuery createEmptyEndBoxcarCallQuery(DataService dataService) {
+	public static CallQuery createEmptyBoxcarCallQuery(DataService dataService) {
 		CallQuery callQuery = new CallQuery(dataService, DBConstants.EMPTY_END_BOXCAR_QUERY_ID, 
 				new HashMap<String, WithParam>(), new HashSet<String>());
 		return callQuery;

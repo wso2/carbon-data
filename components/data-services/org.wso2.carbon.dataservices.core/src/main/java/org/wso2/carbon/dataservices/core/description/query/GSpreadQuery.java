@@ -31,6 +31,7 @@ import org.wso2.carbon.dataservices.core.engine.*;
 
 import javax.xml.stream.XMLStreamWriter;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
@@ -126,54 +127,58 @@ public class GSpreadQuery extends Query {
 		return header;
 	}
 	
-	public void runQuery(XMLStreamWriter xmlWriter, InternalParamCollection params,	int queryLevel)
+	public Object runPreQuery(InternalParamCollection params,	int queryLevel)
 			throws DataServiceFault {
 		try {
 			/* get the data */
-			GSpreadResultSet grs = (GSpreadResultSet) Query.getAndRemoveQueryPreprocessObject("grs");
-			if (grs == null) {
-			    grs = this.retrieveData();
-			    if (Query.isQueryPreprocessInitial()) {
-			        Query.setQueryPreprocessedObject("grs", grs);
-			        return;
-			    }
-			}
-			/* if no data, return. */
-			if (grs.getRowCount() == 0) {
-				return;
-			}			
-			/* get the column mappings */
-			Map<Integer, String> columnsMap = DBUtils.createColumnMappings(this.getHeader(grs));
-			
-			/* process the data */
-			int rowCount, columnCount = grs.getColumnCount();
-			if (this.getMaxRowCount() == -1) {
-				rowCount = grs.getRowCount();
-			} else {
-			    rowCount = this.getMaxRowCount() + this.getStartingRow() - 1;
-			    if (rowCount > grs.getRowCount()) {
-					rowCount = grs.getRowCount();
-				}
-			}
-			
-			DataEntry dataEntry = new DataEntry();
-			String columnValue;
-			boolean useColumnNumbers = this.isUsingColumnNumbers();			
-			for (int i = this.getStartingRow() - 1; i < rowCount; i++) {
-				for (int j = 1; j <= columnCount; j++) {
-					columnValue = grs.getValueAt(i + 1, j);
-					dataEntry.addValue(useColumnNumbers ? Integer.toString(j) : 
-						columnsMap.get(j), new ParamValue(columnValue));
-				}				
-				/* write data */
-				this.writeResultEntry(xmlWriter, dataEntry, params, queryLevel);
-			}
+			GSpreadResultSet grs;
+            grs = this.retrieveData();
+            return grs;
 		} catch (Exception e) {
 			throw new DataServiceFault(e, "Error in query GSpreadQuery.execute");
 		}
 	}
-	
-	private String getPosStringFromId(String id) {
+
+    @Override
+    public void runPostQuery(Object result, XMLStreamWriter xmlWriter,
+                             InternalParamCollection params, int queryLevel) throws DataServiceFault {
+        GSpreadResultSet grs = (GSpreadResultSet) result;
+        /* if no data, return. */
+        if (grs != null && grs.getRowCount() == 0) {
+            return;
+        }
+        try {
+			/* get the column mappings */
+            Map<Integer, String> columnsMap = DBUtils.createColumnMappings(this.getHeader(grs));
+
+                /* process the data */
+            int rowCount, columnCount = grs != null ? grs.getColumnCount() : 0;
+            if (this.getMaxRowCount() == -1) {
+                rowCount = grs != null ? grs.getRowCount() : 0;
+            } else {
+                rowCount = this.getMaxRowCount() + this.getStartingRow() - 1;
+                if (rowCount > (grs != null ? grs.getRowCount() : 0)) {
+                    rowCount = grs != null ? grs.getRowCount() : 0;
+                }
+            }
+            DataEntry dataEntry = new DataEntry();
+            String columnValue;
+            boolean useColumnNumbers = this.isUsingColumnNumbers();
+            for (int i = this.getStartingRow() - 1; i < rowCount; i++) {
+                for (int j = 1; j <= columnCount; j++) {
+                    columnValue = grs != null ? grs.getValueAt(i + 1, j) : null;
+                    dataEntry.addValue(useColumnNumbers ? Integer.toString(j) :
+                            columnsMap.get(j), new ParamValue(columnValue));
+                }
+                    /* write data */
+                this.writeResultEntry(xmlWriter, dataEntry, params, queryLevel);
+            }
+        } catch (IOException e) {
+            throw new DataServiceFault(e, "Error in creating writing result for GSpreadQuery.execute");
+        }
+    }
+
+    private String getPosStringFromId(String id) {
 		return id.substring(id.lastIndexOf("/") + 1);
 	}
 

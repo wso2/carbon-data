@@ -74,6 +74,7 @@ public class DSTaskUtils {
 		Map<String, String> props = new HashMap<String, String>();
 		if (dsTaskInfo.getDataTaskClassName() != null) {
 		    props.put(DSTaskConstants.DATA_TASK_CLASS_NAME, dsTaskInfo.getDataTaskClassName());
+            props.put(DSTaskConstants.TASK_NAME, dsTaskInfo.getName());
 		    triggerInfo.setDisallowConcurrentExecution(true);
 		    return new TaskInfo(
 					dsTaskInfo.getName(), DSTaskExt.class.getName(), props, triggerInfo);

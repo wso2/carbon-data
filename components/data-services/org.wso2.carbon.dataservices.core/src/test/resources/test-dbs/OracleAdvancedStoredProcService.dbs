@@ -66,6 +66,23 @@
       <param name="my_rc" sqlType="ORACLE_REF_CURSOR" type="OUT"/>
       <param name="name" sqlType="STRING" type="OUT"/>
    </query>
+
+   <query id="stored_procedure_with_ref_cursors_varray_query" useConfig="default">
+        <sql>call addAndGetMemberGroup(:id, :name, :city, mem_array_type(:member),:groupNameRef)</sql>
+        <result element="Groups" rowName="Group">
+            <element column="Name" name="Name" xsdType="string"/>
+        </result>
+        <param name="id" ordinal="1" sqlType="INTEGER"/>
+        <param name="name" ordinal="2" sqlType="STRING"/>
+        <param name="city" ordinal="3" sqlType="STRING"/>
+        <param name="member" ordinal="4" paramType="ARRAY" sqlType="STRING"/>
+        <param name="groupNameRef" ordinal="5" sqlType="ORACLE_REF_CURSOR" type="OUT"/>
+   </query>
+
+   <query id="delete_added_groups_query" useConfig="default">
+         <sql>DELETE FROM GROUPS  WHERE GROUPNUM=:id</sql>
+         <param name="id" ordinal="1" sqlType="INTEGER"/>
+   </query>
    
    <operation name="stored_procedure_with_out_params_op">
       <call-query href="stored_procedure_with_out_params_query">
@@ -87,6 +104,21 @@
       <call-query href="stored_procedure_with_ref_cursors_query">
          <with-param name="id" query-param="id" />
       </call-query>
+   </operation>
+
+   <operation name="stored_procedure_with_ref_cursors_varray_op">
+        <call-query href="stored_procedure_with_ref_cursors_varray_query">
+            <with-param name="id" query-param="id" />
+            <with-param name="name" query-param="name" />
+            <with-param name="city" query-param="city" />
+            <with-param name="member" query-param="member" />
+        </call-query>
+   </operation>
+
+   <operation name="delete_groups_op">
+        <call-query href="delete_added_groups_query">
+            <with-param name="id" query-param="id"/>
+        </call-query>
    </operation>
       
 </data>

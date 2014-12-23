@@ -34,8 +34,6 @@ import org.wso2.carbon.dataservices.core.internal.DataServicesDSComponent;
 import org.wso2.carbon.event.core.EventBroker;
 import org.wso2.carbon.event.core.Message;
 import org.wso2.carbon.event.core.subscription.Subscription;
-import org.wso2.carbon.user.core.UserStoreException;
-import org.wso2.carbon.user.core.service.RealmService;
 
 import javax.xml.namespace.QName;
 import java.util.*;
@@ -136,16 +134,6 @@ public abstract class EventTrigger {
                 PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(tenantId, true);
                 PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(
                         CarbonConstants.REGISTRY_SYSTEM_USERNAME);
-                RealmService realmService = DataServicesDSComponent.getRealmService();
-                if (realmService != null) {
-                    try {
-                    	PrivilegedCarbonContext.getThreadLocalCarbonContext().setUserRealm(
-                                realmService.getBootstrapRealm());
-                    } catch (UserStoreException e) {
-                        throw new DataServiceFault(e,
-                                "Error occurred while registering the user realm");
-                    }
-                }
                 subscription = new Subscription();
                 subscription.setEventSinkURL(epr);
                 subscription.setId(UUID.randomUUID().toString());

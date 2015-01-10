@@ -4,7 +4,7 @@ options
 }
 PARSER_BEGIN(Expression)
 
-package org.wso2.carbon.dataService.poc.expression;
+package org.wso2.carbon.ndataService.expression;
 
 import java.util.HashMap;
 import java.util.Map;

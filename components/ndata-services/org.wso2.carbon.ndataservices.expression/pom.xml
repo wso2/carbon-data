@@ -20,231 +20,163 @@
 
     <parent>
         <groupId>org.wso2.carbon</groupId>
-        <artifactId>data-services</artifactId>
+        <artifactId>ndata-services</artifactId>
         <version>4.3.0-SNAPSHOT</version>
-	<relativePath>../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.wso2.carbon</groupId>
-    <artifactId>org.wso2.carbon.dataservices.core</artifactId>
+    <artifactId>org.wso2.carbon.ndataservices.expression</artifactId>
     <version>4.3.0-SNAPSHOT</version>
-    <packaging>bundle</packaging>
-    <name>WSO2 Carbon - Data Services Core</name>
+    <!--<packaging>bundle</packaging>-->
+    <packaging>jar</packaging>
+    <name>WSO2 Carbon - NData Services Expression</name>
     <url>http://wso2.org</url>
-    <description>WSO2 Data Services Core Bundle</description>
+    <description>WSO2 Data Services Expression</description>
 
     <dependencies>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.core</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.core.services</artifactId>
-       </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.event.core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.transaction.manager</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.utils</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.ndatasource.core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.ndatasource.rdbms</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>au.com.bytecode.opencsv</groupId>
-            <artifactId>opencsv</artifactId>
-        </dependency>
-        <!-- H2 jdbc driver for tests -->
-        <dependency>
-            <groupId>com.h2database.wso2</groupId>
-            <artifactId>h2-database-engine</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <!-- MySQL jdbc driver -->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.derby</groupId>
-            <artifactId>derby</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.hp.hpl.jena.wso2</groupId>
-            <artifactId>arq</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.gdata.wso2</groupId>
-            <artifactId>gdata-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.gdata.wso2</groupId>
-            <artifactId>gdata-spreadsheet</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava.wso2</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.poi.wso2</groupId>
-            <artifactId>poi</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.poi.wso2</groupId>
-            <artifactId>poi-ooxml</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.dataservices.common</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.dataservices.sql.driver</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.webharvest.wso2</groupId>
-            <artifactId>webharvest-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.sf.saxon.wso2</groupId>
-            <artifactId>saxon</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-httpclient.wso2</groupId>
-            <artifactId>commons-httpclient</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>bsh.wso2</groupId>
-            <artifactId>bsh</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.htmlcleaner.wso2</groupId>
-            <artifactId>htmlcleaner</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.spec.javax.transaction</groupId>
-            <artifactId>jboss-transaction-api_1.1_spec</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ojdbc</groupId>
-            <artifactId>ojdbc6</artifactId>
-            <scope>system</scope>
-            <systemPath>${basedir}/src/test/resources/lib/ojdbc6.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>org.mongodb.wso2</groupId>
-            <artifactId>mongo-java-driver</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.datastax.cassandra.wso2</groupId>
-            <artifactId>cassandra-driver-core</artifactId>
-        </dependency>
     </dependencies>
 
     <build>
         <plugins>
-           <!-- <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-scr-plugin</artifactId>
-            </plugin> -->
+            <!-- <plugin>
+                 <groupId>org.apache.felix</groupId>
+                 <artifactId>maven-scr-plugin</artifactId>
+             </plugin> -->
 
             <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.2</version>
-                <inherited>true</inherited>
-                <configuration>
-                    <forkMode>pertest</forkMode>
-                    <argLine>-enableassertions</argLine>
-                    <testFailureIgnore>false</testFailureIgnore>
-                    <skip>false</skip>
-                    <includes>
-                        <include>**/*TestSuite.java</include>
-                    </includes>
-                    <excludes>
-                        <exclude>**/MySQLTestSuite.java</exclude>
-                        <exclude>**/OracleTestSuite.java</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <Bundle-Name>${project.artifactId}</Bundle-Name>
-                        <Private-Package>org.wso2.carbon.dataservices.core.internal</Private-Package>
-                        <Export-Package>
-                            !org.wso2.carbon.dataservices.core.internal,
-                            org.wso2.carbon.dataservices.core.*
-                        </Export-Package>
-                        <Import-Package>
-                            !org.wso2.carbon.dataservices.core.*,
-                            org.apache.axis2.*; version="${axis2.osgi.version.range}",
-                            *;resolution:=optional
-                        </Import-Package>
-                        <DynamicImport-Package>*</DynamicImport-Package>
-                        <Axis2Deployer>DataServicesDeployer</Axis2Deployer>
-                        <Axis2RequiredServices>
-                            org.wso2.carbon.dataservices.core.internal.DSDummyService,
-                            org.wso2.carbon.transaction.manager.TransactionManagerDummyService
-                        </Axis2RequiredServices>
-                    </instructions>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-scr-plugin</artifactId>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>javacc-maven-plugin</artifactId>
+                <version>2.6</version>
                 <executions>
                     <execution>
-                        <id>generate-test-repository</id>
-                        <phase>generate-test-resources</phase>
-                        <configuration>
-                            <tasks>
-                                <echo>######################################</echo>
-                                <echo>Creating Repository for Data Services</echo>
-                                <echo>######################################</echo>
-                                <mkdir dir="${basedir}/target/repository"/>
-                                <mkdir dir="${basedir}/target/repository/dataservices"/>
-                                <mkdir dir="${basedir}/target/repository/services"/>
-                                <mkdir dir="${basedir}/target/repository/modules"/>
-                                <mkdir dir="${basedir}/target/repository/database"/>
-                                <property name="test_dbs_files_dir"
-                                          value="${basedir}/src/test/resources/test-dbs"/>
-                                <copy todir="${basedir}/target/repository/dataservices">
-                                    <fileset dir="${test_dbs_files_dir}">
-                                        <include name="**/*.dbs"/>
-                                    </fileset>
-                                </copy>
-                            </tasks>
-                        </configuration>
+                        <id>javacc</id>
                         <goals>
-                            <goal>run</goal>
+                            <goal>javacc</goal>
                         </goals>
+                        <configuration>
+                            <lookAhead>2</lookAhead>
+                            <isStatic>false</isStatic>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
+
+            <!--<plugin>-->
+                <!--<groupId>org.apache.maven.plugins</groupId>-->
+                <!--<artifactId>maven-compiler-plugin</artifactId>-->
+                <!--<version>2.5.1</version>-->
+                <!--<configuration>-->
+                    <!--<source>${JDK_VERSION}</source>-->
+                    <!--<target>${JDK_VERSION}</target>-->
+                    <!--<excludes>-->
+
+                    <!--</excludes>-->
+                <!--</configuration>-->
+            <!--</plugin>-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>com.wso2.training.axis2.client.ClientTest</mainClass>
+                            <classpathPrefix>lib/</classpathPrefix>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <!--<plugin>-->
+                <!--<artifactId>maven-surefire-plugin</artifactId>-->
+                <!--<version>2.2</version>-->
+                <!--<inherited>true</inherited>-->
+                <!--<configuration>-->
+                    <!--<forkMode>pertest</forkMode>-->
+                    <!--<argLine>-enableassertions</argLine>-->
+                    <!--<testFailureIgnore>false</testFailureIgnore>-->
+                    <!--<skip>false</skip>-->
+                    <!--<includes>-->
+                        <!--<include>**/*TestSuite.java</include>-->
+                    <!--</includes>-->
+                    <!--<excludes>-->
+                        <!--<exclude>**/MySQLTestSuite.java</exclude>-->
+                        <!--<exclude>**/OracleTestSuite.java</exclude>-->
+                    <!--</excludes>-->
+                <!--</configuration>-->
+            <!--</plugin>-->
+            <!--<plugin>-->
+                <!--<groupId>org.apache.felix</groupId>-->
+                <!--<artifactId>maven-bundle-plugin</artifactId>-->
+                <!--<extensions>true</extensions>-->
+                <!--<configuration>-->
+                    <!--<instructions>-->
+                        <!--<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>-->
+                        <!--<Bundle-Name>${project.artifactId}</Bundle-Name>-->
+                        <!--<Private-Package>org.wso2.carbon.dataservices.core.internal</Private-Package>-->
+                        <!--<Export-Package>-->
+                            <!--!org.wso2.carbon.dataservices.core.internal,-->
+                            <!--org.wso2.carbon.dataservices.core.*-->
+                        <!--</Export-Package>-->
+                        <!--<Import-Package>-->
+                            <!--!org.wso2.carbon.dataservices.core.*,-->
+                            <!--org.apache.axis2.*; version="${axis2.osgi.version.range}",-->
+                            <!--*;resolution:=optional-->
+                        <!--</Import-Package>-->
+                        <!--<DynamicImport-Package>*</DynamicImport-Package>-->
+                        <!--<Axis2Deployer>DataServicesDeployer</Axis2Deployer>-->
+                        <!--<Axis2RequiredServices>-->
+                            <!--org.wso2.carbon.dataservices.core.internal.DSDummyService,-->
+                            <!--org.wso2.carbon.transaction.manager.TransactionManagerDummyService-->
+                        <!--</Axis2RequiredServices>-->
+                    <!--</instructions>-->
+                <!--</configuration>-->
+            <!--</plugin>-->
+
+            <!--<plugin>-->
+                <!--<groupId>org.apache.felix</groupId>-->
+                <!--<artifactId>maven-scr-plugin</artifactId>-->
+            <!--</plugin>-->
+
+            <!--<plugin>-->
+                <!--<groupId>org.apache.maven.plugins</groupId>-->
+                <!--<artifactId>maven-antrun-plugin</artifactId>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<id>generate-test-repository</id>-->
+                        <!--<phase>generate-test-resources</phase>-->
+                        <!--<configuration>-->
+                            <!--<tasks>-->
+                                <!--<echo>######################################</echo>-->
+                                <!--<echo>Creating Repository for Data Services</echo>-->
+                                <!--<echo>######################################</echo>-->
+                                <!--<mkdir dir="${basedir}/target/repository"/>-->
+                                <!--<mkdir dir="${basedir}/target/repository/dataservices"/>-->
+                                <!--<mkdir dir="${basedir}/target/repository/services"/>-->
+                                <!--<mkdir dir="${basedir}/target/repository/modules"/>-->
+                                <!--<mkdir dir="${basedir}/target/repository/database"/>-->
+                                <!--<property name="test_dbs_files_dir"-->
+                                          <!--value="${basedir}/src/test/resources/test-dbs"/>-->
+                                <!--<copy todir="${basedir}/target/repository/dataservices">-->
+                                    <!--<fileset dir="${test_dbs_files_dir}">-->
+                                        <!--<include name="**/*.dbs"/>-->
+                                    <!--</fileset>-->
+                                <!--</copy>-->
+                            <!--</tasks>-->
+                        <!--</configuration>-->
+                        <!--<goals>-->
+                            <!--<goal>run</goal>-->
+                        <!--</goals>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+            <!--</plugin>-->
         </plugins>
     </build>
 

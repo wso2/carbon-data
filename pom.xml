@@ -13,6 +13,7 @@
     <modules>
         <module>service-stubs/data-services</module>
         <module>components/data-services</module>
+        <module>components/ndata-services</module>
         <module>components/dbconsole</module>
         <module>features/cassandra-jdbc-1.2.5</module>
         <module>features/data-services</module>

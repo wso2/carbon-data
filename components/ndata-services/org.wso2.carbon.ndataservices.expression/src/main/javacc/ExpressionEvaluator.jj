@@ -2,9 +2,9 @@ options
 {
     LOOKAHEAD=3;
 }
-PARSER_BEGIN(Expression)
+PARSER_BEGIN(ExpressionEvaluator)
 
-package org.wso2.carbon.ndataService.expression;
+package org.wso2.carbon.dataservices.expression;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,69 +12,64 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
 
-public class Expression
+public class ExpressionEvaluator
 {
     public static Map<String, Double> map = new HashMap<String, Double>();
     public static Map<String, String> map1 = new HashMap<String, String>();
+    private static Data data;
 
-    public static String parse(String expression) throws ParseException
+    public static void init(Data dataIn) {
+        data = dataIn;
+    }
+
+    public static String evaluate(String expression) throws ParseException
     {
         map.put("val1", 12d);
         map.put("val2", 3d);
         map1.put("str1", "this is test");
         map1.put("str2", "hello");
         InputStream stream = new ByteArrayInputStream(expression.getBytes());
-        Expression parser = new Expression(stream);
+        ExpressionEvaluator parser = new ExpressionEvaluator(stream);
         return parser.program();
     }
 
     public static void parseSysIn() throws ParseException
     {
 
-        Expression parser = new Expression(System.in);
+        ExpressionEvaluator parser = new ExpressionEvaluator(System.in);
         while (true)
         {
             System.out.println(parser.program());
         }
     }
 
-    public static double getLength(String param){
-        System.out.println("getLength param "+param);
-        System.out.println("getLength map1 "+map1);
-        String[] arr = param.split("\\.");
-        System.out.println("getLength arr "+Arrays.toString(arr));
-        String val = "";
-        for (String s: arr)
-        {
-            System.out.println("getLength s "+s);
-            val = getFromMap(map1,s);
+    public static double getLength(String param) throws ParseException{
+        Object value = data.getVariable(param);
+        if (value instanceof String) {
+            return (double)value.toString().length();
         }
-        System.out.println("getLength val "+val);
-        return (double)val.length();
+        throw new ParseException("variable type missmatch expected String but found "+value.getClass().getName());
     }
 
-    public static double getDoubleVal(String var){
-        return map.get(var);
-    }
-
-    public static String getVal(String var){
-        String[] arr = var.split("\\.");
-        System.out.println("getLength arr "+Arrays.toString(arr));
-        String val = "";
-        for (String s: arr)
-        {
-            System.out.println("getLength s "+s);
-            val = getFromMap(map1,s);
+    public static double getDoubleVal(String param) throws ParseException{
+        Object value = data.getVariable(param);
+        if (value instanceof Double) {
+            return (Double)value;
+        } else if (value instanceof Number){
+            return (Double)value;
         }
-        System.out.println("getLength val "+val);
-        return val;
+        throw new ParseException("variable type missmatch : expected number but found "+value.getClass().getName());
     }
 
-    public static String getFromMap(Map map,String var){
-        return (String)map.get(var);
+    public static String getVal(String param) throws ParseException{
+        Object value = data.getVariable(param);
+        if (value instanceof String) {
+            return value.toString();
+        }
+        throw new ParseException("variable type missmatch expected String but found "+value.getClass().getName());
     }
 }
-PARSER_END(Expression)
+PARSER_END(ExpressionEvaluator)
 SKIP :
 {
     " "
@@ -109,7 +104,7 @@ String program():
     String result;
 }
 {
-    result = declaration() <EOL> { return result; }
+    result = declaration() ( <EOL>|<EOF>) { return result; }
   | <EOL>               { return "line ends"; }
   | <EOF>               { System.exit(-1); }
 }

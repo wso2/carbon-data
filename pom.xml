@@ -13,10 +13,12 @@
     <modules>
         <module>service-stubs/data-services</module>
         <module>components/data-services</module>
+        <module>components/ndata-services</module>
         <module>components/dbconsole</module>
         <module>features/cassandra-jdbc-1.2.5</module>
         <module>features/data-services</module>
         <module>features/dbconsole</module>
+        <module>features/ndata-services</module>
     </modules>
 
     <dependencyManagement>
@@ -285,6 +287,11 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.ndataservices.core</artifactId>
+                <version>${carbon.platform.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.dataservices.fileupload.stub</artifactId>
                 <version>${carbon.platform.version}</version>
             </dependency>
@@ -361,6 +368,11 @@
                 <groupId>net.jpountz.lz4.wso2</groupId>
                 <artifactId>lz4</artifactId>
                 <version>${lz4.version.data-services}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.equinox</groupId>
+                <artifactId>javax.servlet</artifactId>
+                <version>${version.javax.servlet}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -533,6 +545,7 @@
 
         <axis2.osgi.version.range>[1.6.1.wso2v11, 1.7.0)</axis2.osgi.version.range>
         <imp.pkg.version.javax.servlet>[2.6.0, 3.0.0)</imp.pkg.version.javax.servlet>
+        <version.javax.servlet>3.0.0.v201112011016</version.javax.servlet>
 
 
         <opencsv.version.data-services>1.8</opencsv.version.data-services>

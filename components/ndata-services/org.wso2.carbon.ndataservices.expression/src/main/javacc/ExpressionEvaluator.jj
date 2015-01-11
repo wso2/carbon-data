@@ -16,9 +16,9 @@ public class ExpressionEvaluator
 {
     public static Map<String, Double> map = new HashMap<String, Double>();
     public static Map<String, String> map1 = new HashMap<String, String>();
-    private static Data data;
+    private static ExpressionData data;
 
-    public static void init(Data dataIn) {
+    public static void init(ExpressionData dataIn) {
         data = dataIn;
     }
 

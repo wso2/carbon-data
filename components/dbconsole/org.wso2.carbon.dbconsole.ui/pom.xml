@@ -20,14 +20,14 @@
   <parent>
         <groupId>org.wso2.carbon</groupId>
         <artifactId>dbconsole</artifactId>
-        <version>4.3.0-SNAPSHOT</version>
+        <version>${dataservices.version}</version>
 	<relativePath>../pom.xml</relativePath>
     </parent>
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.wso2.carbon</groupId>
   <artifactId>org.wso2.carbon.dbconsole.ui</artifactId>
-  <version>4.3.0-SNAPSHOT</version>
+  <!--<version>4.3.0-SNAPSHOT</version>-->
   <packaging>bundle</packaging>
   <name>WSO2 Carbon - DB Console UI</name>
   <url>http://maven.apache.org</url>

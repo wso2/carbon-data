@@ -22,14 +22,14 @@
     <parent>
         <groupId>org.wso2.carbon</groupId>
         <artifactId>dbconsole-feature</artifactId>
-        <version>4.3.0-SNAPSHOT</version>
+        <version>${dataservices.version}</version>
 	<relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.dbconsole.ui.feature</artifactId>
     <packaging>pom</packaging>
-    <version>4.3.0-SNAPSHOT</version>
+    <!--<version>4.3.0-SNAPSHOT</version>-->
     <name>Database Console UI Feature</name>
     <url>http://wso2.org</url>
     <description>This feature contains the bundles required for Front-end Database console</description>

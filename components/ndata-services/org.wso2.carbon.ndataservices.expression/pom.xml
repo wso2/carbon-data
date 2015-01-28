@@ -21,14 +21,14 @@
     <parent>
         <groupId>org.wso2.carbon</groupId>
         <artifactId>ndata-services</artifactId>
-        <version>4.3.0-SNAPSHOT</version>
+        <version>${dataservices.version}</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.wso2.carbon</groupId>
     <artifactId>org.wso2.carbon.ndataservices.expression</artifactId>
-    <version>4.3.0-SNAPSHOT</version>
+    <!--<version>4.3.0-SNAPSHOT</version>-->
     <!--<packaging>bundle</packaging>-->
     <packaging>jar</packaging>
     <name>WSO2 Carbon - NData Services Expression</name>

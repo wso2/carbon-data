@@ -580,7 +580,6 @@
         <dataservices.package.export.version>4.3.0</dataservices.package.export.version>
 
         <carbon.kernel.version>4.3.0</carbon.kernel.version>
-        <carbon.kernel.imp.pkg.version>4.3.0</carbon.kernel.imp.pkg.version>
 
         <apache.axis2.orbit.version>1.6.1.wso2v11</apache.axis2.orbit.version>
         <apache.axis2.orbit.imp.pkg.version>[1.6.1.wso2v11, 1.7.0)</apache.axis2.orbit.imp.pkg.version>

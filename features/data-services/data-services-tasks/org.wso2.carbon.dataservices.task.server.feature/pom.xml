@@ -78,7 +78,7 @@
                             </bundles>
                             <includedFeatures>
                                 <includedFeatureDef>org.wso2.carbon.commons:org.wso2.carbon.ntask.core.feature:${carbon-commons.version}</includedFeatureDef>
-                                <includedFeatureDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.server.feature</includedFeatureDef>
+                                <includedFeatureDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.server.feature:${dataservices.version}</includedFeatureDef>
                             </includedFeatures>
                         </configuration>
                     </execution>

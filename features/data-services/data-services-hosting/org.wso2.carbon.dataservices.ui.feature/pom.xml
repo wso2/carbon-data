@@ -93,8 +93,8 @@
                                 <bundleDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.fileupload.stub</bundleDef>
                             </bundles>
                             <importFeatures>
-                                <importFeatureDef>org.wso2.carbon.service.mgt.ui</importFeatureDef>
-                                <importFeatureDef>org.wso2.carbon.ndatasource.ui</importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.service.mgt.ui:${carbon-deployment.version}</importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.ndatasource.ui:${carbon-commons.version}</importFeatureDef>
                             </importFeatures>
                         </configuration>
                     </execution>

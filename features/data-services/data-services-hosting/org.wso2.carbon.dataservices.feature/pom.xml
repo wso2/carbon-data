@@ -69,8 +69,8 @@
                                 </properties>
                             </adviceFile>
                             <includedFeatures>
-                                <includedFeatureDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.server.feature</includedFeatureDef>
-                                <includedFeatureDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.ui.feature</includedFeatureDef>
+                                <includedFeatureDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.server.feature:${dataservices.version}</includedFeatureDef>
+                                <includedFeatureDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.ui.feature:${dataservices.version}</includedFeatureDef>
                             </includedFeatures>
                         </configuration>
                     </execution>

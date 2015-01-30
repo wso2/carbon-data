@@ -98,7 +98,7 @@
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
-                        <Bundle-Version>${project.version}</Bundle-Version>
+                        <Bundle-Version>${dataservices.version}</Bundle-Version>
                         <Export-Package>
                             org.wso2.carbon.dataservices.ui.fileupload.stub.*
                             version="${dataservices.package.export.version}"

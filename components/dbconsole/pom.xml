@@ -20,7 +20,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.wso2.carbon</groupId>
+        <groupId>org.wso2.carbon.data</groupId>
         <artifactId>carbon-data</artifactId>
         <relativePath>../../pom.xml</relativePath>
         <version>4.3.0-SNAPSHOT</version>
@@ -37,53 +37,4 @@
            <module>org.wso2.carbon.dbconsole.ui</module>
     </modules>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.5</source>
-                    <target>1.5</target>
-                </configuration>
-            </plugin>			
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <Bundle-Name>${project.artifactId}</Bundle-Name>
-                        <Export-Package>
-                            org.wso2.carbon.dbconsole.ui.*
-                        </Export-Package>
-                        <DynamicImport-Package>*</DynamicImport-Package>
-                        <Import-Package>
-                            javax.servlet.*;version="${imp.pkg.version.javax.servlet}",
-                            javax.xml.namespace; version=0.0.0,
-                            *;resolution:=optional
-                        </Import-Package>
-                        <Carbon-Component>UIBundle</Carbon-Component>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.ui</artifactId>
-        </dependency>
-	<dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.h2database.wso2</groupId>
-            <artifactId>h2-database-engine</artifactId>
-        </dependency>        
-    </dependencies>
 </project>

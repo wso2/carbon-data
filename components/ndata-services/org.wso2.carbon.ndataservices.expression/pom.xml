@@ -19,14 +19,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.wso2.carbon</groupId>
+        <groupId>org.wso2.carbon.data</groupId>
         <artifactId>ndata-services</artifactId>
         <version>4.3.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.wso2.carbon</groupId>
+    <!--<groupId>org.wso2.carbon</groupId>-->
     <artifactId>org.wso2.carbon.ndataservices.expression</artifactId>
     <!--<version>4.3.0-SNAPSHOT</version>-->
     <!--<packaging>bundle</packaging>-->
@@ -44,11 +44,6 @@
 
     <build>
         <plugins>
-            <!-- <plugin>
-                 <groupId>org.apache.felix</groupId>
-                 <artifactId>maven-scr-plugin</artifactId>
-             </plugin> -->
-
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>javacc-maven-plugin</artifactId>
@@ -93,90 +88,6 @@
                     </archive>
                 </configuration>
             </plugin>
-
-            <!--<plugin>-->
-                <!--<artifactId>maven-surefire-plugin</artifactId>-->
-                <!--<version>2.2</version>-->
-                <!--<inherited>true</inherited>-->
-                <!--<configuration>-->
-                    <!--<forkMode>pertest</forkMode>-->
-                    <!--<argLine>-enableassertions</argLine>-->
-                    <!--<testFailureIgnore>false</testFailureIgnore>-->
-                    <!--<skip>false</skip>-->
-                    <!--<includes>-->
-                        <!--<include>**/*TestSuite.java</include>-->
-                    <!--</includes>-->
-                    <!--<excludes>-->
-                        <!--<exclude>**/MySQLTestSuite.java</exclude>-->
-                        <!--<exclude>**/OracleTestSuite.java</exclude>-->
-                    <!--</excludes>-->
-                <!--</configuration>-->
-            <!--</plugin>-->
-            <!--<plugin>-->
-                <!--<groupId>org.apache.felix</groupId>-->
-                <!--<artifactId>maven-bundle-plugin</artifactId>-->
-                <!--<extensions>true</extensions>-->
-                <!--<configuration>-->
-                    <!--<instructions>-->
-                        <!--<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>-->
-                        <!--<Bundle-Name>${project.artifactId}</Bundle-Name>-->
-                        <!--<Private-Package>org.wso2.carbon.dataservices.core.internal</Private-Package>-->
-                        <!--<Export-Package>-->
-                            <!--!org.wso2.carbon.dataservices.core.internal,-->
-                            <!--org.wso2.carbon.dataservices.core.*-->
-                        <!--</Export-Package>-->
-                        <!--<Import-Package>-->
-                            <!--!org.wso2.carbon.dataservices.core.*,-->
-                            <!--org.apache.axis2.*; version="${axis2.osgi.version.range}",-->
-                            <!--*;resolution:=optional-->
-                        <!--</Import-Package>-->
-                        <!--<DynamicImport-Package>*</DynamicImport-Package>-->
-                        <!--<Axis2Deployer>DataServicesDeployer</Axis2Deployer>-->
-                        <!--<Axis2RequiredServices>-->
-                            <!--org.wso2.carbon.dataservices.core.internal.DSDummyService,-->
-                            <!--org.wso2.carbon.transaction.manager.TransactionManagerDummyService-->
-                        <!--</Axis2RequiredServices>-->
-                    <!--</instructions>-->
-                <!--</configuration>-->
-            <!--</plugin>-->
-
-            <!--<plugin>-->
-                <!--<groupId>org.apache.felix</groupId>-->
-                <!--<artifactId>maven-scr-plugin</artifactId>-->
-            <!--</plugin>-->
-
-            <!--<plugin>-->
-                <!--<groupId>org.apache.maven.plugins</groupId>-->
-                <!--<artifactId>maven-antrun-plugin</artifactId>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<id>generate-test-repository</id>-->
-                        <!--<phase>generate-test-resources</phase>-->
-                        <!--<configuration>-->
-                            <!--<tasks>-->
-                                <!--<echo>######################################</echo>-->
-                                <!--<echo>Creating Repository for Data Services</echo>-->
-                                <!--<echo>######################################</echo>-->
-                                <!--<mkdir dir="${basedir}/target/repository"/>-->
-                                <!--<mkdir dir="${basedir}/target/repository/dataservices"/>-->
-                                <!--<mkdir dir="${basedir}/target/repository/services"/>-->
-                                <!--<mkdir dir="${basedir}/target/repository/modules"/>-->
-                                <!--<mkdir dir="${basedir}/target/repository/database"/>-->
-                                <!--<property name="test_dbs_files_dir"-->
-                                          <!--value="${basedir}/src/test/resources/test-dbs"/>-->
-                                <!--<copy todir="${basedir}/target/repository/dataservices">-->
-                                    <!--<fileset dir="${test_dbs_files_dir}">-->
-                                        <!--<include name="**/*.dbs"/>-->
-                                    <!--</fileset>-->
-                                <!--</copy>-->
-                            <!--</tasks>-->
-                        <!--</configuration>-->
-                        <!--<goals>-->
-                            <!--<goal>run</goal>-->
-                        <!--</goals>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-            <!--</plugin>-->
         </plugins>
     </build>
 

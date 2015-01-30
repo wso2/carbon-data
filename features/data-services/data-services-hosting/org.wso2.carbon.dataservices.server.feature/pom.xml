@@ -20,10 +20,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.wso2.carbon</groupId>
+        <groupId>org.wso2.carbon.data</groupId>
         <artifactId>data-services-hosting-feature</artifactId>
         <version>4.3.0-SNAPSHOT</version>
-	<relativePath>../pom.xml</relativePath>
+	    <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -36,15 +36,15 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.data</groupId>
             <artifactId>org.wso2.carbon.dataservices.core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.data</groupId>
             <artifactId>org.wso2.carbon.dataservices.common</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.data</groupId>
             <artifactId>org.wso2.carbon.dataservices.sql.driver</artifactId>
         </dependency>
         <dependency>
@@ -116,17 +116,17 @@
             <artifactId>commons-pool</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.commons</groupId>
             <artifactId>org.wso2.carbon.event.server.feature</artifactId>
             <type>zip</type>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.deployment</groupId>
             <artifactId>org.wso2.carbon.service.mgt.feature</artifactId>
             <type>zip</type>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.commons</groupId>
             <artifactId>org.wso2.carbon.transaction.manager.feature</artifactId>
             <type>zip</type>
         </dependency>
@@ -155,11 +155,11 @@
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.dataservices.core
+                                <bundleDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.core
                                 </bundleDef>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.dataservices.common
+                                <bundleDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.common
                                 </bundleDef>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.dataservices.sql.driver
+                                <bundleDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.sql.driver
                                 </bundleDef>
                                 <bundleDef>com.google.gdata.wso2:gdata-core</bundleDef>
                                 <bundleDef>com.google.gdata.wso2:gdata-spreadsheet</bundleDef>

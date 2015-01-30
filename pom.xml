@@ -579,7 +579,7 @@
 
     <properties>
         <dataservices.version>4.3.0-SNAPSHOT</dataservices.version>
-        <dataservices.package.export.version>4.3.0-SNAPSHOT</dataservices.package.export.version>
+        <dataservices.package.export.version>4.3.0</dataservices.package.export.version>
 
         <carbon.kernel.version>4.3.0</carbon.kernel.version>
         <carbon.kernel.imp.pkg.version>4.3.0</carbon.kernel.imp.pkg.version>

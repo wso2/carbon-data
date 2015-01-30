@@ -622,7 +622,7 @@
         <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
 
         <carbon-commons.version>4.3.1</carbon-commons.version>
-        <carbon-deployment.version>4.3.0-SNAPSHOT</carbon-deployment.version>
+        <carbon-deployment.version>4.3.0</carbon-deployment.version>
 
 
     </properties>

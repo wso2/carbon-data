@@ -32,6 +32,8 @@ import org.apache.axis2.transport.http.SimpleHTTPServer;
 import javax.xml.namespace.QName;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
+import java.net.Socket;
 
 public class UtilServer {
     private static int count = 0;
@@ -96,6 +98,7 @@ public class UtilServer {
             throw new AxisFault("Thread interuptted", e1);
         }
 
+        waitForService();
 
         count++;
     }
@@ -121,6 +124,9 @@ public class UtilServer {
             }
 
         }
+
+        waitForService();
+
         count++;
     }
 
@@ -243,5 +249,32 @@ public class UtilServer {
                 configContext.createServiceGroupContext((AxisServiceGroup) service.getParent());
         return serviceGroupContext.getServiceContext(service);
     }
-    
+
+
+    public static void waitForService() throws AxisFault {
+        System.out.println("waiting for server start on port " + TESTING_PORT);
+        Socket sock = null;
+        int count = 1;
+        while (true) {
+            try {
+                sock = new Socket("localhost", TESTING_PORT);
+                if (sock != null) {
+                    break;
+                }
+            } catch (IOException e) {
+                try {
+                    count++;
+                    Thread.sleep(10000);
+                } catch (InterruptedException e1) {
+                    throw new AxisFault("Thread interuptted", e1);
+                }
+            }
+            if (count > 30) {
+                System.out.println("Server start failed on port " + TESTING_PORT);;
+                throw new AxisFault("Server start failed on port " + TESTING_PORT);
+            }
+        }
+        System.out.println("Server started on port " + TESTING_PORT);
+    }
+
 }

@@ -45,6 +45,7 @@ public class AbstractBinaryDataServiceTest extends DataServiceBaseTestCase {
 	private byte[] retrieveBinaryData(String id) throws Exception {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("id", id);
+        TestUtils.checkForService(this.epr);
 		OMElement result = TestUtils.callOperation(this.epr, "retrieve_binary_data_op",	params);
 		String value = TestUtils.getFirstValue(result, "/DataList/DataEntry/data", 
 				TestUtils.DEFAULT_DS_WS_NAMESPACE);
@@ -56,6 +57,7 @@ public class AbstractBinaryDataServiceTest extends DataServiceBaseTestCase {
 		params.put("id", id);
 		params.put("data", new String(Base64.encodeBase64(data), DBConstants.DEFAULT_CHAR_SET_TYPE));
 		try {
+            TestUtils.checkForService(this.epr);
 			assertNotNull(TestUtils.callOperation(this.epr, "store_binary_data_op",
 					params));
 		} catch (AxisFault e) {
@@ -71,6 +73,7 @@ public class AbstractBinaryDataServiceTest extends DataServiceBaseTestCase {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("id", id);
 		try {
+            TestUtils.checkForService(this.epr);
 			assertNotNull(TestUtils.callOperation(this.epr, "delete_binary_data_op",
 					params));
 		} catch (AxisFault e) {

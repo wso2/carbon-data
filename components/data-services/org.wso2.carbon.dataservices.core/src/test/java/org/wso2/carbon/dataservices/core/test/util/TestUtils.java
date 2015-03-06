@@ -33,7 +33,9 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.StringReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -289,5 +291,45 @@ public class TestUtils {
 		}
 		return true;
 	}
-	
+
+    public static void checkForService(String url) throws AxisFault {
+        int defaultTimeout = 5000; //5seconds
+        checkForService(url, defaultTimeout);
+    }
+
+    public static void checkForService(String url, int timeout) throws AxisFault {
+        url = url.replaceFirst("^https", "http");
+        url = url + "?wsdl";
+        System.out.println("Checking availability of url " + url);
+        int count = 1;
+        while (true) {
+            try {
+                HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+                connection.setRequestMethod("GET");
+                connection.setConnectTimeout(timeout);
+                connection.setReadTimeout(timeout);
+                int responseCode = connection.getResponseCode();
+                if (200 <= responseCode && responseCode <= 399) {
+                    System.out.println("Url " + url + " is available");
+                    break;
+                }
+                System.out.println("Connection attempt no " + count + " unsuccessful");
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException e1) {
+                    throw new AxisFault("Thread interuptted", e1);
+                }
+            } catch (IOException exception) {
+                System.out.println("Connection attempt no " + count + " failed due to " + exception.getMessage());
+            }
+            count++;
+            if (count > 30) {
+                int timeInMins = (count * 10000) / 60000;
+                System.out.println("Connection failed to url " + url + " for " + timeInMins + " minutes");
+                throw new AxisFault("Connection failed to url " + url + " for " + timeInMins + " minutes");
+            }
+        }
+
+    }
+
 }

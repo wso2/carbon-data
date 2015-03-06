@@ -42,6 +42,7 @@ public abstract class AbstractStoredProcedureServiceTest extends
 	protected void storedProcNoParams() {
 		TestUtils.showMessage(this.epr + " - storedProcNoParams");
 		try {
+            TestUtils.checkForService(this.epr);
 			OMElement result = TestUtils.callOperation(this.epr,
 					"stored_procedure_noparam_op", null);
 			assertTrue(TestUtils.validateResultStructure(result,
@@ -61,6 +62,7 @@ public abstract class AbstractStoredProcedureServiceTest extends
 		params.put("customerNumber", "103");
 		params.put("contactLastName", "Schmitt");
 		try {
+            TestUtils.checkForService(this.epr);
 			OMElement result = TestUtils.callOperation(this.epr,
 					"stored_procedure_withparam_op", params);
 			assertTrue(TestUtils.validateResultStructure(result,
@@ -81,6 +83,7 @@ public abstract class AbstractStoredProcedureServiceTest extends
 	protected void storedProcNested1() {
 		TestUtils.showMessage(this.epr + " - storedProcNested1");
 		try {
+            TestUtils.checkForService(this.epr);
 			OMElement result = TestUtils.callOperation(this.epr,
 					"stored_procedure_nested_op1", null);
 			assertTrue(TestUtils.validateResultStructure(result,
@@ -97,6 +100,7 @@ public abstract class AbstractStoredProcedureServiceTest extends
 	protected void storedProcNested1ForDateTime(){
 		TestUtils.showMessage(this.epr + " - storedProcNested1ForDateTime");
 		try {
+            TestUtils.checkForService(this.epr);
 			OMElement result = TestUtils.callOperation(this.epr,
 					"stored_procedure_nested_for_date_time_op1", null);
 			assertTrue(TestUtils.validateResultStructure(result,
@@ -113,6 +117,7 @@ public abstract class AbstractStoredProcedureServiceTest extends
 	protected void storedProcNested2() {
 		TestUtils.showMessage(this.epr + " - storedProcNested2");
 		try {
+            TestUtils.checkForService(this.epr);
 			OMElement result = TestUtils.callOperation(this.epr,
 					"stored_procedure_nested_op2", null);
 			assertTrue(TestUtils.validateResultStructure(result,
@@ -129,6 +134,7 @@ public abstract class AbstractStoredProcedureServiceTest extends
 	protected void storedProcNested2ForDateTime(){
 		TestUtils.showMessage(this.epr + " - storedProcNested2ForDateTime");
 		try {
+            TestUtils.checkForService(this.epr);
 			OMElement result = TestUtils.callOperation(this.epr,
 					"stored_procedure_nested_for_date_time_op2", null);
 			assertTrue(TestUtils.validateResultStructure(result,
@@ -145,6 +151,7 @@ public abstract class AbstractStoredProcedureServiceTest extends
 	protected void storedProcNested3() {
 		TestUtils.showMessage(this.epr + " - storedProcNested3");
 		try {
+            TestUtils.checkForService(this.epr);
 			OMElement result = TestUtils.callOperation(this.epr,
 					"stored_procedure_nested_op3", null);
 			assertTrue(TestUtils.validateResultStructure(result,
@@ -161,6 +168,7 @@ public abstract class AbstractStoredProcedureServiceTest extends
 	protected void storedProcNested3ForDateTime(){
 		TestUtils.showMessage(this.epr + " - storedProcNested3ForDateTime");
 		try {
+            TestUtils.checkForService(this.epr);
 			OMElement result = TestUtils.callOperation(this.epr,
 					"stored_procedure_nested_for_date_time_op3", null);
 			assertTrue(TestUtils.validateResultStructure(result,
@@ -183,6 +191,7 @@ public abstract class AbstractStoredProcedureServiceTest extends
         params.put("contactLastName", "&Silva");
         params.put("contactFirstName", "Kelvin");
         try {
+            TestUtils.checkForService(this.epr);
             TestUtils.callOperation(this.epr,
                     "stored_procedure_with_wrong_result_set", params);
             Map<String, String> params1 = new HashMap<String, String>();
@@ -205,6 +214,7 @@ public abstract class AbstractStoredProcedureServiceTest extends
 	protected void storedFuncNoParams() {
 		TestUtils.showMessage(this.epr + " - storedFuncNoParams");
 		try {
+            TestUtils.checkForService(this.epr);
 			OMElement result = TestUtils.callOperation(this.epr,
 					"stored_func_noparam_op", null);
 			String val = TestUtils.getFirstValue(result,
@@ -225,6 +235,7 @@ public abstract class AbstractStoredProcedureServiceTest extends
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("customerNumber", "128");
 		try {
+            TestUtils.checkForService(this.epr);
 			OMElement result = TestUtils.callOperation(this.epr,
 					"stored_func_withparam_op", params);
 			String val = TestUtils.getFirstValue(result,
@@ -245,6 +256,7 @@ public abstract class AbstractStoredProcedureServiceTest extends
                 params.put("customerNumber", "103");
                 params.put("contactLastName", "Scott");
                 try {
+                    TestUtils.checkForService(this.epr);
                         TestUtils.callUpdateOperation(this.epr,
                                 "stored_procedure_withfaulty_op", params);
                         OMElement result = TestUtils.callOperation(this.epr,

@@ -34,6 +34,7 @@ public abstract class AbstractUDTTest extends DataServiceBaseTestCase {
     protected void selectUDTsFromTable () {
         TestUtils.showMessage(this.epr + " - selectUDTsFromTable");
         try {
+            TestUtils.checkForService(this.epr);
 			OMElement result = TestUtils.callOperation(this.epr,
 					"select_udt_from_table", null);
 			assertTrue(TestUtils.validateResultStructure(result, TestUtils.CUSTOMER_XSD_PATH));
@@ -46,6 +47,7 @@ public abstract class AbstractUDTTest extends DataServiceBaseTestCase {
     protected void selectUDTAsOutParameterOfStoredProc() {
         TestUtils.showMessage(this.epr + " - selectUDTAsOutParameterOfStoredProc");
         try {
+            TestUtils.checkForService(this.epr);
 			OMElement result = TestUtils.callOperation(this.epr,
 					"select_udt_as_out_param", null);
 			assertTrue(TestUtils.validateResultStructure(result, TestUtils.CUSTOMER_XSD_PATH));

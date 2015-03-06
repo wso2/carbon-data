@@ -38,6 +38,7 @@ public abstract class AbstractResourceServiceTest extends
 	protected void resourceGET() {
 		TestUtils.showMessage(this.epr + " - resourceGET");
 		try {
+            TestUtils.checkForService(this.epr);
 			OMElement result = TestUtils.getAsResource(this.epr, "customers1",
 					null, "GET");
 			assertTrue(TestUtils.validateResultStructure(result,
@@ -54,6 +55,7 @@ public abstract class AbstractResourceServiceTest extends
 	protected void resourcePOST() {
 		TestUtils.showMessage(this.epr + " - resourcePOST");
 		try {
+            TestUtils.checkForService(this.epr);
 			OMElement result = TestUtils.getAsResource(this.epr, "customers2",
 					null, "POST");
 			assertTrue(TestUtils.validateResultStructure(result,

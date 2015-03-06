@@ -43,6 +43,7 @@ public class AbstractAdvancedStoredProcServiceTest extends DataServiceBaseTestCa
 	protected void storedProcWithOutParams() {
 		TestUtils.showMessage(this.epr + " - storedProcWithOutParams");
 		try {
+            TestUtils.checkForService(this.epr);
 			OMElement result = TestUtils.callOperation(this.epr,
 					"stored_procedure_with_out_params_op", null);
 			String customerNumber = TestUtils.getFirstValue(result, 
@@ -63,6 +64,7 @@ public class AbstractAdvancedStoredProcServiceTest extends DataServiceBaseTestCa
 	protected void storedProcWithOutParamsAndRS() {
 		TestUtils.showMessage(this.epr + " - storedProcWithOutParamsAndRS");
 		try {
+            TestUtils.checkForService(this.epr);
 			OMElement result = TestUtils.callOperation(this.epr,
 					"stored_procedure_with_out_params_result_set_op", null);
 			String customerNumber = TestUtils.getFirstValue(result, 
@@ -81,6 +83,7 @@ public class AbstractAdvancedStoredProcServiceTest extends DataServiceBaseTestCa
 	protected void storedProcWithInOutParamsAndRS() {
 		TestUtils.showMessage(this.epr + " - storedProcWithInOutParamsAndRS");
 		try {
+            TestUtils.checkForService(this.epr);
 			Map<String, String> params = new HashMap<String, String>();
 			params.put("customerNumber", "103");
 			OMElement result = TestUtils.callOperation(this.epr,
@@ -101,6 +104,7 @@ public class AbstractAdvancedStoredProcServiceTest extends DataServiceBaseTestCa
     protected void storedProcWithRefCursors() {
         TestUtils.showMessage(this.epr + " - storedProcWithRefCursors");
         try {
+            TestUtils.checkForService(this.epr);
 			Map<String, String> params = new HashMap<String, String>();
 			params.put("id", "480");
             for (int i = 0; i <= 1000; i++) {
@@ -125,6 +129,7 @@ public class AbstractAdvancedStoredProcServiceTest extends DataServiceBaseTestCa
     protected void storedProcWithRefCursorsVarrays() {
         TestUtils.showMessage(this.epr + " - storedProcWithRefCursors&Varrays");
         try {
+            TestUtils.checkForService(this.epr);
             for (int i = 0; i <= 5; i++) {
                 List<List<String>> params = new ArrayList<List<String>>();
                 params.add(this.getList("id", "" + i));

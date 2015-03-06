@@ -40,6 +40,7 @@ public abstract class AbstractBasicServiceTest extends DataServiceBaseTestCase {
 	protected void basicSelectWithFields() {
 		TestUtils.showMessage(this.epr + " - basicSelectWithFields");
 		try {
+            TestUtils.checkForService(this.epr);
 			OMElement result = TestUtils.callOperation(this.epr,
 					"select_op_given_fields", null);
 			assertTrue(TestUtils.validateResultStructure(result, TestUtils.CUSTOMER_XSD_PATH));
@@ -55,6 +56,7 @@ public abstract class AbstractBasicServiceTest extends DataServiceBaseTestCase {
 	protected void basicSelectAll() {
 		TestUtils.showMessage(this.epr + " - basicSelectAll");
 		try {
+            TestUtils.checkForService(this.epr);
 			OMElement result = TestUtils.callOperation(this.epr,
 					"select_op_all_fields", null);
 			assertTrue(TestUtils.validateResultStructure(result, TestUtils.PRODUCTS_XSD_PATH));
@@ -71,6 +73,7 @@ public abstract class AbstractBasicServiceTest extends DataServiceBaseTestCase {
 	protected void basicSelectCount() {
 		TestUtils.showMessage(this.epr + " - basicSelectCount");
 		try {
+            TestUtils.checkForService(this.epr);
 			OMElement result = TestUtils.callOperation(this.epr,
 					"select_op_count", null);
 			assertTrue(TestUtils.validateResultStructure(result, TestUtils.ORDER_COUNT_XSD_PATH));
@@ -90,6 +93,7 @@ public abstract class AbstractBasicServiceTest extends DataServiceBaseTestCase {
 	protected void basicSelectWithAttributes() {
 		TestUtils.showMessage(this.epr + " - basicSelectWithAttributes");
 		try {
+            TestUtils.checkForService(this.epr);
 			OMElement result = TestUtils.callOperation(this.epr,
 					"select_attributes_op", null);
 			assertTrue(TestUtils.validateResultStructure(result, TestUtils.PAYMENTS_XSD_PATH));
@@ -105,6 +109,7 @@ public abstract class AbstractBasicServiceTest extends DataServiceBaseTestCase {
 	protected void basicSelectWithAttributesForDateTime(){
 		TestUtils.showMessage(this.epr + " -basicSelectWithAttributesForDateTime");
 		try{
+            TestUtils.checkForService(this.epr);
 			OMElement result = TestUtils.callOperation(this.epr, "select_attributes_for_date_time_op", null);
 			assertTrue(TestUtils.validateResultStructure(result, TestUtils.PAYMENTS_WITH_DATETIME_XSD_PATH));
 			
@@ -138,6 +143,7 @@ public abstract class AbstractBasicServiceTest extends DataServiceBaseTestCase {
 		params.add(this.getList("city", "Brisbane"));
 		params.add(this.getList("contactFirstName", "Julie"));
 		try {
+            TestUtils.checkForService(this.epr);
 			OMElement result = TestUtils.callOperationWithArray(this.epr, "basic_array_type_op", params);
 			assertTrue(TestUtils.validateResultStructure(result, TestUtils.CUSTOMER_XSD_PATH));
 			String val = TestUtils.getFirstValue(result, "/Customers/Customer/customerNumber",

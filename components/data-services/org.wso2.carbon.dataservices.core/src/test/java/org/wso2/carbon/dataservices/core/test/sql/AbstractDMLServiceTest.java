@@ -42,6 +42,7 @@ public abstract class AbstractDMLServiceTest extends DataServiceBaseTestCase {
 	private int selectDataCount(String id) throws Exception {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("customerNumber", id);
+        TestUtils.checkForService(this.epr);
 		OMElement result = TestUtils.callOperation(this.epr,
 				"select_count_id_op", params);
 		String val = TestUtils.getFirstValue(result,
@@ -80,6 +81,7 @@ public abstract class AbstractDMLServiceTest extends DataServiceBaseTestCase {
 		// TODO: Fix exception occuring "org.apache.axis2.AxisFault: The input
 		// stream for an incoming message is null"
 		try {
+            TestUtils.checkForService(this.epr);
 			assertNotNull(TestUtils.callOperation(this.epr, "delete_data_op",
 					params));
 		} catch (AxisFault e) {
@@ -94,6 +96,7 @@ public abstract class AbstractDMLServiceTest extends DataServiceBaseTestCase {
 		// TODO: Fix exception occuring "org.apache.axis2.AxisFault: The input
 		// stream for an incoming message is null"
 		try {
+            TestUtils.checkForService(this.epr);
 			assertNotNull(TestUtils.callOperation(this.epr, "insert_data_op",
 					params));
 		} catch (AxisFault e) {
@@ -108,6 +111,7 @@ public abstract class AbstractDMLServiceTest extends DataServiceBaseTestCase {
 		// TODO: Fix exception occuring "org.apache.axis2.AxisFault: The input
 		// stream for an incoming message is null"
 		try {
+            TestUtils.checkForService(this.epr);
 			assertNotNull(TestUtils.callOperation(this.epr, "insert_data_val_op",
 					params));
 		} catch (AxisFault e) {
@@ -124,6 +128,7 @@ public abstract class AbstractDMLServiceTest extends DataServiceBaseTestCase {
 		// TODO: Fix exception occuring "org.apache.axis2.AxisFault: The input
 		// stream for an incoming message is null"
 		try {
+            TestUtils.checkForService(this.epr);
 			assertNotNull(TestUtils.callOperation(this.epr, "update_data_op",
 					params));
 		} catch (AxisFault e) {
@@ -140,6 +145,7 @@ public abstract class AbstractDMLServiceTest extends DataServiceBaseTestCase {
 		// TODO: Fix exception occuring "org.apache.axis2.AxisFault: The input
 		// stream for an incoming message is null"
 		try {
+            TestUtils.checkForService(this.epr);
 			assertNotNull(TestUtils.callOperation(this.epr,
 					"update_stored_proc_data_op", params));
 		} catch (AxisFault e) {

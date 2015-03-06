@@ -34,6 +34,7 @@ private String epr = null;
 	public void testExcelOldFormatNoHeaderWithInts() {
 		TestUtils.showMessage(this.epr + " - testExcelOldFormatNoHeaderWithInts");
 		try {
+            TestUtils.checkForService(this.epr);
 			OMElement result = TestUtils.callOperation(this.epr,
 					"excel_old_noheader_with_ints_op", null);
 			assertTrue(TestUtils.validateResultStructure(result,
@@ -50,6 +51,7 @@ private String epr = null;
 	public void testExcelNewFormatNoHeader() {
 		TestUtils.showMessage(this.epr + " - testExcelNewFormatNoHeader");
 		try {
+            TestUtils.checkForService(this.epr);
 			OMElement result = TestUtils.callOperation(this.epr,
 					"excel_new_op", null);
 			assertTrue(TestUtils.validateResultStructure(result,
@@ -63,6 +65,7 @@ private String epr = null;
 	public void testExcelOldNoInts() {
 		TestUtils.showMessage(this.epr + " - testExcelOldNoInts");
 		try {
+            TestUtils.checkForService(this.epr);
 			OMElement result = TestUtils.callOperation(this.epr,
 					"customers_old_no_ints_op", null);
 			assertTrue(TestUtils.validateResultStructure(result,

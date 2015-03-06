@@ -270,7 +270,7 @@ public class UtilServer {
                 }
             }
             if (count > 30) {
-                System.out.println("Server start failed on port " + TESTING_PORT);;
+                System.out.println("Server start failed on port " + TESTING_PORT);
                 throw new AxisFault("Server start failed on port " + TESTING_PORT);
             }
         }

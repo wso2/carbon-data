@@ -35,6 +35,7 @@ public abstract class AbstractNestedQueryServiceTest extends
 	protected void nestedQuery1() {
 		TestUtils.showMessage(this.epr + " - nestedQuery1");
 		try {
+            TestUtils.checkForService(this.epr);
 			OMElement result = TestUtils.callOperation(this.epr,
 					"payment_info_op", null);
 			assertTrue(TestUtils.validateResultStructure(result,
@@ -48,6 +49,7 @@ public abstract class AbstractNestedQueryServiceTest extends
 	protected void nestedQuery2() {
 		TestUtils.showMessage(this.epr + " - nestedQuery2");
 		try {
+            TestUtils.checkForService(this.epr);
 			OMElement result = TestUtils.callOperation(this.epr,
 					"order_details_op", null);
 			assertTrue(TestUtils.validateResultStructure(result,
@@ -64,6 +66,7 @@ public abstract class AbstractNestedQueryServiceTest extends
 	protected void nestedQuery2ForDateTime(){
 		TestUtils.showMessage(this.epr + " - nestedQuery2ForDateTime");
 		try {
+            TestUtils.checkForService(this.epr);
 			OMElement result = TestUtils.callOperation(this.epr,
 					"order_details_for_date_time_op", null);
 			assertTrue(TestUtils.validateResultStructure(result,

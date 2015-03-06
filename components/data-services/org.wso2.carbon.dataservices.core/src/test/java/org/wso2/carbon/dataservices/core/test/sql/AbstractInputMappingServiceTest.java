@@ -46,6 +46,7 @@ public abstract class AbstractInputMappingServiceTest extends DataServiceBaseTes
 		params.put("orderNumber", "10242");
 		params.put("orderDate", "2004-04-20");
 		try {
+            TestUtils.checkForService(this.epr);
 			OMElement result = TestUtils.callOperation(this.epr,
 					"select_input_mappings_op1", params);
 			assertTrue(TestUtils.validateResultStructure(result,
@@ -69,6 +70,7 @@ public abstract class AbstractInputMappingServiceTest extends DataServiceBaseTes
 		params.put("orderNumber", "10242");
 		params.put("orderDate", "2004-04-20");
 		try {
+            TestUtils.checkForService(this.epr);
 			OMElement result = TestUtils.callOperation(this.epr,
 					"select_input_mappings_for_date_time_op1", params);
 			assertTrue(TestUtils.validateResultStructure(result,
@@ -94,6 +96,7 @@ public abstract class AbstractInputMappingServiceTest extends DataServiceBaseTes
 		params.put("checkNumber", "HJ32686");
 		params.put("amount", "59830.55");
 		try {
+            TestUtils.checkForService(this.epr);
 			OMElement result = TestUtils.callOperation(this.epr,
 					"select_input_mappings_op2", params);
 			assertTrue(TestUtils.validateResultStructure(result,
@@ -122,6 +125,7 @@ public abstract class AbstractInputMappingServiceTest extends DataServiceBaseTes
 		params.put("checkNumber", "HJ32686");
 		params.put("amount", "59830.55");
 		try {
+            TestUtils.checkForService(this.epr);
 			OMElement result = TestUtils.callOperation(this.epr,
 					"select_input_mappings_for_date_time_op2", params);
 			assertTrue(TestUtils.validateResultStructure(result,
@@ -150,6 +154,7 @@ public abstract class AbstractInputMappingServiceTest extends DataServiceBaseTes
 		params.put("customerNumber", "103");
 		params.put("paymentDate", "2004-12-18");
 		try {
+            TestUtils.checkForService(this.epr);
 			OMElement result = TestUtils.callOperation(this.epr,
 					"select_input_mappings_merge_op", params);
 			assertTrue(TestUtils.validateResultStructure(result,
@@ -177,6 +182,7 @@ public abstract class AbstractInputMappingServiceTest extends DataServiceBaseTes
 		params.put("customerNumber", "103");
 		params.put("paymentDate", "2004-12-18");
 		try {
+            TestUtils.checkForService(this.epr);
 			OMElement result = TestUtils.callOperation(this.epr,
 					"select_input_mappings_merge_for_date_time_op", params);
 			assertTrue(TestUtils.validateResultStructure(result,
@@ -202,6 +208,7 @@ public abstract class AbstractInputMappingServiceTest extends DataServiceBaseTes
         TestUtils.showMessage(this.epr + " - inputMappingsWithDefValue");
         Map<String, String> params = new  HashMap<String, String>();
         try {
+            TestUtils.checkForService(this.epr);
             OMElement result = TestUtils.callOperation(this.epr,
 					"results_with_default_values_op", params);
 			assertTrue(TestUtils.validateResultStructure(result,
@@ -219,6 +226,7 @@ public abstract class AbstractInputMappingServiceTest extends DataServiceBaseTes
 		TestUtils.showMessage(this.epr + " - inputMappingsWithDefValueForDateTime");
 		Map<String, String> params = new HashMap<String, String>();
 		try {
+            TestUtils.checkForService(this.epr);
 			OMElement result = TestUtils.callOperation(this.epr,
 					"results_with_default_values_for_date_time_op", params);
 			assertTrue(TestUtils.validateResultStructure(result,

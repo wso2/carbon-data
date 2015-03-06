@@ -34,6 +34,7 @@ public class CSVServiceTest extends DataServiceBaseTestCase {
 	public void testBasicCSVWithHeader() {
 		TestUtils.showMessage(this.epr + " - testBasicCSVWithHeader");
 		try {
+            TestUtils.checkForService(this.epr);
 			OMElement result = TestUtils.callOperation(this.epr,
 					"customer_list_op", null);
 			assertTrue(TestUtils.validateResultStructure(result,
@@ -50,6 +51,7 @@ public class CSVServiceTest extends DataServiceBaseTestCase {
 	public void testBasicCSVNoHeader() {
 		TestUtils.showMessage(this.epr + " - testBasicCSVNoHeader");
 		try {
+            TestUtils.checkForService(this.epr);
 			OMElement result = TestUtils.callOperation(this.epr,
 					"office_list_op", null);
 			assertTrue(TestUtils.validateResultStructure(result,

@@ -71,6 +71,7 @@ public class UtilServer {
 
     public static synchronized void start(String repository) throws Exception {
         if (count == 0) {
+            TestUtils.shutdownFailsafe(TESTING_PORT);
             ConfigurationContext er = getNewConfigurationContext(repository);
 
             receiver = new SimpleHTTPServer(er, TESTING_PORT);
@@ -105,6 +106,7 @@ public class UtilServer {
 
     public static synchronized void start(String repository, String axis2xml) throws Exception {
         if (count == 0) {
+            TestUtils.shutdownFailsafe(TESTING_PORT);
             ConfigurationContext er = getNewConfigurationContext(repository, axis2xml);
 
             receiver = new SimpleHTTPServer(er, TESTING_PORT);

@@ -32,9 +32,7 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.StringReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -297,6 +295,13 @@ public class TestUtils {
         checkForService(url, defaultTimeout);
     }
 
+    /**
+     * method to wait until the given service is up and running
+     *
+     * @param url
+     * @param timeout
+     * @throws AxisFault
+     */
     public static void checkForService(String url, int timeout) throws AxisFault {
         url = url.replaceFirst("^https", "http");
         url = url + "?wsdl";
@@ -330,6 +335,39 @@ public class TestUtils {
             }
         }
 
+    }
+
+    /**
+     * method to kill existing servers which are bind to the given port
+     *
+     * @param port
+     */
+    public static void shutdownFailsafe(int port) {
+        try {
+            System.out.println("method to kill already existing servers in port " + port);
+            Process p = Runtime.getRuntime().exec("lsof -Pi tcp:" + port);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(
+                    p.getInputStream()));
+            String line;
+            reader.readLine();
+            line = reader.readLine();
+            if (line != null) {
+                line = line.trim();
+                String processId = line.split(" +")[1];
+                System.out.println("There is already a process using " + port + ", process id is - " + processId);
+                if (processId != null) {
+                    String killStr = "kill -9 " + processId;
+                    System.out.println("kill string to kill the process - " + killStr);
+                    Runtime.getRuntime().exec(killStr);
+
+                    System.out.println("process " + processId + " killed successfully, which was running on port " + port);
+                }
+            } else {
+                System.out.println("There are no existing processes running on port "+ port);
+            }
+        } catch (Exception e) {
+            System.out.println("Error killing the process which uses the port " + port);
+        }
     }
 
 }

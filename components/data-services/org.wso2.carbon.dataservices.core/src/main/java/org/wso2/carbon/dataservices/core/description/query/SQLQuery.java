@@ -25,7 +25,6 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.dataservices.common.DBConstants;
 import org.wso2.carbon.dataservices.common.DBConstants.AdvancedSQLProps;
 import org.wso2.carbon.dataservices.common.DBConstants.AutoCommit;
-import org.wso2.carbon.dataservices.common.DBConstants.DataTypes;
 import org.wso2.carbon.dataservices.common.DBConstants.FaultCodes;
 import org.wso2.carbon.dataservices.common.DBConstants.QueryTypes;
 import org.wso2.carbon.dataservices.common.DBConstants.RDBMS;
@@ -1374,111 +1373,6 @@ public class SQLQuery extends Query implements BatchRequestParticipant {
         return result.toArray(new Integer[result.size()]);
     }
 
-    /**
-     * Modifies the SQL to include the direct value of the parameters of type
-     * "QUERY_STRING"; The SQL will be recreated and the other parameters will
-     * be re-organized to point to correct ordinal values.
-     * 
-     * @return [0] The updated SQL, [1] The updated parameter count
-     */
-    private Object[] processDynamicQuery(String sql, InternalParamCollection params,
-            int paramCount) {
-        Integer[] paramIndices = this.extractSQLParamIndices(sql);
-        int currentOrdinalDiff = 0;
-        int currentParamIndexDiff = 0;
-        InternalParam tmpParam;
-        int paramIndex;
-        String tmpValue;
-        int resultParamCount = paramCount;
-        for (int i = 1; i <= paramCount; i++) {
-            tmpParam = params.getParam(i);
-            if (DataTypes.QUERY_STRING.equals(tmpParam.getSqlType())) {
-                paramIndex = paramIndices[i - 1] + currentParamIndexDiff;
-                tmpValue = params.getParam(i).getValue().getScalarValue();
-                currentParamIndexDiff += tmpValue.length() - 1;
-                if (paramIndex + 1 < sql.length()) {
-                    sql = sql.substring(0, paramIndex) + tmpValue + sql.substring(paramIndex + 1);
-                } else {
-                    sql = sql.substring(0, paramIndex) + tmpValue;
-                }
-                params.remove(i);
-                currentOrdinalDiff++;
-                resultParamCount--;
-            } else {
-                params.remove(i);
-                tmpParam.setOrdinal(i - currentOrdinalDiff);
-                params.addParam(tmpParam);
-            }
-        }
-        return new Object[] { sql, resultParamCount };
-    }
-
-    /**
-     * Returns the SQL manipulated to suite the given parameters, e.g. adding
-     * additional "?"'s for array types.
-     */
-    public String createProcessedSql(String sql, InternalParamCollection params, int paramCount) {
-        String currentSql = sql;
-        int start = 0;
-        Object[] vals;
-        InternalParam param;
-        ParamValue value;
-        int count;
-        for (int i = 1; i <= paramCount; i++) {
-            param = params.getParam(i);
-            value = param.getValue();
-            /*
-             * value can be null in stored proc OUT params, so it is simply
-             * treated as a single param, because the number of elements in an
-             * array cannot be calculated, since there's no actual value passed
-             * in
-             */
-            if (value != null && (value.getValueType() == ParamValue.PARAM_VALUE_ARRAY)) {
-                count = (value.getArrayValue()).size();
-            } else {
-                count = 1;
-            }
-            vals = this.expandSQL(start, count, currentSql);
-            start = (Integer) vals[0];
-            currentSql = (String) vals[1];
-        }
-        return currentSql;
-    }
-
-    /**
-     * Given the starting position, this method searches for the first occurence
-     * of "?" and replace it with `count` "?"'s. Returns [0] - end position of
-     * "?"'s, [1] - modified sql.
-     */
-    private Object[] expandSQL(int start, int count, String sql) {
-        StringBuilder result = new StringBuilder();
-        int n = sql.length();
-        int end = n;
-        for (int i = start; i < n; i++) {
-            if (sql.charAt(i) == '?') {
-                result.append(sql.substring(0, i));
-                result.append(this.generateQuestionMarks(count));
-                end = result.length() + 1;
-                if (i + 1 < n) {
-                    result.append(sql.substring(i + 1));
-                }
-                break;
-            }
-        }
-        return new Object[] { end, result.toString() };
-    }
-
-    private String generateQuestionMarks(int n) {
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < n; i++) {
-            builder.append("?");
-            if (i + 1 < n) {
-                builder.append(",");
-            }
-        }
-        return builder.toString();
-    }
-
     private int calculateParamCount(String sql) {
         int n = 0;
         for (char ch : sql.toCharArray()) {
@@ -1508,7 +1402,7 @@ public class SQLQuery extends Query implements BatchRequestParticipant {
                 String dynamicSQL = (String) result[0];
                 currentParamCount = (Integer) result[1];
                 String processedSQL = this
-                        .createProcessedSql(dynamicSQL, params, currentParamCount);
+                        .createProcessedQuery(dynamicSQL, params, currentParamCount);
                 if (queryType == SQLQuery.DS_QUERY_TYPE_NORMAL) {
                     if (this.isReturnGeneratedKeys()) {
                         if (this.getKeyColumns() != null) {

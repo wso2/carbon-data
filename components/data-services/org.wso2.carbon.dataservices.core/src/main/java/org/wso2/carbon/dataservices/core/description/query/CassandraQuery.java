@@ -109,26 +109,15 @@ public class CassandraQuery extends Query {
      */
     private void init() {
         this.processNamedParams();
-        this.cql=createSqlFromQueryString(this.getQuery());
-
-
-
-        /*try {
-            this.hasBatchQuerySupport = this.getDataService().isBatchRequestsEnabled()
-                                        &&  this.calculateCQLBatchQuerySupport();
-        } catch (DataServiceFault e) {
-            this.hasBatchQuerySupport = false;
-            log.warn("Unable to determine batch query support for query '" + this.getQueryId()
-                     + "' : " + e.getMessage() + " - batch query support is disabled.");
-        }*/
-
+        this.cql = createSqlFromQueryString(this.getQuery());
     }
 
     /**
-     * Check whether DataTypes.QUERY_STRING type parameters are available in the query input mappings
+     * This method checks whether DataTypes.QUERY_STRING type parameters are available in the query
+     * input mappings and returns a boolean value.
      *
      * @param params The parameters in the input mappings
-     * @return boolean value - isDynamicQuery
+     * @return The boolean value of the isDynamicQuery variable
      */
     private boolean isDynamicQuery(InternalParamCollection params) {
         boolean isDynamicQuery = false;
@@ -154,11 +143,11 @@ public class CassandraQuery extends Query {
     public String getQuery() {
         return query;
     }
-    
+
     public PreparedStatement getStatement() {
         return statement;
     }
-    
+
     public Session getSession() {
         return this.config.getSession();
     }
@@ -251,7 +240,8 @@ public class CassandraQuery extends Query {
         }
     }
 
-    @Override public Object runPreQuery(InternalParamCollection params, int queryLevel)
+    @Override
+    public Object runPreQuery(InternalParamCollection params, int queryLevel)
             throws DataServiceFault {
         ResultSet rs = null;
         /*
@@ -260,11 +250,10 @@ public class CassandraQuery extends Query {
         if (isDynamicQuery(params)) {
             Object[] result = this.processDynamicQuery(this.getCql(), params,
                                                        this.calculateParamCount(this.cql));
-            String dynamicSQL = (String) result[0];
+            String dynamicCql = (String) result[0];
             int currentParamCount = (Integer) result[1];
-            String processedSQL = this.createProcessedSql(dynamicSQL, params, currentParamCount);
+            String processedSQL = this.createProcessedQuery(dynamicCql, params, currentParamCount);
             rs = this.getSession().execute(processedSQL);
-            return rs;
         } else {
             this.checkAndCreateStatement();
             if (DispatchStatus.isBatchRequest() && this.isNativeBatchRequestsSupported()) {
@@ -279,9 +268,8 @@ public class CassandraQuery extends Query {
             } else {
                 rs = this.getSession().execute(this.bindParams(params));
             }
-            return rs;
         }
-
+        return rs;
     }
 
     @Override
@@ -376,7 +364,6 @@ public class CassandraQuery extends Query {
         }
     }
 
-    //Copied from SQL Query
     private void sortStringsByLength(List<String> values) {
         Collections.sort(values, new Comparator<String>() {
             @Override public int compare(String lhs, String rhs) {

@@ -471,10 +471,11 @@ public abstract class Query extends XMLWriterHelper {
 	}
 
 	/**
-	 * Returns the SQL manipulated to suite the given parameters, e.g. adding
+	 * Returns the Query manipulated to suite the given parameters, e.g. adding
 	 * additional "?"'s for array types.
 	 */
-	protected String createProcessedSql(String query, InternalParamCollection params, int paramCount) {
+	protected String createProcessedQuery(String query, InternalParamCollection params,
+	                                      int paramCount) {
 		String currentQuery = query;
 		int start = 0;
 		Object[] vals;

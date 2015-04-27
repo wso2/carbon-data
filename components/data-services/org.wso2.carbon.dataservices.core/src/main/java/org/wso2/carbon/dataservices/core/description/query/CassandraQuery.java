@@ -30,6 +30,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.Set;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Collections;
+import java.util.Comparator;
 
 import javax.xml.stream.XMLStreamWriter;
 
@@ -63,13 +68,17 @@ import com.datastax.driver.core.Session;
  * This class represents Cassandra-CQL data services query implementation.
  */
 public class CassandraQuery extends Query {
-    
+
     private CassandraConfig config;
     
     private PreparedStatement statement;
         
     private String query;
-        
+
+    private List<String> namedParamNames;
+
+    private String cql;
+
     /**
      * thread local variable to keep a batch statement in batch processing
      */
@@ -83,9 +92,10 @@ public class CassandraQuery extends Query {
             List<QueryParam> queryParams, Result result, String configId, 
             EventTrigger inputEventTrigger, EventTrigger outputEventTrigger,
             Map<String, String> advancedProperties, String inputNamespace) throws DataServiceFault {
-        super(dataService, queryId, queryParams, result, configId, inputEventTrigger, 
-                outputEventTrigger, advancedProperties, inputNamespace);
+        super(dataService, queryId, queryParams, result, configId, inputEventTrigger,
+              outputEventTrigger, advancedProperties, inputNamespace);
         this.query = query;
+        this.init();
         try {
             this.config = (CassandraConfig) this.getDataService().getConfig(this.getConfigId());
         } catch (ClassCastException e) {
@@ -93,15 +103,51 @@ public class CassandraQuery extends Query {
                     this.getConfigId());
         }
     }
-    
+
+    /**
+     * Pre-processing of the CQL query
+     */
+    private void init() {
+        this.processNamedParams();
+        this.cql = createSqlFromQueryString(this.getQuery());
+    }
+
+    /**
+     * This method checks whether DataTypes.QUERY_STRING type parameters are available in the query
+     * input mappings and returns a boolean value.
+     *
+     * @param params The parameters in the input mappings
+     * @return The boolean value of the isDynamicQuery variable
+     */
+    private boolean isDynamicQuery(InternalParamCollection params) {
+        boolean isDynamicQuery = false;
+        InternalParam tmpParam;
+        for (int i = 1; i <= params.getData().size(); i++) {
+            tmpParam = params.getParam(i);
+            if (DataTypes.QUERY_STRING.equals(tmpParam.getSqlType())) {
+                isDynamicQuery = true;
+                break;
+            }
+        }
+        return isDynamicQuery;
+    }
+
+    public String getCql() {
+        return cql;
+    }
+
+    public List<String> getNamedParamNames() {
+        return namedParamNames;
+    }
+
     public String getQuery() {
         return query;
     }
-    
+
     public PreparedStatement getStatement() {
         return statement;
     }
-    
+
     public Session getSession() {
         return this.config.getSession();
     }
@@ -188,28 +234,40 @@ public class CassandraQuery extends Query {
             synchronized (this) {
                 if (this.statement == null) {
                     Session session = this.getSession();
-                    this.statement = session.prepare(this.getQuery());
+                    this.statement = session.prepare(this.getCql());
                 }
             }            
         }
     }
-    
+
     @Override
     public Object runPreQuery(InternalParamCollection params, int queryLevel)
             throws DataServiceFault {
         ResultSet rs = null;
-        this.checkAndCreateStatement();
-        if (DispatchStatus.isBatchRequest() && this.isNativeBatchRequestsSupported()) {
-            /* handle batch requests */
-            if (DispatchStatus.isFirstBatchRequest()) {
-                this.batchStatement.set(new BatchStatement());
-            }
-            this.batchStatement.get().add(this.bindParams(params));
-            if (DispatchStatus.isLastBatchRequest()) {
-                this.getSession().execute(this.batchStatement.get());
-            }
+        /*
+            There is no point of creating prepared statements for dynamic queries
+         */
+        if (isDynamicQuery(params)) {
+            Object[] result = this.processDynamicQuery(this.getCql(), params,
+                                                       this.calculateParamCount(this.cql));
+            String dynamicCql = (String) result[0];
+            int currentParamCount = (Integer) result[1];
+            String processedSQL = this.createProcessedQuery(dynamicCql, params, currentParamCount);
+            rs = this.getSession().execute(processedSQL);
         } else {
-            rs = this.getSession().execute(this.bindParams(params));
+            this.checkAndCreateStatement();
+            if (DispatchStatus.isBatchRequest() && this.isNativeBatchRequestsSupported()) {
+            /* handle batch requests */
+                if (DispatchStatus.isFirstBatchRequest()) {
+                    this.batchStatement.set(new BatchStatement());
+                }
+                this.batchStatement.get().add(this.bindParams(params));
+                if (DispatchStatus.isLastBatchRequest()) {
+                    this.getSession().execute(this.batchStatement.get());
+                }
+            } else {
+                rs = this.getSession().execute(this.bindParams(params));
+            }
         }
         return rs;
     }
@@ -304,6 +362,123 @@ public class CassandraQuery extends Query {
         } catch (UnsupportedEncodingException e) {
             throw new DataServiceFault(e, "Error in decoding input base64 data: " + e.getMessage());
         }
+    }
+
+    private void sortStringsByLength(List<String> values) {
+        Collections.sort(values, new Comparator<String>() {
+            @Override public int compare(String lhs, String rhs) {
+                return lhs.length() - rhs.length();
+            }
+        });
+    }
+
+    private String createSqlFromQueryString(String query) {
+        /* get a copy of the param names */
+        List<String> values = new ArrayList<String>(this.getNamedParamNames());
+        /* sort the strings */
+        this.sortStringsByLength(values);
+        /*
+         * make it from largest to smallest, this is done to make sure, if there
+         * are params like, :abcd,:abc, then the step of replacing :abc doesn't
+         * also initially replace :abcd's substring as well
+         */
+        Collections.reverse(values);
+        for (String val : values) {
+            /* replace named params with ?'s */
+            query = query.replaceAll(":" + val, "?");
+        }
+        return query;
+    }
+
+    private List<String> extractParamNames(String query, Set<String> queryParams) {
+        List<String> paramNames = new ArrayList<String>();
+        String tmpParam;
+        for (int i = 0; i < query.length(); i++) {
+            if (query.charAt(i) == '?') {
+                paramNames.add("?");
+            } else if (query.charAt(i) == ':') {
+                /* check if the string is at the end */
+                if (i + 1 < query.length()) {
+                    /*
+                     * split params in situations like ":a,:b", ":a :b", ":a:b",
+                     * "(:a,:b)"
+                     */
+                    tmpParam = query.substring(i + 1, query.length()).split(" |,|\\)|\\(|:")[0];
+                    if (queryParams.contains(tmpParam)) {
+                        /*
+                         * only consider this as a parameter if it's in input
+                         * mappings
+                         */
+                        paramNames.add(tmpParam);
+                    }
+                }
+            }
+        }
+        return paramNames;
+    }
+
+    private void processNamedParams() {
+        Map<String, QueryParam> paramMap = new HashMap<String, QueryParam>();
+        for (QueryParam param : this.getQueryParams()) {
+            paramMap.put(param.getName(), param);
+        }
+        List<String> paramNames = this.extractParamNames(this.getQuery(), paramMap.keySet());
+        this.namedParamNames = new ArrayList<String>();
+        QueryParam tmpParam;
+        String tmpParamName;
+        int tmpOrdinal;
+        Set<String> checkedQueryParams = new HashSet<String>();
+        Set<Integer> processedOrdinalsForNamedParams = new HashSet<Integer>();
+        for (int i = 0; i < paramNames.size(); i++) {
+            if (!paramNames.get(i).equals("?")) {
+                tmpParamName = paramNames.get(i);
+                tmpParam = paramMap.get(tmpParamName);
+                if (tmpParam != null) {
+                    if (!checkedQueryParams.contains(tmpParamName)) {
+                        tmpParam.clearOrdinals();
+                        checkedQueryParams.add(tmpParamName);
+                    }
+                    this.namedParamNames.add(tmpParamName);
+                    /* ordinals of named params */
+                    tmpOrdinal = i + 1;
+                    tmpParam.addOrdinal(tmpOrdinal);
+                    processedOrdinalsForNamedParams.add(tmpOrdinal);
+                }
+            }
+        }
+        this.cleanupProcessedNamedParams(checkedQueryParams, processedOrdinalsForNamedParams,
+                                         paramMap);
+    }
+
+    /**
+     * This method is used to clean up the ordinal in the named paramter
+     * scenario, where the SQL may not have all the params as named parameters,
+     * so other non-named parameters ordinals may clash with the processed one.
+     */
+    private void cleanupProcessedNamedParams(Set<String> checkedQueryParams,
+                                             Set<Integer> processedOrdinalsForNamedParams,
+                                             Map<String, QueryParam> paramMap) {
+        QueryParam tmpQueryParam;
+        for (String paramName : paramMap.keySet()) {
+            if (!checkedQueryParams.contains(paramName)) {
+                tmpQueryParam = paramMap.get(paramName);
+                /* unchecked query param can only have one ordinal */
+                if (processedOrdinalsForNamedParams.contains(tmpQueryParam.getOrdinal())) {
+                    /* set to a value that will not clash with valid ordinals */
+                    tmpQueryParam.setOrdinal(0);
+                }
+            }
+        }
+    }
+
+    private int calculateParamCount(String sql) {
+        int n = 0;
+        for (char ch : sql.toCharArray()) {
+            if (ch == '?') {
+                n++;
+            }
+        }
+        return n;
     }
 
 }

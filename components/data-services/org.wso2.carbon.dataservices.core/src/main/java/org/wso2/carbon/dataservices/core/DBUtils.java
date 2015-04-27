@@ -419,11 +419,6 @@ public class DBUtils {
         return new Timestamp(ConverterUtil.convertToDateTime(value).getTimeInMillis());
     }
 
-    public static void main(String[] args) throws Exception {
-        Timestamp ts = getTimestamp("2011-12-01T00:00:00.000+01:00");
-        System.out.println(ts.toString());
-    }
-
     /**
      * Create a Time object from the given time string.
      */

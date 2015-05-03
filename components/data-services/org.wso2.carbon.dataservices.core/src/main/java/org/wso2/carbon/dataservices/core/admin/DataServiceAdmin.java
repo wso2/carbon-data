@@ -49,13 +49,23 @@ import org.wso2.carbon.dataservices.core.script.PaginatedTableInfo;
 import org.wso2.carbon.dataservices.core.sqlparser.SQLParserUtil;
 import org.wso2.carbon.utils.Pageable;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Set;
+import java.util.Collections;
+import java.util.Arrays;
 
 /**
  * Data Services admin service class, for the basic functions.
@@ -204,7 +214,7 @@ public class DataServiceAdmin extends AbstractAdmin {
 			PrivilegedCarbonContext.startTenantFlow();
 			PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(tenantId);
 
-			String resolvePwd = "";
+			String resolvePwd;
 			if (driverClass == null || driverClass.length() == 0) {
 				String message = "Driver class is missing";
 				log.debug(message);
@@ -223,14 +233,25 @@ public class DataServiceAdmin extends AbstractAdmin {
 			}
 
 			Class.forName(driverClass.trim());
-			connection = DriverManager.getConnection(jdbcURL, username, resolvePwd);
-			String message = "Database connection is successfull with driver class " + driverClass
-					+ " , jdbc url " + jdbcURL + " and user name " + username;
+			String message;
+			if (username != null && !username.equals("")) {
+				connection = DriverManager.getConnection(jdbcURL, username, resolvePwd);
+				message = "Database connection is successful with driver class " + driverClass +
+				          " , jdbc url " + jdbcURL + " and user name " + username;
+			} else {
+				connection = DriverManager.getConnection(jdbcURL);
+				message = "Database connection is successful with driver class " + driverClass +
+				          " , jdbc url " + jdbcURL;
+			}
 			log.debug(message);
 			return message;
 		} catch (SQLException e) {
-			String message = "Could not connect to database " + jdbcURL + " with username "
-					+ username;
+			String message;
+			if (username != null && !username.equals("")) {
+				message = "Could not connect to database " + jdbcURL + " with username " + username;
+			} else {
+				message = "Could not connect to database " + jdbcURL;
+			}
 			log.error(message, e);
 			return message;
 		} catch (ClassNotFoundException e) {

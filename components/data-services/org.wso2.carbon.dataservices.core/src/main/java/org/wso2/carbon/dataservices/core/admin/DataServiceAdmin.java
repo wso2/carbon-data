@@ -217,16 +217,20 @@ public class DataServiceAdmin extends AbstractAdmin {
 			String resolvePwd;
 			if (driverClass == null || driverClass.length() == 0) {
 				String message = "Driver class is missing";
-				log.debug(message);
+				if (log.isDebugEnabled()) {
+					log.debug(message);
+				}
 				return message;
 			}
 			if (jdbcURL == null || jdbcURL.length() == 0) {
 				String message = "Driver connection URL is missing";
-				log.debug(message);
+				if (log.isDebugEnabled()) {
+					log.debug(message);
+				}
 				return message;
 			}
-			
-			if (passwordAlias != null && !passwordAlias.equals("")) {
+
+			if (null != passwordAlias && !("").equals(passwordAlias)) {
 				resolvePwd = DBUtils.loadFromSecureVault(passwordAlias);
 			} else {
 				resolvePwd = password;
@@ -234,20 +238,22 @@ public class DataServiceAdmin extends AbstractAdmin {
 
 			Class.forName(driverClass.trim());
 			String message;
-			if (username != null && !username.equals("")) {
+			if (null != username && !("").equals(username)) {
 				connection = DriverManager.getConnection(jdbcURL, username, resolvePwd);
-				message = "Database connection is successful with driver class " + driverClass +
-				          " , jdbc url " + jdbcURL + " and user name " + username;
+				message = "Database connection is successful with driver class " + driverClass + " , jdbc url " +
+				          jdbcURL + " and user name " + username;
 			} else {
 				connection = DriverManager.getConnection(jdbcURL);
-				message = "Database connection is successful with driver class " + driverClass +
-				          " , jdbc url " + jdbcURL;
+				message = "Database connection is successful with driver class " + driverClass + " , jdbc url " +
+				          jdbcURL;
 			}
-			log.debug(message);
+			if (log.isDebugEnabled()) {
+				log.debug(message);
+			}
 			return message;
 		} catch (SQLException e) {
 			String message;
-			if (username != null && !username.equals("")) {
+			if (null != username && !("").equals(username)) {
 				message = "Could not connect to database " + jdbcURL + " with username " + username;
 			} else {
 				message = "Could not connect to database " + jdbcURL;

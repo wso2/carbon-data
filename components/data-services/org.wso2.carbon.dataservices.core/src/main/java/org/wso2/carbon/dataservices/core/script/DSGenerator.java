@@ -320,7 +320,7 @@ public class DSGenerator {
 				&& (password != null)) {
 			Class.forName(driver);
 			Connection connection;
-			if (!userName.equals("")) {
+			if (!("").equals(userName)) {
 				connection = DriverManager.getConnection(url, userName, password);
 			} else {
 				connection = DriverManager.getConnection(url);

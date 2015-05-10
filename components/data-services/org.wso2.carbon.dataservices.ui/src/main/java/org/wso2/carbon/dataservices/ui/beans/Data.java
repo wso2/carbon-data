@@ -484,6 +484,7 @@ public class Data extends DataServiceConfigurationElement{
 		query.setInputEventTrigger(queryEle.getAttributeValue(new QName("input-event-trigger")));
         query.setOutputEventTrigger(queryEle.getAttributeValue(new QName("output-event-trigger")));
         query.setReturnGeneratedKeys(Boolean.parseBoolean(queryEle.getAttributeValue(new QName("returnGeneratedKeys"))));
+        query.setReturnUpdatedRowCount(Boolean.parseBoolean(queryEle.getAttributeValue(new QName("returnUpdatedRowCount"))));
         query.setKeyColumns(queryEle.getAttributeValue(new QName("keyColumns")));
 		Param[] params = getParams(queryEle.getChildrenWithName(new QName("param")));
 		query.setParams(params);

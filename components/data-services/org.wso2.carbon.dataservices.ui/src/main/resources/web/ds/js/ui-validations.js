@@ -256,6 +256,21 @@ function validateClickOnReturnGeneratedKeys() {
     return true;
 }
 
+function validateClickOnReturnUpdatedRowCount() {
+    var query = document.getElementById('sql').value;
+    if ('' != query) {
+        var startingKeyword = query.trim().toUpperCase().toString().split(" ");
+        if (startingKeyword[0] != "UPDATE") {
+            CARBON.showWarningDialog("Return Updated Keys cannot be used with the given query");
+            return false;
+        }
+    } else {
+        CARBON.showWarningDialog("Query cannot be empty");
+        return false;
+    }
+    return true;
+}
+
 function validateAddQueryFormSave(obj) {
 	var queryId = document.getElementById('queryId').value;
 	var dataSourceId = document.getElementById('datasource').value;

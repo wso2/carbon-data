@@ -462,6 +462,15 @@ function validateQueriesForm(){
     return true;
 }
 
+function validateQuery() {
+    if (document.getElementById('returnGeneratedKeys').checked) {
+        if (true != validateClickOnReturnGeneratedKeys()) {
+            document.dataForm.action = 'queryProcessor.jsp?setReturnGeneratedKeys=false&flag=ReturnRowChanged';
+            document.dataForm.submit();
+        }
+    }
+}
+
 function validateOperationsForm(){
     return true;
 }

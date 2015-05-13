@@ -56,7 +56,7 @@ public class HadoopDataSourceReaderUtil {
         Configuration configuration = HadoopDataSourceReaderUtil.loadConfig(xmlConfig);
         FileSystem fileSystem;
         try {
-           fileSystem = FileSystem.get(configuration);
+            fileSystem = FileSystem.get(configuration);
         } catch (IOException e) {
             throw new DataSourceException("Cannot initialize Hadoop FileSystem from configuration:" + e.getMessage(), e);
         }

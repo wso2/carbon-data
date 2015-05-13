@@ -388,6 +388,16 @@
                 <version>${javax.servlet.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.wso2.orbit.org.apache.hadoop</groupId>
+                <artifactId>hadoop-client</artifactId>
+                <version>${orbit.version.hadoop}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.org.apache.hbase</groupId>
+                <artifactId>hbase-client</artifactId>
+                <version>${orbit.version.hbase}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.wso2.carbon.data</groupId>
                 <artifactId>org.wso2.carbon.datasource.reader.hadoop</artifactId>
                 <version>${dataservices.version}</version>
@@ -626,6 +636,7 @@
         <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
 
         <orbit.version.hadoop>2.6.0.wso2v1</orbit.version.hadoop>
+        <orbit.version.hbase>1.0.0.wso2v1</orbit.version.hbase>
 
         <carbon-commons.version>4.3.1</carbon-commons.version>
         <carbon-deployment.version>4.3.0</carbon-deployment.version>

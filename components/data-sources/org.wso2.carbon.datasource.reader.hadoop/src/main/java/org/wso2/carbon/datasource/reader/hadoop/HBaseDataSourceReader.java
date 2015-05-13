@@ -20,16 +20,16 @@ package org.wso2.carbon.datasource.reader.hadoop;
 import org.wso2.carbon.ndatasource.common.DataSourceException;
 import org.wso2.carbon.ndatasource.common.spi.DataSourceReader;
 
-public class HadoopDataSourceReader implements DataSourceReader {
+public class HBaseDataSourceReader implements DataSourceReader {
 
     @Override
     public String getType() {
-        return HadoopDataSourceConstants.DATASOURCE_TYPE;
+        return HadoopDataSourceConstants.DATASOURCE_TYPE_HBASE;
     }
 
     @Override
     public Object createDataSource(String xmlConfig, boolean isDataSourceFactoryReference) throws DataSourceException {
-        return HadoopDataSourceReaderUtil.loadConfig(xmlConfig);
+        return HadoopDataSourceReaderUtil.getHBaseConnection(xmlConfig);
     }
 
     @Override

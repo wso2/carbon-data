@@ -17,9 +17,24 @@
 */
 package org.wso2.carbon.datasource.reader.hadoop;
 
-public class HadoopDataSourceConstants {
+import org.wso2.carbon.ndatasource.common.DataSourceException;
+import org.wso2.carbon.ndatasource.common.spi.DataSourceReader;
 
-    public static final String DATASOURCE_TYPE_HDFS = "HDFS";
-    public static final String DATASOURCE_TYPE_HBASE = "HBASE";
+public class HDFSDataSourceReader implements DataSourceReader {
+
+    @Override
+    public String getType() {
+        return HadoopDataSourceConstants.DATASOURCE_TYPE_HDFS;
+    }
+
+    @Override
+    public Object createDataSource(String xmlConfig, boolean isDataSourceFactoryReference) throws DataSourceException {
+        return HadoopDataSourceReaderUtil.getHadoopFileSystem(xmlConfig);
+    }
+
+    @Override
+    public boolean testDataSourceConnection(String xmlConfig) throws DataSourceException {
+        return true;
+    }
 
 }

@@ -630,65 +630,65 @@
     /* auto generate input mappings */
     if (autoInputMappings != null) {
         String[] inputMappingNames = new String[0];
-        Config con = dataService.getConfig(datasource);
-        if (con != null && "Cassandra".equals(con.getDataSourceType())) {
-            String message = "Generate input mappings feature is not supported for Cassandra datasources";
-            CarbonUIMessage.sendCarbonUIMessage(message, CarbonUIMessage.WARNING, request);
-        } else {
-            if (sql != null && sql.trim().length() > 0)  {
-                try {
+        if ((null != sql && sql.trim().length() > 0) ||
+            (null != cassandraExpression && cassandraExpression.trim().length() > 0)) {
+            try {
+                Config con = dataService.getConfig(datasource);
+                if ("Cassandra".equals(con.getDataSourceType())) {
+                    inputMappingNames = client.getInputMappingNames(cassandraExpression);
+                } else {
                     inputMappingNames = client.getInputMappingNames(sql);
-                } catch (Exception e) {
-                    CarbonError carbonError = new CarbonError();
-                    carbonError.addError("Error occurred while retrieving input mapping names");
-                    request.setAttribute(CarbonError.ID, carbonError);
                 }
-                if ((inputMappingNames != null) && (inputMappingNames.length > 0))  {
-                    Query q = dataService.getQuery(queryId);
-                    List<String> inputMappingList = Arrays.asList(inputMappingNames);
-                    List<String> currentInputMappingList = new ArrayList<String>();
-                    Param[] currentInputMappings = q.getParams();
-                    if (currentInputMappings != null && currentInputMappings.length > 0) {
-                        for (Param param : currentInputMappings) {
-                            currentInputMappingList.add(param.getName());
-                        }
+            } catch (Exception e) {
+                CarbonError carbonError = new CarbonError();
+                carbonError.addError("Error occurred while retrieving input mapping names");
+                request.setAttribute(CarbonError.ID, carbonError);
+            }
+            if ((inputMappingNames != null) && (inputMappingNames.length > 0)) {
+                Query q = dataService.getQuery(queryId);
+                List<String> inputMappingList = Arrays.asList(inputMappingNames);
+                List<String> currentInputMappingList = new ArrayList<String>();
+                Param[] currentInputMappings = q.getParams();
+                if (currentInputMappings != null && currentInputMappings.length > 0) {
+                    for (Param param : currentInputMappings) {
+                        currentInputMappingList.add(param.getName());
                     }
-                    for (String name : inputMappingNames) {
-                        if (!currentInputMappingList.contains(name)) {
-                            Param param = new Param();
-                            param.setName(name);
-                            param.setParamType("SCALAR");
-                            param.setSqlType("STRING");
-                            param.setType("IN");
-                            param.setValidarors(validators);
-                            session.setAttribute("validators", new ArrayList());
-                            q.addParam(param);
-                        }
+                }
+                for (String name : inputMappingNames) {
+                    if (!currentInputMappingList.contains(name)) {
+                        Param param = new Param();
+                        param.setName(name);
+                        param.setParamType("SCALAR");
+                        param.setSqlType("STRING");
+                        param.setType("IN");
+                        param.setValidarors(validators);
+                        session.setAttribute("validators", new ArrayList());
+                        q.addParam(param);
                     }
-                    if (inputMappingList != null && inputMappingList.size() > 0) {
-                        for (String name : currentInputMappingList) {
-                            if (!inputMappingList.contains(name)) {
-                                q.removeParam(name);
-                            }
-                        }
-                    }
-                } else { // no input mappings for the query.
-                	Query q = dataService.getQuery(queryId);
-                    List<String> currentInputMappingList = new ArrayList<String>();
-                    Param[] currentInputMappings = q.getParams();
-                    if (currentInputMappings != null && currentInputMappings.length > 0) {
-                        for (Param param : currentInputMappings) {
-                            currentInputMappingList.add(param.getName());
-                        }
-                    }
+                }
+                if (inputMappingList != null && inputMappingList.size() > 0) {
                     for (String name : currentInputMappingList) {
-                    	//remove each current param
-                        q.removeParam(name);
+                        if (!inputMappingList.contains(name)) {
+                            q.removeParam(name);
+                        }
                     }
+                }
+            } else { // no input mappings for the query.
+                Query q = dataService.getQuery(queryId);
+                List<String> currentInputMappingList = new ArrayList<String>();
+                Param[] currentInputMappings = q.getParams();
+                if (currentInputMappings != null && currentInputMappings.length > 0) {
+                    for (Param param : currentInputMappings) {
+                        currentInputMappingList.add(param.getName());
+                    }
+                }
+                for (String name : currentInputMappingList) {
+                    //remove each current param
+                    q.removeParam(name);
                 }
             }
         }
-    } 
+    }
 %>
 
 <table style="display:none">

@@ -560,75 +560,75 @@
         }
     }
     /* add auto response */
-    if (autoResponse != null) {
+    if (null != autoResponse) {
         String columnNames[];
-    	try{
+        try {
             boolean isColumnAvailable = false;
             Config con = dataService.getConfig(datasource);
-            if (con != null && "Cassandra".equals(con.getDataSourceType())) {
-                String message = "Generate response feature is not supported for Cassandra datasources";
-                CarbonUIMessage.sendCarbonUIMessage(message, CarbonUIMessage.WARNING, request);
-            } else {
-                if (sql != null && sql.trim().length() > 0)  {
+
+            if ((null != sql && sql.trim().length() > 0) ||
+                (null != cassandraExpression && cassandraExpression.trim().length() > 0)) {
+                if ("Cassandra".equals(con.getDataSourceType())) {
+                    columnNames = client.getOutputColumnNames(cassandraExpression);
+                } else {
                     columnNames = client.getOutputColumnNames(sql);
-                    if ((columnNames != null) && (columnNames.length > 0))  {
-                        if (columnNames[0].equals("ALL")) {
-                         String message = "Please Enter column names to generate the response";
-                         CarbonUIMessage.sendCarbonUIMessage(message, CarbonUIMessage.ERROR, request);
-                        } else {
-                            Query autoResponseQuery = dataService.getQuery(queryId);
-                            Result res = autoResponseQuery.getResult();
-                            if (res == null){
-                                res = new Result();
-                                    res.setResultWrapper("Entries");
-                                    res.setRowName("Entry");
-                                    autoResponseQuery.setResult(res);
+                }
+                if ((null != columnNames) && (columnNames.length > 0)) {
+                    if ("ALL".equals(columnNames[0])) {
+                        String message = "Please Enter column names to generate the response";
+                        CarbonUIMessage.sendCarbonUIMessage(message, CarbonUIMessage.ERROR, request);
+                    } else {
+                        Query autoResponseQuery = dataService.getQuery(queryId);
+                        Result res = autoResponseQuery.getResult();
+                        if (null == res) {
+                            res = new Result();
+                            res.setResultWrapper("Entries");
+                            res.setRowName("Entry");
+                            autoResponseQuery.setResult(res);
+                        }
+                        Query q = dataService.getQuery(queryId);
+                        List<String> outputMappingList = Arrays.asList(columnNames);
+                        List<Element> currentOutputMappingList = res.getElements();
+                        List<String> currentOutputMappingNameList = new ArrayList<String>();
+                        if (null != currentOutputMappingList) {
+                            for (Element ele : currentOutputMappingList) {
+                                currentOutputMappingNameList.add(ele.getName());
                             }
-                            Query q = dataService.getQuery(queryId);
-                            List<String> outputMappingList = Arrays.asList(columnNames);
-                            List<Element> currentOutputMappingList = res.getElements();
-                            List<String> currentOutputMappingNameList = new ArrayList<String>();
-                            if (currentOutputMappingList != null) {
-                                for (Element ele : currentOutputMappingList) {
-                                    currentOutputMappingNameList.add(ele.getName());
-                                }
+                        }
+                        for (String name : columnNames) {
+                            if (!currentOutputMappingNameList.contains(name)) {
+                                Element el = new Element();
+                                el.setDataSourceType("column");
+                                el.setDataSourceValue(name.trim());
+                                el.setName(name.trim());
+                                el.setxsdType("string");
+                                res.addElement(el);
                             }
-                            for (String name : columnNames) {
-                                if (!currentOutputMappingNameList.contains(name)) {
-                                    Element el = new Element();
-                                    el.setDataSourceType("column");
-                                    el.setDataSourceValue(name.trim());
-                                    el.setName(name.trim());
-                                    el.setxsdType("string");
-                                    res.addElement(el);
-                                }
-                            }
-                            if (outputMappingList != null && outputMappingList.size() > 0) {
-                                for (String name : currentOutputMappingNameList) {
-                                    if (!outputMappingList.contains(name)) {
-                                        res.removeElement(name);
-                                    }
+                        }
+                        if (null != outputMappingList && outputMappingList.size() > 0) {
+                            for (String name : currentOutputMappingNameList) {
+                                if (!outputMappingList.contains(name)) {
+                                    res.removeElement(name);
                                 }
                             }
                         }
-                     } else {
-                         String message = "SQL query is not applicable to automate the response";
-                         CarbonUIMessage.sendCarbonUIMessage(message, CarbonUIMessage.ERROR, request);
-                     }
+                    }
                 } else {
                     String message = "SQL query is not applicable to automate the response";
                     CarbonUIMessage.sendCarbonUIMessage(message, CarbonUIMessage.ERROR, request);
                 }
+            } else {
+                String message = "SQL query is not applicable to automate the response";
+                CarbonUIMessage.sendCarbonUIMessage(message, CarbonUIMessage.ERROR, request);
             }
-        } catch(AxisFault e){
+        } catch (AxisFault e) {
             CarbonError carbonError = new CarbonError();
             carbonError.addError("Error occurred while saving data service configuration.");
             request.setAttribute(CarbonError.ID, carbonError);
-     	 
-     	 }
+        }
     }
     /* auto generate input mappings */
-    if (autoInputMappings != null) {
+    if (null != autoInputMappings) {
         String[] inputMappingNames = new String[0];
         if ((null != sql && sql.trim().length() > 0) ||
             (null != cassandraExpression && cassandraExpression.trim().length() > 0)) {
@@ -644,12 +644,12 @@
                 carbonError.addError("Error occurred while retrieving input mapping names");
                 request.setAttribute(CarbonError.ID, carbonError);
             }
-            if ((inputMappingNames != null) && (inputMappingNames.length > 0)) {
+            if ((null != inputMappingNames) && (inputMappingNames.length > 0)) {
                 Query q = dataService.getQuery(queryId);
                 List<String> inputMappingList = Arrays.asList(inputMappingNames);
                 List<String> currentInputMappingList = new ArrayList<String>();
                 Param[] currentInputMappings = q.getParams();
-                if (currentInputMappings != null && currentInputMappings.length > 0) {
+                if (null != currentInputMappings && currentInputMappings.length > 0) {
                     for (Param param : currentInputMappings) {
                         currentInputMappingList.add(param.getName());
                     }
@@ -666,7 +666,7 @@
                         q.addParam(param);
                     }
                 }
-                if (inputMappingList != null && inputMappingList.size() > 0) {
+                if (null != inputMappingList && inputMappingList.size() > 0) {
                     for (String name : currentInputMappingList) {
                         if (!inputMappingList.contains(name)) {
                             q.removeParam(name);

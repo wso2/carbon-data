@@ -17,6 +17,10 @@
 */
 package org.wso2.carbon.datasource.reader.hadoop;
 
+/***
+ * Stores constants required by the datasource reader implementation
+ */
+
 public class HadoopDataSourceConstants {
 
     public static final String DATASOURCE_TYPE_HDFS = "HDFS";

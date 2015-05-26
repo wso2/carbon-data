@@ -20,19 +20,23 @@ package org.wso2.carbon.datasource.reader.hadoop;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/***
+ * Represents a single datasource configuration specification, which contains an array of configuration properties.
+ */
+
 @XmlRootElement(name = "configuration")
 public class HadoopDataSourceConfiguration {
 
-    private HadoopConfigProperty[] confingProperties;
+    private HadoopConfigProperty[] configProperties;
 
     @XmlElement(name = "property")
-    public HadoopConfigProperty[] getConfingProperties() {
-        return confingProperties;
+    public HadoopConfigProperty[] getConfigProperties() {
+        return configProperties;
     }
 
 
-    public void setConfingProperties(HadoopConfigProperty[] confingProperties) {
-        this.confingProperties = confingProperties;
+    public void setConfigProperties(HadoopConfigProperty[] configProperties) {
+        this.configProperties = configProperties;
     }
 
 }

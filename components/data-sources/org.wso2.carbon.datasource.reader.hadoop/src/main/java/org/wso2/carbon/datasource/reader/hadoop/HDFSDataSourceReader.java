@@ -20,6 +20,9 @@ package org.wso2.carbon.datasource.reader.hadoop;
 import org.wso2.carbon.ndatasource.common.DataSourceException;
 import org.wso2.carbon.ndatasource.common.spi.DataSourceReader;
 
+/***
+ * HDFS implementation of {@link org.wso2.carbon.ndatasource.common.spi.DataSourceReader}
+ */
 public class HDFSDataSourceReader implements DataSourceReader {
 
     @Override

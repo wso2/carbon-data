@@ -20,6 +20,10 @@ package org.wso2.carbon.datasource.reader.hadoop;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/***
+ * Represents a single configuration property entry, and all values picked up as part of a single entry will be
+ * unmarshalled through JAXB and sent on to the Apache Commons Configurations object during creation.
+ */
 @XmlRootElement(name = "property")
 public class HadoopConfigProperty {
 

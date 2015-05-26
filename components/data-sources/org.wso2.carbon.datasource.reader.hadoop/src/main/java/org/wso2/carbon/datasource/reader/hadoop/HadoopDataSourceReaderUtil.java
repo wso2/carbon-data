@@ -32,14 +32,14 @@ import java.io.IOException;
 public class HadoopDataSourceReaderUtil {
 
     public static Configuration loadConfig(String xmlConfiguration) throws DataSourceException {
+        ByteArrayInputStream baos = null;
         try {
             xmlConfiguration = CarbonUtils.replaceSystemVariablesInXml(xmlConfiguration);
             JAXBContext ctx = JAXBContext.newInstance(HadoopDataSourceConfiguration.class);
-
-            HadoopDataSourceConfiguration fileConfig = (HadoopDataSourceConfiguration) ctx.createUnmarshaller().unmarshal(
-                    new ByteArrayInputStream(xmlConfiguration.getBytes()));
+            baos = new ByteArrayInputStream(xmlConfiguration.getBytes());
+            HadoopDataSourceConfiguration fileConfig = (HadoopDataSourceConfiguration) ctx.createUnmarshaller().unmarshal(baos);
             Configuration config = new Configuration();
-            HadoopConfigProperty[] properties = fileConfig.getConfingProperties();
+            HadoopConfigProperty[] properties = fileConfig.getConfigProperties();
 
             for (HadoopConfigProperty configEntry : properties) {
                 if (!("".equals(configEntry.getPropertyName())) && !("".equals(configEntry.getPropertyValue()))) {
@@ -49,6 +49,14 @@ public class HadoopDataSourceReaderUtil {
             return config;
         } catch (Exception e) {
             throw new DataSourceException("Error loading Hadoop configuration: " + e.getMessage(), e);
+        } finally {
+            if (baos != null) {
+                try {
+                    baos.close();
+                } catch (IOException ignore) {
+                    // ignore
+                }
+            }
         }
     }
 
@@ -69,6 +77,7 @@ public class HadoopDataSourceReaderUtil {
         Connection connection;
         try {
             connection = ConnectionFactory.createConnection(configuration);
+
         } catch (IOException e) {
             throw new DataSourceException("Cannot create Hadoop Connection from configuration:" + e.getMessage(), e);
         }

@@ -26,10 +26,12 @@
         <module>components/data-services</module>
         <module>components/ndata-services</module>
         <module>components/dbconsole</module>
+        <module>components/data-sources</module>
         <module>features/cassandra-jdbc-1.2.5</module>
         <module>features/data-services</module>
         <module>features/dbconsole</module>
         <module>features/ndata-services</module>
+        <module>features/data-sources</module>
     </modules>
 
     <dependencyManagement>
@@ -385,6 +387,21 @@
                 <artifactId>javax.servlet</artifactId>
                 <version>${javax.servlet.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.org.apache.hadoop</groupId>
+                <artifactId>hadoop-client</artifactId>
+                <version>${orbit.version.hadoop}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.org.apache.hbase</groupId>
+                <artifactId>hbase-client</artifactId>
+                <version>${orbit.version.hbase}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.data</groupId>
+                <artifactId>org.wso2.carbon.datasource.reader.hadoop</artifactId>
+                <version>${dataservices.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -617,6 +634,12 @@
         <commons-pool.orbit.version>1.5.6.wso2v1</commons-pool.orbit.version>
         <axiom.orbit.version>1.2.11.wso2v5</axiom.orbit.version>
         <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
+
+        <orbit.version.hadoop>2.6.0.wso2v1</orbit.version.hadoop>
+        <orbit.version.hbase>1.0.0.wso2v1</orbit.version.hbase>
+
+        <!-- TODO: remove this property when upgrading repo to kernel 4.4.0 -->
+        <carbon.kernel.version.440>4.4.0</carbon.kernel.version.440>
 
         <carbon-commons.version>4.3.1</carbon-commons.version>
         <carbon-deployment.version>4.3.0</carbon-deployment.version>

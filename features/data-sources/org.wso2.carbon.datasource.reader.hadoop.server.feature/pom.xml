@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <parent>
+        <artifactId>data-sources-features</artifactId>
+        <groupId>org.wso2.carbon.data</groupId>
+        <version>4.3.1-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>org.wso2.carbon.datasource.reader.hadoop.server.feature</artifactId>
+    <packaging>pom</packaging>
+    <name>WSO2 Carbon - Hadoop Data Source Reader Server Feature</name>
+    <url>http://wso2.org</url>
+    <description>This feature contains the bundles required for the Hadoop Data Source Reader Implementation</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.wso2.carbon.data</groupId>
+            <artifactId>org.wso2.carbon.datasource.reader.hadoop</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.wso2.maven</groupId>
+                <artifactId>carbon-p2-plugin</artifactId>
+                <version>${carbon.p2.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>p2-feature-generation</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>p2-feature-gen</goal>
+                        </goals>
+                        <configuration>
+                            <id>org.wso2.carbon.datasource.reader.hadoop.server</id>
+                            <propertiesFile>../../../etc/feature.properties</propertiesFile>
+                            <adviceFile>
+                                <properties>
+                                    <propertyDef>org.wso2.carbon.p2.category.type:server</propertyDef>
+                                    <propertyDef>org.eclipse.equinox.p2.type.group:false</propertyDef>
+                                </properties>
+                            </adviceFile>
+                            <bundles>
+                                <bundleDef>org.wso2.carbon.data:org.wso2.carbon.datasource.reader.hadoop:${dataservices.version}</bundleDef>
+                            </bundles>
+                            <importFeatures>
+                                <importFeatureDef>org.wso2.carbon.core.server:${carbon.kernel.version.440}
+                                </importFeatureDef>
+                            </importFeatures>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

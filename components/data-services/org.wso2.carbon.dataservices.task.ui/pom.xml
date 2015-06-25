@@ -31,6 +31,17 @@
     <url>http://wso2.org</url>
     <description>WSO2 Data Services Task UI Bundle</description>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.ui</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.data</groupId>
+            <artifactId>org.wso2.carbon.dataservices.task.stub</artifactId>
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
 	   <plugin>
@@ -42,30 +53,24 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-                            org.wso2.carbon.dataservices.task.ui.*
+                            !org.wso2.carbon.dataservices.task.ui.stub.*,
+                            org.wso2.carbon.dataservices.task.ui.*;version="${project.version}"
                         </Export-Package>
                         <Import-Package>
+                            <!--!org.wso2.carbon.dataservices.task.ui.*,-->
                             javax.servlet.*;version="${javax.servlet.imp.pkg.version}",
-                            javax.xml.namespace.*;version="0.0.0",
-                            *;resolution:=optional,
-                            org.wso2.carbon.dataservices.task.ui.stub.*;version="${dataservices.package.export.version}",
+                            org.apache.axis2.context.ConfigurationContext;version="${apache.axis2.orbit.imp.pkg.version}",
+                            org.wso2.carbon.CarbonConstants;version="${carbon.kernel.imp.pkg.version}",
+                            org.wso2.carbon.ui.CarbonUIUtil;version="${carbon.kernel.imp.pkg.version}",
+                            org.wso2.carbon.utils.ServerConstants;version="${carbon.kernel.imp.pkg.version}",
+                            org.apache.commons.logging.*;version="${carbon.kernel.imp.pkg.version}",
+                            org.wso2.carbon.dataservices.task.ui.stub.*;version="${dataservices.imp.pkg.version}"
+                            <!--javax.xml.namespace.*;version="0.0.0",-->
                         </Import-Package>
-			<Carbon-Component>UIBundle</Carbon-Component>
+			            <Carbon-Component>UIBundle</Carbon-Component>
                     </instructions>
                 </configuration>
             </plugin>
         </plugins>
     </build>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.ui</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.data</groupId>
-            <artifactId>org.wso2.carbon.dataservices.task.stub</artifactId>
-        </dependency>
-    </dependencies>
-    
 </project>

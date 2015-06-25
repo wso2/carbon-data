@@ -12,32 +12,10 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.datasource.reader.hadoop</artifactId>
-    <version>4.3.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>WSO2 Carbon - Hadoop Data Source Implementation</name>
     <url>http://wso2.org</url>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-scr-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <Bundle-Name>${project.artifactId}</Bundle-Name>
-                        <Export-Package>org.wso2.carbon.datasource.reader.hadoop*</Export-Package>
-                        <DynamicImport-Package>*</DynamicImport-Package>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
     <dependencies>
         <dependency>
@@ -57,5 +35,37 @@
             <artifactId>hbase-client</artifactId>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-scr-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Name>${project.artifactId}</Bundle-Name>
+                        <Export-Package>org.wso2.carbon.datasource.reader.hadoop.*;version="${project.version}"</Export-Package>
+                        <Import-Package>
+                            !org.wso2.carbon.datasource.reader.hadoop.*,
+                            org.apache.hadoop.conf.Configuration;version="${hadoop-client.orbit.imp.pkg.version.}",
+                            org.apache.hadoop.fs.FileSystem;version="${hadoop-client.orbit.imp.pkg.version.}",
+                            org.apache.hadoop.hbase.client.Connection;version="${hbase-client.orbit.imp.pkg.version}",
+                            org.apache.hadoop.hbase.client.ConnectionFactory;version="${hbase-client.orbit.imp.pkg.version}",
+                            org.wso2.carbon.ndatasource.common.DataSourceException;version="${carbon.kernel.imp.pkg.version}",
+                            org.wso2.carbon.ndatasource.common.spi.DataSourceReader;version="${carbon.kernel.imp.pkg.version}",
+                            org.wso2.carbon.utils.CarbonUtils;version="${carbon.kernel.imp.pkg.version}"
+                        </Import-Package>
+                        <!--<DynamicImport-Package>*</DynamicImport-Package>-->
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

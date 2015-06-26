@@ -77,11 +77,11 @@
                             org.wso2.carbon.dataservices.sql.driver.*;version="${project.version}"
                         </Export-Package>
                         <Import-Package>
-                            !org.wso2.carbon.dataservices.sql.drover.*,
+                            !org.wso2.carbon.dataservices.sql.driver.*,
                             org.apache.poi.*;version="${poi.orbit.imp.pkg.version}",
-                            com.google.gdata.client;version="${gdata-core.orbit.imp.pkg.version}",
-                            com.google.gdata.util;version="${gdata-core.orbit.imp.pkg.version}",
-                            com.google.gdata.data;version="${gdata-core.orbit.imp.pkg.version}",
+                            com.google.gdata.client.*;version="${gdata-core.orbit.imp.pkg.version}",
+                            com.google.gdata.util.*;version="${gdata-core.orbit.imp.pkg.version}",
+                            com.google.gdata.data.*;version="${gdata-core.orbit.imp.pkg.version}",
                             com.google.gdata.client.spreadsheet.*;version="${gdata-spreadsheet.orbit.imp.pkg.version}",
                             com.google.gdata.data.spreadsheet.*;version="${gdata-spreadsheet.orbit.imp.pkg.version}",
                             org.wso2.carbon.context.*;version="${carbon.kernel.imp.pkg.version}",

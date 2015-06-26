@@ -59,10 +59,10 @@
                         <Import-Package>
                             <!--!org.wso2.carbon.dataservices.task.ui.*,-->
                             javax.servlet.*;version="${javax.servlet.imp.pkg.version}",
-                            org.apache.axis2.context.ConfigurationContext;version="${apache.axis2.orbit.imp.pkg.version}",
-                            org.wso2.carbon.CarbonConstants;version="${carbon.kernel.imp.pkg.version}",
-                            org.wso2.carbon.ui.CarbonUIUtil;version="${carbon.kernel.imp.pkg.version}",
-                            org.wso2.carbon.utils.ServerConstants;version="${carbon.kernel.imp.pkg.version}",
+                            org.apache.axis2.context.*;version="${apache.axis2.orbit.imp.pkg.version}",
+                            org.wso2.carbon.*;version="${carbon.kernel.imp.pkg.version}",
+                            org.wso2.carbon.ui.*;version="${carbon.kernel.imp.pkg.version}",
+                            org.wso2.carbon.utils.*;version="${carbon.kernel.imp.pkg.version}",
                             org.apache.commons.logging.*;version="${carbon.kernel.imp.pkg.version}",
                             org.wso2.carbon.dataservices.task.ui.stub.*;version="${dataservices.imp.pkg.version}"
                             <!--javax.xml.namespace.*;version="0.0.0",-->

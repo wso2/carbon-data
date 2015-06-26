@@ -22,6 +22,14 @@
             <groupId>org.wso2.carbon.data</groupId>
             <artifactId>org.wso2.carbon.datasource.reader.hadoop</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.org.apache.hadoop</groupId>
+            <artifactId>hadoop-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.org.apache.hbase</groupId>
+            <artifactId>hbase-client</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -48,6 +56,8 @@
                             </adviceFile>
                             <bundles>
                                 <bundleDef>org.wso2.carbon.data:org.wso2.carbon.datasource.reader.hadoop</bundleDef>
+                                <bundleDef>org.wso2.orbit.org.apache.hadoop:hadoop-client</bundleDef>
+                                <bundleDef>org.wso2.orbit.org.apache.hbase:hbase-client</bundleDef>
                             </bundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.core.server:${carbon.kernel.version}</importFeatureDef>

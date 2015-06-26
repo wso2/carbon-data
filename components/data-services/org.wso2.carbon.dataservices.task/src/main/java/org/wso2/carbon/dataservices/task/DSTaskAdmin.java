@@ -23,7 +23,6 @@ import org.apache.axis2.description.AxisService;
 import org.apache.axis2.description.Parameter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.core.AbstractAdmin;
 import org.wso2.carbon.dataservices.common.DBConstants;
 import org.wso2.carbon.dataservices.core.description.operation.Operation;
@@ -33,9 +32,11 @@ import org.wso2.carbon.ntask.common.TaskException;
 import org.wso2.carbon.ntask.core.TaskInfo;
 import org.wso2.carbon.ntask.core.TaskManager;
 import org.wso2.carbon.utils.deployment.GhostDeployerUtils;
-import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public class DSTaskAdmin extends AbstractAdmin {
 

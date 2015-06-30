@@ -71,7 +71,7 @@
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
-                        <Private-Package>org.wso2.carbon.dataservices.core.internal</Private-Package>
+                        <Private-Package>org.wso2.carbon.dataservices.sql.driver.internal</Private-Package>
                         <Export-Package>
                             !org.wso2.carbon.dataservices.sql.driver.internal,
                             org.wso2.carbon.dataservices.sql.driver.*;version="${project.version}"

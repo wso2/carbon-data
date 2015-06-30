@@ -89,21 +89,22 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Private-Package>org.wso2.carbon.dbconsole.ui.internal</Private-Package>
                         <!--<Export-Package>-->
                             <!--org.wso2.carbon.dbconsole.ui.*-->
                         <!--</Export-Package>-->
                         <!--<DynamicImport-Package>*</DynamicImport-Package>-->
                         <Import-Package>
                             !org.wso2.carbon.dbconsole.ui.internal.*,
-                            javax.servlet.*;version="${javax.servlet.imp.pkg.version}",
-                            org.h2.server.web.WebServlet;version="${h2.engine.orbit.imp.pkg.version}",
-                            org.osgi.framework.*;version="${osgi.imp.pkg.version}",
-                            org.osgi.service.*;version="${osgi.service.imp.pkg.version}",
-                            org.apache.commons.logging.*;version="${carbon.kernel.imp.pkg.version}",
-                            org.apache.axis2.context.ConfigurationContext;version="${apache.axis2.orbit.imp.pkg.version}",
-                            org.wso2.carbon.CarbonConstants;version="${carbon.kernel.imp.pkg.version}",
-                            org.wso2.carbon.ui.CarbonUIUtil;version="${carbon.kernel.imp.pkg.version}",
-                            org.wso2.carbon.utils.ServerConstants;version="${carbon.kernel.imp.pkg.version}"
+                            org.h2.server.web;version="${h2.engine.orbit.imp.pkg.version}",
+                            org.osgi.framework;version="${osgi.imp.pkg.version}",
+                            org.osgi.service.http;version="${osgi.service.imp.pkg.version}",
+                            org.osgi.service.component;version="${osgi.service.imp.pkg.version}",
+                            org.apache.commons.logging;version="${carbon.kernel.imp.pkg.version}",
+                            org.apache.axis2.context;version="${apache.axis2.orbit.imp.pkg.version}",
+                            org.wso2.carbon;version="${carbon.kernel.imp.pkg.version}",
+                            org.wso2.carbon.ui;version="${carbon.kernel.imp.pkg.version}",
+                            org.wso2.carbon.utils;version="${carbon.kernel.imp.pkg.version}"
                         </Import-Package>
                         <Carbon-Component>UIBundle</Carbon-Component>
                     </instructions>

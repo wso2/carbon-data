@@ -90,7 +90,7 @@
                         <!--<DynamicImport-Package>*</DynamicImport-Package>-->
                         <Import-Package>
                             !org.wso2.carbon.dataservices.task,
-                            org.apache.commons.logging;version="${carbon.kernel.imp.pkg.version}",
+                            org.apache.commons.logging;version="${carbon.commons.logging.imp.pkg.version}",
                             org.osgi.service.component;version="${osgi.service.imp.pkg.version}",
                             org.wso2.carbon.ntask.core;version="${carbon-commons.imp.pkg.version}",
                             org.wso2.carbon.ntask.core.service;version="${carbon-commons.imp.pkg.version}",

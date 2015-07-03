@@ -345,9 +345,9 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>org.apache.derby</groupId>
+                <groupId>org.apache.derby.wso2</groupId>
                 <artifactId>derby</artifactId>
-                <version>${derby.version}</version>
+                <version>${derby.orbit.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.hp.hpl.jena.wso2</groupId>
@@ -648,11 +648,11 @@
                 <artifactId>lz4</artifactId>
                 <version>${lz4.orbit.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.eclipse.equinox</groupId>
-                <artifactId>javax.servlet</artifactId>
-                <version>${javax.servlet.version}</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>org.eclipse.equinox</groupId>-->
+                <!--<artifactId>javax.servlet</artifactId>-->
+                <!--<version>${javax.servlet.version}</version>-->
+            <!--</dependency>-->
             <dependency>
                 <groupId>org.wso2.orbit.org.apache.hadoop</groupId>
                 <artifactId>hadoop-client</artifactId>
@@ -965,12 +965,18 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <dataservices.version>4.3.1-SNAPSHOT</dataservices.version>
+        <dataservices.version>${project.version}</dataservices.version>
         <dataservices.imp.pkg.version>[4.3.1-SNAPSHOT,4.4.0)</dataservices.imp.pkg.version>
         <dataservices.package.export.version>4.3.1-SNAPSHOT</dataservices.package.export.version>
 
         <carbon.kernel.version>4.4.0</carbon.kernel.version>
         <carbon.kernel.imp.pkg.version>[4.4.0,4.5.0)</carbon.kernel.imp.pkg.version>
+
+        <carbon.registry.imp.pkg.version>0.0.0</carbon.registry.imp.pkg.version> <!-- todo remove this and use {carbon.kernel.imp.pkg.version} after registry bundles are corrected to export correct versions-->
+        <carbon.base.imp.pkg.version>0.0.0</carbon.base.imp.pkg.version> <!-- todo remove this and use {carbon.kernel.imp.pkg.version} after carbon base bundles are corrected to export correct versions-->
+        <carbon.user.api.imp.pkg.version>[1.0.1,1.1.0)</carbon.user.api.imp.pkg.version> <!-- todo remove this and use {carbon.kernel.imp.pkg.version} after carbon base bundles are corrected to export correct versions-->
+
+
 
         <apache.axis2.orbit.version>1.6.1.wso2v12</apache.axis2.orbit.version>
         <apache.axis2.orbit.imp.pkg.version>[1.6.1.wso2v12, 1.7.0)</apache.axis2.orbit.imp.pkg.version>
@@ -984,13 +990,13 @@
 
         <!--<opencsv.version>1.8</opencsv.version>--> <!--todo test and remove later - rajith-->
         <opencsv.orbit.version>1.8.wso2v1</opencsv.orbit.version>
-        <opencsv.orbit.imp.pkg.version>[1.8.wso2v1,1.9)</opencsv.orbit.imp.pkg.version>
+        <opencsv.orbit.imp.pkg.version>0.0.0</opencsv.orbit.imp.pkg.version> <!--todo change this to appropriate version range ([1.8.wso2v1,1.9)) after osgi bundle was corrected -->
 
         <mysql.connector.version>5.1.35</mysql.connector.version>
-        <derby.version>10.11.1.1</derby.version>
+        <derby.orbit.version>10.3.2.1wso2v1</derby.orbit.version>
 
         <jena-arq.orbit.version>1.0.0.wso2v1</jena-arq.orbit.version>
-        <jena-arq.orbit.imp.pkg.version>[1.0.0.wso2v1,1.1.0)</jena-arq.orbit.imp.pkg.version>
+        <jena-arq.orbit.imp.pkg.version>0.0.0</jena-arq.orbit.imp.pkg.version> <!--todo change this to appropriate version range ([1.0.0.wso2v1,1.1.0)) after osgi bundle was corrected -->
 
         <gdata-core.orbit.version>1.47.0.wso2v1</gdata-core.orbit.version>
         <gdata-core.orbit.imp.pkg.version>[1.47.0, 2.0.0)</gdata-core.orbit.imp.pkg.version>
@@ -1001,10 +1007,10 @@
         <google.guava.orbit.version>12.0.0.wso2v1</google.guava.orbit.version>
 
         <poi.orbit.version>3.9.0.wso2v1</poi.orbit.version>
-        <poi.orbit.imp.pkg.version>[3.9.0,4.0.0)</poi.orbit.imp.pkg.version>
+        <poi.orbit.imp.pkg.version>0.0.0</poi.orbit.imp.pkg.version> <!--todo change this to appropriate version range ([3.9.0,4.0.0)) after osgi bundle is corrected - rajith-->
 
         <poi-ooxml.orbit.version>3.9.0.wso2v3</poi-ooxml.orbit.version>
-        <poi-ooxml.orbit.imp.pkg.version>[3.9.0.wso2v3,4.0.0)</poi-ooxml.orbit.imp.pkg.version>
+        <poi-ooxml.orbit.imp.pkg.version>0.0.0</poi-ooxml.orbit.imp.pkg.version> <!--todo change this to appropriate version range ([3.9.0.wso2v3,4.0.0)) after osgi bundle is corrected - rajith-->
 
         <!--<poi-scratchpad.orbit.version>3.9.0.wso2v1</poi-scratchpad.orbit.version>-->
         <!--<poi-scratchpad.orbit.imp.pkg.version>[3.9.0.wso2v1,4.0.0)</poi-scratchpad.orbit.imp.pkg.version>-->
@@ -1012,7 +1018,7 @@
         <ooxml-spreadsheet-schemas.orbit.version>1.1.wso2v1</ooxml-spreadsheet-schemas.orbit.version>
 
         <webharvest-core.orbit.version>2.0.0.wso2v2</webharvest-core.orbit.version>
-        <webharvest-core.orbit.imp.pkg.version>[2.0.0.wso2v2,2.1.0)</webharvest-core.orbit.imp.pkg.version>
+        <webharvest-core.orbit.imp.pkg.version>0.0.0</webharvest-core.orbit.imp.pkg.version> <!--todo change this to appropriate version range ([2.0.0.wso2v2,2.1.0)) after osgi bundle is corrected - rajith-->
 
         <saxon.orbit.version>8.9.0.wso2v2</saxon.orbit.version>
         <commons-httpclient.orbit.version>3.1.0.wso2v2</commons-httpclient.orbit.version>
@@ -1023,14 +1029,14 @@
         <cassandra-jdbc.orbit.version>1.2.5.wso2v1</cassandra-jdbc.orbit.version>
 
         <mongo-java-driver.orbit.version>2.11.4.wso2v1</mongo-java-driver.orbit.version>
-        <mongo-java-driver.orbit.imp.pkg.version>[2.11.4.wso2v1,2.12.0)</mongo-java-driver.orbit.imp.pkg.version>
+        <mongo-java-driver.orbit.imp.pkg.version>0.0.0</mongo-java-driver.orbit.imp.pkg.version> <!--todo change this to appropriate version range ([2.11.4.wso2v1,2.12.0)) after osgi bundle is corrected - rajith-->
 
 
         <jackson-core.orbit.version>2.3.2.wso2v1</jackson-core.orbit.version>
         <bson4jackson.orbit.version>2.3.1.wso2v1</bson4jackson.orbit.version>
 
         <cassandra-driver-core.orbit.version>2.1.1.wso2v1</cassandra-driver-core.orbit.version>
-        <cassandra-driver-core.orbit.imp.pkg.version>[2.1.1.wso2v1,2.2.0)</cassandra-driver-core.orbit.imp.pkg.version>
+        <cassandra-driver-core.orbit.imp.pkg.version>0.0.0</cassandra-driver-core.orbit.imp.pkg.version>
 
 
         <snappy-java.orbit.version>1.1.1.6.wso2v1</snappy-java.orbit.version>
@@ -1039,7 +1045,7 @@
         <commons-pool.orbit.version>1.5.6.wso2v1</commons-pool.orbit.version>
 
         <axiom.orbit.version>1.2.11.wso2v6</axiom.orbit.version>
-        <axiom.orbit.imp.pkg.version>[1.2.11,1.3.0)</axiom.orbit.imp.pkg.version>
+        <axiom.orbit.imp.pkg.version>0.0.0</axiom.orbit.imp.pkg.version> <!--todo change this to appropriate version range ([1.2.11,1.3.0)) after osgi bundle is corrected - rajith-->
 
         <hadoop-client.orbit.version.>2.6.0.wso2v1</hadoop-client.orbit.version.>
         <hadoop-client.orbit.imp.pkg.version.>[2.6.0.wso2v1,2.7.0)</hadoop-client.orbit.imp.pkg.version.>
@@ -1049,23 +1055,27 @@
 
         <carbon.p2.plugin.version>1.5.5</carbon.p2.plugin.version>
 
-        <carbon-commons.version>4.4.1</carbon-commons.version>
-        <carbon-commons.imp.pkg.version>[4.4.1,4.5.0)</carbon-commons.imp.pkg.version>
+        <carbon-commons.version>4.4.3</carbon-commons.version>
+        <carbon-commons.imp.pkg.version>[4.4.3,4.5.0)</carbon-commons.imp.pkg.version>
 
-        <carbon-deployment.version>4.4.0</carbon-deployment.version>
+        <carbon-commons.trnsaction.mgt.imp.pkg.version>0.0.0</carbon-commons.trnsaction.mgt.imp.pkg.version> <!-- todo remove this and use {carbon-commons.imp.pkg.version} after org.wso2.carbon.transaction.manager (bundle - org.wso2.carbon.transaction.manager) is corrected to export correct versions-->
 
-        <osgi.imp.pkg.version>[3.9.0,4.0.0)</osgi.imp.pkg.version>
-        <osgi.service.imp.pkg.version>[3.3.0,4.0.0)</osgi.service.imp.pkg.version>
+
+
+        <carbon-deployment.version>4.4.1</carbon-deployment.version>
+
+        <osgi.imp.pkg.version>[1.7.0,1.8.0)</osgi.imp.pkg.version> <!-- todo change this version to proper version range after osgi bundles are corrected (because export versions are different from bundle version) -rajith -->
+        <osgi.service.imp.pkg.version>[1.2.0,1.3.0)</osgi.service.imp.pkg.version> <!-- todo change this version to proper version range after osgi bundles are corrected -rajith -->
 
         <commons-io.orbit.version>2.0.0.wso2v2</commons-io.orbit.version>
-        <commons-io.orbit.imp.pkg.version>[2.0.0.wso2v2,2.1.0)</commons-io.orbit.imp.pkg.version>
+        <commons-io.orbit.imp.pkg.version>0.0.0</commons-io.orbit.imp.pkg.version> <!-- todo change this once commons-io is corrected to use correct version exports - rajith -->
 
         <commons-codec.orbit.version>1.4.0.wso2v1</commons-codec.orbit.version>
-        <commons-codec.orbit.imp.pkg.version>[1.4.0.wso2v1,1.5.0)</commons-codec.orbit.imp.pkg.version>
+        <commons-codec.orbit.imp.pkg.version>0.0.0</commons-codec.orbit.imp.pkg.version> <!--todo change this to appropriate version range ([1.4.0.wso2v1,1.5.0)) after osgi bundle is corrected - rajith-->
 
 
         <wso2.securevault.version>1.0.0-wso2v2</wso2.securevault.version>
-        <wso2.securevault.imp.pkg.version>[1.0.0-wso2v2,1.1.0)</wso2.securevault.imp.pkg.version>
+        <wso2.securevault.imp.pkg.version>0.0.0</wso2.securevault.imp.pkg.version> <!--todo change this to appropriate version range ([1.0.0-wso2v2,1.1.0)) after osgi bundle is corrected - rajith-->
 
         <xmlschema.orbit.version>1.4.7.wso2v3</xmlschema.orbit.version>
         <xmlschema.orbit.imp.pkg.version>[1.4.7.wso2v3,1.5.0)</xmlschema.orbit.imp.pkg.version>
@@ -1074,7 +1084,9 @@
         <neethi.orbit.imp.pkg.version>[2.0.4.wso2v4,2.1.0)</neethi.orbit.imp.pkg.version>
 
         <jdbc-pool.orbit.version>7.0.34.wso2v2</jdbc-pool.orbit.version>
-        <jdbc-pool.orbit.imp.pkg.version>[7.0.34.wso2v2,7.1.0)</jdbc-pool.orbit.imp.pkg.version>
+        <jdbc-pool.orbit.imp.pkg.version>[1.7.0,1.8.0)</jdbc-pool.orbit.imp.pkg.version>
+
+        <carbon.commons.logging.imp.pkg.version>0.0.0</carbon.commons.logging.imp.pkg.version> <!-- todo  org.apache.commons.logging package version changed to this since there are no version in current export, after it was fixed change accordingly (should be able to use carbon.kernel.imp.pkg.version). - rajith-->
     </properties>
 
 </project>

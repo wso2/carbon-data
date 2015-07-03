@@ -96,11 +96,12 @@
                         <!--<DynamicImport-Package>*</DynamicImport-Package>-->
                         <Import-Package>
                             !org.wso2.carbon.dbconsole.ui.internal.*,
-                            org.h2.server.web;version="${h2.engine.orbit.imp.pkg.version}",
+                            <!--org.h2.server.web;version="${h2.engine.orbit.imp.pkg.version}",--> <!-- todo this is the correct one, but since existing h2 bundle doesn't export versions, keep without versions for time being, once h2 bundle is corrected, use with versions -->
+                            org.h2.server.web,
                             org.osgi.framework;version="${osgi.imp.pkg.version}",
                             org.osgi.service.http;version="${osgi.service.imp.pkg.version}",
                             org.osgi.service.component;version="${osgi.service.imp.pkg.version}",
-                            org.apache.commons.logging;version="${carbon.kernel.imp.pkg.version}",
+                            org.apache.commons.logging;version="${carbon.commons.logging.imp.pkg.version}",
                             org.apache.axis2.context;version="${apache.axis2.orbit.imp.pkg.version}",
                             org.wso2.carbon;version="${carbon.kernel.imp.pkg.version}",
                             org.wso2.carbon.ui;version="${carbon.kernel.imp.pkg.version}",

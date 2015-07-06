@@ -94,6 +94,7 @@
                             org.osgi.service.component;version="${osgi.service.imp.pkg.version}",
                             org.wso2.carbon.ntask.core;version="${carbon-commons.imp.pkg.version}",
                             org.wso2.carbon.ntask.core.service;version="${carbon-commons.imp.pkg.version}",
+                            org.wso2.carbon.ntask.core.internal;version="${carbon-commons.imp.pkg.version}", <!-- todo should find a way to remove this import of internal package -rajith -->
                             org.apache.axiom.om;version="${axiom.orbit.imp.pkg.version}",
                             org.apache.axis2;version="${apache.axis2.orbit.imp.pkg.version}",
                             org.apache.axis2.description;version="${apache.axis2.orbit.imp.pkg.version}",
@@ -108,6 +109,7 @@
                             org.wso2.carbon.core;version="${carbon.kernel.imp.pkg.version}",
                             org.wso2.carbon.core.multitenancy.utils;version="${carbon.kernel.imp.pkg.version}",
                             org.wso2.carbon.ntask.common;version="${carbon-commons.imp.pkg.version}",
+                            org.wso2.carbon.utils;version="${carbon.kernel.imp.pkg.version}",
                             org.wso2.carbon.utils.deployment;version="${carbon.kernel.imp.pkg.version}",
                             org.wso2.carbon.utils.multitenancy;version="${carbon.kernel.imp.pkg.version}",
                             org.wso2.carbon.context;version="${carbon.kernel.imp.pkg.version}"

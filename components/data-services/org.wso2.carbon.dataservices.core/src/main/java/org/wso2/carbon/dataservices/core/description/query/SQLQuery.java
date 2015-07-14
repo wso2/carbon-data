@@ -106,6 +106,8 @@ public class SQLQuery extends Query implements BatchRequestParticipant {
 
     private boolean returnGeneratedKeys;
 
+    private boolean returnUpdatedRowCount;
+
     private String[] keyColumns;
 
     private boolean hasBatchQuerySupport;
@@ -131,14 +133,14 @@ public class SQLQuery extends Query implements BatchRequestParticipant {
         }
     };
 
-    public SQLQuery(DataService dataService, String queryId, String configId,
-            boolean returnGeneratedKeys, String[] keyColumns, String query,
-            List<QueryParam> queryParams, Result result, EventTrigger inputEventTrigger,
-            EventTrigger outputEventTrigger, Map<String, String> advancedProperties,
-            String inputNamespace) throws DataServiceFault {
-        super(dataService, queryId, queryParams, result, configId, inputEventTrigger,
-                outputEventTrigger, advancedProperties, inputNamespace);
+    public SQLQuery(DataService dataService, String queryId, String configId, boolean returnGeneratedKeys,
+                    boolean returnUpdatedRowCount, String[] keyColumns, String query, List<QueryParam> queryParams,
+                    Result result, EventTrigger inputEventTrigger, EventTrigger outputEventTrigger,
+                    Map<String, String> advancedProperties, String inputNamespace) throws DataServiceFault {
+        super(dataService, queryId, queryParams, result, configId, inputEventTrigger, outputEventTrigger,
+              advancedProperties, inputNamespace);
         this.returnGeneratedKeys = returnGeneratedKeys;
+        this.returnUpdatedRowCount = returnUpdatedRowCount;
         this.keyColumns = keyColumns;
         this.query = query;
         try {
@@ -344,6 +346,10 @@ public class SQLQuery extends Query implements BatchRequestParticipant {
 
     public boolean isReturnGeneratedKeys() {
         return returnGeneratedKeys;
+    }
+
+    public boolean isReturnUpdatedRowCount() {
+        return returnUpdatedRowCount;
     }
 
     public boolean isForceStoredProc() {
@@ -796,6 +802,27 @@ public class SQLQuery extends Query implements BatchRequestParticipant {
         }
     }
 
+    /**
+     * This method writes the return update row count to the response
+     *
+     * @param stmt SQL Statement
+     * @param xmlWriter XMLStreamWriter
+     * @param params input params
+     * @param queryLevel Query Level
+     * @throws DataServiceFault
+     * @throws SQLException
+     */
+    private void writeOutUpdatedRowCount(Statement stmt, XMLStreamWriter xmlWriter, InternalParamCollection params,
+                                         int queryLevel) throws DataServiceFault, SQLException {
+        int updateCount = stmt.getUpdateCount();
+        DataEntry dataEntry = new DataEntry();
+        ParamValue param = new ParamValue(ParamValue.PARAM_VALUE_SCALAR);
+        param.setScalarValue(Integer.toString(updateCount));
+        /* Updated Row Count result is mapped to Column Number 1 */
+        dataEntry.addValue("1", param);
+        this.writeResultEntry(xmlWriter, dataEntry, params, queryLevel);
+    }
+
     private Object processPreNormalQuery(InternalParamCollection params,
             int queryLevel) throws DataServiceFault {
         PreparedStatement stmt = null;
@@ -811,7 +838,8 @@ public class SQLQuery extends Query implements BatchRequestParticipant {
                 BatchDataServiceRequest.addParticipant(this);
             }
             /* if updating/inserting stuff, go inside here */
-            if (!this.hasResult() || (this.hasResult() && this.isReturnGeneratedKeys())) {
+            if (!this.hasResult() || (this.hasResult() && (this.isReturnGeneratedKeys() ||
+                                                           this.isReturnUpdatedRowCount()))) {
                 /* if we are in the middle of a batch request, don't execute it */
                 if (this.isJDBCBatchRequest()) {
                     /* if this is the last one, execute the full batch */
@@ -852,21 +880,17 @@ public class SQLQuery extends Query implements BatchRequestParticipant {
                 BatchDataServiceRequest.addParticipant(this);
             }
             /* if updating/inserting stuff, go inside here */
-            if (!this.hasResult() || (this.hasResult() && this.isReturnGeneratedKeys())) {
+            if (!this.hasResult() || (this.hasResult() && (this.isReturnGeneratedKeys() ||
+                                                           this.isReturnUpdatedRowCount()))) {
                 /* if we are in the middle of a batch request, don't execute it */
                 if (this.isJDBCBatchRequest()) {
                     /* if this is the last one, execute the full batch */
                     if (this.isJDBCLastBatchRequest()) {
-                        if (this.isReturnGeneratedKeys()) {
-                            /* handle generated keys, i.e. SQL INSERT etc.. */
-                            this.writeOutGeneratedKeys(stmt, xmlWriter, params, queryLevel);
-                        }
+                        this.writeGeneratedElements(stmt, xmlWriter, params, queryLevel);
                     }
                 } else {
                     /* normal update operation */
-                    if (this.isReturnGeneratedKeys()) {
-                        this.writeOutGeneratedKeys(stmt, xmlWriter, params, queryLevel);
-                    }
+                    this.writeGeneratedElements(stmt, xmlWriter, params, queryLevel);
                 }
             } else {
                 DataEntry dataEntry;
@@ -882,6 +906,25 @@ public class SQLQuery extends Query implements BatchRequestParticipant {
                     "Error in 'SQLQuery.processPostNormalQuery': " + e.getMessage());
         } finally {
             this.releaseResources(rs, this.isStatementClosable(isError) ? stmt : null);
+        }
+    }
+
+    /**
+     * This method write generate elements like, update_row_count,generated_keys to the response
+     *
+     * @param stmt       Statement
+     * @param xmlWriter  xmlWriter
+     * @param params     paramCollection
+     * @param queryLevel query level
+     * @throws DataServiceFault
+     * @throws SQLException
+     */
+    private void writeGeneratedElements(Statement stmt, XMLStreamWriter xmlWriter, InternalParamCollection params,
+                                        int queryLevel) throws DataServiceFault, SQLException {
+        if (isReturnUpdatedRowCount()) {
+            this.writeOutUpdatedRowCount(stmt, xmlWriter, params, queryLevel);
+        } else {
+            this.writeOutGeneratedKeys(stmt, xmlWriter, params, queryLevel);
         }
     }
 
@@ -938,7 +981,8 @@ public class SQLQuery extends Query implements BatchRequestParticipant {
                 /* add this to cleanup this query after batch request */
                 BatchDataServiceRequest.addParticipant(this);
             }
-            if (!this.hasResult() || (this.hasResult() && this.isReturnGeneratedKeys())) {
+            if (!this.hasResult() || (this.hasResult() && this.isReturnGeneratedKeys()) ||
+                (this.hasResult() && this.isReturnUpdatedRowCount())) {
                 /* if we are in the middle of a batch request, don't execute it */
                 if (this.isJDBCBatchRequest()) {
                     /* if this is the last one, execute the full batch */
@@ -984,7 +1028,8 @@ public class SQLQuery extends Query implements BatchRequestParticipant {
         ResultSet rs = resultInfo.getResultSet();
         try {
             /* check if this is a batch request */
-            if (!this.hasResult() || (this.hasResult() && this.isReturnGeneratedKeys())) {
+            if (!this.hasResult() || (this.hasResult() && this.isReturnGeneratedKeys()) ||
+                (this.hasResult() && this.isReturnUpdatedRowCount())) {
                 /* if we are in the middle of a batch request, don't execute it */
                 if (this.isJDBCBatchRequest()) {
                     /* if this is the last one, execute the full batch */
@@ -992,10 +1037,16 @@ public class SQLQuery extends Query implements BatchRequestParticipant {
                         if (this.isReturnGeneratedKeys()) {
                             this.writeOutGeneratedKeys(stmt, xmlWriter, params, queryLevel);
                         }
+                        if (this.isReturnUpdatedRowCount()) {
+                            this.writeOutUpdatedRowCount(stmt, xmlWriter, params, queryLevel);
+                        }
                     }
                 } else {
                     if (this.isReturnGeneratedKeys()) {
                         this.writeOutGeneratedKeys(stmt, xmlWriter, params, queryLevel);
+                    }
+                    if (this.isReturnUpdatedRowCount()) {
+                        this.writeOutUpdatedRowCount(stmt, xmlWriter, params, queryLevel);
                     }
                 }
             } else {

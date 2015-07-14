@@ -224,11 +224,10 @@ public class WSDLToDataService {
 			queryId = operationName + DBConstants.CONTRACT_FIRST_QUERY_SUFFIX;
 			queryParams = getQueryParamsFromAxisOperation(modelMap, elementMap, axisOperation);
 			/* query */
-			dataService.addQuery(new SQLQuery(dataService, queryId, dummyConfigId, false, null,
-					DBConstants.CONTRACT_FIRST_DUMMY_SQL, queryParams,
-					getResultFromAxisOperation(dataService, axisOperation), null, null,
-					new HashMap<String, String>(),
-					dataService.getServiceNamespace()));
+			dataService.addQuery(new SQLQuery(dataService, queryId, dummyConfigId, false, false, null,
+			                                  DBConstants.CONTRACT_FIRST_DUMMY_SQL, queryParams,
+			                                  getResultFromAxisOperation(dataService, axisOperation), null, null,
+			                                  new HashMap<String, String>(), dataService.getServiceNamespace()));
 			/* operation */
 			dataService.addOperation(new Operation(dataService, operationName, null, 
 					getOperationCallQueryFromQueryParams(dataService, queryId, queryParams),

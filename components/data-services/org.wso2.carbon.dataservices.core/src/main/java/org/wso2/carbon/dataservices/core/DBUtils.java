@@ -240,10 +240,8 @@ public class DBUtils {
     public static String[] getUserRoles(String username) throws DataServiceFault {
     	RealmService realmService = DataServicesDSComponent.getRealmService();
         RegistryService registryService = DataServicesDSComponent.getRegistryService();
-        username = MultitenantUtils.getTenantAwareUsername(username);
         String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain();
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-        username = MultitenantUtils.getTenantAwareUsername(username);
         try {
             if (tenantId < MultitenantConstants.SUPER_TENANT_ID) {
                 tenantId = realmService.getTenantManager().getTenantId(tenantDomain);
@@ -252,6 +250,9 @@ public class DBUtils {
                 /* the tenant doesn't exist. */
                 log.error("The tenant doesn't exist. Tenant domain:" + tenantDomain);
                 throw new DataServiceFault("Access Denied. You are not authorized.");
+            }
+            if (tenantId != MultitenantConstants.SUPER_TENANT_ID){ //tenant space users can't access super tenant
+                username = MultitenantUtils.getTenantAwareUsername(username);
             }
             if (!realmService.getTenantManager().isTenantActive(tenantId)) {
                 /* the tenant is not active. */

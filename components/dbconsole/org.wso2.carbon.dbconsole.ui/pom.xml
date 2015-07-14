@@ -22,75 +22,16 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-  <modelVersion>4.0.0</modelVersion>
-  <!--<groupId>org.wso2.carbon</groupId>-->
-  <artifactId>org.wso2.carbon.dbconsole.ui</artifactId>
-  <!--<version>4.3.0-SNAPSHOT</version>-->
-  <packaging>bundle</packaging>
-  <name>WSO2 Carbon - DB Console UI</name>
-  <url>http://maven.apache.org</url>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>org.wso2.carbon.dbconsole.ui</artifactId>
+    <!--<version>4.3.0-SNAPSHOT</version>-->
+    <packaging>bundle</packaging>
+    <name>WSO2 Carbon - DB Console UI</name>
+    <url>http://maven.apache.org</url>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
-
-<build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
-           </plugin>
-           <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-scr-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>1.7</version>
-                <executions>
-                    <execution>
-                        <id>add-source</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>add-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>target/generated-code/src</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>
-                            org.wso2.carbon.dbconsole.ui.*
-                        </Export-Package>
-                        <DynamicImport-Package>*</DynamicImport-Package>
-                        <Import-Package>
-			    !javax.xml.namespace,
-                            javax.servlet.*;version="${javax.servlet.imp.pkg.version}",
-			    javax.xml.namespace;version="0.0.0",
-			    *;resolution:=optional,                            
-			</Import-Package>
-                        <Carbon-Component>UIBundle</Carbon-Component>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -107,4 +48,69 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <!--<plugin>-->
+                <!--<groupId>org.apache.maven.plugins</groupId>-->
+                <!--<artifactId>maven-compiler-plugin</artifactId>-->
+                <!--<configuration>-->
+                    <!--<source>1.6</source>-->
+                    <!--<target>1.6</target>-->
+                <!--</configuration>-->
+            <!--</plugin>-->
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-scr-plugin</artifactId>
+            </plugin>
+            <!--<plugin>-->
+                <!--<groupId>org.codehaus.mojo</groupId>-->
+                <!--<artifactId>build-helper-maven-plugin</artifactId>-->
+                <!--<version>1.7</version>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<id>add-source</id>-->
+                        <!--<phase>generate-sources</phase>-->
+                        <!--<goals>-->
+                            <!--<goal>add-source</goal>-->
+                        <!--</goals>-->
+                        <!--<configuration>-->
+                            <!--<sources>-->
+                                <!--<source>target/generated-code/src</source>-->
+                            <!--</sources>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+            <!--</plugin>-->
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Private-Package>org.wso2.carbon.dbconsole.ui.internal</Private-Package>
+                        <!--<Export-Package>-->
+                            <!--org.wso2.carbon.dbconsole.ui.*-->
+                        <!--</Export-Package>-->
+                        <!--<DynamicImport-Package>*</DynamicImport-Package>-->
+                        <Import-Package>
+                            !org.wso2.carbon.dbconsole.ui.internal.*,
+                            <!--org.h2.server.web;version="${h2.engine.orbit.imp.pkg.version}",--> <!-- todo this is the correct one, but since existing h2 bundle doesn't export versions, keep without versions for time being, once h2 bundle is corrected, use with versions -->
+                            org.h2.server.web,
+                            org.osgi.framework;version="${osgi.imp.pkg.version}",
+                            org.osgi.service.http;version="${osgi.service.imp.pkg.version}",
+                            org.osgi.service.component;version="${osgi.service.imp.pkg.version}",
+                            org.apache.commons.logging;version="${carbon.commons.logging.imp.pkg.version}",
+                            org.apache.axis2.context;version="${apache.axis2.orbit.imp.pkg.version}",
+                            org.wso2.carbon;version="${carbon.kernel.imp.pkg.version}",
+                            org.wso2.carbon.ui;version="${carbon.kernel.imp.pkg.version}",
+                            org.wso2.carbon.utils;version="${carbon.kernel.imp.pkg.version}"
+                        </Import-Package>
+                        <Carbon-Component>UIBundle</Carbon-Component>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

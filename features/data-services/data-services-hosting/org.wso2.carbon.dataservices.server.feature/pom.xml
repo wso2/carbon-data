@@ -145,20 +145,17 @@
                         </goals>
                         <configuration>
                             <id>org.wso2.carbon.dataservices.server</id>
-                            <propertiesFile>../../../../etc/feature.properties</propertiesFile>
+                            <propertiesFile>../../../etc/feature.properties</propertiesFile>
                             <adviceFile>
                                 <properties>
-                                    <propertyDef>org.wso2.carbon.p2.category.type:console</propertyDef>
+                                    <propertyDef>org.wso2.carbon.p2.category.type:server</propertyDef>
                                     <propertyDef>org.eclipse.equinox.p2.type.group:false</propertyDef>
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <bundleDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.core
-                                </bundleDef>
-                                <bundleDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.common
-                                </bundleDef>
-                                <bundleDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.sql.driver
-                                </bundleDef>
+                                <bundleDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.core</bundleDef>
+                                <bundleDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.common</bundleDef>
+                                <bundleDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.sql.driver</bundleDef>
                                 <bundleDef>com.google.gdata.wso2:gdata-core</bundleDef>
                                 <bundleDef>com.google.gdata.wso2:gdata-spreadsheet</bundleDef>
                                 <bundleDef>com.google.guava.wso2:guava</bundleDef>
@@ -178,8 +175,7 @@
                                 <bundleDef>commons-pool.wso2:commons-pool</bundleDef>
                             </bundles>
                             <importFeatures>
-                                <importFeatureDef>org.wso2.carbon.service.mgt.server:${carbon-deployment.version}
-                                </importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.service.mgt.server:${carbon-deployment.version}</importFeatureDef>
                                 <importFeatureDef>org.wso2.carbon.event.server:${carbon-commons.version}</importFeatureDef>
                                 <importFeatureDef>org.wso2.carbon.transaction.manager:${carbon-commons.version}</importFeatureDef>
                             </importFeatures>

@@ -31,14 +31,6 @@
     <url>http://wso2.org</url>
     <description>WSO2 Data Services Common Bundle</description>
 
-    <!--dependencies>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.core</artifactId>
-            <version>${wso2carbon.version.data-services}</version>
-        </dependency>
-    </dependencies-->
-
     <build>
         <plugins>
             <!--<plugin>-->
@@ -65,14 +57,14 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-                            org.wso2.carbon.dataservices.common.*
+                            org.wso2.carbon.dataservices.common.*;version="${project.version}"
                         </Export-Package>
-                        <Import-Package>
-                            !org.wso2.carbon.dataservices.common.*,
-                            org.apache.axis2.*; version="${apache.axis2.orbit.imp.pkg.version}",
-                            *;resolution:=optional
-                        </Import-Package>
-                        <DynamicImport-Package>*</DynamicImport-Package>
+                        <!--<Import-Package>-->
+                            <!--!org.wso2.carbon.dataservices.common.*,-->
+                            <!--org.apache.axis2.*; version="${apache.axis2.orbit.imp.pkg.version}",-->
+                            <!--*;resolution:=optional-->
+                        <!--</Import-Package>-->
+                        <!--<DynamicImport-Package>*</DynamicImport-Package>-->
                     </instructions>
                 </configuration>
             </plugin>

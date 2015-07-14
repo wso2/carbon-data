@@ -19,7 +19,7 @@
 
 package org.wso2.carbon.dataservices.sql.driver.internal;
 
-        import org.apache.commons.logging.Log;
+import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;

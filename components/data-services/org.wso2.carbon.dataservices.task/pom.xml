@@ -51,6 +51,10 @@
             <groupId>org.wso2.carbon.data</groupId>
             <artifactId>org.wso2.carbon.dataservices.common</artifactId>
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -81,13 +85,34 @@
                         <Private-Package>org.wso2.carbon.dataservices.task.internal</Private-Package>
                         <Export-Package>
                             !org.wso2.carbon.dataservices.task.internal,
-                            org.wso2.carbon.dataservices.task.*
+                            org.wso2.carbon.dataservices.task;version="${project.version}"
                         </Export-Package>
-                        <DynamicImport-Package>*</DynamicImport-Package>
+                        <!--<DynamicImport-Package>*</DynamicImport-Package>-->
                         <Import-Package>
-                            !org.wso2.carbon.dataservices.task.*,
-                            org.apache.axis2.*; version="${apache.axis2.orbit.imp.pkg.version}",
-                            *;resolution:=optional
+                            !org.wso2.carbon.dataservices.task,
+                            org.apache.commons.logging;version="${carbon.commons.logging.imp.pkg.version}",
+                            org.osgi.service.component;version="${osgi.service.imp.pkg.version}",
+                            org.wso2.carbon.ntask.core;version="${carbon-commons.imp.pkg.version}",
+                            org.wso2.carbon.ntask.core.service;version="${carbon-commons.imp.pkg.version}",
+                            org.wso2.carbon.ntask.core.internal;version="${carbon-commons.imp.pkg.version}", <!-- todo should find a way to remove this import of internal package -rajith -->
+                            org.apache.axiom.om;version="${axiom.orbit.imp.pkg.version}",
+                            org.apache.axis2;version="${apache.axis2.orbit.imp.pkg.version}",
+                            org.apache.axis2.description;version="${apache.axis2.orbit.imp.pkg.version}",
+                            org.apache.axis2.context;version="${apache.axis2.orbit.imp.pkg.version}",
+                            org.apache.axis2.engine;version="${apache.axis2.orbit.imp.pkg.version}",
+                            org.wso2.carbon.dataservices.common;version="${dataservices.imp.pkg.version}",
+                            org.wso2.carbon.dataservices.core;version="${dataservices.imp.pkg.version}",
+                            org.wso2.carbon.dataservices.core.engine;version="${dataservices.imp.pkg.version}",
+                            org.wso2.carbon.dataservices.core.tools;version="${dataservices.imp.pkg.version}",
+                            org.wso2.carbon.dataservices.core.description.operation;version="${dataservices.imp.pkg.version}",
+                            org.wso2.carbon.ntask.solutions.webservice;version="${carbon-commons.imp.pkg.version}",
+                            org.wso2.carbon.core;version="${carbon.kernel.imp.pkg.version}",
+                            org.wso2.carbon.core.multitenancy.utils;version="${carbon.kernel.imp.pkg.version}",
+                            org.wso2.carbon.ntask.common;version="${carbon-commons.imp.pkg.version}",
+                            org.wso2.carbon.utils;version="${carbon.kernel.imp.pkg.version}",
+                            org.wso2.carbon.utils.deployment;version="${carbon.kernel.imp.pkg.version}",
+                            org.wso2.carbon.utils.multitenancy;version="${carbon.kernel.imp.pkg.version}",
+                            org.wso2.carbon.context;version="${carbon.kernel.imp.pkg.version}"
                         </Import-Package>
                     </instructions>
                 </configuration>

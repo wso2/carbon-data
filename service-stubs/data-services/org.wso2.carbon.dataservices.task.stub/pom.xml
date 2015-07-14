@@ -26,11 +26,21 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <!--<groupId>org.wso2.carbon</groupId> -->
     <artifactId>org.wso2.carbon.dataservices.task.stub</artifactId>
     <packaging>bundle</packaging>
     <name>WSO2 Carbon - Data Services Task Stub</name>
     <url>http://wso2.org</url>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.ws.commons.axiom.wso2</groupId>
+            <artifactId>axiom</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.securevault</groupId>
+            <artifactId>org.wso2.securevault</artifactId>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>
@@ -96,8 +106,26 @@
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-Version>${dataservices.version}</Bundle-Version>
                         <Export-Package>
-                            org.wso2.carbon.dataservices.task.ui.stub.*
+                            org.wso2.carbon.dataservices.task.ui.stub.*;version="${project.version}"
                         </Export-Package>
+                        <Import-Package>
+                            !org.wso2.carbon.dataservices.task.ui.stub.*,
+                            org.apache.axiom.om;version="${axiom.orbit.imp.pkg.version}",
+                            org.apache.axiom.soap;version="${axiom.orbit.imp.pkg.version}",
+                            org.apache.axis2;version="${apache.axis2.orbit.imp.pkg.version}",
+                            org.apache.axis2.addressing;version="${apache.axis2.orbit.imp.pkg.version}",
+                            org.apache.axis2.client;version="${apache.axis2.orbit.imp.pkg.version}",
+                            org.apache.axis2.client.async;version="${apache.axis2.orbit.imp.pkg.version}",
+                            org.apache.axis2.context;version="${apache.axis2.orbit.imp.pkg.version}",
+                            org.apache.axis2.databinding;version="${apache.axis2.orbit.imp.pkg.version}",
+                            org.apache.axis2.databinding.utils;version="${apache.axis2.orbit.imp.pkg.version}",
+                            org.apache.axis2.databinding.utils.reader;version="${apache.axis2.orbit.imp.pkg.version}",
+                            org.apache.axis2.description;version="${apache.axis2.orbit.imp.pkg.version}",
+                            org.apache.axis2.engine;version="${apache.axis2.orbit.imp.pkg.version}",
+                            org.apache.axis2.transport;version="${apache.axis2.orbit.imp.pkg.version}",
+                            org.apache.axis2.util;version="${apache.axis2.orbit.imp.pkg.version}",
+                        </Import-Package>
+
                     </instructions>
                 </configuration>
             </plugin>

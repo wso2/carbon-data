@@ -24,41 +24,12 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <!--<groupId>org.wso2.carbon</groupId>-->
     <artifactId>org.wso2.carbon.dataservices.ui</artifactId>
     <!--<version>4.3.0-SNAPSHOT</version>-->
     <packaging>bundle</packaging>
     <name>WSO2 Carbon - Data Services UI</name>
     <url>http://wso2.org</url>
     <description>WSO2 Data Services UI Bundle</description>
-
-    <build>
-        <plugins>
-	   <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <Bundle-Name>${project.artifactId}</Bundle-Name>
-                        <Export-Package>
-                            org.wso2.carbon.dataservices.ui.*
-                        </Export-Package>
-                        <Import-Package>
-                            javax.servlet.*;version="${javax.servlet.imp.pkg.version}",
-                            javax.xml.namespace.*;version="0.0.0",
-                            *;resolution:=optional,
-                            org.wso2.carbon.dataservices.ui.stub.*;version="${dataservices.package.export.version}",
-                            org.wso2.carbon.dataservices.ui.fileupload.stub.*;version="${dataservices.package.export.version}"
-                        </Import-Package>
-			<Carbon-Component>UIBundle</Carbon-Component>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
     <dependencies>
         <dependency>
@@ -69,7 +40,7 @@
             <groupId>org.wso2.carbon.commons</groupId>
             <artifactId>org.wso2.carbon.user.mgt.ui</artifactId>
         </dependency>
-	    <dependency>
+        <dependency>
             <groupId>org.wso2.carbon.commons</groupId>
             <artifactId>org.wso2.carbon.user.mgt.common</artifactId>
         </dependency>
@@ -78,8 +49,8 @@
             <artifactId>org.wso2.carbon.dataservices.common</artifactId>
         </dependency>
         <!--<dependency>-->
-            <!--<groupId>org.wso2.carbon</groupId>-->
-            <!--<artifactId>org.wso2.carbon.mashup.javascript-scraper.ui</artifactId>-->
+        <!--<groupId>org.wso2.carbon</groupId>-->
+        <!--<artifactId>org.wso2.carbon.mashup.javascript-scraper.ui</artifactId>-->
         <!--</dependency>-->
         <dependency>
             <groupId>org.wso2.carbon.data</groupId>
@@ -89,6 +60,59 @@
             <groupId>org.wso2.carbon.data</groupId>
             <artifactId>org.wso2.carbon.dataservices.fileupload.stub</artifactId>
         </dependency>
+        <dependency>
+            <groupId>commons-io.wso2</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Name>${project.artifactId}</Bundle-Name>
+                        <Export-Package>
+                            !org.wso2.carbon.dataservices.ui.stub.*,
+                            !org.wso2.carbon.dataservices.ui.fileupload.stub.*,
+                            org.wso2.carbon.dataservices.ui.*;version="${project.version}"
+                        </Export-Package>
+                        <Import-Package>
+                            !org.wso2.carbon.dataservices.ui,
+                            !org.wso2.carbon.dataservices.ui.beans,
+                            !org.wso2.carbon.dataservices.ui.fileupload,
+                            org.apache.axiom.om;version="${axiom.orbit.imp.pkg.version}",
+                            org.apache.axiom.om.impl.llom;version="${axiom.orbit.imp.pkg.version}",
+                            org.apache.axiom.om.impl.builder;version="${axiom.orbit.imp.pkg.version}",
+                            org.wso2.carbon.dataservices.common;version="${dataservices.imp.pkg.version}",
+                            org.wso2.carbon.dataservices.common.conf;version="${dataservices.imp.pkg.version}",
+                            org.apache.axis2;version="${apache.axis2.orbit.imp.pkg.version}",
+                            org.apache.axis2.client;version="${apache.axis2.orbit.imp.pkg.version}",
+                            org.apache.axis2.context;version="${apache.axis2.orbit.imp.pkg.version}",
+                            org.apache.axis2.description;version="${apache.axis2.orbit.imp.pkg.version}",
+                            org.wso2.carbon.dataservices.ui.fileupload.stub;version="${dataservices.imp.pkg.version}",
+                            org.wso2.carbon;version="${carbon.kernel.imp.pkg.version}",
+                            org.wso2.carbon.ui;version="${carbon.kernel.imp.pkg.version}",
+                            org.wso2.carbon.utils;version="${carbon.kernel.imp.pkg.version}",
+                            org.wso2.carbon.ui.transports.fileupload;version="${carbon.kernel.imp.pkg.version}",
+                            <!--javax.servlet.http;version="${javax.servlet.imp.pkg.version}",-->
+                            org.apache.commons.logging;version="${carbon.commons.logging.imp.pkg.version}",
+                            org.wso2.carbon.dataservices.ui.stub;version="${dataservices.imp.pkg.version}",
+                            org.wso2.carbon.dataservices.ui.stub.admin.core.xsd;version="${dataservices.imp.pkg.version}",
+                            org.wso2.carbon.user.mgt.ui;version="${carbon-commons.imp.pkg.version}",
+                            org.wso2.carbon.user.mgt.stub.types.carbon;version="${carbon-commons.imp.pkg.version}",
+                            org.apache.commons.io;version="${commons-io.orbit.imp.pkg.version}"
+                        </Import-Package>
+                        <Carbon-Component>UIBundle</Carbon-Component>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
     
 </project>

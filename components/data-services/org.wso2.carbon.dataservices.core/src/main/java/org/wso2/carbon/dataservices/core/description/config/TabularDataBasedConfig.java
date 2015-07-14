@@ -33,12 +33,14 @@ import org.wso2.carbon.dataservices.sql.driver.processor.reader.DataCell;
 import org.wso2.carbon.dataservices.sql.driver.query.ColumnInfo;
 
 import javax.sql.DataSource;
+import java.sql.SQLFeatureNotSupportedException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.logging.Logger;
 
 /**
  * This class represents a data services custom data source.
@@ -126,7 +128,12 @@ public class TabularDataBasedConfig extends SQLConfig {
 			return loginTimeout;
 		}
 
-		@Override
+        @Override //remove the annotation if needs to support this in java 1.6 too(backward compatibility)
+        public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+            return Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+        }
+
+        @Override
 		public void setLogWriter(PrintWriter logWriter) throws SQLException {
 			this.logWriter = logWriter;
 		}

@@ -71,15 +71,28 @@
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
-                        <!--Private-Package>org.wso2.carbon.dataservices.core.internal</Private-Package-->
+                        <Private-Package>org.wso2.carbon.dataservices.sql.driver.internal</Private-Package>
                         <Export-Package>
-                            org.wso2.carbon.dataservices.sql.driver.*
+                            !org.wso2.carbon.dataservices.sql.driver.internal,
+                            org.wso2.carbon.dataservices.sql.driver.*;version="${project.version}"
                         </Export-Package>
                         <Import-Package>
-                            !org.wso2.carbon.dataservices.sql.drover.*,
-                            *;resolution:=optional
+                            !org.wso2.carbon.dataservices.sql.driver.*,
+                            org.apache.poi.ss.usermodel;version="${poi.orbit.imp.pkg.version}",
+                            org.apache.poi.hssf.usermodel;version="${poi.orbit.imp.pkg.version}",
+                            com.google.gdata.data;version="${gdata-core.orbit.imp.pkg.version}",
+                            com.google.gdata.data.spreadsheet;version="${gdata-spreadsheet.orbit.imp.pkg.version}",
+                            com.google.gdata.client;version="${gdata-core.orbit.imp.pkg.version}",
+                            com.google.gdata.client.spreadsheet;version="${gdata-spreadsheet.orbit.imp.pkg.version}",
+                            com.google.gdata.util;version="${gdata-core.orbit.imp.pkg.version}",
+                            org.wso2.carbon.registry.core;version="${carbon.registry.imp.pkg.version}",
+                            org.wso2.carbon.registry.core.service;version="${carbon.registry.imp.pkg.version}",
+                            org.wso2.carbon.registry.core.exceptions;version="${carbon.registry.imp.pkg.version}",
+                            org.apache.commons.logging;version="${carbon.commons.logging.imp.pkg.version}",
+                            org.wso2.carbon.context;version="${carbon.kernel.imp.pkg.version}",
+                            org.wso2.carbon.utils.multitenancy;version="${carbon.kernel.imp.pkg.version}"
                         </Import-Package>
-                        <DynamicImport-Package>*</DynamicImport-Package>
+                        <!--<DynamicImport-Package>*</DynamicImport-Package>-->
                     </instructions>
                 </configuration>
             </plugin>

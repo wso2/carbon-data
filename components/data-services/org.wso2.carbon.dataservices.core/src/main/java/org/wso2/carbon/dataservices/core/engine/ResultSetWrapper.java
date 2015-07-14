@@ -20,6 +20,8 @@ package org.wso2.carbon.dataservices.core.engine;
 
 import java.io.InputStream;
 import java.io.Reader;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.*;
@@ -990,6 +992,46 @@ public class ResultSetWrapper implements ResultSet {
     @Override
     public void updateNClob(String columnLabel, Reader reader) throws SQLException {
         this.getResultSet().updateNClob(columnLabel, reader);
+    }
+
+    @Override //need to remove the annotation if need to support this in java 1.6 too(backward compatibility)
+    public <T> T getObject(int columnIndex, Class<T> type) throws SQLException {
+        return this.getResultSet().getObject(columnIndex,type);
+        //need to us below reflection code for the purpose of backward compatibility. unless this won't get compiled
+        //with java 6 since this method is introduced in java 7
+//        try {
+//            Class[] paramString = new Class[2];
+//            paramString[0] = Integer.TYPE;
+//            paramString[1] = Class.class;
+//            Method method = this.getResultSet().getClass().getDeclaredMethod("getObject", paramString);
+//            return (T) method.invoke(this.getResultSet(), columnIndex, type);
+//        } catch (NoSuchMethodException e) {
+//            throw new UnsupportedOperationException("Method not supported in current implementation - method not found", e);
+//        } catch (IllegalAccessException e) {
+//            throw new UnsupportedOperationException("Method not supported in current implementation - Illegal Access attempt", e);
+//        } catch (InvocationTargetException e) {
+//            throw new UnsupportedOperationException("Method not supported in current implementation - Invocation exception", e);
+//        }
+    }
+
+    @Override  //need to remove the annotation if need to support this in java 1.6 too(backward compatibility)
+    public <T> T getObject(String columnLabel, Class<T> type) throws SQLException {
+        return this.getResultSet().getObject(columnLabel,type);
+        //need to us below reflection code for the purpose of backward compatibility. unless this won't get compiled
+        //with java 6 since this method is introduced in java 7
+//        try {
+//            Class[] paramString = new Class[2];
+//            paramString[0] = String.class;
+//            paramString[1] = Class.class;
+//            Method method = this.getResultSet().getClass().getDeclaredMethod("getObject", paramString);
+//            return (T) method.invoke(this.getResultSet(), columnLabel, type);
+//        } catch (NoSuchMethodException e) {
+//            throw new UnsupportedOperationException("Method not supported in current implementation - method not found", e);
+//        } catch (IllegalAccessException e) {
+//            throw new UnsupportedOperationException("Method not supported in current implementation - Illegal Access attempt", e);
+//        } catch (InvocationTargetException e) {
+//            throw new UnsupportedOperationException("Method not supported in current implementation - Invocation exception", e);
+//        }
     }
 
     @Override

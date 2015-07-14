@@ -77,7 +77,7 @@
                         </goals>
                         <configuration>
                             <id>org.wso2.carbon.dataservices.ui</id>
-                            <propertiesFile>../../../../etc/feature.properties</propertiesFile>
+                            <propertiesFile>../../../etc/feature.properties</propertiesFile>
                             <adviceFile>
                                 <properties>
                                     <propertyDef>org.wso2.carbon.p2.category.type:console</propertyDef>
@@ -86,10 +86,12 @@
                             </adviceFile>
                             <bundles>
                                 <bundleDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.ui</bundleDef>
-                                <bundleDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.common</bundleDef>
                                 <bundleDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.stub</bundleDef>
                                 <bundleDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.fileupload.stub</bundleDef>
                             </bundles>
+                            <importBundles>
+                                <importBundleDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.common</importBundleDef>
+                            </importBundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.service.mgt.ui:${carbon-deployment.version}</importFeatureDef>
                                 <importFeatureDef>org.wso2.carbon.ndatasource.ui:${carbon-commons.version}</importFeatureDef>

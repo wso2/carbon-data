@@ -1034,20 +1034,10 @@ public class SQLQuery extends Query implements BatchRequestParticipant {
                 if (this.isJDBCBatchRequest()) {
                     /* if this is the last one, execute the full batch */
                     if (this.isJDBCLastBatchRequest()) {
-                        if (this.isReturnGeneratedKeys()) {
-                            this.writeOutGeneratedKeys(stmt, xmlWriter, params, queryLevel);
-                        }
-                        if (this.isReturnUpdatedRowCount()) {
-                            this.writeOutUpdatedRowCount(stmt, xmlWriter, params, queryLevel);
-                        }
+                        this.writeGeneratedElements(stmt, xmlWriter, params, queryLevel);
                     }
                 } else {
-                    if (this.isReturnGeneratedKeys()) {
-                        this.writeOutGeneratedKeys(stmt, xmlWriter, params, queryLevel);
-                    }
-                    if (this.isReturnUpdatedRowCount()) {
-                        this.writeOutUpdatedRowCount(stmt, xmlWriter, params, queryLevel);
-                    }
+                    this.writeGeneratedElements(stmt, xmlWriter, params, queryLevel);
                 }
             } else {
                 if (rs == null || this.isRSClosed(rs) || !rs.next()) {

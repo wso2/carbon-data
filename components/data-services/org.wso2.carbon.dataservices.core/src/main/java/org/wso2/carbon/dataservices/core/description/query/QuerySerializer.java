@@ -115,8 +115,7 @@ public class QuerySerializer {
 		queryEl.addChild(sqlEl);
 		if (sqlQuery.isReturnGeneratedKeys()) {
 			queryEl.addAttribute(DBSFields.RETURN_GENERATED_KEYS, Boolean.TRUE.toString(), null);
-		}
-		if (sqlQuery.isReturnUpdatedRowCount()) {
+		} else if (sqlQuery.isReturnUpdatedRowCount()) {
 			queryEl.addAttribute(DBSFields.RETURN_UPDATED_ROWCOUNT, Boolean.TRUE.toString(), null);
 		}
 	}

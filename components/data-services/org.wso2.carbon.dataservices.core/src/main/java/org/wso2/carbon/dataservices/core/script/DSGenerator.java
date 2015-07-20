@@ -30,7 +30,13 @@ import org.wso2.carbon.dataservices.core.description.operation.Operation;
 import org.wso2.carbon.dataservices.core.description.query.Query;
 import org.wso2.carbon.dataservices.core.description.query.QueryFactory;
 import org.wso2.carbon.dataservices.core.description.query.SQLQuery;
-import org.wso2.carbon.dataservices.core.engine.*;
+import org.wso2.carbon.dataservices.core.engine.DataService;
+import org.wso2.carbon.dataservices.core.engine.CallQuery;
+import org.wso2.carbon.dataservices.core.engine.Result;
+import org.wso2.carbon.dataservices.core.engine.QueryParam;
+import org.wso2.carbon.dataservices.core.engine.ParamValue;
+import org.wso2.carbon.dataservices.core.engine.OutputElementGroup;
+import org.wso2.carbon.dataservices.core.engine.StaticOutputElement;
 import org.wso2.carbon.dataservices.core.engine.CallQuery.WithParam;
 import org.wso2.carbon.dataservices.core.internal.DataServicesDSComponent;
 import org.wso2.carbon.dataservices.core.validation.Validator;
@@ -40,8 +46,17 @@ import org.wso2.carbon.ndatasource.core.DataSourceService;
 
 import javax.sql.DataSource;
 import javax.xml.namespace.QName;
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * Convert whole database into list of data-service objects,data-service object
@@ -174,13 +189,13 @@ public class DSGenerator {
 		List<DataService> serviceList = new ArrayList<DataService>();
 		if (schemas.length != 0) {
 			for (String schema : schemas) {
-				makeServices(dbName, tableNames, metaData, serviceList, schema,
-						datasourceId,serviceNamespace);
+				makeServices(dbName, tableNames, metaData, serviceList, schema, datasourceId,
+				             serviceNamespace);
 			}
 		} else {
 			String schema = null;
-			makeServices(dbName, tableNames, metaData, serviceList, schema,
-					datasourceId,serviceNamespace);
+			makeServices(dbName, tableNames, metaData, serviceList, schema, datasourceId,
+			             serviceNamespace);
 		}
 		return serviceList;
 	}
@@ -304,8 +319,12 @@ public class DSGenerator {
 		if ((url != null) && (driver != null) && (userName != null)
 				&& (password != null)) {
 			Class.forName(driver);
-			Connection connection = DriverManager.getConnection(url, userName,
-					password);
+			Connection connection;
+			if (!("").equals(userName)) {
+				connection = DriverManager.getConnection(url, userName, password);
+			} else {
+				connection = DriverManager.getConnection(url);
+			}
 			return DSGenerator.getTableList(connection, dbName, schemas);
 		} else {
 			return null;

@@ -111,7 +111,7 @@ public class QuerySerializer {
 	
 	private static void serializeSQLQueryProps(SQLQuery sqlQuery, OMElement queryEl, OMFactory fac) {
 		OMElement sqlEl = fac.createOMElement(new QName(DBSFields.SQL));
-		sqlEl.setText(sqlQuery.getSql());
+		sqlEl.setText(sqlQuery.getQuery());
 		queryEl.addChild(sqlEl);
 		if (sqlQuery.isReturnGeneratedKeys()) {
 			queryEl.addAttribute(DBSFields.RETURN_GENERATED_KEYS, Boolean.TRUE.toString(), null);

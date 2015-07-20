@@ -103,6 +103,7 @@ window.onload=function() {
     String textMapping = "";
     int workSheetNumber = 1;
     boolean returnGeneratedKeys = false;
+    boolean returnUpdatedRowCount = false;
     boolean isUseColumnNumbers = true;
     String keyColumns = "";
     boolean isEmptyReturnGeneratedKeys = true;
@@ -153,6 +154,7 @@ window.onload=function() {
             scraperVaribale = query.getScraperVariable();
             Config c = dataService.getConfig(useConfig);
             returnGeneratedKeys = query.isReturnGeneratedKeys();
+            returnUpdatedRowCount = query.isReturnUpdatedRowCount();
             keyColumns = query.getKeyColumns();
             if (c != null) {
                 datasourceType = c.getDataSourceType();
@@ -940,7 +942,20 @@ window.onload=function() {
                     <label for="returnGeneratedKeys"><fmt:message
                         key="datasources.return.generated.keys"/></label>                    
                 </td>
-                    
+                <td>
+                    <%
+                        if (returnUpdatedRowCount) {
+                    %>
+                    <input type="checkbox" id="returnUpdatedRowCount" name="returnUpdatedRowCount"
+                           checked="checked" value="<%=returnUpdatedRowCount%>" onclick="var validated=validateClickOnReturnUpdatedRowCount();if(validated){document.dataForm.action='queryProcessor.jsp?setReturnUpdatedRowCount=false&flag=ReturnRowChanged';document.dataForm.submit();} return validated;"  />
+                    <% } else {
+                    %>
+                    <input type="checkbox" id="returnUpdatedRowCount" name="returnUpdatedRowCount" value="<%=returnUpdatedRowCount%>"
+                           onclick="var validated=validateClickOnReturnUpdatedRowCount();if(validated){document.dataForm.action='queryProcessor.jsp?setReturnUpdatedRowCount=true&flag=ReturnRowChanged';document.dataForm.submit();} return validated;" />
+                    <% } %>
+                    <label for="returnUpdatedRowCount"><fmt:message
+                        key="datasources.return.updated.row.count"/></label>
+                </td>
             </tr>
             <% if (returnGeneratedKeys) { %>
             <tr>

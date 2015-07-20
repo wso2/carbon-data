@@ -76,8 +76,10 @@
     String autoResponse = request.getParameter("addAutoResponse");
     String autoInputMappings = request.getParameter("addAutoInputMappings");
     String returnGeneratedKeys = request.getParameter("returnGeneratedKeys");
+    String returnUpdatedRowCount = request.getParameter("returnUpdatedRowCount");
     String keyColumns = request.getParameter("keyColumns");
     String setReturnGeneratedKeys = request.getParameter("setReturnGeneratedKeys");
+    String setReturnUpdatedRowCount = request.getParameter("setReturnUpdatedRowCount");
     String useColumnNumbers = request.getParameter("useColumnNumbers");
     String escapeNonPrintableChar = request.getParameter("escapeNonPrintableChar");
     String textMapping = request.getParameter("jsonMapping");
@@ -85,6 +87,7 @@
     edit = (edit == null) ? "" : edit;
     outputType = (outputType == null) ? "xml" : outputType;
     returnGeneratedKeys = (returnGeneratedKeys == null) ? "false" : "true";
+    returnUpdatedRowCount = (null == returnUpdatedRowCount) ? "false" : "true";
     useColumnNumbers = (useColumnNumbers == null) ? "false" : "true";
     escapeNonPrintableChar = (escapeNonPrintableChar == null) ? "false" : "true";
     xsltPath = (xsltPath == null) ? "":xsltPath;
@@ -151,6 +154,7 @@
             } else {
                 query.setId(queryId);
                 query.setReturnGeneratedKeys(Boolean.parseBoolean(returnGeneratedKeys));
+                query.setReturnUpdatedRowCount(Boolean.parseBoolean(returnUpdatedRowCount));
                 query.setKeyColumns(keyColumns);
                 query.setConfigToUse(datasource);
                 if (outputEvent != null) {
@@ -357,6 +361,7 @@
             //query hasn't saved yet. Set status to remove until it is saved.
             query.setStatus("remove");
             query.setReturnGeneratedKeys(Boolean.parseBoolean(returnGeneratedKeys));
+            query.setReturnUpdatedRowCount(Boolean.parseBoolean(returnUpdatedRowCount));
             query.setKeyColumns(keyColumns);
             if (outputEvent != null) {
                 query.setOutputEventTrigger(outputEvent);
@@ -512,7 +517,7 @@
             }
         }
     } 
-    /* check return row id change */
+    /* check return row id change - GeneratedKeys */
     if (setReturnGeneratedKeys != null) {
     	boolean hasReturnRowProperty = false;
     	String eleName ="";
@@ -548,6 +553,53 @@
                         res.removeElement("ID");
                         //remove result wrapper only if there are no other result elements exist other than generated key
                         if (res.getElements() != null && res.getElements().size() == 0) {
+                            res.setResultWrapper("");
+                            res.setRowName("");
+                            res.setUseColumnNumbers("false");
+                            res.setEscapeNonPrintableChar(escapeNonPrintableChar);
+                        }
+                        returnRowQuery.setResult(res);
+                    }
+                }
+            }
+        }
+    }
+
+    /* check return row id change - ReturnUpdatedRowCount */
+    if (null != setReturnUpdatedRowCount) {
+        boolean hasReturnRowProperty = false;
+        String eleName = "";
+        if (("true").equals(setReturnUpdatedRowCount)) {
+           if(null != dataService.getQuery(queryId)) {
+              Query returnRowQuery = dataService.getQuery(queryId);
+              Result res = returnRowQuery.getResult();
+              if (("true").equals(returnUpdatedRowCount) && (!hasReturnRowProperty)) {
+                  returnRowQuery.setReturnUpdatedRowCount(true);
+                  if (null == res || res.getElements().size() == 0) {
+                      res = new Result();
+                      res.setResultWrapper("UpdatedRowCount");
+                      res.setUseColumnNumbers("true");
+                      res.setEscapeNonPrintableChar(escapeNonPrintableChar);
+                      returnRowQuery.setResult(res);
+                  }
+                  Element newElement = new Element();
+                  newElement.setDataSourceType("column");
+                  newElement.setName("Value");
+                  newElement.setDataSourceValue("1");
+                  newElement.setxsdType("integer");
+                  res.addElement(newElement);
+              }
+           }
+        } else if (("false").equals(setReturnUpdatedRowCount)) {
+            if (null != dataService.getQuery(queryId)) {
+                Query returnRowQuery = dataService.getQuery(queryId);
+                Result res = returnRowQuery.getResult();
+                if (("false").equals(returnUpdatedRowCount)) {
+                    returnRowQuery.setReturnUpdatedRowCount(false);
+                    if (null != res) {
+                        res.removeElement("Value");
+                        // Remove result wrapper only if there are no other result elements exist other than generated key
+                        if (null != res.getElements() && 0 == res.getElements().size()) {
                             res.setResultWrapper("");
                             res.setRowName("");
                             res.setUseColumnNumbers("false");
@@ -702,12 +754,13 @@
     <tr><input type="hidden" id="sql" value="<%=sql%>"/></tr>
     <tr><input type="hidden" id="sparql" value="<%=sparql%>"/></tr>
     <tr><input type="hidden" id="rowName" value="<%=rowName%>"/></tr>
-     <tr><input type="hidden" id="outputType" value="<%=outputType%>"/></tr>
-     <tr><input type="hidden" id="rdfBaseURI" value="<%=rdfBaseURI%>"/></tr>
+    <tr><input type="hidden" id="outputType" value="<%=outputType%>"/></tr>
+    <tr><input type="hidden" id="rdfBaseURI" value="<%=rdfBaseURI%>"/></tr>
     <tr><input type="hidden" id="ns" value="<%=nameSpace%>"/></tr>
     <tr><input type="hidden" id="ns" value="<%=rdfNameSpace%>"/></tr>
     <tr><input type="hidden" id="element" value="<%=element%>"/></tr>
     <tr><input type="hidden" id="returnGeneratedKeys" value="<%=returnGeneratedKeys%>"/></tr>
+    <tr><input type="hidden" id="returnUpdatedRowCount" value="<%=returnUpdatedRowCount%>"/></tr>
     <tr><input type="hidden" id="useColumnNumbers" value="<%=useColumnNumbers%>"/></tr>
 </table>
 

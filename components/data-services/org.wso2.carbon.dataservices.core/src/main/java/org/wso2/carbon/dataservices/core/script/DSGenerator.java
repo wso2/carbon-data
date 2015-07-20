@@ -662,9 +662,9 @@ public class DSGenerator {
 				tablePrimaryKey);
 		Result result = null;
 		Map<String, String> advanceProp = new HashMap<String, String>();
-		return new SQLQuery(dataServiceObject, queryId, DBConstants.DataServiceGenerator.CONFIG_ID, false,
-				null, query, this.getQueryParamList(metaData, dbName, schema,
-						tableName, pList), result, null, null, advanceProp, null);
+		return new SQLQuery(dataServiceObject, queryId, DBConstants.DataServiceGenerator.CONFIG_ID, false, false, null,
+		                    query, this.getQueryParamList(metaData, dbName, schema, tableName, pList), result, null,
+		                    null, advanceProp, null);
 	}
 
 	private Query getDeleteQuery(List<String> pList, String tablePrimaryKey,
@@ -676,9 +676,9 @@ public class DSGenerator {
 				tablePrimaryKey);
 		Result result = null;
 		Map<String, String> advanceProp = new HashMap<String, String>();
-		return new SQLQuery(dataServiceObject, queryId, DBConstants.DataServiceGenerator.CONFIG_ID, false,
-				null, query, this.getQueryParamList(metaData, dbName, schema,
-						tableName, pList), result, null, null, advanceProp, null);
+		return new SQLQuery(dataServiceObject, queryId, DBConstants.DataServiceGenerator.CONFIG_ID, false, false, null,
+		                    query, this.getQueryParamList(metaData, dbName, schema, tableName, pList), result, null,
+		                    null, advanceProp, null);
 	}
 
 	private SQLQuery getInsertQuery(List<String> param, String queryId,
@@ -690,9 +690,9 @@ public class DSGenerator {
 		String query = sqlStatementCreator.getInsertStatement(tableName, schema, param);
 		Result result = null;
 		Map<String, String> advanceProp = new HashMap<String, String>();
-		return new SQLQuery(dataServiceObject, queryId, DBConstants.DataServiceGenerator.CONFIG_ID, false,
-				null, query, this.getQueryParamList(metaData, dbName, schema,
-						tableName, param), result, null, null, advanceProp, null);
+		return new SQLQuery(dataServiceObject, queryId, DBConstants.DataServiceGenerator.CONFIG_ID, false, false, null,
+		                    query, this.getQueryParamList(metaData, dbName, schema, tableName, param), result, null,
+		                    null, advanceProp, null);
 	}
 
 	private Query getSelectAllQuery(List<String> param, String queryId,
@@ -704,9 +704,9 @@ public class DSGenerator {
 		Result result = this.getResult(dataServiceObject, metaData, dbName,
 				schema, tableName);
 		Map<String, String> advanceProp = new HashMap<String, String>();
-		return new SQLQuery(dataServiceObject, queryId, DBConstants.DataServiceGenerator.CONFIG_ID, false,
-				null, query, this.getQueryParamList(metaData, dbName, schema,
-						tableName, param), result, null, null, advanceProp, null);
+		return new SQLQuery(dataServiceObject, queryId, DBConstants.DataServiceGenerator.CONFIG_ID, false, false, null,
+		                    query, this.getQueryParamList(metaData, dbName, schema, tableName, param), result, null,
+		                    null, advanceProp, null);
 	}
 
 	private Query getSelectWithKeyQuery(List<String> param,
@@ -719,9 +719,9 @@ public class DSGenerator {
 		Result result = this.getResult(dataServiceObject, metaData, dbName,
 				schema, tableName);
 		Map<String, String> advanceProp = new HashMap<String, String>();
-		return new SQLQuery(dataServiceObject, queryId, DBConstants.DataServiceGenerator.CONFIG_ID, false,
-				null, query, this.getQueryParamList(metaData, dbName, schema,
-						tableName, param), result, null, null, advanceProp, null);
+		return new SQLQuery(dataServiceObject, queryId, DBConstants.DataServiceGenerator.CONFIG_ID, false, false, null,
+		                    query, this.getQueryParamList(metaData, dbName, schema, tableName, param), result, null,
+		                    null, advanceProp, null);
 	}
 
 	/**

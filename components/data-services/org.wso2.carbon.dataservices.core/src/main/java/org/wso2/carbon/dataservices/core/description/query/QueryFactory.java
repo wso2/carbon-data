@@ -387,6 +387,7 @@ public class QueryFactory {
 			throws DataServiceFault {
 		String queryId, configId, sql, inputNamespace;
 		boolean returnGeneratedKeys = false;
+		boolean isReturnUpdatedRowCount = false;
 		EventTrigger[] eventTriggers;
 		String[] keyColumns;
 		Result result;
@@ -400,16 +401,19 @@ public class QueryFactory {
 		    if (returnRowIdStr != null) {
 		    	returnGeneratedKeys = Boolean.parseBoolean(returnRowIdStr);
 		    }
-		    keyColumns = extractKeyColumns(queryEl);
+			String returnUpdatedRowCountStr = queryEl.getAttributeValue(new QName(DBSFields.RETURN_UPDATED_ROWCOUNT));
+			if (null != returnUpdatedRowCountStr) {
+				isReturnUpdatedRowCount = Boolean.parseBoolean(returnUpdatedRowCountStr);
+			}
+			keyColumns = extractKeyColumns(queryEl);
 		    result = getResultFromQueryElement(dataService, queryEl);
 		    inputNamespace = extractQueryInputNamespace(dataService, result, queryEl);
 		} catch (Exception e) {
 			throw new DataServiceFault(e, "Error in parsing SQL query element");
 		}
-		SQLQuery query = new SQLQuery(dataService, queryId, configId,
-				returnGeneratedKeys, keyColumns, sql, getQueryParamsFromQueryElement(queryEl),
-				result, eventTriggers[0], eventTriggers[1],
-				extractAdvancedProps(queryEl), inputNamespace);
+		SQLQuery query = new SQLQuery(dataService, queryId, configId, returnGeneratedKeys, isReturnUpdatedRowCount, keyColumns,
+				             sql, getQueryParamsFromQueryElement(queryEl), result, eventTriggers[0], eventTriggers[1],
+				             extractAdvancedProps(queryEl), inputNamespace);
 
 		return query;
 	}

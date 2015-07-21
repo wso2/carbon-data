@@ -82,10 +82,10 @@ public class DSSqlTypes {
 		qnameTypeMap.put(java.sql.Types.TIME, "time");
 		qnameTypeMap.put(java.sql.Types.TINYINT, "integer");
 		qnameTypeMap.put(java.sql.Types.BIGINT, "long");
-		qnameTypeMap.put(java.sql.Types.LONGVARBINARY, "base64");
-		qnameTypeMap.put(java.sql.Types.VARBINARY, "base64");
-		qnameTypeMap.put(java.sql.Types.BINARY, "base64");
-		qnameTypeMap.put(java.sql.Types.BLOB, "base64");
+		qnameTypeMap.put(java.sql.Types.LONGVARBINARY, "base64Binary");
+		qnameTypeMap.put(java.sql.Types.VARBINARY, "base64Binary");
+		qnameTypeMap.put(java.sql.Types.BINARY, "base64Binary");
+		qnameTypeMap.put(java.sql.Types.BLOB, "base64Binary");
 		qnameTypeMap.put(java.sql.Types.DATE, "date");
 	}
 

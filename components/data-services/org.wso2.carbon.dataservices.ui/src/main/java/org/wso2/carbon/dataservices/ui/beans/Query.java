@@ -54,6 +54,8 @@ public class Query extends DataServiceConfigurationElement {
 	private String scraperVariable;
 
 	private boolean returnGeneratedKeys;
+
+	private boolean returnUpdatedRowCount;
 	
 	private String keyColumns;
 
@@ -368,7 +370,15 @@ public class Query extends DataServiceConfigurationElement {
 	public void setReturnGeneratedKeys(boolean returnGeneratedKeys) {
 		this.returnGeneratedKeys = returnGeneratedKeys;
 	}
-	
+
+	public boolean isReturnUpdatedRowCount() {
+		return returnUpdatedRowCount;
+	}
+
+	public void setReturnUpdatedRowCount(boolean returnUpdatedRowCount) {
+		this.returnUpdatedRowCount = returnUpdatedRowCount;
+	}
+
 	public String getKeyColumns() {
 		return keyColumns;
 	}
@@ -413,8 +423,11 @@ public class Query extends DataServiceConfigurationElement {
 		if (this.getOutputEventTrigger() != null && this.getOutputEventTrigger().trim().length() > 0) {
 			queryEl.addAttribute("output-event-trigger", this.getOutputEventTrigger().trim(), null);
 		}
-		if (this.isReturnGeneratedKeys() == true) {
+		if (this.isReturnGeneratedKeys()) {
 			queryEl.addAttribute("returnGeneratedKeys", String.valueOf(this.isReturnGeneratedKeys()), null);
+		}
+		if (this.isReturnUpdatedRowCount()) {
+			queryEl.addAttribute("returnUpdatedRowCount", String.valueOf(this.isReturnUpdatedRowCount()), null);
 		}
 		if (this.getKeyColumns() != null && this.getKeyColumns().trim().length() > 0) {
 			queryEl.addAttribute("keyColumns", this.getKeyColumns().trim(), null);

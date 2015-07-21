@@ -123,7 +123,9 @@
                             org.apache.axis2.description;version="${apache.axis2.orbit.imp.pkg.version}",
                             org.apache.axis2.engine;version="${apache.axis2.orbit.imp.pkg.version}",
                             org.apache.axis2.transport;version="${apache.axis2.orbit.imp.pkg.version}",
-                            org.apache.axis2.util;version="${apache.axis2.orbit.imp.pkg.version}"
+                            org.apache.axis2.util;version="${apache.axis2.orbit.imp.pkg.version}",
+                            org.apache.axiom.om;version="${axiom.orbit.imp.pkg.version}",
+                            org.apache.axiom.soap;version="${axiom.orbit.imp.pkg.version}"
                         </Import-Package>
 
                         <!--<DynamicImport-Package>*</DynamicImport-Package>-->

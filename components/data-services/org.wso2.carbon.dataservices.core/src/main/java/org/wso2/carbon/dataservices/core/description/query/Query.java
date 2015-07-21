@@ -21,6 +21,7 @@ package org.wso2.carbon.dataservices.core.description.query;
 import org.apache.axiom.om.OMDocument;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
+import org.wso2.carbon.dataservices.common.DBConstants;
 import org.wso2.carbon.dataservices.common.DBConstants.DBSFields;
 import org.wso2.carbon.dataservices.common.DBConstants.FaultCodes;
 import org.wso2.carbon.dataservices.common.DBConstants.QueryParamTypes;
@@ -31,7 +32,15 @@ import org.wso2.carbon.dataservices.core.TLConnectionStore;
 import org.wso2.carbon.dataservices.core.boxcarring.TLParamStore;
 import org.wso2.carbon.dataservices.core.description.event.EventTrigger;
 import org.wso2.carbon.dataservices.core.dispatch.DispatchStatus;
-import org.wso2.carbon.dataservices.core.engine.*;
+import org.wso2.carbon.dataservices.core.engine.DataEntry;
+import org.wso2.carbon.dataservices.core.engine.DataService;
+import org.wso2.carbon.dataservices.core.engine.ExternalParamCollection;
+import org.wso2.carbon.dataservices.core.engine.InternalParam;
+import org.wso2.carbon.dataservices.core.engine.InternalParamCollection;
+import org.wso2.carbon.dataservices.core.engine.ParamValue;
+import org.wso2.carbon.dataservices.core.engine.QueryParam;
+import org.wso2.carbon.dataservices.core.engine.Result;
+import org.wso2.carbon.dataservices.core.engine.XMLWriterHelper;
 import org.wso2.carbon.dataservices.core.validation.ValidationContext;
 import org.wso2.carbon.dataservices.core.validation.ValidationException;
 import org.wso2.carbon.dataservices.core.validation.Validator;
@@ -39,8 +48,9 @@ import org.wso2.carbon.dataservices.core.validation.Validator;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Represents a query in a data service.
@@ -468,5 +478,5 @@ public abstract class Query extends XMLWriterHelper {
 	    setQueryPreprocessingInitial(false);
 	    setQueryPreprocessingSecondary(false);
 	}
-	
+
 }

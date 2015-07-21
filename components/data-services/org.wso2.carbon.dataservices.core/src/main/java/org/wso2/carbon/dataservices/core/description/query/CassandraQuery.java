@@ -18,21 +18,15 @@
  */
 package org.wso2.carbon.dataservices.core.description.query;
 
-import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import javax.xml.stream.XMLStreamWriter;
-
+import com.datastax.driver.core.BatchStatement;
+import com.datastax.driver.core.BoundStatement;
+import com.datastax.driver.core.ColumnDefinitions;
+import com.datastax.driver.core.DataType;
+import com.datastax.driver.core.PreparedStatement;
+import com.datastax.driver.core.ResultSet;
+import com.datastax.driver.core.Row;
+import com.datastax.driver.core.Session;
+import com.datastax.driver.core.SimpleStatement;
 import org.apache.axis2.databinding.utils.ConverterUtil;
 import org.apache.commons.codec.binary.Base64;
 import org.wso2.carbon.dataservices.common.DBConstants;
@@ -50,26 +44,29 @@ import org.wso2.carbon.dataservices.core.engine.ParamValue;
 import org.wso2.carbon.dataservices.core.engine.QueryParam;
 import org.wso2.carbon.dataservices.core.engine.Result;
 
-import com.datastax.driver.core.BatchStatement;
-import com.datastax.driver.core.BoundStatement;
-import com.datastax.driver.core.ColumnDefinitions;
-import com.datastax.driver.core.DataType;
-import com.datastax.driver.core.PreparedStatement;
-import com.datastax.driver.core.ResultSet;
-import com.datastax.driver.core.Row;
-import com.datastax.driver.core.Session;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * This class represents Cassandra-CQL data services query implementation.
  */
-public class CassandraQuery extends Query {
+public class CassandraQuery extends ExpressionQuery {
     
     private CassandraConfig config;
     
     private PreparedStatement statement;
-        
-    private String query;
-        
+
     /**
      * thread local variable to keep a batch statement in batch processing
      */
@@ -83,9 +80,9 @@ public class CassandraQuery extends Query {
             List<QueryParam> queryParams, Result result, String configId, 
             EventTrigger inputEventTrigger, EventTrigger outputEventTrigger,
             Map<String, String> advancedProperties, String inputNamespace) throws DataServiceFault {
-        super(dataService, queryId, queryParams, result, configId, inputEventTrigger, 
-                outputEventTrigger, advancedProperties, inputNamespace);
-        this.query = query;
+        super(dataService, queryId, queryParams, query, result, configId, inputEventTrigger,
+              outputEventTrigger, advancedProperties, inputNamespace);
+        this.init(query);
         try {
             this.config = (CassandraConfig) this.getDataService().getConfig(this.getConfigId());
         } catch (ClassCastException e) {
@@ -93,11 +90,7 @@ public class CassandraQuery extends Query {
                     this.getConfigId());
         }
     }
-    
-    public String getQuery() {
-        return query;
-    }
-    
+
     public PreparedStatement getStatement() {
         return statement;
     }
@@ -198,18 +191,41 @@ public class CassandraQuery extends Query {
     public Object runPreQuery(InternalParamCollection params, int queryLevel)
             throws DataServiceFault {
         ResultSet rs = null;
-        this.checkAndCreateStatement();
-        if (DispatchStatus.isBatchRequest() && this.isNativeBatchRequestsSupported()) {
-            /* handle batch requests */
-            if (DispatchStatus.isFirstBatchRequest()) {
-                this.batchStatement.set(new BatchStatement());
-            }
-            this.batchStatement.get().add(this.bindParams(params));
-            if (DispatchStatus.isLastBatchRequest()) {
-                this.getSession().execute(this.batchStatement.get());
+         /*
+            There is no point of creating prepared statements for dynamic queries
+         */
+        if (isDynamicQuery(params)) {
+            Object[] result = this.processDynamicQuery(this.getQuery(), params);
+            String dynamicCql = (String) result[0];
+            int currentParamCount = (Integer) result[1];
+            String processedSQL = this.createProcessedQuery(dynamicCql, params, currentParamCount);
+            if (DispatchStatus.isBatchRequest() && this.isNativeBatchRequestsSupported()) {
+                /* handle batch requests */
+                if (DispatchStatus.isFirstBatchRequest()) {
+                    this.batchStatement.set(new BatchStatement());
+                }
+                SimpleStatement simpleStatement = new SimpleStatement(processedSQL);
+                this.batchStatement.get().add(simpleStatement);
+                if (DispatchStatus.isLastBatchRequest()) {
+                    this.getSession().execute(this.batchStatement.get());
+                }
+            } else {
+                rs = this.getSession().execute(processedSQL);
             }
         } else {
-            rs = this.getSession().execute(this.bindParams(params));
+            this.checkAndCreateStatement();
+            if (DispatchStatus.isBatchRequest() && this.isNativeBatchRequestsSupported()) {
+                /* handle batch requests */
+                if (DispatchStatus.isFirstBatchRequest()) {
+                    this.batchStatement.set(new BatchStatement());
+                }
+                this.batchStatement.get().add(this.bindParams(params));
+                if (DispatchStatus.isLastBatchRequest()) {
+                    this.getSession().execute(this.batchStatement.get());
+                }
+            } else {
+                rs = this.getSession().execute(this.bindParams(params));
+            }
         }
         return rs;
     }

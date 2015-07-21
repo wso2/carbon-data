@@ -84,11 +84,11 @@ function validateDataSourcesForm(){
 function validateAddDataSourceForm(){
     if(document.getElementById('datasourceId').value == ''){
         //CARBON.showErrorDialog("Data Service Name is mandatory");
-        CARBON.showWarningDialog('Data Source Id is mandatory');
+        CARBON.showWarningDialog('Datasource Id is mandatory');
         return false;
     }
     if(document.getElementById('datasourceType').value == ''){
-        CARBON.showWarningDialog('Select the data source type');
+        CARBON.showWarningDialog('Select the datasource type');
         return false;
     }
     if(document.getElementById('datasourceType').value == 'RDBMS'){
@@ -235,7 +235,7 @@ function validateFieldsForEvents(obj){
         return false;
     }
     if(dataSourceId == '#'){
-        CARBON.showWarningDialog('Select the data source');
+        CARBON.showWarningDialog('Select the datasource');
         return  false;
     }
     return true;
@@ -279,7 +279,7 @@ function validateAddQueryFormSave(obj) {
         return  false;
     }
     if(dataSourceId == '#'){
-        CARBON.showWarningDialog('Select the data source');
+        CARBON.showWarningDialog('Select the datasource');
         return  false;
     }
     
@@ -444,11 +444,11 @@ function validateManageXADSForm(){
 	var xaDatasourceId = document.getElementById('xaId').value;
 	var txXADatasourceClass = document.getElementById('txXADatasourceClass').value;
 	if(xaDatasourceId == ''){
-        CARBON.showWarningDialog('XA Data Source Id is mandatory');
+        CARBON.showWarningDialog('XA Datasource Id is mandatory');
         return false;
     }
 	if(txXADatasourceClass == ''){
-        CARBON.showWarningDialog('XA Data Source Class is mandatory');
+        CARBON.showWarningDialog('XA Datasource Class is mandatory');
         return false;
     }
     return true;
@@ -676,7 +676,7 @@ function validateOutputMappingFields(obj){
         return false;
     }
     if(datasource == '#'){
-        CARBON.showWarningDialog('Select the Data Source');
+        CARBON.showWarningDialog('Select the Datasource');
         return false;
     }
     //location.href = 'queryProcessor.jsp?flag=outputMapping&queryId='+document.getElementById('queryId').value+'&sql='+document.getElementById('sql').value+'&datasource='+document.getElementById('datasource').value+'&rowName='+document.getElementById('txtDataServiceRowName').value+'&element='+document.getElementById('txtDataServiceWrapElement').value+'&ns='+document.getElementById('txtDataServiceRowNamespace').value;

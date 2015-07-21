@@ -47,7 +47,7 @@
 <link rel="stylesheet" type="text/css" href="../resources/css/registry.css"/>
 
 <carbon:breadcrumb
-        label="Add Data Source"
+        label="Add Datasource"
         resourceBundle="org.wso2.carbon.dataservices.ui.i18n.Resources"
         topPage="false"
         request="<%=request%>"/>
@@ -644,8 +644,8 @@ private String getSheetName(String gSpreadJDBCUrl) {
     dynamicUserAuthClass = (dynamicUserAuthClass == null) ? "" : dynamicUserAuthClass;
     if (configId == null
         || (selectedType != null && newConfig.getDataSourceType() != null) && !newConfig.getDataSourceType().equals(selectedType)) {
-        /* if a new data source or,
-          /* if the data source type change, create a new Config session object */
+        /* if a new datasource or,
+          /* if the datasource type change, create a new Config session object */
         newConfig = new Config();
         session.setAttribute("newConfig", newConfig);
     }
@@ -991,14 +991,14 @@ private String getSheetName(String gSpreadJDBCUrl) {
                     dataSourceType = dsConfig.getDataSourceType();
             	} else {
             		/* 'backupConfigProps' is used to keep the original config properties, when the user
-            		   switches the data source type when editing, so if the user cancels it, we can restore
+            		   switches the datasource type when editing, so if the user cancels it, we can restore
             		   the original values using this list */
             		if (backupConfigProps.isEmpty()) {
             		    backupConfigProps.addAll(dsConfig.getProperties());
             		}
             		dsConfig.getProperties().clear();
             	}
-                //Check whether Data Source is Excel or GSpread in Query Mode and change the dataSourceType
+                //Check whether datasource is Excel or GSpread in Query Mode and change the dataSourceType
                 if ("RDBMS".equals(dataSourceType)) {
                 	if (dsConfig.getPropertyValue(DBConstants.RDBMS.URL) instanceof String) {
                         String jdbcUrl = dsConfig.getPropertyValue(DBConstants.RDBMS.URL).toString();
@@ -1058,7 +1058,7 @@ private String getSheetName(String gSpreadJDBCUrl) {
         } else {
             configId = "";
         }
-        /* if the selectType is carbon data sources, populate the names list */
+        /* if the selectType is carbon datasources, populate the names list */
         if ((selectedType != null && selectedType.equals("CARBON_DATASOURCE")) || dataSourceType.equals("CARBON_DATASOURCE")) {
             String backendServerURL = CarbonUIUtil.getServerURL(config.getServletContext(), session);
             ConfigurationContext configContext =
@@ -1067,7 +1067,7 @@ private String getSheetName(String gSpreadJDBCUrl) {
             DataServiceAdminClient client = new DataServiceAdminClient(cookie, backendServerURL, configContext);
             carbonDataSourceNames = client.getCarbonDataSourceNames();
             if (carbonDataSourceNames == null) {
-                /* no data sources */
+                /* no datasources */
                 carbonDataSourceNames = new String[0];
             }
 
@@ -1214,25 +1214,25 @@ private String getSheetName(String gSpreadJDBCUrl) {
                     <%}%>
 
                     <% if (dataSourceType.equals("CARBON_DATASOURCE")) { %>
-                    <option value="CARBON_DATASOURCE" selected="selected">Carbon Data Source
+                    <option value="CARBON_DATASOURCE" selected="selected">Carbon Datasource
                     </option>
                     <%
                     } else {%>
-                    <option value="CARBON_DATASOURCE">Carbon Data Source</option>
+                    <option value="CARBON_DATASOURCE">Carbon Datasource</option>
                     <%}%>
 
                     <% if (dataSourceType.equals("WEB_CONFIG")) { %>
-                    <option value="WEB_CONFIG" selected="selected">Web Data Source</option>
+                    <option value="WEB_CONFIG" selected="selected">Web Datasource</option>
                     <%
                     } else {%>
-                    <option value="WEB_CONFIG">Web Data Source</option>
+                    <option value="WEB_CONFIG">Web Datasource</option>
                     <%}%>
                     
                     <% if (dataSourceType.equals("CUSTOM")) { %>
-                    <option value="CUSTOM" selected="selected">Custom Data Source</option>
+                    <option value="CUSTOM" selected="selected">Custom Datasource</option>
                     <%
                     } else {%>
-                    <option value="CUSTOM">Custom Data Source</option>
+                    <option value="CUSTOM">Custom Datasource</option>
                     <%}%>
                 </select>
                 <% if ("RDBMS".equals(dataSourceType)) {
@@ -1522,11 +1522,11 @@ private String getSheetName(String gSpreadJDBCUrl) {
 	<tr>
 	<td colspan="2">
 		<%if (customDSType.equals(DBConstants.DataSourceTypes.CUSTOM_QUERY)) { %>
-			<input type="radio" name="customType" id="custom_tabular" value="tabular" onclick="changeCustomDsType()"/> Custom Tabular Data Source 
-			<input type="radio" name="customType" value="query" id="custom_query" onclick="changeCustomDsType()" checked/> Custom Query Data Source
+			<input type="radio" name="customType" id="custom_tabular" value="tabular" onclick="changeCustomDsType()"/> Custom Tabular Datasource
+			<input type="radio" name="customType" value="query" id="custom_query" onclick="changeCustomDsType()" checked/> Custom Query Datasource
 		<%} else { %>
-			<input type="radio" name="customType" id="custom_tabular" value="tabular" onclick="changeCustomDsType()" checked/> Custom Tabular Data Source 
-			<input type="radio" name="customType" value="query" id="custom_query" onclick="changeCustomDsType()"/> Custom Query Data Source
+			<input type="radio" name="customType" id="custom_tabular" value="tabular" onclick="changeCustomDsType()" checked/> Custom Tabular Datasource
+			<input type="radio" name="customType" value="query" id="custom_query" onclick="changeCustomDsType()"/> Custom Query Datasource
 		<%} %>
 		<input type="hidden" id="customTypeValue" name="customTypeValue" value="<%=customDSType %>"/>
 	</td>

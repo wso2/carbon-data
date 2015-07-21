@@ -30,7 +30,7 @@
 
 <fmt:bundle basename="org.wso2.carbon.dataservices.ui.i18n.Resources">
 <carbon:breadcrumb 
-		label="XA Data Sources"
+		label="XA Datasources"
 		resourceBundle="org.wso2.carbon.dataservices.ui.i18n.Resources"
 		topPage="false" 
 		request="<%=request%>" />

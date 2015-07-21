@@ -29,7 +29,7 @@
 <fmt:bundle basename="org.wso2.carbon.dataservices.ui.i18n.Resources">
 <!-- 
 <carbon:breadcrumb
-		label="Add Data Source"
+		label="Add Datasource"
 		resourceBundle="org.wso2.carbon.dataservices.ui.i18n.Resources"
 		topPage="false"
 		request="<%=request%>" />

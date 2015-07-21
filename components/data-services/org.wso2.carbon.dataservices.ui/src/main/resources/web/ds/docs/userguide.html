@@ -40,9 +40,8 @@
     <li><a href="#deleteDS">Delete Data Service</a></li>
 </ul>
 </div><h2 id="Introducti">Introduction</h2>
-<p>WSO2 Data Services Server is a convenient mechanism to provide a web service interface for data stored in some data
-    sources.
-    Data sources such as relational databases, CSV files, Microsoft Excel files and google spread sheets can be easily service enabled
+<p>WSO2 Data Services Server is a convenient mechanism to provide a web service interface for data stored in some datasources.
+    Datasources such as relational databases, CSV files, Microsoft Excel files and google spread sheets can be easily service enabled
     using Data Services Server. Now, the data can be exposed and accessed in a secured(using WS-Security) and
     reliable(using WS-ReliableMessaging) manner, and is also available for mashing-up with other Web services.
 </p>
@@ -127,9 +126,9 @@
 <p><b>Figure 2: WSO2 Data Services Server Create Data Service page</b></p>
 
 
-<p>Now we can enter the data source details in this step. Let's start with giving a name for
-    the data source as 'DataSourceEmp'.</p>
-<p>Select the data source type as 'RDBMS' and enter the following values.</p>
+<p>Now we can enter the datasource details in this step. Let's start with giving a name for
+    the datasource as 'DataSourceEmp'.</p>
+<p>Select the datasource type as 'RDBMS' and enter the following values.</p>
 <p>Database Engine = MySQL</p>
 <p>Driver Class = com.mysql.jdbc.Driver</p>
 <p>JDBC URL = jdbc:mysql://localhost:3306/employeedb</p>
@@ -143,24 +142,24 @@
 
 <p>
     <br/>
-    <img src="images/add_data_source.png" alt="Create Data source"/>
+    <img src="images/add_data_source.png" alt="Create Datasource"/>
     <br/>
     <br/>
 </p>
 
-<p><b>Figure 3: Create Data source</b></p>
+<p><b>Figure 3: Create Datasource</b></p>
 
-<p>Click on 'Save' button. You will see the created data source as follows.</p>
+<p>Click on 'Save' button. You will see the created datasource as follows.</p>
 
 <p>
     <br/>
-    <img src="images/added_data_sources.png" alt="Preview of added data sources"/>
+    <img src="images/added_data_sources.png" alt="Preview of added datasources"/>
     <br/>
     <br/>
 </p>
-<p><b>Figure 4: Created data sources list</b></p>
+<p><b>Figure 4: Created datasources list</b></p>
 <ul>
-    <li>Next, click on 'Next' button at the Data Sources. Initially your service does not include any queries.</li>
+    <li>Next, click on 'Next' button at the Datasources. Initially your service does not include any queries.</li>
     <li>Click on 'Add New Query' to add a new query to our service. 'Add New Query' window will be displayed.
         Enter the following values there.
     </li>
@@ -291,17 +290,17 @@
 <h2 id="automatedDS">Automated Data Service Generator</h2>
 <p>WSO2 Data Services Server provides the feature to create data services automatically using a given database structure. When generating the service, DS Generator will consider the table structure. According to the given table structure "SELECT", "INSERT", "UPDATE", and "DELETE" operations will get automatically created.</p>
 <p>
-    <b>Step 1 - Create a Carbon Data Source</b>
+    <b>Step 1 - Create a Carbon Datasource</b>
 </p>
 <hr/>
-<p> Before generating the data services Carbon data source should be created according to the database properties.
+<p> Before generating the data services Carbon datasource should be created according to the database properties.
 </p>
 <br/>
 <img alt="DS" src="images/step1.png"/>
-<p>Figure 10: Create Carbon Data Source</p>
+<p>Figure 10: Create Carbon Datasource</p>
 <br/>
 <p>
-    <b>Step 2 - Select Data Source</b>
+    <b>Step 2 - Select Datasource</b>
 </p>
 <hr/>
 <p>To start the ds generation click on 'Generate' link on your left hand menu.
@@ -310,17 +309,17 @@
 <img alt="DS" src="images/step2.png"/>
 <p>Figure 11: Generate Data Service</p>
 <br/>
-<p> In the first screen that appears select the Carbon Data Source and the Database Name as shown below.
+<p> In the first screen that appears select the Carbon Datasource and the Database Name as shown below.
 </p>
 
 <br/>
 <img alt="DS" src="images/step3.png"/>
-<p>Figure 12: Select Data Source</p>
+<p>Figure 12: Select Datasource</p>
 <br/>
 <p>
     <b>Step 3 - Select Database Schema</b>
 </p><hr/>
-<p>After Data Source is selected, DB Schema needs to be selected to identify the needed tables.
+<p>After Datasource is selected, DB Schema needs to be selected to identify the needed tables.
 </p>
 <img alt="DS" src="images/step4.png"/>
 <p>Figure 13: Select DB Schema</p>
@@ -423,37 +422,37 @@
         </p>
 
 	<p>
-	After clicking 'Next' on above you can edit the data source by clicking 'Edit Data Source' link.  
+	After clicking 'Next' on above you can edit the datasource by clicking 'Edit Datasource' link.
 	</p>
 
 	<br/>
 
 	<p>
-            <img src="images/edit_datasource.png" alt="Figure: Edit Data Source"/>
+            <img src="images/edit_datasource.png" alt="Figure: Edit Datasource"/>
             <br/>
             <br/>
-            <p>Figure 22 : Edit Data Source</p>
+            <p>Figure 22 : Edit Datasource</p>
             <br/>
             <br/>
         </p>
 
 	<p>
-	Change the required values on "Edit Data Source' wizard page and click 'Save'  
+	Change the required values on "Edit Datasource' wizard page and click 'Save'
 	</p>
 
 	<br/>
 
 	<p>
-            <img src="images/edit_datasource_values.png" alt="Figure: Edit Data Source Information"/>
+            <img src="images/edit_datasource_values.png" alt="Figure: Edit Datasource Information"/>
             <br/>
             <br/>
-            <p>Figure 23 : Edit Data Source Information</p>
+            <p>Figure 23 : Edit Datasource Information</p>
             <br/>
             <br/>
         </p>
 
 	<p>
-	Now you will be in 'Data Sources' page. Click 'Next' to edit queries. Click 'Edit Query' link and change required information and click 'Save'.    
+	Now you will be in 'Datasources' page. Click 'Next' to edit queries. Click 'Edit Query' link and change required information and click 'Save'.
 	</p>
 
 	<br/>
@@ -490,7 +489,7 @@
 	<p>
 	If you click on the 'Edit Data Service (XML Edit)' option, you will be redirected to the Data Service XML Editor. 
 	If you are familiar with data service configuration language, you can directly edit the required configurations 
-	through this editor. The 'config' element defines the data source configuration. The data element describes 
+	through this editor. The 'config' element defines the datasource configuration. The data element describes
 	the data service or the resource. The 'query' element defines the query and 'operation' element defines the 
 	operation. We can have any number of config, query, and operatiion elements. 
 	Further we can define 'resource' element to expose data as RESTful resources. 
@@ -554,7 +553,7 @@
         
          <h3>Step 4</h3>
         <hr/>
-        <p>Selected data source will deploy and list under the deployed service list as below.
+        <p>Selected datasource will deploy and list under the deployed service list as below.
             <br/>
             <br/>
             <img src="images/ds_upload_step4.png" alt="Figure: Upload Services - Step 4"/>

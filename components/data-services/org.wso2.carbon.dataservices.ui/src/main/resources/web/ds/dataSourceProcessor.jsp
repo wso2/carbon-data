@@ -221,7 +221,7 @@
    		dsConfig.setProperties((ArrayList<Property>) backupConfigProps);
     } else if (datasourceId != null) {
         if (flag.equals("") && dsConfig != null) {
-            String message = "Data source " + datasourceId + " is already available. Please use different data-source name.";
+            String message = "Datasource " + datasourceId + " is already available. Please use different datasource name.";
             CarbonUIMessage.sendCarbonUIMessage(message, CarbonUIMessage.ERROR, request);
         } else {
         if (dsConfig == null) {
@@ -242,7 +242,7 @@
                 if (queryList.size() >= 0) {
                     for (int a = 0; a < queryList.size(); a++) {
                         if (datasourceId.equals(queryList.get(a).getConfigToUse())) {
-                            String message = "Data source " + datasourceId + " has been used by queries. Please remove them to proceed.";
+                            String message = "Datasource " + datasourceId + " has been used by queries. Please remove them to proceed.";
                             CarbonUIMessage.sendCarbonUIMessage(message, CarbonUIMessage.ERROR, request);
                             forwardTo = "dataSources.jsp?ordinal=1";
                             remove = false;
@@ -524,7 +524,7 @@
                 	}
                 } else if (DBConstants.DataSourceTypes.CARBON.equals(datasourceType)) {
                     if (carbonDatasourceName == null || carbonDatasourceName.length() == 0) {
-                        String message = "Please select a valid data source name";
+                        String message = "Please select a valid datasource name";
                         CarbonUIMessage.sendCarbonUIMessage(message, CarbonUIMessage.ERROR, request);
                         forwardTo = "addDataSource.jsp?configId=" + datasourceId + "&ordinal=1";
                     } else {

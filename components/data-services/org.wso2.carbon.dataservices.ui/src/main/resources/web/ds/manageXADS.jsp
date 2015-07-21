@@ -40,7 +40,7 @@
 <link rel="stylesheet" type="text/css" href="../resources/css/registry.css"/>
 <!--
 <carbon:breadcrumb
-        label="Add Data Source"
+        label="Add Datasource"
         resourceBundle="org.wso2.carbon.dataservices.ui.i18n.Resources"
         topPage="false"
         request="<%=request%>"/>

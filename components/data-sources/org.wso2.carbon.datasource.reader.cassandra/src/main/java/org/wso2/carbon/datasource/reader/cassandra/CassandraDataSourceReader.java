@@ -17,6 +17,8 @@
 */
 package org.wso2.carbon.datasource.reader.cassandra;
 
+import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.Session;
 import org.wso2.carbon.ndatasource.common.DataSourceException;
 import org.wso2.carbon.ndatasource.common.spi.DataSourceReader;
 
@@ -30,12 +32,17 @@ public class CassandraDataSourceReader implements DataSourceReader {
     }
 
     @Override
-    public Object createDataSource(String s, boolean b) throws DataSourceException {
-        return null;
+    public Object createDataSource(String xmlConfig, boolean isDataSourceFactoryReference) throws DataSourceException {
+        return CassandraDataSourceReaderUtil.loadConfiguration(xmlConfig);
     }
 
     @Override
-    public boolean testDataSourceConnection(String s) throws DataSourceException {
-        return true;
+    public boolean testDataSourceConnection(String xmlConfig) throws DataSourceException {
+        Cluster cluster = (Cluster) this.createDataSource(xmlConfig, true);
+        try (Session session = cluster.connect()) {
+            boolean status = (session == null);
+            cluster.close();
+            return status;
+        }
     }
 }

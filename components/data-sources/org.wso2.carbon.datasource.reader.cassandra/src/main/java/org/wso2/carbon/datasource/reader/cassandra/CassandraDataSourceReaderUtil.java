@@ -40,13 +40,26 @@ public class CassandraDataSourceReaderUtil {
             baos = new ByteArrayInputStream(xmlConfiguration.getBytes());
             CassandraDataSourceConfiguration fileConfig = (CassandraDataSourceConfiguration) ctx.createUnmarshaller().unmarshal(baos);
 
-            builder.addContactPoint(fileConfig.getContactPoints());
+            String[] contactPoints = fileConfig.getContactPoints().split(",");
+            SocketOptions socketOptions = populateSocketOptions(fileConfig);
+            PoolingOptions poolingOptions = populatePoolingOptions(fileConfig);
 
-            //nullcheck
-            builder.withPort(fileConfig.getPort());
-            builder.withPoolingOptions(populatePoolingOptions(fileConfig));
-
+            for (String contactPoint : contactPoints) {
+                if (contactPoint.length() > 0) {
+                    builder.addContactPoint(contactPoint);
+                }
+            }
+            if (fileConfig.getPort() != null) {
+                builder.withPort(fileConfig.getPort());
+            }
+            if (socketOptions != null) {
+                builder.withSocketOptions(socketOptions);
+            }
+            if (poolingOptions != null) {
+                builder.withPoolingOptions(poolingOptions);
+            }
             return builder.build();
+
         } catch (Exception e) {
             throw new DataSourceException("Error loading Cassandra Datasource configuration: " + e.getMessage(), e);
         } finally {
@@ -61,9 +74,11 @@ public class CassandraDataSourceReaderUtil {
     }
 
     public static PoolingOptions populatePoolingOptions(CassandraDataSourceConfiguration config) {
-        PoolingOptions options = new PoolingOptions();
+        PoolingOptions options = null;
         PoolingOptionsConfig poc = config.getPoolingOptionsConfig();
         if (poc != null) {
+            options = new PoolingOptions();
+
             CoreConnectionsPerHostConfig[] coreConnectionsPerHostz = poc.getCoreConnectionsPerHostz();
             MaxConnectionsPerHostConfig[] maxConnectionsPerHostsz = poc.getMaxConnectionsPerHostz();
             MaxConnectionThresholdConfig[] maxConnectionThresholdz = poc.getMaxThresholdz();
@@ -71,6 +86,7 @@ public class CassandraDataSourceReaderUtil {
             MaxHostThresholdConfig[] maxHostThresholdz = poc.getMaxHostThresholdz();
             Integer heartbeatIntervalSeconds = poc.getHeartbeatIntervalSeconds();
             Integer poolTimeoutMillis = poc.getPoolTimeoutMillis();
+
             if (coreConnectionsPerHostz != null) {
                 for (CoreConnectionsPerHostConfig conn : coreConnectionsPerHostz) {
                     options.setCoreConnectionsPerHost(conn.getHostDistance(), conn.getValue());
@@ -98,13 +114,11 @@ public class CassandraDataSourceReaderUtil {
             }
             if (heartbeatIntervalSeconds != null) {
                 options.setHeartbeatIntervalSeconds(heartbeatIntervalSeconds);
-
             }
             if (poolTimeoutMillis != null) {
                 options.setPoolTimeoutMillis(poolTimeoutMillis);
             }
         }
-
         return options;
     }
 

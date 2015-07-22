@@ -639,6 +639,16 @@
                 <version>${cassandra-driver-core.orbit.version}</version>
             </dependency>
             <dependency>
+                <groupId>com.datastax.cassandra</groupId>
+                <artifactId>cassandra-driver-core</artifactId>
+                <version>${cassandra-driver-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.xerial.snappy.wso2</groupId>
                 <artifactId>snappy-java</artifactId>
                 <version>${snappy-java.orbit.version}</version>
@@ -666,6 +676,11 @@
             <dependency>
                 <groupId>org.wso2.carbon.data</groupId>
                 <artifactId>org.wso2.carbon.datasource.reader.hadoop</artifactId>
+                <version>${dataservices.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.data</groupId>
+                <artifactId>org.wso2.carbon.datasource.reader.cassandra</artifactId>
                 <version>${dataservices.version}</version>
             </dependency>
             <dependency>
@@ -1038,6 +1053,10 @@
         <cassandra-driver-core.orbit.version>2.1.1.wso2v1</cassandra-driver-core.orbit.version>
         <cassandra-driver-core.orbit.imp.pkg.version>0.0.0</cassandra-driver-core.orbit.imp.pkg.version>
 
+        <cassandra-driver-core.version>2.1.5</cassandra-driver-core.version>
+        <cassandra-driver-core.imp.pkg.version>[2.1.5,2.1.6)</cassandra-driver-core.imp.pkg.version>
+        <netty.version>3.9.0.Final</netty.version>
+        <netty.imp.pkg.version>[3.9.0.Final,4.0.0)</netty.imp.pkg.version>
 
         <snappy-java.orbit.version>1.1.1.6.wso2v1</snappy-java.orbit.version>
         <lz4.orbit.version>1.2.0.wso2v1</lz4.orbit.version>

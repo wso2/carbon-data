@@ -86,7 +86,7 @@ public class PoolingOptionsConfig {
         this.maxThresholdz = maxThresholdz;
     }
 
-    @XmlElement(name = "minSimultaneousRequestsPerHostThreshold")
+    @XmlElement(name = "maxSimultaneousRequestsPerHostThreshold")
     public MaxHostThresholdConfig[] getMaxHostThresholdz() {
         return maxHostThresholdz;
     }

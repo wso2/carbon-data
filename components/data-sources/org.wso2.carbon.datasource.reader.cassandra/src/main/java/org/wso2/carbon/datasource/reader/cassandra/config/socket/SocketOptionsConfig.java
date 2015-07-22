@@ -17,82 +17,52 @@
 */
 package org.wso2.carbon.datasource.reader.cassandra.config.socket;
 
+import com.datastax.driver.core.SocketOptions;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "socketOptions")
-public class SocketOptionsConfig {
-
-    //Not using primitives to force unassigned values to be null
-    private Integer connectTimeoutMillis;
-    private Boolean keepAlive;
-    private Integer receiveBufferSize;
-    private Boolean reuseAddress;
-    private Integer sendBufferSize;
-    private Integer soLinger;
-    private Boolean tcpNoDelay;
+public class SocketOptionsConfig extends SocketOptions {
 
     @XmlElement(name = "connectTimeoutMillis")
-    public Integer getConnectTimeoutMillis() {
-        return connectTimeoutMillis;
-    }
-
-    public void setConnectTimeoutMillis(Integer connectTimeoutMillis) {
-        this.connectTimeoutMillis = connectTimeoutMillis;
+    public int getConnectTimeoutMillis() {
+        return super.getConnectTimeoutMillis();
     }
 
     @XmlElement(name = "keepAlive")
     public Boolean getKeepAlive() {
-        return keepAlive;
+        return super.getKeepAlive();
     }
 
-    public void setKeepAlive(Boolean keepAlive) {
-        this.keepAlive = keepAlive;
+    @XmlElement(name = "readTimeoutMillis")
+    public int getReadTimeoutMillis(){
+        return super.getReadTimeoutMillis();
     }
 
     @XmlElement(name = "receiveBufferSize")
     public Integer getReceiveBufferSize() {
-        return receiveBufferSize;
-    }
-
-    public void setReceiveBufferSize(Integer receiveBufferSize) {
-        this.receiveBufferSize = receiveBufferSize;
+        return super.getReceiveBufferSize();
     }
 
     @XmlElement(name = "reuseAddress")
     public Boolean getReuseAddress() {
-        return reuseAddress;
-    }
-
-    public void setReuseAddress(Boolean reuseAddress) {
-        this.reuseAddress = reuseAddress;
+        return super.getReuseAddress();
     }
 
     @XmlElement(name = "sendBufferSize")
     public Integer getSendBufferSize() {
-        return sendBufferSize;
-    }
-
-    public void setSendBufferSize(Integer sendBufferSize) {
-        this.sendBufferSize = sendBufferSize;
+        return super.getSendBufferSize();
     }
 
     @XmlElement(name = "soLinger")
     public Integer getSoLinger() {
-        return soLinger;
-    }
-
-    public void setSoLinger(Integer soLinger) {
-        this.soLinger = soLinger;
+        return super.getSoLinger();
     }
 
     @XmlElement(name = "tcpNoDelay")
     public Boolean getTcpNoDelay() {
-        return tcpNoDelay;
-    }
-
-    public void setTcpNoDelay(Boolean tcpNoDelay) {
-        this.tcpNoDelay = tcpNoDelay;
+        return super.getTcpNoDelay();
     }
 
 }

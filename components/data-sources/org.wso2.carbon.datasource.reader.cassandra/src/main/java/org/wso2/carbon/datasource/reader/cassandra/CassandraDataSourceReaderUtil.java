@@ -22,7 +22,6 @@ import com.datastax.driver.core.PoolingOptions;
 import com.datastax.driver.core.SocketOptions;
 import org.wso2.carbon.datasource.reader.cassandra.config.CassandraDataSourceConfiguration;
 import org.wso2.carbon.datasource.reader.cassandra.config.pooling.*;
-import org.wso2.carbon.datasource.reader.cassandra.config.socket.SocketOptionsConfig;
 import org.wso2.carbon.ndatasource.common.DataSourceException;
 import org.wso2.carbon.utils.CarbonUtils;
 
@@ -110,18 +109,7 @@ public class CassandraDataSourceReaderUtil {
     }
 
     public static SocketOptions populateSocketOptions(CassandraDataSourceConfiguration config) {
-        SocketOptions options = new SocketOptions();
-        SocketOptionsConfig sock = config.getSocketOptionsConfig();
-        if (sock != null) {
-            options.setConnectTimeoutMillis(sock.getConnectTimeoutMillis());
-            options.setKeepAlive(sock.getKeepAlive());
-            options.setReceiveBufferSize(sock.getReceiveBufferSize());
-            options.setReuseAddress(sock.getReuseAddress());
-            options.setSendBufferSize(sock.getSendBufferSize());
-            options.setSoLinger(sock.getSoLinger());
-            options.setTcpNoDelay(sock.getTcpNoDelay());
-        }
-        return options;
+        return config.getSocketOptionsConfig();
     }
 
 }

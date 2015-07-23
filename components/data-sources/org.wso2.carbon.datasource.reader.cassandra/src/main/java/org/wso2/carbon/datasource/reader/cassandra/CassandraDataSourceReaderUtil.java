@@ -17,11 +17,8 @@
 */
 package org.wso2.carbon.datasource.reader.cassandra;
 
-import com.datastax.driver.core.Cluster;
-import com.datastax.driver.core.PoolingOptions;
-import com.datastax.driver.core.SocketOptions;
+import com.datastax.driver.core.*;
 import org.wso2.carbon.datasource.reader.cassandra.config.CassandraDataSourceConfiguration;
-import org.wso2.carbon.datasource.reader.cassandra.config.pooling.*;
 import org.wso2.carbon.ndatasource.common.DataSourceException;
 import org.wso2.carbon.utils.CarbonUtils;
 
@@ -41,22 +38,39 @@ public class CassandraDataSourceReaderUtil {
             CassandraDataSourceConfiguration fileConfig = (CassandraDataSourceConfiguration) ctx.createUnmarshaller().unmarshal(baos);
 
             String[] contactPoints = fileConfig.getContactPoints().split(",");
-            SocketOptions socketOptions = populateSocketOptions(fileConfig);
-            PoolingOptions poolingOptions = populatePoolingOptions(fileConfig);
 
             for (String contactPoint : contactPoints) {
                 if (contactPoint.length() > 0) {
                     builder.addContactPoint(contactPoint);
                 }
             }
+
+            if (fileConfig.getClusterName() != null) {
+                builder.withClusterName(fileConfig.getClusterName());
+            }
+            if (fileConfig.getCompression() != null) {
+                builder.withCompression(ProtocolOptions.Compression.valueOf(fileConfig.getCompression()));
+            }
+            if (fileConfig.getMaxSchemaAgreementWaitSeconds() != null) {
+                builder.withMaxSchemaAgreementWaitSeconds(fileConfig.getMaxSchemaAgreementWaitSeconds());
+            }
+            if (fileConfig.getProtocolVersion() != null) {
+                builder.withProtocolVersion(ProtocolVersion.valueOf(fileConfig.getProtocolVersion()));
+            }
             if (fileConfig.getPort() != null) {
                 builder.withPort(fileConfig.getPort());
             }
-            if (socketOptions != null) {
-                builder.withSocketOptions(socketOptions);
+            if ((fileConfig.getUsername() != null) && (fileConfig.getPassword() != null)) {
+                builder.withCredentials(fileConfig.getUsername(), fileConfig.getPassword());
             }
-            if (poolingOptions != null) {
-                builder.withPoolingOptions(poolingOptions);
+            if (fileConfig.getQueryOptionsConfig() != null) {
+                builder.withQueryOptions(fileConfig.getQueryOptionsConfig().getQueryOptions());
+            }
+            if (fileConfig.getSocketOptionsConfig() != null) {
+                builder.withSocketOptions(fileConfig.getSocketOptionsConfig());
+            }
+            if (fileConfig.getPoolingOptionsConfig() != null) {
+                builder.withPoolingOptions(fileConfig.getPoolingOptionsConfig().getPoolingOptions());
             }
             return builder.build();
 
@@ -73,53 +87,12 @@ public class CassandraDataSourceReaderUtil {
         }
     }
 
+    public static QueryOptions populateQueryOptions(CassandraDataSourceConfiguration config) {
+        return config.getQueryOptionsConfig().getQueryOptions();
+    }
+
     public static PoolingOptions populatePoolingOptions(CassandraDataSourceConfiguration config) {
-        PoolingOptions options = null;
-        PoolingOptionsConfig poc = config.getPoolingOptionsConfig();
-        if (poc != null) {
-            options = new PoolingOptions();
-
-            CoreConnectionsPerHostConfig[] coreConnectionsPerHostz = poc.getCoreConnectionsPerHostz();
-            MaxConnectionsPerHostConfig[] maxConnectionsPerHostsz = poc.getMaxConnectionsPerHostz();
-            MaxConnectionThresholdConfig[] maxConnectionThresholdz = poc.getMaxThresholdz();
-            MinConnectionThresholdConfig[] minConnectionThresholdz = poc.getMinThresholdz();
-            MaxHostThresholdConfig[] maxHostThresholdz = poc.getMaxHostThresholdz();
-            Integer heartbeatIntervalSeconds = poc.getHeartbeatIntervalSeconds();
-            Integer poolTimeoutMillis = poc.getPoolTimeoutMillis();
-
-            if (coreConnectionsPerHostz != null) {
-                for (CoreConnectionsPerHostConfig conn : coreConnectionsPerHostz) {
-                    options.setCoreConnectionsPerHost(conn.getHostDistance(), conn.getValue());
-                }
-            }
-            if (maxConnectionsPerHostsz != null) {
-                for (MaxConnectionsPerHostConfig conn : maxConnectionsPerHostsz) {
-                    options.setMaxConnectionsPerHost(conn.getHostDistance(), conn.getValue());
-                }
-            }
-            if (maxConnectionThresholdz != null) {
-                for (MaxConnectionThresholdConfig threshold : maxConnectionThresholdz) {
-                    options.setMaxSimultaneousRequestsPerConnectionThreshold(threshold.getHostDistance(), threshold.getValue());
-                }
-            }
-            if (minConnectionThresholdz != null) {
-                for (MinConnectionThresholdConfig threshold : minConnectionThresholdz) {
-                    options.setMinSimultaneousRequestsPerConnectionThreshold(threshold.getHostDistance(), threshold.getValue());
-                }
-            }
-            if (maxHostThresholdz != null) {
-                for (MaxHostThresholdConfig threshold : maxHostThresholdz) {
-                    options.setMaxSimultaneousRequestsPerHostThreshold(threshold.getHostDistance(), threshold.getValue());
-                }
-            }
-            if (heartbeatIntervalSeconds != null) {
-                options.setHeartbeatIntervalSeconds(heartbeatIntervalSeconds);
-            }
-            if (poolTimeoutMillis != null) {
-                options.setPoolTimeoutMillis(poolTimeoutMillis);
-            }
-        }
-        return options;
+        return config.getPoolingOptionsConfig().getPoolingOptions();
     }
 
     public static SocketOptions populateSocketOptions(CassandraDataSourceConfiguration config) {

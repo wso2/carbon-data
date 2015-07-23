@@ -36,7 +36,7 @@ public class SocketOptionsConfig extends SocketOptions {
     }
 
     @XmlElement(name = "readTimeoutMillis")
-    public int getReadTimeoutMillis(){
+    public int getReadTimeoutMillis() {
         return super.getReadTimeoutMillis();
     }
 

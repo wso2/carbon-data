@@ -30,7 +30,13 @@ public class CassandraDataSourceConfiguration {
 
     /* Protocol options */
     private Integer port;
+    private Integer maxSchemaAgreementWaitSeconds;
     private String compression;
+    private String clusterName;
+    private String username;
+    private String password;
+    private String protocolVersion;
+    private QueryOptionsConfig queryOptionsConfig;
 
     /* Pooling options */
     private PoolingOptionsConfig poolingOptionsConfig;
@@ -63,6 +69,60 @@ public class CassandraDataSourceConfiguration {
 
     public void setCompression(String compression) {
         this.compression = compression;
+    }
+
+    @XmlElement(name = "maxSchemaAgreementWaitSeconds")
+    public Integer getMaxSchemaAgreementWaitSeconds() {
+        return maxSchemaAgreementWaitSeconds;
+    }
+
+    public void setMaxSchemaAgreementWaitSeconds(Integer maxSchemaAgreementWaitSeconds) {
+        this.maxSchemaAgreementWaitSeconds = maxSchemaAgreementWaitSeconds;
+    }
+
+    @XmlElement(name = "clusterName")
+    public String getClusterName() {
+        return clusterName;
+    }
+
+    public void setClusterName(String clusterName) {
+        this.clusterName = clusterName;
+    }
+
+    @XmlElement(name = "username")
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    @XmlElement(name = "password")
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    @XmlElement(name = "protocolVersion")
+    public String getProtocolVersion() {
+        return protocolVersion;
+    }
+
+    public void setProtocolVersion(String protocolVersion) {
+        this.protocolVersion = protocolVersion;
+    }
+
+    @XmlElement(name = "queryOptions")
+    public QueryOptionsConfig getQueryOptionsConfig() {
+        return queryOptionsConfig;
+    }
+
+    public void setQueryOptionsConfig(QueryOptionsConfig queryOptionsConfig) {
+        this.queryOptionsConfig = queryOptionsConfig;
     }
 
     @XmlElement(name = "socketOptions")

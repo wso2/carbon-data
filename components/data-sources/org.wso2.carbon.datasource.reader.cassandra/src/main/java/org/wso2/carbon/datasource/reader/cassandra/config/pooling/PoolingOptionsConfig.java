@@ -18,81 +18,158 @@
 package org.wso2.carbon.datasource.reader.cassandra.config.pooling;
 
 
+import com.datastax.driver.core.HostDistance;
+import com.datastax.driver.core.PoolingOptions;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
+import java.util.List;
 
 @XmlRootElement(name = "poolingOptions")
 public class PoolingOptionsConfig {
 
-    private Integer heartbeatIntervalSeconds;
-    private Integer poolTimeoutMillis;
-    private CoreConnectionsPerHostConfig[] coreConnectionsPerHostz;
-    private MaxConnectionsPerHostConfig[] maxConnectionsPerHostz;
-    private MinConnectionThresholdConfig[] minThresholdz;
-    private MaxConnectionThresholdConfig[] maxThresholdz;
-    private MaxHostThresholdConfig[] maxHostThresholdz;
+    private PoolingOptions poolingOptions;
 
-    @XmlElement(name = "heartbeatIntervalSeconds")
-    public Integer getHeartbeatIntervalSeconds() {
-        return heartbeatIntervalSeconds;
+    public PoolingOptionsConfig() {
+        this.poolingOptions = new PoolingOptions();
     }
 
-    public void setHeartbeatIntervalSeconds(Integer heartbeatIntervalSeconds) {
-        this.heartbeatIntervalSeconds = heartbeatIntervalSeconds;
+    public PoolingOptions getPoolingOptions() {
+        return this.poolingOptions;
+    }
+
+    @XmlElement(name = "heartbeatIntervalSeconds")
+    public int getHeartbeatIntervalSeconds() {
+        return this.poolingOptions.getHeartbeatIntervalSeconds();
+    }
+
+    public void setHeartbeatIntervalSeconds(int heartbeatIntervalSeconds) {
+        this.poolingOptions.setHeartbeatIntervalSeconds(heartbeatIntervalSeconds);
     }
 
     @XmlElement(name = "poolTimeoutMillis")
-    public Integer getPoolTimeoutMillis() {
-        return poolTimeoutMillis;
+    public int getPoolTimeoutMillis() {
+        return this.poolingOptions.getPoolTimeoutMillis();
     }
 
-    public void setPoolTimeoutMillis(Integer poolTimeoutMillis) {
-        this.poolTimeoutMillis = poolTimeoutMillis;
+    public void setPoolTimeoutMillis(int poolTimeoutMillis) {
+        this.poolingOptions.setPoolTimeoutMillis(poolTimeoutMillis);
     }
 
     @XmlElement(name = "coreConnectionsPerHost")
-    public CoreConnectionsPerHostConfig[] getCoreConnectionsPerHostz() {
-        return coreConnectionsPerHostz;
+    public List<CoreConnectionsPerHostConfig> getCoreConnectionsPerHostz() {
+        List<CoreConnectionsPerHostConfig> list = new ArrayList<>();
+        for (HostDistance dist : HostDistance.values()) {
+            if (dist != HostDistance.IGNORED) {
+                CoreConnectionsPerHostConfig cfg = new CoreConnectionsPerHostConfig();
+                cfg.setHostDistance(dist);
+                cfg.setValue(this.poolingOptions.getCoreConnectionsPerHost(dist));
+                list.add(cfg);
+            }
+        }
+        return list;
     }
 
-    public void setCoreConnectionsPerHostz(CoreConnectionsPerHostConfig[] coreConnectionsPerHost) {
-        this.coreConnectionsPerHostz = coreConnectionsPerHost;
+    public void setCoreConnectionsPerHostz(List<CoreConnectionsPerHostConfig> coreConnectionsPerHost) {
+        for (CoreConnectionsPerHostConfig cfg : coreConnectionsPerHost) {
+            this.poolingOptions.setCoreConnectionsPerHost(cfg.getHostDistance(), cfg.getValue());
+        }
     }
 
     @XmlElement(name = "maxConnectionPerHost")
-    public MaxConnectionsPerHostConfig[] getMaxConnectionsPerHostz() {
-        return maxConnectionsPerHostz;
+    public List<MaxConnectionsPerHostConfig> getMaxConnectionsPerHostz() {
+        List<MaxConnectionsPerHostConfig> list = new ArrayList<>();
+        for (HostDistance dist : HostDistance.values()) {
+            if (dist != HostDistance.IGNORED) {
+                MaxConnectionsPerHostConfig cfg = new MaxConnectionsPerHostConfig();
+                cfg.setHostDistance(dist);
+                cfg.setValue(this.poolingOptions.getMaxConnectionsPerHost(dist));
+                list.add(cfg);
+            }
+        }
+        return list;
     }
 
-    public void setMaxConnectionsPerHostz(MaxConnectionsPerHostConfig[] maxConnectionsPerHostz) {
-        this.maxConnectionsPerHostz = maxConnectionsPerHostz;
+    public void setMaxConnectionsPerHostz(List<MaxConnectionsPerHostConfig> maxConnectionsPerHostz) {
+        for (MaxConnectionsPerHostConfig cfg : maxConnectionsPerHostz) {
+            this.poolingOptions.setMaxConnectionsPerHost(cfg.getHostDistance(), cfg.getValue());
+        }
     }
 
     @XmlElement(name = "minSimultaneousRequestsPerConnectionThreshold")
-    public MinConnectionThresholdConfig[] getMinThresholdz() {
-        return minThresholdz;
+    public List<MinConnectionThresholdConfig> getMinThresholdz() {
+        List<MinConnectionThresholdConfig> list = new ArrayList<>();
+        for (HostDistance dist : HostDistance.values()) {
+            if (dist != HostDistance.IGNORED) {
+                MinConnectionThresholdConfig cfg = new MinConnectionThresholdConfig();
+                cfg.setHostDistance(dist);
+                cfg.setValue(this.poolingOptions.getMinSimultaneousRequestsPerConnectionThreshold(dist));
+                list.add(cfg);
+            }
+        }
+        return list;
     }
 
-    public void setMinThresholdz(MinConnectionThresholdConfig[] minThresholdz) {
-        this.minThresholdz = minThresholdz;
+    public void setMinThresholdz(List<MinConnectionThresholdConfig> minThresholdz) {
+        for (MinConnectionThresholdConfig cfg : minThresholdz) {
+            this.poolingOptions.setMinSimultaneousRequestsPerConnectionThreshold(cfg.getHostDistance(), cfg.getValue());
+        }
     }
 
     @XmlElement(name = "maxSimultaneousRequestsPerConnectionThreshold")
-    public MaxConnectionThresholdConfig[] getMaxThresholdz() {
-        return maxThresholdz;
+    public List<MaxConnectionThresholdConfig> getMaxThresholdz() {
+        List<MaxConnectionThresholdConfig> list = new ArrayList<>();
+        for (HostDistance dist : HostDistance.values()) {
+            if (dist != HostDistance.IGNORED) {
+                MaxConnectionThresholdConfig cfg = new MaxConnectionThresholdConfig();
+                cfg.setHostDistance(dist);
+                cfg.setValue(this.poolingOptions.getMaxSimultaneousRequestsPerConnectionThreshold(dist));
+                list.add(cfg);
+            }
+        }
+        return list;
     }
 
-    public void setMaxThresholdz(MaxConnectionThresholdConfig[] maxThresholdz) {
-        this.maxThresholdz = maxThresholdz;
+    public void setMaxThresholdz(List<MaxConnectionThresholdConfig> maxThresholdz) {
+        for (MaxConnectionThresholdConfig cfg : maxThresholdz) {
+            this.poolingOptions.setMaxSimultaneousRequestsPerConnectionThreshold(cfg.getHostDistance(), cfg.getValue());
+        }
     }
 
     @XmlElement(name = "maxSimultaneousRequestsPerHostThreshold")
-    public MaxHostThresholdConfig[] getMaxHostThresholdz() {
-        return maxHostThresholdz;
+    public List<MaxHostThresholdConfig> getMaxHostThresholdz() {
+        List<MaxHostThresholdConfig> list = new ArrayList<>();
+        for (HostDistance dist : HostDistance.values()) {
+            if (dist != HostDistance.IGNORED) {
+                MaxHostThresholdConfig cfg = new MaxHostThresholdConfig();
+                cfg.setHostDistance(dist);
+                cfg.setValue(this.poolingOptions.getMaxSimultaneousRequestsPerHostThreshold(dist));
+                list.add(cfg);
+            }
+        }
+        return list;
     }
 
-    public void setMaxHostThresholdz(MaxHostThresholdConfig[] maxHostThresholdz) {
-        this.maxHostThresholdz = maxHostThresholdz;
+    public void setMaxHostThresholdz(List<MaxHostThresholdConfig> maxHostThresholdz) {
+        for (MaxHostThresholdConfig cfg : maxHostThresholdz) {
+            this.poolingOptions.setMaxSimultaneousRequestsPerHostThreshold(cfg.getHostDistance(), cfg.getValue());
+        }
+    }
+
+    public static class CoreConnectionsPerHostConfig extends PoolingOptionsConfigProperty {
+    }
+
+    public static class MaxConnectionsPerHostConfig extends PoolingOptionsConfigProperty {
+    }
+
+    public static class MinConnectionThresholdConfig extends PoolingOptionsConfigProperty {
+    }
+
+    public static class MaxConnectionThresholdConfig extends PoolingOptionsConfigProperty {
+    }
+
+    public static class MaxHostThresholdConfig extends PoolingOptionsConfigProperty {
     }
 
 }

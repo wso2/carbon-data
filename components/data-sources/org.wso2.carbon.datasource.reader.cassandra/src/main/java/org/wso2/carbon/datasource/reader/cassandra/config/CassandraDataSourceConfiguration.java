@@ -33,6 +33,8 @@ public class CassandraDataSourceConfiguration {
     private String username;
     private String password;
     private String protocolVersion;
+
+    /* Query options */
     private QueryOptionsConfig queryOptionsConfig;
 
     /* Pooling options */

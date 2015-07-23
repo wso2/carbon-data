@@ -86,17 +86,4 @@ public class CassandraDataSourceReaderUtil {
             }
         }
     }
-
-    public static QueryOptions populateQueryOptions(CassandraDataSourceConfiguration config) {
-        return config.getQueryOptionsConfig().getQueryOptions();
-    }
-
-    public static PoolingOptions populatePoolingOptions(CassandraDataSourceConfiguration config) {
-        return config.getPoolingOptionsConfig().getPoolingOptions();
-    }
-
-    public static SocketOptions populateSocketOptions(CassandraDataSourceConfiguration config) {
-        return config.getSocketOptionsConfig();
-    }
-
 }

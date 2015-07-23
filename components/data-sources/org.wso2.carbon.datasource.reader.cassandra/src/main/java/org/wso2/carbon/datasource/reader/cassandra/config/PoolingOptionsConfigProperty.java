@@ -15,7 +15,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.wso2.carbon.datasource.reader.cassandra.config.pooling;
+package org.wso2.carbon.datasource.reader.cassandra.config;
 
 import com.datastax.driver.core.HostDistance;
 

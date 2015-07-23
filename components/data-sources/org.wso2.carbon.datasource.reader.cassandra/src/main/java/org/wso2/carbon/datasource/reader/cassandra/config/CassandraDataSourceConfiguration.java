@@ -17,9 +17,6 @@
 */
 package org.wso2.carbon.datasource.reader.cassandra.config;
 
-import org.wso2.carbon.datasource.reader.cassandra.config.pooling.PoolingOptionsConfig;
-import org.wso2.carbon.datasource.reader.cassandra.config.socket.SocketOptionsConfig;
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 

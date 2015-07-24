@@ -34,6 +34,7 @@
 
     <modules>
         <module>org.wso2.carbon.datasource.reader.hadoop</module>
+        <module>org.wso2.carbon.datasource.reader.cassandra</module>
     </modules>
 
     <!--<build>-->

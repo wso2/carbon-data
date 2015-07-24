@@ -18,9 +18,6 @@
 package org.wso2.carbon.datasource.reader.hadoop;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.hbase.client.Connection;
-import org.apache.hadoop.hbase.client.ConnectionFactory;
 import org.wso2.carbon.ndatasource.common.DataSourceException;
 import org.wso2.carbon.utils.CarbonUtils;
 
@@ -58,30 +55,6 @@ public class HadoopDataSourceReaderUtil {
                 }
             }
         }
-    }
-
-    public static FileSystem getHadoopFileSystem(String xmlConfig) throws DataSourceException {
-        Configuration configuration = HadoopDataSourceReaderUtil.loadConfig(xmlConfig);
-        FileSystem fileSystem;
-        try {
-            fileSystem = FileSystem.get(configuration);
-        } catch (IOException e) {
-            throw new DataSourceException("Cannot initialize Hadoop FileSystem from configuration:" + e.getMessage(), e);
-        }
-        return fileSystem;
-    }
-
-
-    public static Connection getHBaseConnection(String xmlConfig) throws DataSourceException {
-        Configuration configuration = HadoopDataSourceReaderUtil.loadConfig(xmlConfig);
-        Connection connection;
-        try {
-            connection = ConnectionFactory.createConnection(configuration);
-
-        } catch (IOException e) {
-            throw new DataSourceException("Cannot create Hadoop Connection from configuration:" + e.getMessage(), e);
-        }
-        return connection;
     }
 
 }

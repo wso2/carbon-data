@@ -17,10 +17,14 @@
 */
 package org.wso2.carbon.datasource.reader.hadoop;
 
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
 import org.wso2.carbon.ndatasource.common.DataSourceException;
 import org.wso2.carbon.ndatasource.common.spi.DataSourceReader;
 
-/***
+import java.io.IOException;
+
+/**
  * HDFS implementation of {@link org.wso2.carbon.ndatasource.common.spi.DataSourceReader}
  */
 public class HDFSDataSourceReader implements DataSourceReader {
@@ -32,12 +36,17 @@ public class HDFSDataSourceReader implements DataSourceReader {
 
     @Override
     public Object createDataSource(String xmlConfig, boolean isDataSourceFactoryReference) throws DataSourceException {
-        return HadoopDataSourceReaderUtil.getHadoopFileSystem(xmlConfig);
+        return HadoopDataSourceReaderUtil.loadConfig(xmlConfig);
     }
 
     @Override
     public boolean testDataSourceConnection(String xmlConfig) throws DataSourceException {
-        return true;
+        Configuration config = (Configuration) createDataSource(xmlConfig, true);
+        try (FileSystem fileSystem = FileSystem.get(config)) {
+            return (fileSystem == null);
+        } catch (IOException e) {
+            throw new DataSourceException("Cannot establish connection to HDFS instance for testing: " + e.getMessage(), e);
+        }
     }
 
 }

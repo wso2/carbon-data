@@ -73,12 +73,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This class represents an SQL query in a data service.
@@ -143,6 +138,8 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
 
     private boolean forceJDBCBatchReqs;
 
+    private Calendar calendar;
+
     /**
      * thread local variable to keep the ordinal of the ref cursor if there is any
      */
@@ -196,6 +193,12 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
         this.checkRefCursor(this.getQueryParams());
         /* check for existence of any SQL Arrays */
         this.hasOutParams = this.getOutQueryParams().size() > 0;
+        /*
+         * Create Calendar instance with "UTC" time zone
+         * to use when setting timestamp for prepared statements
+         * and retrieving timestamps from result sets
+         */
+        calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         /*
          * first a result should be available and then check the other necessary
          * conditions
@@ -1154,7 +1157,7 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
                 paramValue = new ParamValue(value);
                 break;
             case Types.TIMESTAMP:
-                sqlTimestamp = rs.getTimestamp(i);
+                sqlTimestamp = rs.getTimestamp(i, calendar);
                 if (sqlTimestamp != null) {
                     value = this.convertToTimestampString(sqlTimestamp);
                 } else {
@@ -1661,20 +1664,20 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
                 if (value == null) {
                     sqlQuery.setNull(i + 1, java.sql.Types.TIMESTAMP);
                 } else {
-                    sqlQuery.setTimestamp(i + 1, timestamp);
+                    sqlQuery.setTimestamp(i + 1, timestamp, calendar);
                 }
             } else {
                 if (value == null) {
                     ((CallableStatement) sqlQuery).setNull(i + 1, java.sql.Types.TIMESTAMP);
                 } else {
-                    ((CallableStatement) sqlQuery).setTimestamp(i + 1, timestamp);
+                    ((CallableStatement) sqlQuery).setTimestamp(i + 1, timestamp, calendar);
                 }
             }
         } else if ("INOUT".equals(paramType)) {
             if (value == null) {
                 ((CallableStatement) sqlQuery).setNull(i + 1, java.sql.Types.TIMESTAMP);
             } else {
-                ((CallableStatement) sqlQuery).setTimestamp(i + 1, timestamp);
+                ((CallableStatement) sqlQuery).setTimestamp(i + 1, timestamp, calendar);
             }
             ((CallableStatement) sqlQuery).registerOutParameter(i + 1, java.sql.Types.TIMESTAMP);
         } else {
@@ -2031,7 +2034,7 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
                 return new ParamValue(elementValue == null ? null
                         : ConverterUtil.convertToString((Date) elementValue));
             } else if (type.equals(DBConstants.DataTypes.TIMESTAMP)) {
-                elementValue = cs.getTimestamp(ordinal);
+                elementValue = cs.getTimestamp(ordinal, calendar);
                 return new ParamValue(elementValue == null ? null
                         : this.convertToTimestampString((Timestamp) elementValue));
             } else if (type.equals(DBConstants.DataTypes.BLOB)) {

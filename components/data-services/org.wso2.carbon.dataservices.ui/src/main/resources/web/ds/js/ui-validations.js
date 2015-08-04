@@ -260,7 +260,7 @@ function validateClickOnReturnUpdatedRowCount() {
     var query = document.getElementById('sql').value;
     if ('' != query) {
         var startingKeyword = query.trim().toUpperCase().toString().split(" ");
-        if ("UPDATE" != startingKeyword[0]) {
+        if ("UPDATE" != startingKeyword[0] && "DELETE" != startingKeyword[0]) {
             CARBON.showWarningDialog("Return Updated Keys cannot be used with the given query");
             return false;
         }

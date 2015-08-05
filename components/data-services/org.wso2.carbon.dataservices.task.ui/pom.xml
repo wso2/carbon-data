@@ -54,7 +54,8 @@
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
                             !org.wso2.carbon.dataservices.task.ui.stub.*,
-                            org.wso2.carbon.dataservices.task.ui;version="${project.version}"
+                            org.wso2.carbon.dataservices.task.ui;version="${project.version}",
+                            org.wso2.carbon.dataservices.task.ui.i18n;version="${project.version}"
                         </Export-Package>
                         <Import-Package>
                             !org.wso2.carbon.dataservices.task.ui,

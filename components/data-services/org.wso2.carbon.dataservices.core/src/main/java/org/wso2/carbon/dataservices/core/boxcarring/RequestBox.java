@@ -44,7 +44,7 @@ public class RequestBox {
 		return requests;
 	}
 	
-	public void addRequest(DataServiceRequest request) {
+	public synchronized void addRequest(DataServiceRequest request) {
 		this.getRequests().add(request);
 	}
 	

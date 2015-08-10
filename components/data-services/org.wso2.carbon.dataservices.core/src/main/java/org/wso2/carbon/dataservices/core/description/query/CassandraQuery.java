@@ -261,21 +261,21 @@ public class CassandraQuery extends ExpressionQuery {
             } else if (columnType.getName().equals(DataType.Name.TEXT)) {
                 paramValue = new ParamValue(row.getString(i));
             } else if (columnType.getName().equals(DataType.Name.BIGINT)) {
-                paramValue = new ParamValue(Long.toString(row.getLong(i)));
+                paramValue = new ParamValue(row.isNull(i) ? null : Long.toString(row.getLong(i)));
             } else if (columnType.getName().equals(DataType.Name.BLOB)) {
                 paramValue = new ParamValue(this.base64EncodeByteBuffer(row.getBytes(i)));
             } else if (columnType.getName().equals(DataType.Name.BOOLEAN)) {
-                paramValue = new ParamValue(Boolean.toString(row.getBool(i)));
+                paramValue = new ParamValue(row.isNull(i) ? null : Boolean.toString(row.getBool(i)));
             } else if (columnType.getName().equals(DataType.Name.COUNTER)) {
-                paramValue = new ParamValue(Long.toString(row.getLong(i)));
+                paramValue = new ParamValue(row.isNull(i) ? null : Long.toString(row.getLong(i)));
             } else if (columnType.getName().equals(DataType.Name.CUSTOM)) {
                 paramValue = new ParamValue(this.base64EncodeByteBuffer(row.getBytes(i)));
             } else if (columnType.getName().equals(DataType.Name.DECIMAL)) {
-                paramValue = new ParamValue(row.getDecimal(i).toString());
+                paramValue = new ParamValue(row.isNull(i) ? null : row.getDecimal(i).toString());
             } else if (columnType.getName().equals(DataType.Name.DOUBLE)) {
-                paramValue = new ParamValue(Double.toString(row.getDouble(i)));
+                paramValue = new ParamValue(row.isNull(i) ? null : Double.toString(row.getDouble(i)));
             } else if (columnType.getName().equals(DataType.Name.FLOAT)) {
-                paramValue = new ParamValue(Float.toString(row.getFloat(i)));
+                paramValue = new ParamValue(row.isNull(i) ? null : Float.toString(row.getFloat(i)));
             } else if (columnType.getName().equals(DataType.Name.INET)) {
                 paramValue = new ParamValue(row.getInet(i).toString());
             } else if (columnType.getName().equals(DataType.Name.INT)) {

@@ -1110,21 +1110,21 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
                 /* fall through */
             case Types.SMALLINT:
                 value = ConverterUtil.convertToString(rs.getInt(i));
-                paramValue = new ParamValue(value);
+                paramValue = new ParamValue(rs.wasNull() ? null : value);
                 break;
             case Types.DOUBLE:
                 value = ConverterUtil.convertToString(rs.getDouble(i));
-                paramValue = new ParamValue(value);
+                paramValue = new ParamValue(rs.wasNull() ? null : value);
                 break;
             case Types.FLOAT:
                 value = ConverterUtil.convertToString(rs.getFloat(i));
-                paramValue = new ParamValue(value);
+                paramValue = new ParamValue(rs.wasNull() ? null : value);
                 break;
             case Types.BOOLEAN:
                 /* fall through */
             case Types.BIT:
                 value = ConverterUtil.convertToString(rs.getBoolean(i));
-                paramValue = new ParamValue(value);
+                paramValue = new ParamValue(rs.wasNull() ? null : value);
                 break;
             case Types.DECIMAL:
                 bigDecimal = rs.getBigDecimal(i);
@@ -1212,7 +1212,7 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
                 break;
             case Types.BIGINT:
                 value = ConverterUtil.convertToString(rs.getLong(i));
-                paramValue = new ParamValue(value);
+                paramValue = new ParamValue(rs.wasNull() ? null : value);
                 break;
 
             /* handle all other types as strings */

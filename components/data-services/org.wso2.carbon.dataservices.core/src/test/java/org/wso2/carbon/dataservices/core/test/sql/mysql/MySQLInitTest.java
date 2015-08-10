@@ -25,6 +25,7 @@ public class MySQLInitTest extends DataServiceBaseTestCase {
 	}
 	
 	public void testMySQLStartup() throws Exception {
+               startTenantFlow();
 		UtilServer.start(repository, axis2Conf);
 	}
 		

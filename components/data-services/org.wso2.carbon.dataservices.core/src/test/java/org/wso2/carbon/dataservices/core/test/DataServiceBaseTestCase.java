@@ -16,15 +16,29 @@
 package org.wso2.carbon.dataservices.core.test;
 
 import junit.framework.TestCase;
+import org.wso2.carbon.base.MultitenantConstants;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.utils.ServerConstants;
 
 public abstract class DataServiceBaseTestCase extends TestCase {
 	
 	protected String repository = "./target/repository";
 	protected String axis2Conf = "./src/test/resources/axis2.xml";
 	protected String baseEpr = "http://localhost:5555/axis2/services/";
+       protected String carbonHome = "./target/carbonHome";
 
 	public DataServiceBaseTestCase(String testName) {
 		super(testName);
 	}
+
+       protected void startTenantFlow() {
+               System.setProperty(ServerConstants.CARBON_HOME, carbonHome);
+               PrivilegedCarbonContext.startTenantFlow();
+               PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID, true);
+       }
+
+       protected void endTenantFlow() {
+               PrivilegedCarbonContext.endTenantFlow();
+       }
 	
 }

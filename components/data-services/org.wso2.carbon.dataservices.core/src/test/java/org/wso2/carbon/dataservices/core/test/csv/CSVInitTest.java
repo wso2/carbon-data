@@ -25,6 +25,7 @@ public class CSVInitTest extends DataServiceBaseTestCase {
 	}
 	
 	public void testExcelStartup() throws Exception {
+               startTenantFlow();
 		UtilServer.start(repository, axis2Conf);
 	}
 	

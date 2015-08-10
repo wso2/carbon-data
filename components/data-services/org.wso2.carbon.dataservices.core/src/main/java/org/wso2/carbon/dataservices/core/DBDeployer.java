@@ -128,6 +128,7 @@ public class DBDeployer extends AbstractDeployer {
 	 */
 	public void deploy(DeploymentFileData deploymentFileData)
 			throws DeploymentException {
+        PrivilegedCarbonContext.getThreadLocalCarbonContext().setApplicationName(deploymentFileData.getName());
         /* If there's already a faulty service corresponding to this particular service,
            remove it */
         if (isFaultyService(deploymentFileData)) {

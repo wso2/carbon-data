@@ -26,6 +26,7 @@ public class ExcelFinalizeTest extends DataServiceBaseTestCase {
 	
 	public void testExcelStartup() throws Exception {
 		UtilServer.stop();
+               endTenantFlow();
 	}
 	
 }

@@ -11,6 +11,7 @@ public class OracleInitTest extends DataServiceBaseTestCase{
 	}
 	
 	public void testOracleStartup() throws Exception {
+               startTenantFlow();
 		UtilServer.start(repository, axis2Conf);
 	}
 

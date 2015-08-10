@@ -29,6 +29,7 @@ public class H2InitTest extends DataServiceBaseTestCase {
 	}
 	
 	public void testH2Startup() throws Exception {
+               startTenantFlow();
 		Class.forName("org.h2.Driver");
 		Connection conn = DriverManager.getConnection("jdbc:h2:mem:ds-test-db;DB_CLOSE_DELAY=-1");
 		Statement stmt = conn.createStatement();

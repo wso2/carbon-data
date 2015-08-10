@@ -26,6 +26,7 @@ public class MySQLFinalizeTest extends DataServiceBaseTestCase {
 	
 	public void testMySQLStop() throws Exception {
 		UtilServer.stop();
+               endTenantFlow();
 	}
 	
 }

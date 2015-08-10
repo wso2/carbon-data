@@ -34,7 +34,8 @@ public class GenericFinalizeTest extends DataServiceBaseTestCase {
 		Statement stmt = conn.createStatement();
 		stmt.executeUpdate("DROP ALL OBJECTS");
 		stmt.close();
-		conn.close();		
+		conn.close();
+               endTenantFlow();
 	}
 
 	

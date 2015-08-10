@@ -28,6 +28,7 @@ public class ToolsInitTest extends DataServiceBaseTestCase {
 	}
 	
 	public void testGenericStartup() throws Exception {
+               startTenantFlow();
 		Class.forName("org.h2.Driver");
 		Connection conn = DriverManager.getConnection("jdbc:h2:mem:ds-test-db;DB_CLOSE_DELAY=-1");
 		Statement stmt = conn.createStatement();

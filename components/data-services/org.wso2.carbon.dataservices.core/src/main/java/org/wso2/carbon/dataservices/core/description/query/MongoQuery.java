@@ -33,11 +33,20 @@ import org.wso2.carbon.dataservices.core.custom.datasource.FixedDataRow;
 import org.wso2.carbon.dataservices.core.custom.datasource.QueryResult;
 import org.wso2.carbon.dataservices.core.description.config.MongoConfig;
 import org.wso2.carbon.dataservices.core.description.event.EventTrigger;
+import org.wso2.carbon.dataservices.core.engine.DataEntry;
+import org.wso2.carbon.dataservices.core.engine.DataService;
+import org.wso2.carbon.dataservices.core.engine.InternalParam;
 import org.wso2.carbon.dataservices.core.engine.InternalParamCollection;
-import org.wso2.carbon.dataservices.core.engine.*;
+import org.wso2.carbon.dataservices.core.engine.ParamValue;
+import org.wso2.carbon.dataservices.core.engine.QueryParam;
+import org.wso2.carbon.dataservices.core.engine.Result;
 
 import javax.xml.stream.XMLStreamWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class represents the MongoDB data services query implementation.
@@ -329,48 +338,36 @@ public class MongoQuery extends Query {
             return result.iterator();
         }
 
-        private void doInsert(MongoCollection collection,
-                              String opQuery, Object[] parameters) throws DataServiceFault {
-            String error;
+        private void doInsert(MongoCollection collection, String opQuery, Object[] parameters) throws DataServiceFault {
             if (opQuery != null) {
                 if (parameters.length > 0) {
                     if (opQuery.equals("#")) {
-                        error = collection.save(JSON.parse(parameters[0].toString())).getError();
+                        collection.save(JSON.parse(parameters[0].toString()));
                     } else {
-                        error = collection.insert(opQuery, parameters).getError();
+                        collection.insert(opQuery, parameters);
                     }
                 } else {
-                    error = collection.insert(opQuery).getError();
+                    collection.insert(opQuery);
                 }
             } else {
                 throw new DataServiceFault("Mongo insert statements must contain a query");
             }
-            if (!DBUtils.isEmptyString(error)) {
-                throw new DataServiceFault(error);
-            }
         }
 
-        private void doRemove(MongoCollection collection,
-                              String opQuery, Object[] parameters) throws DataServiceFault {
-            String error;
+        private void doRemove(MongoCollection collection, String opQuery, Object[] parameters) throws DataServiceFault {
             if (opQuery != null) {
                 if (parameters.length > 0) {
-                    error = collection.remove(opQuery, parameters).getError();
+                    collection.remove(opQuery, parameters);
                 } else {
-                    error = collection.remove(opQuery).getError();
+                    collection.remove(opQuery);
                 }
             } else {
                 throw new DataServiceFault("Mongo remove statements must contain a query");
             }
-            if (!DBUtils.isEmptyString(error)) {
-                throw new DataServiceFault(error);
-            }
         }
 
-        private void doUpdate(MongoCollection collection,
-                              String opQuery, Object[] parameters, String modifier,
+        private void doUpdate(MongoCollection collection, String opQuery, Object[] parameters, String modifier,
                               boolean upsert, boolean multi) throws DataServiceFault {
-            String error;
             if (opQuery != null) {
                 if (parameters.length > 0) {
                     Update update = collection.update(opQuery);
@@ -380,7 +377,7 @@ public class MongoQuery extends Query {
                     if (multi) {
                         update = update.multi();
                     }
-                    error = update.with(modifier, parameters).getError();
+                    update.with(modifier, parameters);
                 } else {
                     Update update = collection.update(opQuery);
                     if (upsert) {
@@ -389,13 +386,10 @@ public class MongoQuery extends Query {
                     if (multi) {
                         update = update.multi();
                     }
-                    error = update.with(modifier).getError();
+                    update.with(modifier);
                 }
             } else {
                 throw new DataServiceFault("Mongo update statements must contain a query");
-            }
-            if (!DBUtils.isEmptyString(error)) {
-                throw new DataServiceFault(error);
             }
         }
 

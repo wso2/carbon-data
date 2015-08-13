@@ -629,6 +629,9 @@ public final class DBConstants {
         }
 
         public static final String SERVERS = "mongoDB_servers";
+        public static final String AUTHENTICATION_TYPE = "mongoDB_authentication_type";
+        public static final String USERNAME = "username";
+        public static final String PASSWORD = "password";
         public static final String DATABASE = "mongoDB_database";
         public static final String WRITE_CONCERN = "mongoDB_write_concern";
         public static final String READ_PREFERENCE = "mongoDB_read_preference";

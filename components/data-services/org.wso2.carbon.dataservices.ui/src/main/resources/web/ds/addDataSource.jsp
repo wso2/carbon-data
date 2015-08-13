@@ -60,6 +60,17 @@
 
 var propertyCount_ = 0;
 var staticUserMappingsCount = 0;
+function setHiddenInputs() {
+    if (document.getElementById("mongoDB_authentication_type").value == 'NONE') {
+        document.getElementById("tr:username").style.display = 'none';
+        document.getElementById("tr:password").style.display = 'none';
+    } else if (document.getElementById("mongoDB_authentication_type").value == 'MONGODB-X509') {
+        document.getElementById("tr:password").style.display = 'none';
+    } else {
+        document.getElementById("tr:username").style.display = '';
+        document.getElementById("tr:password").style.display = '';
+    }
+}
 function setValueConf() {
 	if (document.getElementById('datasourceType').value == 'EXCEL') {
        var elementId ='excel_datasource';
@@ -153,6 +164,8 @@ private boolean isFieldMandatory(String propertName) {
       	return true;
     } else if (propertName.equals(DBConstants.MongoDB.DATABASE)) {
       	return true;
+    } else if (propertName.equals(DBConstants.MongoDB.AUTHENTICATION_TYPE)) {
+        return true;
     } else if (propertName.equals(DBConstants.WebDatasource.WEB_CONFIG)) {
 		return true;
 	}  else if (propertName.equals(DBConstants.WebDatasource.QUERY_VARIABLE)) {
@@ -498,14 +511,20 @@ private Config addNotAvailableFunctions(Config config,String selectedType, HttpS
         if (config.getPropertyValue(DBConstants.MongoDB.DATABASE) == null) {
             config.addProperty(DBConstants.MongoDB.DATABASE, "");
         }
+        if (config.getPropertyValue(DBConstants.MongoDB.AUTHENTICATION_TYPE) == null) {
+            config.addProperty(DBConstants.MongoDB.AUTHENTICATION_TYPE, "");
+        }
+        if (config.getPropertyValue(DBConstants.MongoDB.USERNAME) == null) {
+            config.addProperty(DBConstants.MongoDB.USERNAME, "");
+        }
+        if (config.getPropertyValue(DBConstants.MongoDB.PASSWORD) == null) {
+            config.addProperty(DBConstants.MongoDB.PASSWORD, "");
+        }
         if (config.getPropertyValue(DBConstants.MongoDB.WRITE_CONCERN) == null) {
             config.addProperty(DBConstants.MongoDB.WRITE_CONCERN, "");
         }
         if (config.getPropertyValue(DBConstants.MongoDB.READ_PREFERENCE) == null) {
             config.addProperty(DBConstants.MongoDB.READ_PREFERENCE, "");
-        }
-        if (config.getPropertyValue(DBConstants.MongoDB.AUTO_CONNECT_RETRY) == null) {
-            config.addProperty(DBConstants.MongoDB.AUTO_CONNECT_RETRY, "");
         }
         if (config.getPropertyValue(DBConstants.MongoDB.CONNECT_TIMEOUT) == null) {
             config.addProperty(DBConstants.MongoDB.CONNECT_TIMEOUT, "");
@@ -799,9 +818,11 @@ private String getSheetName(String gSpreadJDBCUrl) {
                 }  else if (DBConstants.DataSourceTypes.MONGODB.equals(selectedType)) {
                     newConfig.addProperty(DBConstants.MongoDB.SERVERS, "");
                     newConfig.addProperty(DBConstants.MongoDB.DATABASE, "");
+                    newConfig.addProperty(DBConstants.MongoDB.AUTHENTICATION_TYPE, "");
+                    newConfig.addProperty(DBConstants.MongoDB.USERNAME, "");
+                    newConfig.addProperty(DBConstants.MongoDB.PASSWORD, "");
                     newConfig.addProperty(DBConstants.MongoDB.WRITE_CONCERN, "");
                     newConfig.addProperty(DBConstants.MongoDB.READ_PREFERENCE, "");
-                    newConfig.addProperty(DBConstants.MongoDB.AUTO_CONNECT_RETRY, "");
                     newConfig.addProperty(DBConstants.MongoDB.CONNECT_TIMEOUT, "");
                     newConfig.addProperty(DBConstants.MongoDB.MAX_WAIT_TIME, "");
                     newConfig.addProperty(DBConstants.MongoDB.SOCKET_TIMEOUT, "");
@@ -956,9 +977,11 @@ private String getSheetName(String gSpreadJDBCUrl) {
                 }  else if (DBConstants.DataSourceTypes.MONGODB.equals(selectedType)) {
                     conf.addProperty(DBConstants.MongoDB.SERVERS, "");
                     conf.addProperty(DBConstants.MongoDB.DATABASE, "");
+                    conf.addProperty(DBConstants.MongoDB.AUTHENTICATION_TYPE, "");
+                    conf.addProperty(DBConstants.MongoDB.USERNAME, "");
+                    conf.addProperty(DBConstants.MongoDB.PASSWORD, "");
                     conf.addProperty(DBConstants.MongoDB.WRITE_CONCERN, "");
                     conf.addProperty(DBConstants.MongoDB.READ_PREFERENCE, "");
-                    conf.addProperty(DBConstants.MongoDB.AUTO_CONNECT_RETRY, "");
                     conf.addProperty(DBConstants.MongoDB.CONNECT_TIMEOUT, "");
                     conf.addProperty(DBConstants.MongoDB.MAX_WAIT_TIME, "");
                     conf.addProperty(DBConstants.MongoDB.SOCKET_TIMEOUT, "");
@@ -1716,7 +1739,7 @@ private String getSheetName(String gSpreadJDBCUrl) {
             <option value="false">false</option>
             <% } %>
         </select>
-        <% } else if (propertyName.equals(DBConstants.MongoDB.AUTO_CONNECT_RETRY) || propertyName.equals(DBConstants.Cassandra.ENABLE_JMX_REPORTING)
+        <% } else if (propertyName.equals(DBConstants.Cassandra.ENABLE_JMX_REPORTING)
                   || propertyName.equals(DBConstants.Cassandra.ENABLE_METRICS) || propertyName.equals(DBConstants.Cassandra.KEEP_ALIVE)
                   || propertyName.equals(DBConstants.Cassandra.REUSE_ADDRESS) || propertyName.equals(DBConstants.Cassandra.TCP_NODELAY)
                   || propertyName.equals(DBConstants.Cassandra.ENABLE_SSL))
@@ -1740,6 +1763,39 @@ private String getSheetName(String gSpreadJDBCUrl) {
             <option value="false">false</option>
             <% } %>
         </select>
+		<%  } else if (propertyName.equals(DBConstants.MongoDB.AUTHENTICATION_TYPE)) { %>
+			<select id="<%=propertyName%>" name="<%=propertyName%>" onChange="setHiddenInputs();">
+				<% if (propertyValue.equals("") || propertyValue.equals("NONE")) { %>
+				<option value="NONE" selected="selected">NONE</option>
+				<% } else { %>
+				<option value="NONE">NONE</option>
+				<% } %>
+				<% if (propertyValue.equals("SCRAM-SHA-1")) { %>
+				<option value="SCRAM-SHA-1" selected="selected">SCRAM-SHA-1</option>
+				<% } else { %>
+				<option value="SCRAM-SHA-1">SCRAM-SHA-1</option>
+				<% } %>
+				<% if (propertyValue.equals("MONGODB-CR")) { %>
+				<option value="MONGODB-CR" selected="selected">MONGODB-CR</option>
+				<% } else { %>
+				<option value="MONGODB-CR">MONGODB-CR</option>
+				<% } %>
+				<% if (propertyValue.equals("MONGODB-X509")) { %>
+				<option value="MONGODB-X509" selected="selected">MONGODB-X509</option>
+				<% } else { %>
+				<option value="MONGODB-X509">MONGODB-X509</option>
+				<% } %>
+				<% if (propertyValue.equals("GSSAPI")) { %>
+				<option value="GSSAPI" selected="selected">GSSAPI</option>
+				<% } else { %>
+				<option value="GSSAPI">GSSAPI</option>
+				<% } %>
+				<% if (propertyValue.equals("PLAIN")) { %>
+				<option value="PLAIN" selected="selected">PLAIN</option>
+				<% } else { %>
+				<option value="PLAIN">PLAIN</option>
+				<% } %>
+			</select>
         <%  } else if (propertyName.equals(DBConstants.MongoDB.WRITE_CONCERN)) { %>
             <select id="<%=propertyName%>" name="<%=propertyName%>">
                 <% if (propertyValue.equals("")) { %>

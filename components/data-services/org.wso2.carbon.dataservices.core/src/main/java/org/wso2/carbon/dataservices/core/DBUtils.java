@@ -124,6 +124,7 @@ public class DBUtils {
         conversionTypes.put(DBConstants.DataTypes.VARBINARY, "base64Binary"); /* byte[] */
         conversionTypes.put(DBConstants.DataTypes.LONG_VARBINARY, "base64Binary"); /* byte [] */
         conversionTypes.put(DBConstants.DataTypes.IMAGE, "base64Binary"); /* byte[] */
+        conversionTypes.put(DBConstants.DataTypes.BLOB, "base64Binary"); /* byte[] */
         conversionTypes.put(DBConstants.DataTypes.DATE, "java.sql.Date");
         conversionTypes.put(DBConstants.DataTypes.TIME, "java.sql.Time");
         conversionTypes.put(DBConstants.DataTypes.TIMESTAMP, "java.sql.Timestamp");

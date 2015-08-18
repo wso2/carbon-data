@@ -430,14 +430,24 @@ public class DBUtils {
     /**
      * Create a Date object from the given date string.
      */
-    public static Date getDate(String value) {
+    public static Date getDate(String value) throws DataServiceFault {
         /* if something goes wrong with converting the value to a date,
            * try with dateTime and get the date out it, this is because,
            * some service clients send a full date-time string for a date */
         try {
-            return new Date(ConverterUtil.convertToDate(value).getTime());
+            java.util.Date date = ConverterUtil.convertToDate(value);
+            if (null == date) {
+                throw new DataServiceFault("Empty string or null value was found as date.");
+            } else {
+                return new Date(date.getTime());
+            }
         } catch (Exception e) {
-            return new Date(ConverterUtil.convertToDateTime(value).getTimeInMillis());
+            java.util.Calendar calendarDate = ConverterUtil.convertToDateTime(value);
+            if (null == calendarDate) {
+                throw new DataServiceFault("Empty string or null value was found as date.");
+            } else {
+                return new Date(calendarDate.getTimeInMillis());
+            }
         }
     }
 

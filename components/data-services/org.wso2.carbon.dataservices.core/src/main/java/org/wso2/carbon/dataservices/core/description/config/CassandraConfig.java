@@ -20,6 +20,7 @@ package org.wso2.carbon.dataservices.core.description.config;
 
 import java.util.Map;
 
+import com.datastax.driver.core.exceptions.NoHostAvailableException;
 import org.wso2.carbon.dataservices.common.DBConstants;
 import org.wso2.carbon.dataservices.common.DBConstants.DataSourceTypes;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
@@ -60,15 +61,19 @@ public class CassandraConfig extends Config {
         super(dataService, configId, DataSourceTypes.CASSANDRA, properties);
         Builder builder = Cluster.builder();
         this.populateSettings(builder, properties);
-        String keyspace = properties.get(DBConstants.Cassandra.KEYSPACE);        
+        String keyspace = properties.get(DBConstants.Cassandra.KEYSPACE);
         this.cluster = builder.build();
-        if (keyspace != null && keyspace.trim().length() > 0) {
-            this.session = this.cluster.connect(keyspace);
-        } else {
-            this.session = this.cluster.connect();
+        try {
+            if (keyspace != null && keyspace.trim().length() > 0) {
+                this.session = this.cluster.connect(keyspace);
+            } else {
+                this.session = this.cluster.connect();
+            }
+            this.nativeBatchRequestsSupported = this.session.getCluster().
+                    getConfiguration().getProtocolOptions().getProtocolVersion() > 1;
+        } catch (NoHostAvailableException e) {
+            throw new DataServiceFault(e, DBConstants.FaultCodes.CONNECTION_UNAVAILABLE_ERROR, e.getMessage());
         }
-        this.nativeBatchRequestsSupported = this.session.getCluster().
-                getConfiguration().getProtocolOptions().getProtocolVersion() > 1;
     }
     
     public boolean isNativeBatchRequestsSupported() {

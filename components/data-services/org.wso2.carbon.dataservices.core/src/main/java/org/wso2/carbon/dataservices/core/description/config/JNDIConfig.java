@@ -23,6 +23,7 @@ import org.wso2.carbon.dataservices.common.DBConstants.DataSourceTypes;
 import org.wso2.carbon.dataservices.core.DBUtils;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
 import org.wso2.carbon.dataservices.core.engine.DataService;
+import org.wso2.carbon.dataservices.core.odata.ODataDataHandler;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -38,10 +39,10 @@ import java.util.Properties;
 public class JNDIConfig extends SQLConfig {
 
 	private DataSource dataSource;
-	
-	public JNDIConfig(DataService dataService, String configId, Map<String, String> properties) 
+
+	public JNDIConfig(DataService dataService, String configId, Map<String, String> properties, boolean odataEnable)
 			throws DataServiceFault {
-		super(dataService, configId, DataSourceTypes.JNDI, properties);
+		super(dataService, configId, DataSourceTypes.JNDI, properties, odataEnable);
 		if (!dataService.isServiceInactive()) {
 			this.validateJNDIConfig();
 		    this.dataSource = this.createDataSource();
@@ -124,6 +125,11 @@ public class JNDIConfig extends SQLConfig {
 
 	@Override
 	public void close() {
+	}
+
+	@Override
+	public ODataDataHandler createODataHandler() throws DataServiceFault {
+		throw new DataServiceFault("Expose as OData Service feature doesn't support for the Datasource.");
 	}
 		
 }

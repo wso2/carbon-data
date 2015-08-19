@@ -34,6 +34,7 @@
     <modules>
         <module>org.wso2.carbon.dataservices.common</module>
         <module>org.wso2.carbon.dataservices.core</module>
+        <module>org.wso2.carbon.dataservices.odata</module>
         <module>org.wso2.carbon.dataservices.ui</module>
         <module>org.wso2.carbon.dataservices.task</module>
         <module>org.wso2.carbon.dataservices.task.ui</module>

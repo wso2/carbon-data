@@ -58,6 +58,14 @@
             <artifactId>guava</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.wso2.orbit.org.apache.olingo</groupId>
+            <artifactId>odata-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-io.wso2</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.mongodb.wso2</groupId>
             <artifactId>mongo-java-driver</artifactId>
         </dependency>
@@ -114,6 +122,10 @@
             <artifactId>commons-pool</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.wso2.orbit.org.antlr</groupId>
+            <artifactId>antlr4-runtime</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.wso2.carbon.commons</groupId>
             <artifactId>org.wso2.carbon.event.server.feature</artifactId>
             <type>zip</type>
@@ -128,10 +140,84 @@
             <artifactId>org.wso2.carbon.transaction.manager.feature</artifactId>
             <type>zip</type>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.data</groupId>
+            <artifactId>org.wso2.carbon.dataservices.odata</artifactId>
+            <version>4.3.1-SNAPSHOT</version>
+            <type>war</type>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.10</version>
+                <executions>
+                    <execution>
+                        <id>copy</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.wso2.carbon.data</groupId>
+                                    <artifactId>org.wso2.carbon.dataservices.odata</artifactId>
+                                    <version>4.3.1-SNAPSHOT</version>
+                                    <type>war</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${basedir}/src/main/resources/</outputDirectory>
+                                    <destFileName>odataservices.war</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                            <!-- other configurations here -->
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>src</directory>
+                            <followSymlinks>false</followSymlinks>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>src/main/resources</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>resources</directory>
+                                    <includes>
+                                        <include>odataservices.war</include>
+                                        <include>p2.inf</include>
+                                        <include>build.properties</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.wso2.maven</groupId>
                 <artifactId>carbon-p2-plugin</artifactId>
@@ -173,6 +259,9 @@
                                 <bundleDef>org.htmlcleaner.wso2:htmlcleaner</bundleDef>
                                 <bundleDef>commons-dbcp.wso2:commons-dbcp</bundleDef>
                                 <bundleDef>commons-pool.wso2:commons-pool</bundleDef>
+                                <bundleDef>org.wso2.orbit.org.apache.olingo:odata-server</bundleDef>
+                                <bundleDef>org.wso2.orbit.org.antlr:antlr4-runtime</bundleDef>
+                                <bundleDef>commons-io.wso2:commons-io</bundleDef>
                             </bundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.service.mgt.server:${carbon-deployment.version}</importFeatureDef>

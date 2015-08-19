@@ -18,10 +18,6 @@
  */
 package org.wso2.carbon.dataservices.core.description.config;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -32,6 +28,11 @@ import org.wso2.carbon.dataservices.common.DBConstants.DataSourceTypes;
 import org.wso2.carbon.dataservices.core.DBUtils;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
 import org.wso2.carbon.dataservices.core.engine.DataService;
+import org.wso2.carbon.dataservices.core.odata.ODataDataHandler;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
 
 /**
  * This class represents a Excel based data source configuration.
@@ -41,10 +42,9 @@ public class ExcelConfig extends Config {
 	private static final Log log = LogFactory.getLog(ExcelConfig.class);
 	
 	private String excelDataSourcePath;
-	
-	public ExcelConfig(DataService dataService, String configId, Map<String, String> properties) {
-		super(dataService, configId, DataSourceTypes.EXCEL, properties);
-		
+
+	public ExcelConfig(DataService dataService, String configId, Map<String, String> properties, boolean odataEnable) {
+		super(dataService, configId, DataSourceTypes.EXCEL, properties, odataEnable);
 		this.excelDataSourcePath = this.getProperty(DBConstants.Excel.DATASOURCE).trim();
 	}
 
@@ -71,6 +71,11 @@ public class ExcelConfig extends Config {
 	
 	public void close() {
 		/* nothing to close */
+	}
+
+	@Override
+	public ODataDataHandler createODataHandler() throws DataServiceFault {
+		throw new DataServiceFault("Expose as OData Service feature doesn't support for the Datasource.");
 	}
 	
 }

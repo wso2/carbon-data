@@ -137,6 +137,7 @@ public final class DBConstants {
         public static final String CHAR = "CHAR";
         public static final String LONG = "LONG";
         public static final String STRING = "STRING";
+        public static final String LONGTEXT = "LONGTEXT";
         public static final String VARCHAR = "VARCHAR";
         public static final String NVARCHAR = "NVARCHAR";
         public static final String TEXT = "TEXT";
@@ -746,6 +747,7 @@ public final class DBConstants {
         public static final String POLICY_KEY = "key";
         public static final String ENABLESEC = "enableSec";
         public static final String CONFIG = "config";
+        public static final String ENABLE_ODATA = "enableODataService";
         public static final String QUERY = "query";
         public static final String OPERATION = "operation";
         public static final String RESOURCE = "resource";

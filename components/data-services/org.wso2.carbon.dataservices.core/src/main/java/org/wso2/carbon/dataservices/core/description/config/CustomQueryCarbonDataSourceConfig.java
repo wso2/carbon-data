@@ -18,8 +18,6 @@
  */
 package org.wso2.carbon.dataservices.core.description.config;
 
-import java.util.Map;
-
 import org.wso2.carbon.dataservices.common.DBConstants;
 import org.wso2.carbon.dataservices.common.DBConstants.DataSourceTypes;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
@@ -27,9 +25,12 @@ import org.wso2.carbon.dataservices.core.custom.datasource.CustomQueryBasedDS;
 import org.wso2.carbon.dataservices.core.custom.datasource.CustomQueryDataSourceReader;
 import org.wso2.carbon.dataservices.core.engine.DataService;
 import org.wso2.carbon.dataservices.core.internal.DataServicesDSComponent;
+import org.wso2.carbon.dataservices.core.odata.ODataDataHandler;
 import org.wso2.carbon.ndatasource.common.DataSourceException;
 import org.wso2.carbon.ndatasource.core.CarbonDataSource;
 import org.wso2.carbon.ndatasource.core.DataSourceService;
+
+import java.util.Map;
 
 /**
  * This class represents an custom query based Carbon Data Source data source configuration.
@@ -39,10 +40,10 @@ public class CustomQueryCarbonDataSourceConfig extends CustomQueryBasedDSConfig 
 	private String dataSourceName;
 	
 	private CustomQueryBasedDS dataSource;
-	
-	public CustomQueryCarbonDataSourceConfig(DataService dataService,
-			String configId, Map<String, String> properties) throws DataServiceFault {
-		super(dataService, configId, DataSourceTypes.CUSTOM_QUERY, properties);
+
+	public CustomQueryCarbonDataSourceConfig(DataService dataService, String configId, Map<String, String> properties,
+	                                         boolean odataEnable) throws DataServiceFault {
+		super(dataService, configId, DataSourceTypes.CUSTOM_QUERY, properties, odataEnable);
 		this.dataSourceName = properties.get(DBConstants.CarbonDatasource.NAME);
 		this.dataSource = this.initDataSource();
 	}
@@ -90,6 +91,11 @@ public class CustomQueryCarbonDataSourceConfig extends CustomQueryBasedDSConfig 
 	@Override
 	public boolean isActive() {
 		return true;
+	}
+
+	@Override
+	public ODataDataHandler createODataHandler() throws DataServiceFault {
+		throw new DataServiceFault("Expose as OData Service feature doesn't support for the Datasource.");
 	}
 
 }

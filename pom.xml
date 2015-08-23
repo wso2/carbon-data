@@ -993,7 +993,7 @@
 
 
 
-        <apache.axis2.orbit.version>1.6.1.wso2v12</apache.axis2.orbit.version>
+        <apache.axis2.orbit.version>1.6.2.wso2v13</apache.axis2.orbit.version>
         <apache.axis2.orbit.imp.pkg.version>[1.6.1.wso2v12, 1.7.0)</apache.axis2.orbit.imp.pkg.version>
 
         <h2.engine.orbit.version>1.2.140.wso2v3</h2.engine.orbit.version>

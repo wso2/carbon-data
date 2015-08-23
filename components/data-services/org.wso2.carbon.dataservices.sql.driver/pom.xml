@@ -90,11 +90,16 @@
                             org.wso2.carbon.registry.core.exceptions;version="${carbon.registry.imp.pkg.version}",
                             org.apache.commons.logging;version="${carbon.commons.logging.imp.pkg.version}",
                             org.wso2.carbon.context;version="${carbon.kernel.imp.pkg.version}",
-                            org.wso2.carbon.utils.multitenancy;version="${carbon.kernel.imp.pkg.version}"
+                            org.wso2.carbon.utils.multitenancy;version="${carbon.kernel.imp.pkg.version}",
+                            org.osgi.service.component;version="${osgi.service.imp.pkg.version}"
                         </Import-Package>
                         <!--<DynamicImport-Package>*</DynamicImport-Package>-->
                     </instructions>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-scr-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

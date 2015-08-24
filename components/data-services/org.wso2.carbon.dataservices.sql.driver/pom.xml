@@ -44,7 +44,7 @@
             <artifactId>gdata-spreadsheet</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.google.guava.wso2</groupId>
+            <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>
         <dependency>

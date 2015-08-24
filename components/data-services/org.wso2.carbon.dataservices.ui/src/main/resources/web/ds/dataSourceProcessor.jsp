@@ -54,6 +54,13 @@
     String datasourceType = request.getParameter("datasourceType");
     String useSecretAliasForPasswordValue = request.getParameter("useSecretAliasValue");
     String selectBox = request.getParameter("selectbox");
+    Boolean isOData ;
+    if(null != request.getParameter("isOData")){
+    isOData=true;
+    }
+    else{
+    isOData=false;
+    }
     String driverClass = request.getParameter(DBConstants.RDBMS.DRIVER_CLASSNAME);
     String jdbcUrl = request.getParameter(DBConstants.RDBMS.URL);
     String dsUserName = request.getParameter(DBConstants.RDBMS.USERNAME);
@@ -310,6 +317,7 @@
                             }
                             updateConfiguration(dsConfig, DBConstants.RDBMS.DATASOURCE_CLASSNAME, xaDataSourceClass);
                             updateConfiguration(dsConfig, DBConstants.RDBMS.DATASOURCE_PROPS, property);
+                            dsConfig.setExposeAsOData(isOData);
 						}
                         dsConfig.removeProperty(DBConstants.RDBMS.DRIVER_CLASSNAME);
                         dsConfig.removeProperty(DBConstants.RDBMS.URL);
@@ -325,7 +333,7 @@
                         updateConfiguration(dsConfig, DBConstants.RDBMS.URL, jdbcUrl);
                         updateConfiguration(dsConfig, DBConstants.RDBMS.USERNAME, dsUserName);
                         updateConfiguration(dsConfig, DBConstants.RDBMS.PASSWORD, dsPassword);
-
+                        dsConfig.setExposeAsOData(isOData);
                         dsConfig.removeProperty(DBConstants.RDBMS.DATASOURCE_CLASSNAME);
                         dsConfig.removeProperty(DBConstants.RDBMS.DATASOURCE_PROPS);
                     }
@@ -534,6 +542,7 @@
                     updateConfiguration(dsConfig, DBConstants.WebDatasource.WEB_CONFIG, webConfig);
                 } else if (DBConstants.DataSourceTypes.CASSANDRA.equals(datasourceType)) {
                     updateConfiguration(dsConfig, DBConstants.Cassandra.CASSANDRA_SERVERS, cassandraServers);
+                    dsConfig.setExposeAsOData(isOData);
                     updateConfiguration(dsConfig, DBConstants.Cassandra.KEYSPACE, cassandraKeySpace);
                     updateConfiguration(dsConfig, DBConstants.Cassandra.PORT, cassandraPort);
                     updateConfiguration(dsConfig, DBConstants.Cassandra.CLUSTER_NAME, cassandraClusterName);

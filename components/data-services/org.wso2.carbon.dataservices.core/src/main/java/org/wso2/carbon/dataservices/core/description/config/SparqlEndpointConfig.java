@@ -18,11 +18,13 @@
  */
 package org.wso2.carbon.dataservices.core.description.config;
 
-import java.util.Map;
-
 import org.wso2.carbon.dataservices.common.DBConstants;
 import org.wso2.carbon.dataservices.common.DBConstants.DataSourceTypes;
+import org.wso2.carbon.dataservices.core.DataServiceFault;
 import org.wso2.carbon.dataservices.core.engine.DataService;
+import org.wso2.carbon.dataservices.core.odata.ODataDataHandler;
+
+import java.util.Map;
 
 /**
  * This class represents a RDF based data source configuration.
@@ -30,10 +32,10 @@ import org.wso2.carbon.dataservices.core.engine.DataService;
 public class SparqlEndpointConfig extends Config {
 	
 	private String sparqlEndpointUrl;
-	
-	public SparqlEndpointConfig(DataService dataService, String configId, Map<String, String> properties) {
-		super(dataService, configId, DataSourceTypes.SPARQL, properties);
-		
+
+	public SparqlEndpointConfig(DataService dataService, String configId, Map<String, String> properties,
+	                            boolean odataEnable) {
+		super(dataService, configId, DataSourceTypes.SPARQL, properties, odataEnable);
 		this.sparqlEndpointUrl = this.getProperty(DBConstants.SPARQL.DATASOURCE).trim();
 	}
 	
@@ -49,5 +51,10 @@ public class SparqlEndpointConfig extends Config {
 	public void close() {
 		/* nothing to close */
 	}
-	
+
+	@Override
+	public ODataDataHandler createODataHandler() throws DataServiceFault {
+		throw new DataServiceFault("Expose as OData Service feature doesn't support for the Datasource.");
+	}
+
 }

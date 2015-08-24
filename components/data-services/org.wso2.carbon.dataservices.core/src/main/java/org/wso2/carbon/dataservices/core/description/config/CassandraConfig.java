@@ -43,6 +43,9 @@ import com.datastax.driver.core.policies.LatencyAwarePolicy;
 import com.datastax.driver.core.policies.LoggingRetryPolicy;
 import com.datastax.driver.core.policies.RoundRobinPolicy;
 import com.datastax.driver.core.policies.TokenAwarePolicy;
+import org.wso2.carbon.dataservices.core.odata.CassandraDataHandler;
+import org.wso2.carbon.dataservices.core.odata.ODataDataHandler;
+import org.wso2.carbon.dataservices.core.odata.ODataServiceHandler;
 
 /**
  * Cassandra-CQL data source implementation.
@@ -54,10 +57,10 @@ public class CassandraConfig extends Config {
     private Session session;
     
     private boolean nativeBatchRequestsSupported;
-        
-    public CassandraConfig(DataService dataService, String configId, 
-            Map<String, String> properties) throws DataServiceFault {
-        super(dataService, configId, DataSourceTypes.CASSANDRA, properties);
+
+    public CassandraConfig(DataService dataService, String configId, Map<String, String> properties,
+                           boolean odataEnable) throws DataServiceFault {
+        super(dataService, configId, DataSourceTypes.CASSANDRA, properties, odataEnable);
         Builder builder = Cluster.builder();
         this.populateSettings(builder, properties);
         String keyspace = properties.get(DBConstants.Cassandra.KEYSPACE);        
@@ -70,7 +73,7 @@ public class CassandraConfig extends Config {
         this.nativeBatchRequestsSupported = this.session.getCluster().
                 getConfiguration().getProtocolOptions().getProtocolVersion() > 1;
     }
-    
+
     public boolean isNativeBatchRequestsSupported() {
         return nativeBatchRequestsSupported;
     }
@@ -309,6 +312,11 @@ public class CassandraConfig extends Config {
     public synchronized void close() {
         this.session.close();
         this.cluster.close();
+    }
+
+    @Override
+    public ODataDataHandler createODataHandler() throws DataServiceFault {
+        return new CassandraDataHandler(getConfigId(), getSession(), getProperty(DBConstants.Cassandra.KEYSPACE));
     }
 
 }

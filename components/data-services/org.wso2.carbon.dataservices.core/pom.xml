@@ -45,6 +45,10 @@
             <artifactId>org.wso2.carbon.event.core</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.wso2.orbit.org.apache.olingo</groupId>
+            <artifactId>odata-server</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.wso2.carbon.commons</groupId>
             <artifactId>org.wso2.carbon.transaction.manager</artifactId>
         </dependency>
@@ -225,13 +229,14 @@
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
-                        <Private-Package>org.wso2.carbon.dataservices.core.internal</Private-Package>
                         <Export-Package>
                             !org.wso2.carbon.dataservices.core.internal,
-                            org.wso2.carbon.dataservices.core.*;version="${project.version}"
+                            org.wso2.carbon.dataservices.core.*;version="${project.version}",
+                            org.wso2.carbon.dataservices.core.odata;version="${project.version}"
                         </Export-Package>
                         <Import-Package>
                             !org.wso2.carbon.dataservices.core.*,
+                            javax.servlet.http;version="${javax.servlet.imp.pkg.version}",
                             com.google.gdata.client;version="${gdata-core.orbit.imp.pkg.version}",
                             com.google.gdata.data;version="${gdata-core.orbit.imp.pkg.version}",
                             com.google.gdata.client.spreadsheet;version="${gdata-spreadsheet.orbit.imp.pkg.version}",
@@ -319,7 +324,17 @@
                             org.apache.ws.commons.schema.constants;version="${xmlschema.orbit.imp.pkg.version}",
                             org.apache.neethi;version="${neethi.orbit.imp.pkg.version}",
                             org.wso2.carbon.base;version="${carbon.base.imp.pkg.version}",
-                            org.apache.tomcat.jdbc.pool;version="${jdbc-pool.orbit.imp.pkg.version}"
+                            org.apache.tomcat.jdbc.pool;version="${jdbc-pool.orbit.imp.pkg.version}",
+                            org.apache.olingo.commons.api;version="${olingo.orbit.imp.pkg.version}",
+                            org.apache.olingo.commons.api.edm;version="${olingo.orbit.imp.pkg.version}",
+                            org.apache.olingo.commons.api.edm.provider;version="${olingo.orbit.imp.pkg.version}",
+                            org.apache.olingo.commons.api.data;version="${olingo.orbit.imp.pkg.version}",
+                            org.apache.olingo.commons.api.http;version="${olingo.orbit.imp.pkg.version}",
+                            org.apache.olingo.server.api;version="${olingo.orbit.imp.pkg.version}",
+                            org.apache.olingo.server.core;version="${olingo.orbit.imp.pkg.version}",
+                            org.apache.olingo.server.core.requests;version="${olingo.orbit.imp.pkg.version}",
+                            org.apache.olingo.server.core.responses;version="${olingo.orbit.imp.pkg.version}",
+                            org.apache.olingo.server.core.uri.parser;version="${olingo.orbit.imp.pkg.version}"
                             <!--javax.transaction todo need to check this and add if needed. this needs jboss transactions, but for now it's not included in the server-->
                             <!--org.apache.axis2.*; version="${apache.axis2.orbit.imp.pkg.version}"-->
                         </Import-Package>
@@ -327,7 +342,8 @@
                         <Axis2Deployer>DataServicesDeployer</Axis2Deployer>
                         <Axis2RequiredServices>
                             org.wso2.carbon.dataservices.core.internal.DSDummyService,
-                            org.wso2.carbon.transaction.manager.TransactionManagerDummyService
+                            org.wso2.carbon.transaction.manager.TransactionManagerDummyService,
+                            <!--org.wso2.carbon.dataservices.core.odata.ODataServiceRegistry-->
                         </Axis2RequiredServices>
                     </instructions>
                 </configuration>

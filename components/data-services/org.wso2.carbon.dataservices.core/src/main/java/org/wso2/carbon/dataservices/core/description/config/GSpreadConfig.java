@@ -31,6 +31,7 @@ import org.wso2.carbon.dataservices.core.DBUtils;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
 import org.wso2.carbon.dataservices.core.engine.DataService;
 import org.wso2.carbon.dataservices.core.internal.DataServicesDSComponent;
+import org.wso2.carbon.dataservices.core.odata.ODataDataHandler;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.Resource;
 
@@ -59,10 +60,10 @@ public class GSpreadConfig extends Config {
 	private String key;
 	
 	private SpreadsheetService service;
-		
-	public GSpreadConfig(DataService dataService, String configId, Map<String, 
-			String> properties) throws DataServiceFault {
-		super(dataService, configId, DataSourceTypes.GDATA_SPREADSHEET, properties);
+
+	public GSpreadConfig(DataService dataService, String configId, Map<String, String> properties, boolean odataEnable)
+			throws DataServiceFault {
+		super(dataService, configId, DataSourceTypes.GDATA_SPREADSHEET, properties, odataEnable);
 		
 		this.username = this.getProperty(DBConstants.GSpread.USERNAME);
 		this.password = DBUtils.resolvePasswordValue(this.getDataService(), this.getProperty(DBConstants.GSpread.PASSWORD));
@@ -243,6 +244,11 @@ public class GSpreadConfig extends Config {
 
 	public void close() {
 		/* nothing to close */
+	}
+
+	@Override
+	public ODataDataHandler createODataHandler() throws DataServiceFault {
+		throw new DataServiceFault("Expose as OData Service feature doesn't support for the Datasource.");
 	}
 
 }

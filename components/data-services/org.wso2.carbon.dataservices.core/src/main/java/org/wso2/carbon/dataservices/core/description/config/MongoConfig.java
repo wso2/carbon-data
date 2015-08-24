@@ -18,16 +18,20 @@
  */
 package org.wso2.carbon.dataservices.core.description.config;
 
-
-import com.mongodb.*;
+import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
+import com.mongodb.ReadPreference;
+import com.mongodb.ServerAddress;
+import com.mongodb.WriteConcern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jongo.Jongo;
 import org.wso2.carbon.dataservices.common.DBConstants;
 import org.wso2.carbon.dataservices.core.DBUtils;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
-
 import org.wso2.carbon.dataservices.core.engine.DataService;
+import org.wso2.carbon.dataservices.core.odata.ODataDataHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,9 +54,9 @@ public class MongoConfig extends Config {
 
     private Jongo jongo;
 
-    public MongoConfig(DataService dataService, String configId, Map<String, String> properties)
+    public MongoConfig(DataService dataService, String configId, Map<String, String> properties, boolean odataEnable)
             throws DataServiceFault {
-        super(dataService, configId, DBConstants.DataSourceTypes.MONGODB, properties);
+        super(dataService, configId, DBConstants.DataSourceTypes.MONGODB, properties, odataEnable);
         String serversParam = properties.get(DBConstants.MongoDB.SERVERS);
         if (DBUtils.isEmptyString(serversParam)) {
             throw new DataServiceFault("The data source param '" +
@@ -105,6 +109,11 @@ public class MongoConfig extends Config {
     @Override
     public void close() {
          /* nothing to close */
+    }
+
+    @Override
+    public ODataDataHandler createODataHandler() throws DataServiceFault {
+        throw new DataServiceFault("Expose as OData Service feature doesn't support for this Datasource.");
     }
 
     private MongoClientOptions extractMongoOptions(Map<String, String> properties) {

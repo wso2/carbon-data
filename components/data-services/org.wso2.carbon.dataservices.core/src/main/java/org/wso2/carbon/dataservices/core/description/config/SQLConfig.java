@@ -18,18 +18,6 @@
  */
 package org.wso2.carbon.dataservices.core.description.config;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import javax.sql.DataSource;
-import javax.sql.XAConnection;
-import javax.transaction.Transaction;
-import javax.transaction.xa.XAResource;
-import javax.xml.stream.XMLStreamException;
-
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.util.AXIOMUtil;
 import org.apache.commons.logging.Log;
@@ -41,6 +29,17 @@ import org.wso2.carbon.dataservices.core.DataServiceFault;
 import org.wso2.carbon.dataservices.core.auth.ConfigurationBasedAuthenticator;
 import org.wso2.carbon.dataservices.core.auth.DynamicUserAuthenticator;
 import org.wso2.carbon.dataservices.core.engine.DataService;
+
+import javax.sql.DataSource;
+import javax.sql.XAConnection;
+import javax.transaction.Transaction;
+import javax.transaction.xa.XAResource;
+import javax.xml.stream.XMLStreamException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This class is the base class used for all SQL based (RDBMS) data source configurations.
@@ -67,10 +66,10 @@ public abstract class SQLConfig extends Config {
 			return new HashSet<XAResource>();
 		}
 	};
-	
-	public SQLConfig(DataService dataService, String configId, 
-			String type, Map<String, String> properties) throws DataServiceFault {
-		super(dataService, configId, type, properties);
+
+	public SQLConfig(DataService dataService, String configId, String type, Map<String, String> properties,
+	                 boolean odataEnable) throws DataServiceFault {
+		super(dataService, configId, type, properties, odataEnable);
 		/* set validation query, if exists */
 		this.validationQuery = this.getProperty(RDBMS.VALIDATION_QUERY);
 		this.processAutoCommitValue();

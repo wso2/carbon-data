@@ -26,35 +26,57 @@ import org.apache.axiom.soap.SOAP12Constants;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.Constants;
 import org.apache.axis2.context.ConfigurationContext;
-import org.apache.axis2.deployment.*;
+import org.apache.axis2.deployment.AbstractDeployer;
+import org.apache.axis2.deployment.DeploymentEngine;
+import org.apache.axis2.deployment.DeploymentErrorMsgs;
+import org.apache.axis2.deployment.DeploymentException;
 import org.apache.axis2.deployment.repository.util.DeploymentFileData;
 import org.apache.axis2.deployment.util.Utils;
-import org.apache.axis2.description.*;
+import org.apache.axis2.description.AxisBinding;
+import org.apache.axis2.description.AxisBindingMessage;
+import org.apache.axis2.description.AxisBindingOperation;
+import org.apache.axis2.description.AxisEndpoint;
+import org.apache.axis2.description.AxisMessage;
+import org.apache.axis2.description.AxisOperation;
+import org.apache.axis2.description.AxisService;
+import org.apache.axis2.description.AxisServiceGroup;
+import org.apache.axis2.description.InOnlyAxisOperation;
+import org.apache.axis2.description.InOutAxisOperation;
+import org.apache.axis2.description.Parameter;
+import org.apache.axis2.description.TransportInDescription;
+import org.apache.axis2.description.WSDL2Constants;
 import org.apache.axis2.description.java2wsdl.Java2WSDLConstants;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.axis2.i18n.Messages;
 import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.axis2.wsdl.WSDLConstants;
 import org.apache.axis2.wsdl.WSDLUtil;
-import org.apache.neethi.Policy;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.neethi.Policy;
 import org.apache.neethi.PolicyEngine;
 import org.apache.ws.commons.schema.utils.NamespaceMap;
 import org.wso2.carbon.base.MultitenantConstants;
+import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.dataservices.common.DBConstants;
 import org.wso2.carbon.dataservices.common.DBConstants.DBSFields;
 import org.wso2.carbon.dataservices.common.DBConstants.ResultTypes;
+import org.wso2.carbon.dataservices.core.description.config.Config;
 import org.wso2.carbon.dataservices.core.description.operation.Operation;
 import org.wso2.carbon.dataservices.core.description.query.Query;
 import org.wso2.carbon.dataservices.core.description.resource.Resource;
 import org.wso2.carbon.dataservices.core.description.resource.Resource.ResourceID;
-import org.wso2.carbon.dataservices.core.engine.*;
+import org.wso2.carbon.dataservices.core.engine.CallQuery;
 import org.wso2.carbon.dataservices.core.engine.CallQuery.WithParam;
+import org.wso2.carbon.dataservices.core.engine.CallableRequest;
+import org.wso2.carbon.dataservices.core.engine.DataService;
+import org.wso2.carbon.dataservices.core.engine.QueryParam;
 import org.wso2.carbon.dataservices.core.internal.DataServicesDSComponent;
 import org.wso2.carbon.dataservices.core.jmx.DataServiceInstance;
 import org.wso2.carbon.dataservices.core.jmx.DataServiceInstanceMBean;
+import org.wso2.carbon.dataservices.core.odata.ODataServiceHandler;
+import org.wso2.carbon.dataservices.core.odata.ODataServiceRegistryImpl;
 import org.wso2.carbon.ndatasource.common.DataSourceConstants;
 import org.wso2.carbon.ndatasource.common.DataSourceException;
 import org.wso2.carbon.ndatasource.core.DataSourceManager;
@@ -66,12 +88,22 @@ import javax.naming.InitialContext;
 import javax.transaction.TransactionManager;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
-
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.regex.Pattern;
 
 /**
@@ -236,8 +268,7 @@ public class DBDeployer extends AbstractDeployer {
      */
     private boolean isFaultyService(DeploymentFileData deploymentFileData) {
         String faultyServiceFilePath = deploymentFileData.getFile().getAbsolutePath();
-        AxisService faultyService = CarbonUtils.getFaultyService(faultyServiceFilePath,
-                this.configCtx);
+        AxisService faultyService = CarbonUtils.getFaultyService(faultyServiceFilePath, this.configCtx);
         return faultyService != null;
     }
 
@@ -253,7 +284,30 @@ public class DBDeployer extends AbstractDeployer {
         return serviceName;
     }
 
-
+	/**
+	 * This method return the config id from the dbs File.
+	 *
+	 * @param file dbs File
+	 * @return config ID
+	 * @throws FileNotFoundException
+	 * @throws XMLStreamException
+	 * @throws DataServiceFault
+	 */
+	private String getConfigIDFromDSContents(File file)
+			throws FileNotFoundException, XMLStreamException, DataServiceFault {
+		StAXOMBuilder builder = new StAXOMBuilder(new FileInputStream(file.getAbsoluteFile()));
+		OMElement serviceEl = builder.getDocumentElement();
+		String configId = null;
+		for (Iterator itr = serviceEl.getChildrenWithName(new QName(DBSFields.CONFIG)); itr.hasNext(); ) {
+			configId = ((OMElement) itr.next()).getAttributeValue(new QName(DBSFields.ID));
+		}
+		builder.close();
+		if (DBUtils.isEmptyString(configId)) {
+			throw new DataServiceFault(
+					"Service config id cannot be determined for the data service at '" + file.getAbsolutePath() + "'");
+		}
+		return configId;
+	}
 
 	/**
 	 * Creates a timer with a one minute delay, for re-deploying a data service.
@@ -406,10 +460,17 @@ public class DBDeployer extends AbstractDeployer {
             /* In the context of dataservices one service group will only contain one dataservice.
             *  Hence assigning the service group as the service group name */
 			AxisServiceGroup serviceGroup = this.axisConfig.getServiceGroup(serviceName);
+			CarbonContext cCtx = CarbonContext.getThreadLocalCarbonContext();
 			if (serviceGroup == null) { /* must be a faulty service */
 				this.axisConfig.removeFaultyService(servicePath);
+				for (String configID : dataService.getConfigs().keySet()) {
+					removeODataHandler(cCtx.getTenantDomain(), dataService.getName() + configID);
+				}
 			} else {
 				/* cleanup data service */
+				for (String configID : dataService.getConfigs().keySet()) {
+					removeODataHandler(cCtx.getTenantDomain(), dataService.getName() + configID);
+				}
 				dataService.cleanup();
 				this.axisConfig.removeService(serviceName);
 				/* if the service group is now empty, remove it as well */
@@ -626,8 +687,7 @@ public class DBDeployer extends AbstractDeployer {
 	private void createDSSchema(AxisService axisService, DataService dataService)
 			throws DataServiceFault {
 		NamespaceMap map = new NamespaceMap();
-		map.put(Java2WSDLConstants.DEFAULT_SCHEMA_NAMESPACE_PREFIX,
-				Java2WSDLConstants.URI_2001_SCHEMA_XSD);
+		map.put(Java2WSDLConstants.DEFAULT_SCHEMA_NAMESPACE_PREFIX, Java2WSDLConstants.URI_2001_SCHEMA_XSD);
 		axisService.setNamespaceMap(map);
 		DataServiceDocLitWrappedSchemaGenerator.populateServiceSchema(axisService);
 	}
@@ -735,8 +795,19 @@ public class DBDeployer extends AbstractDeployer {
             this.secureVaultResolve(dbsElement);
 
 			/* create the data service object from dbs */
-			DataService dataService = DataServiceFactory.createDataService(
-					dbsElement, configFilePath);
+			DataService dataService = DataServiceFactory.createDataService(dbsElement, configFilePath);
+
+			/*create the odata service */
+			for (String configId : dataService.getConfigs().keySet()) {
+				Config config = dataService.getConfig(configId);
+				if (config.isODataEnabled()) {
+					ODataServiceHandler serviceHandler = new ODataServiceHandler(config.createODataHandler(),
+					                                                             dataService.getServiceNamespace(),
+					                                                             configId);
+					CarbonContext cCtx = CarbonContext.getThreadLocalCarbonContext();
+					registerODataHandler(dataService.getName(), serviceHandler, cCtx.getTenantDomain(), configId);
+				}
+			}
 
 			/* validate the data service */
 			this.validateDataService(dataService);
@@ -910,10 +981,8 @@ public class DBDeployer extends AbstractDeployer {
 		soap12BindingOperation.setParent(soap12Binding);
 		soap12BindingOperation.setProperty(WSDL2Constants.ATTR_WHTTP_LOCATION,
 				httpLocation);
-		soap12Binding.addChild(soap12BindingOperation.getName(),
-				soap12BindingOperation);
-		soap12BindingOperation.setProperty(WSDL2Constants.ATTR_WSOAP_ACTION,
-				inputAction);
+		soap12Binding.addChild(soap12BindingOperation.getName(), soap12BindingOperation);
+		soap12BindingOperation.setProperty(WSDL2Constants.ATTR_WSOAP_ACTION, inputAction);
 		return soap12BindingOperation;
 	}
 
@@ -929,10 +998,8 @@ public class DBDeployer extends AbstractDeployer {
 		soap11BindingOperation.setParent(soap11Binding);
 		soap11BindingOperation.setProperty(WSDL2Constants.ATTR_WHTTP_LOCATION,
 				httpLocation);
-		soap11Binding.addChild(soap11BindingOperation.getName(),
-				soap11BindingOperation);
-		soap11BindingOperation.setProperty(WSDL2Constants.ATTR_WSOAP_ACTION,
-				inputAction);
+		soap11Binding.addChild(soap11BindingOperation.getName(), soap11BindingOperation);
+		soap11BindingOperation.setProperty(WSDL2Constants.ATTR_WSOAP_ACTION, inputAction);
 		return soap11BindingOperation;
 	}
 
@@ -944,10 +1011,8 @@ public class DBDeployer extends AbstractDeployer {
 		AxisBinding soap11Binding = new AxisBinding();
 		soap11Binding.setName(new QName(name + Java2WSDLConstants.BINDING_NAME_SUFFIX));
 		soap11Binding.setType(WSDL2Constants.URI_WSDL2_SOAP);
-		soap11Binding.setProperty(WSDL2Constants.ATTR_WSOAP_PROTOCOL,
-				WSDL2Constants.HTTP_PROTOCAL);
-		soap11Binding.setProperty(WSDL2Constants.ATTR_WSOAP_VERSION,
-				SOAP11Constants.SOAP_ENVELOPE_NAMESPACE_URI);
+		soap11Binding.setProperty(WSDL2Constants.ATTR_WSOAP_PROTOCOL, WSDL2Constants.HTTP_PROTOCAL);
+		soap11Binding.setProperty(WSDL2Constants.ATTR_WSOAP_VERSION, SOAP11Constants.SOAP_ENVELOPE_NAMESPACE_URI);
 		soap11Binding.setProperty(WSDL2Constants.INTERFACE_LOCAL_NAME, interfaceName);
 		soap11Binding.setProperty(WSDL2Constants.HTTP_LOCATION_TABLE, httpLocationTable);
         soap11Binding.setProperty(WSDL2Constants.HTTP_LOCATION_TABLE_FOR_RESOURCE, httpLocationTableForResource);
@@ -974,10 +1039,8 @@ public class DBDeployer extends AbstractDeployer {
 		AxisBinding soap12Binding = new AxisBinding();
 		soap12Binding.setName(new QName(name + Java2WSDLConstants.SOAP12BINDING_NAME_SUFFIX));
 		soap12Binding.setType(WSDL2Constants.URI_WSDL2_SOAP);
-		soap12Binding.setProperty(WSDL2Constants.ATTR_WSOAP_PROTOCOL,
-				WSDL2Constants.HTTP_PROTOCAL);
-		soap12Binding.setProperty(WSDL2Constants.ATTR_WSOAP_VERSION,
-				SOAP12Constants.SOAP_ENVELOPE_NAMESPACE_URI);
+		soap12Binding.setProperty(WSDL2Constants.ATTR_WSOAP_PROTOCOL, WSDL2Constants.HTTP_PROTOCAL);
+		soap12Binding.setProperty(WSDL2Constants.ATTR_WSOAP_VERSION, SOAP12Constants.SOAP_ENVELOPE_NAMESPACE_URI);
 		soap12Binding.setProperty(WSDL2Constants.INTERFACE_LOCAL_NAME, interfaceName);
 		soap12Binding.setProperty(WSDL2Constants.HTTP_LOCATION_TABLE, httpLocationTable);
         soap12Binding.setProperty(WSDL2Constants.HTTP_LOCATION_TABLE_FOR_RESOURCE, httpLocationTableForResource);
@@ -1081,8 +1144,7 @@ public class DBDeployer extends AbstractDeployer {
 	private AxisService processService(DeploymentFileData currentFile,
 			AxisServiceGroup axisServiceGroup, ConfigurationContext configCtx)
 			throws DataServiceFault {
-		AxisService axisService = createDBService(currentFile.getAbsolutePath(),
-				configCtx.getAxisConfiguration());
+		AxisService axisService = createDBService(currentFile.getAbsolutePath(), configCtx.getAxisConfiguration());
 		axisService.setParent(axisServiceGroup);
 		axisService.setClassLoader(axisConfig.getServiceClassLoader());
         /* handle services.xml, if exists */
@@ -1102,8 +1164,7 @@ public class DBDeployer extends AbstractDeployer {
             OMElement policyElement= documentElement.getFirstChildWithName(new QName(DBSFields.POLICY));
             if (policyElement != null) {
                 String policyKey = policyElement.getAttributeValue(new QName(DBSFields.POLICY_KEY));
-                Policy policy = PolicyEngine.getPolicy(
-                        DBUtils.getInputStreamFromPath(policyKey));
+                Policy policy = PolicyEngine.getPolicy(DBUtils.getInputStreamFromPath(policyKey));
                 axisService.getPolicySubject().attachPolicy(policy);
             }
         }catch (Exception e) {
@@ -1114,8 +1175,8 @@ public class DBDeployer extends AbstractDeployer {
 
     @SuppressWarnings("unchecked")
 	private void secureVaultResolve(OMElement dbsElement) {
-    	String secretAliasAttr = dbsElement.getAttributeValue(new QName(DataSourceConstants.SECURE_VAULT_NS,
-                        		DataSourceConstants.SECRET_ALIAS_ATTR_NAME));
+    	String secretAliasAttr = dbsElement.getAttributeValue(
+			    new QName(DataSourceConstants.SECURE_VAULT_NS, DataSourceConstants.SECRET_ALIAS_ATTR_NAME));
     	if (secretAliasAttr != null) {
     		dbsElement.setText(DBUtils.loadFromSecureVault(secretAliasAttr));
     	}
@@ -1124,5 +1185,15 @@ public class DBDeployer extends AbstractDeployer {
     		this.secureVaultResolve(childEls.next());
     	}
     }
-    
+
+	private void removeODataHandler(String tenantDomain, String dataServiceName) throws DataServiceFault {
+		ODataServiceRegistryImpl registry = ODataServiceRegistryImpl.getInstance();
+		registry.removeODataService(tenantDomain, dataServiceName);
+	}
+
+	private void registerODataHandler(String dataServiceName, ODataServiceHandler handler, String tenantDomain,
+	                                  String configId) throws DataServiceFault {
+		ODataServiceRegistryImpl registry = ODataServiceRegistryImpl.getInstance();
+		registry.registerODataService(dataServiceName + configId, handler, tenantDomain);
+	}
 }

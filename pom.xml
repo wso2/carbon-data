@@ -365,9 +365,9 @@
                 <version>${gdata-spreadsheet.orbit.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.google.guava.wso2</groupId>
+                <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>${google.guava.orbit.version}</version>
+                <version>${google.guava.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.poi.wso2</groupId>
@@ -1019,7 +1019,7 @@
         <gdata-spreadsheet.orbit.version>3.0.0.wso2v1</gdata-spreadsheet.orbit.version>
         <gdata-spreadsheet.orbit.imp.pkg.version>[3.0.0, 3.2.0)</gdata-spreadsheet.orbit.imp.pkg.version>
 
-        <google.guava.orbit.version>12.0.0.wso2v1</google.guava.orbit.version>
+        <google.guava.version>13.0.1</google.guava.version>
 
         <poi.orbit.version>3.9.0.wso2v1</poi.orbit.version>
         <poi.orbit.imp.pkg.version>0.0.0</poi.orbit.imp.pkg.version> <!--todo change this to appropriate version range ([3.9.0,4.0.0)) after osgi bundle is corrected - rajith-->

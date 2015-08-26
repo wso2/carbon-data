@@ -629,6 +629,9 @@ public final class DBConstants {
         }
 
         public static final String SERVERS = "mongoDB_servers";
+        public static final String AUTHENTICATION_TYPE = "mongoDB_authentication_type";
+        public static final String USERNAME = "username";
+        public static final String PASSWORD = "password";
         public static final String DATABASE = "mongoDB_database";
         public static final String WRITE_CONCERN = "mongoDB_write_concern";
         public static final String READ_PREFERENCE = "mongoDB_read_preference";
@@ -661,6 +664,16 @@ public final class DBConstants {
             REMOVE,
             UPDATE
         }
+
+        public static class MongoAuthenticationTypes {
+
+            public static final String PLAIN = "PLAIN";
+            public static final String SCRAM_SHA_1 = "SCRAM-SHA-1";
+            public static final String MONGODB_CR = "MONGODB-CR";
+            public static final String GSSAPI = "GSSAPI";
+            public static final String MONGODB_X509 = "MONGODB-X509";
+        }
+
     }
 
     /**

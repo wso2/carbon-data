@@ -58,15 +58,27 @@
             <artifactId>guava</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.mongodb.wso2</groupId>
+            <groupId>org.wso2.orbit.org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.wso2</groupId>
+            <groupId>org.wso2.orbit.org.jongo.wso2</groupId>
+            <artifactId>jongo</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>de.undercouch.wso2</groupId>
+            <groupId>org.wso2.orbit.com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.undercouch</groupId>
             <artifactId>bson4jackson</artifactId>
         </dependency>
         <dependency>
@@ -159,9 +171,12 @@
                                 <bundleDef>com.google.gdata.wso2:gdata-core</bundleDef>
                                 <bundleDef>com.google.gdata.wso2:gdata-spreadsheet</bundleDef>
                                 <bundleDef>com.google.guava:guava</bundleDef>
-                                <bundleDef>org.mongodb.wso2:mongo-java-driver</bundleDef>
-                                <bundleDef>com.fasterxml.jackson.wso2:jackson-core</bundleDef>
-                                <bundleDef>de.undercouch.wso2:bson4jackson</bundleDef>
+                                <bundleDef>org.wso2.orbit.org.mongodb:mongo-java-driver</bundleDef>
+                                <bundleDef>org.wso2.orbit.org.jongo.wso2:jongo</bundleDef>
+                                <bundleDef>org.wso2.orbit.com.fasterxml.jackson.core:jackson-core</bundleDef>
+                                <bundleDef>org.wso2.orbit.com.fasterxml.jackson.core:jackson-databind</bundleDef>
+                                <bundleDef>org.wso2.orbit.com.fasterxml.jackson.core:jackson-annotations</bundleDef>
+                                <bundleDef>de.undercouch:bson4jackson</bundleDef>
                                 <bundleDef>com.datastax.cassandra.wso2:cassandra-driver-core</bundleDef>
                                 <bundleDef>org.apache.poi.wso2:poi</bundleDef>
                                 <bundleDef>org.apache.poi.wso2:poi-ooxml</bundleDef>

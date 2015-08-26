@@ -129,9 +129,11 @@
 
     String mongoDBServers = request.getParameter(DBConstants.MongoDB.SERVERS);
     String mongoDBDatabase = request.getParameter(DBConstants.MongoDB.DATABASE);
+    String mongoDBAuthenticationType = request.getParameter(DBConstants.MongoDB.AUTHENTICATION_TYPE);
+    String mongoDBUserName = request.getParameter(DBConstants.MongoDB.USERNAME);
+    String mongoDBPassword = request.getParameter(DBConstants.MongoDB.PASSWORD);
     String mongoDBWriteConcern = request.getParameter(DBConstants.MongoDB.WRITE_CONCERN);
     String mongoDBReadPreference = request.getParameter(DBConstants.MongoDB.READ_PREFERENCE);
-    String mongoDBAutoConnectRetry= request.getParameter(DBConstants.MongoDB.AUTO_CONNECT_RETRY);
     String mongoDBConnectTimeout = request.getParameter(DBConstants.MongoDB.CONNECT_TIMEOUT);
     String mongoDBMaxWait = request.getParameter(DBConstants.MongoDB.MAX_WAIT_TIME);
     String mongoDBSocketTimeout = request.getParameter(DBConstants.MongoDB.SOCKET_TIMEOUT);
@@ -480,9 +482,11 @@
                 } else if (DBConstants.DataSourceTypes.MONGODB.equals(datasourceType)) {
                     updateConfiguration(dsConfig, DBConstants.MongoDB.SERVERS, mongoDBServers);
                     updateConfiguration(dsConfig, DBConstants.MongoDB.DATABASE, mongoDBDatabase);
+                    updateConfiguration(dsConfig, DBConstants.MongoDB.AUTHENTICATION_TYPE, mongoDBAuthenticationType);
+                    updateConfiguration(dsConfig, DBConstants.MongoDB.USERNAME, mongoDBUserName);
+                    updateConfiguration(dsConfig, DBConstants.MongoDB.PASSWORD, mongoDBPassword);
                     updateConfiguration(dsConfig, DBConstants.MongoDB.WRITE_CONCERN, mongoDBWriteConcern);
                     updateConfiguration(dsConfig, DBConstants.MongoDB.READ_PREFERENCE, mongoDBReadPreference);
-                    updateConfiguration(dsConfig, DBConstants.MongoDB.AUTO_CONNECT_RETRY, mongoDBAutoConnectRetry);
                     updateConfiguration(dsConfig, DBConstants.MongoDB.CONNECT_TIMEOUT, mongoDBConnectTimeout);
                     updateConfiguration(dsConfig, DBConstants.MongoDB.MAX_WAIT_TIME, mongoDBMaxWait);
                     updateConfiguration(dsConfig, DBConstants.MongoDB.SOCKET_TIMEOUT, mongoDBSocketTimeout);

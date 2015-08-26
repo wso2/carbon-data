@@ -41,6 +41,10 @@
             <artifactId>org.wso2.carbon.core.services</artifactId>
        </dependency>
         <dependency>
+            <groupId>org.wso2.orbit.org.jongo.wso2</groupId>
+            <artifactId>jongo</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.wso2.carbon.commons</groupId>
             <artifactId>org.wso2.carbon.event.core</artifactId>
         </dependency>
@@ -151,7 +155,7 @@
             <!--<artifactId>poi-scratchpad</artifactId>-->
         <!--</dependency>-->
         <dependency>
-            <groupId>org.mongodb.wso2</groupId>
+            <groupId>org.wso2.orbit.org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>
         </dependency>
         <dependency>
@@ -291,7 +295,7 @@
                             org.wso2.carbon.registry.core.exceptions;version="${carbon.registry.imp.pkg.version}",
                             com.mongodb;version="${mongo-java-driver.orbit.imp.pkg.version}",
                             com.mongodb.util;version="${mongo-java-driver.orbit.imp.pkg.version}",
-                            org.jongo;version="${mongo-java-driver.orbit.imp.pkg.version}",
+                            org.jongo;version="${jongo.orbit.imp.pkg.version}",
                             org.wso2.carbon.dataservices.sql.driver;version="${dataservices.imp.pkg.version}",
                             org.wso2.carbon.dataservices.sql.driver.parser;version="${dataservices.imp.pkg.version}",
                             org.wso2.carbon.dataservices.sql.driver.processor.reader;version="${dataservices.imp.pkg.version}",

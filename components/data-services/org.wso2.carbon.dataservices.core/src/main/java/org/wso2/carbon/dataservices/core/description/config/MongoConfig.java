@@ -168,19 +168,19 @@ public class MongoConfig extends Config {
         String password = properties.get(DBConstants.MongoDB.PASSWORD);
         String database = properties.get(DBConstants.MongoDB.DATABASE);
         switch (authenticationType) {
-            case "PLAIN":
+            case DBConstants.MongoDB.MongoAuthenticationTypes.PLAIN:
                 credential = MongoCredential.createPlainCredential(username, database, password.toCharArray());
                 break;
-            case "SCRAM-SHA-1":
+            case DBConstants.MongoDB.MongoAuthenticationTypes.SCRAM_SHA_1:
                 credential = MongoCredential.createScramSha1Credential(username, database, password.toCharArray());
                 break;
-            case "MONGODB-CR":
+            case DBConstants.MongoDB.MongoAuthenticationTypes.MONGODB_CR:
                 credential = MongoCredential.createMongoCRCredential(username, database, password.toCharArray());
                 break;
-            case "GSSAPI":
+            case DBConstants.MongoDB.MongoAuthenticationTypes.GSSAPI:
                 credential = MongoCredential.createGSSAPICredential(username);
                 break;
-            case "MONGODB-X509":
+            case DBConstants.MongoDB.MongoAuthenticationTypes.MONGODB_X509:
                 credential = MongoCredential.createMongoX509Credential(username);
                 break;
         }

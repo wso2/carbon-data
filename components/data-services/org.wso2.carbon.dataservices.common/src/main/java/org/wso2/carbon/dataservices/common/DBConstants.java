@@ -664,6 +664,16 @@ public final class DBConstants {
             REMOVE,
             UPDATE
         }
+
+        public static class MongoAuthenticationTypes {
+
+            public static final String PLAIN = "PLAIN";
+            public static final String SCRAM_SHA_1 = "SCRAM-SHA-1";
+            public static final String MONGODB_CR = "MONGODB-CR";
+            public static final String GSSAPI = "GSSAPI";
+            public static final String MONGODB_X509 = "MONGODB-X509";
+        }
+
     }
 
     /**

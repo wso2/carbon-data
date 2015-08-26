@@ -776,6 +776,11 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
+                <groupId>org.wso2.carbon.data</groupId>
+                <artifactId>org.wso2.carbon.dataservices.google.tokengen</artifactId>
+                <version>${dataservices.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.wso2.orbit.com.google.api-client</groupId>
                 <artifactId>google-api-client</artifactId>
                 <version>${google-api-client.orbit.version}</version>

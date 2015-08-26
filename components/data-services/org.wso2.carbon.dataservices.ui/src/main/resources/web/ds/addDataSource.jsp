@@ -2641,7 +2641,7 @@ private String getSheetName(String gSpreadJDBCUrl) {
 
   <%} %>
         <input class="button" name="save_button" type="submit" onclick="return validateAddDataSourceForm();" value="<fmt:message key="save"/>"/>
-        <input class="button" name="cancel_button" type="submit" value="<fmt:message key="cancel"/>"/>
+        <input class="button" name="cancel_button" type="submit" onclick="document.dataForm.action='dataSources.jsp'" value="<fmt:message key="cancel"/>"/>
     </td>
 </tr>
 </table>

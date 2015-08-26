@@ -24,6 +24,7 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.Iterator" %>
 <%@ page import="java.util.List" %>
+<%@ page import="java.net.URLEncoder" %>
 <jsp:useBean id="dataService" class="org.wso2.carbon.dataservices.ui.beans.Data" scope="session"/>
 <jsp:useBean id="newConfig" class="org.wso2.carbon.dataservices.ui.beans.Config" scope="session"/>
 <jsp:useBean id="backupConfigProps" class="java.util.ArrayList" scope="session"></jsp:useBean>
@@ -142,8 +143,11 @@
 
     String gspreadDatasource = request.getParameter(DBConstants.GSpread.DATASOURCE);
     String gspreadVisibility = request.getParameter(DBConstants.GSpread.VISIBILITY);
-    String gspreadUserName = request.getParameter(DBConstants.GSpread.USERNAME);
-    String gspreadPassword = request.getParameter(DBConstants.GSpread.PASSWORD);
+//    String gspreadUserName = request.getParameter(DBConstants.GSpread.USERNAME);
+//    String gspreadPassword = request.getParameter(DBConstants.GSpread.PASSWORD);
+    String gspreadClientId = request.getParameter(DBConstants.GSpread.CLIENT_ID);
+    String gspreadClientSecret = request.getParameter(DBConstants.GSpread.CLIENT_SECRET);
+    String gspreadRefreshToken = request.getParameter(DBConstants.GSpread.REFRESH_TOKEN);
     String gspreadSheetName = request.getParameter(DBConstants.GSpread.SHEET_NAME);
 
     String detailedServiceName = request.getParameter("detailedServiceName");
@@ -231,7 +235,7 @@
             dsConfig.setUseSecretAliasForPassword(useSecretAliasForPassword);
             if (useSecretAliasForPassword) {
             	dsPassword = passwordAlias;
-            	gspreadPassword = passwordAlias;
+//            	gspreadPassword = passwordAlias;
             	jndiPassword = passwordAlias;
             	password = passwordAlias;
             	dataService.setSecureVaultNamespace(DBConstants.SECUREVAULT_NAMESPACE);
@@ -494,22 +498,36 @@
                     updateConfiguration(dsConfig, DBConstants.MongoDB.THREADS_ALLOWED_TO_BLOCK_CONN_MULTIPLIER, mongoDBThreadsAllowed);
                 } else if (DBConstants.DataSourceTypes.GDATA_SPREADSHEET.equals(datasourceType)) {
                 	if (useSecretAliasForPassword) {
-                    	gspreadPassword = passwordAlias;
+//                    	gspreadPassword = passwordAlias;
                     	dataService.setSecureVaultNamespace(DBConstants.SECUREVAULT_NAMESPACE);
                     }
 					if (useQueryMode) {
-						String gspreadQueryModeUrl = DBConstants.DSSQLDriverPrefixes.GSPRED_PREFIX + ":" +
-	                			DBConstants.DSSQLDriverPrefixes.FILE_PATH + "=" + gspreadDatasource + ";" + 
-	                			DBConstants.GSpread.SHEET_NAME + "=" + gspreadSheetName +";visibility=" + gspreadVisibility;
+						String gspreadQueryModeUrl;
+//						String gspreadQueryModeUrl = DBConstants.DSSQLDriverPrefixes.GSPRED_PREFIX + ":" +
+//	                			DBConstants.DSSQLDriverPrefixes.FILE_PATH + "=" + gspreadDatasource + ";" +
+//	                			DBConstants.GSpread.SHEET_NAME + "=" + gspreadSheetName +";visibility=" + gspreadVisibility;
 						updateConfiguration(dsConfig, DBConstants.RDBMS.DRIVER_CLASSNAME, DBConstants.SQL_DRIVER_CLASS_NAME);
-                        updateConfiguration(dsConfig, DBConstants.RDBMS.URL, gspreadQueryModeUrl);
+//                        updateConfiguration(dsConfig, DBConstants.RDBMS.URL, gspreadQueryModeUrl);
                         if (gspreadVisibility.equals(DBConstants.GSpreadVisibility.PRIVATE)) {
-		                    updateConfiguration(dsConfig, DBConstants.RDBMS.USERNAME, gspreadUserName);
-		                    updateConfiguration(dsConfig, DBConstants.RDBMS.PASSWORD, gspreadPassword);
+                            gspreadClientId = URLEncoder.encode(gspreadClientId,"UTF-8");
+                            gspreadClientSecret = URLEncoder.encode(gspreadClientSecret,"UTF-8");
+                            gspreadRefreshToken = URLEncoder.encode(gspreadRefreshToken,"UTF-8");
+                            gspreadQueryModeUrl = DBConstants.DSSQLDriverPrefixes.GSPRED_PREFIX + ":" +
+                                    DBConstants.DSSQLDriverPrefixes.FILE_PATH + "=" + gspreadDatasource + ";" +
+                                    DBConstants.GSpread.SHEET_NAME + "=" + gspreadSheetName +";visibility=" +
+                                    gspreadVisibility + ";clientId=" + gspreadClientId +
+                                    ";clientSecret=" + gspreadClientSecret +
+                                    ";refreshToken=" + gspreadRefreshToken;
+//		                    updateConfiguration(dsConfig, DBConstants.RDBMS.USERNAME, gspreadUserName);todo
+//		                    updateConfiguration(dsConfig, DBConstants.RDBMS.PASSWORD, gspreadPassword);todo change this to be merge with url (clientId and secret)
 	                    } else {
+                            gspreadQueryModeUrl = DBConstants.DSSQLDriverPrefixes.GSPRED_PREFIX + ":" +
+                                    DBConstants.DSSQLDriverPrefixes.FILE_PATH + "=" + gspreadDatasource + ";" +
+                                    DBConstants.GSpread.SHEET_NAME + "=" + gspreadSheetName +";visibility=" + gspreadVisibility;
 	                    	dsConfig.removeProperty(DBConstants.RDBMS.USERNAME);
 	                    	dsConfig.removeProperty(DBConstants.RDBMS.PASSWORD);
 	                    }
+                        updateConfiguration(dsConfig, DBConstants.RDBMS.URL, gspreadQueryModeUrl);
                         
                         dsConfig.removeProperty(DBConstants.GSpread.DATASOURCE);
                 		dsConfig.removeProperty(DBConstants.GSpread.VISIBILITY);
@@ -518,9 +536,12 @@
                 	} else {
 	                    updateConfiguration(dsConfig, DBConstants.GSpread.DATASOURCE, gspreadDatasource);
 	                    updateConfiguration(dsConfig, DBConstants.GSpread.VISIBILITY, gspreadVisibility);
-	                    updateConfiguration(dsConfig, DBConstants.GSpread.USERNAME, gspreadUserName);
-		                updateConfiguration(dsConfig, DBConstants.GSpread.PASSWORD, gspreadPassword);
-	                    	                    
+//	                    updateConfiguration(dsConfig, DBConstants.GSpread.USERNAME, gspreadUserName);
+//		                updateConfiguration(dsConfig, DBConstants.GSpread.PASSWORD, gspreadPassword);
+                        updateConfiguration(dsConfig, DBConstants.GSpread.CLIENT_ID, gspreadClientId);
+                        updateConfiguration(dsConfig, DBConstants.GSpread.CLIENT_SECRET, gspreadClientSecret);
+                        updateConfiguration(dsConfig, DBConstants.GSpread.REFRESH_TOKEN, gspreadRefreshToken);
+
 	                    dsConfig.removeProperty(DBConstants.RDBMS.DRIVER_CLASSNAME);
                 		dsConfig.removeProperty(DBConstants.RDBMS.URL);
                 		dsConfig.removeProperty(DBConstants.RDBMS.USERNAME);

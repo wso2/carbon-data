@@ -142,6 +142,12 @@ public final class Constants {
         public static final String MAX_COLUMNS = "maxColumns";
     }
 
+    public static final class GSPREAD_PROPERTIES {
+        public static final String CLIENT_ID = "clientId";
+        public static final String CLIENT_SECRET = "clientSecret";
+        public static final String REFRESH_TOKEN = "refreshToken";
+    }
+
     public static final String OUTER = "OUTER";
 
     public static final String ACCESS_MODE_PRIVATE = "private";

@@ -140,6 +140,20 @@
             <artifactId>org.wso2.carbon.transaction.manager.feature</artifactId>
             <type>zip</type>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.com.google.api-client</groupId>
+            <artifactId>google-api-client</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.wso2.orbit.com.google.oauth-client</groupId>
+            <artifactId>google-oauth-client</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.wso2.orbit.com.google.http-client</groupId>
+            <artifactId>google-http-client</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -188,6 +202,9 @@
                                 <bundleDef>org.htmlcleaner.wso2:htmlcleaner</bundleDef>
                                 <bundleDef>commons-dbcp.wso2:commons-dbcp</bundleDef>
                                 <bundleDef>commons-pool.wso2:commons-pool</bundleDef>
+                                <bundleDef>org.wso2.orbit.com.google.api-client:google-api-client</bundleDef>
+                                <bundleDef>org.wso2.orbit.com.google.oauth-client:google-oauth-client</bundleDef>
+                                <bundleDef>org.wso2.orbit.com.google.http-client:google-http-client</bundleDef>
                             </bundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.service.mgt.server:${carbon-deployment.version}</importFeatureDef>

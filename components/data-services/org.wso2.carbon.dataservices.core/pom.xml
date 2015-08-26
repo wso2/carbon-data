@@ -194,6 +194,16 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.google.api-client</groupId>-->
+            <!--<artifactId>google-api-client</artifactId>-->
+            <!--&lt;!&ndash;<version>1.18.0-rc</version>&ndash;&gt;-->
+            <!--<version>1.20.0</version>-->
+        <!--</dependency>-->
+        <dependency>
+            <groupId>org.wso2.orbit.com.google.api-client</groupId>
+            <artifactId>google-api-client</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -323,7 +333,11 @@
                             org.apache.ws.commons.schema.constants;version="${xmlschema.orbit.imp.pkg.version}",
                             org.apache.neethi;version="${neethi.orbit.imp.pkg.version}",
                             org.wso2.carbon.base;version="${carbon.base.imp.pkg.version}",
-                            org.apache.tomcat.jdbc.pool;version="${jdbc-pool.orbit.imp.pkg.version}"
+                            org.apache.tomcat.jdbc.pool;version="${jdbc-pool.orbit.imp.pkg.version}",
+                            com.google.api.client.googleapis.auth.oauth2;version="${google-api-client.orbit.imp.pkg.version}",
+                            com.google.api.client.http;version="${google-http-client.orbit.imp.pkg.version}",
+                            com.google.api.client.http.javanet;version="${google-http-client.orbit.imp.pkg.version}",
+                            com.google.api.client.json.jackson2;version="${google-http-client.orbit.imp.pkg.version}"
                             <!--javax.transaction todo need to check this and add if needed. this needs jboss transactions, but for now it's not included in the server-->
                             <!--org.apache.axis2.*; version="${apache.axis2.orbit.imp.pkg.version}"-->
                         </Import-Package>

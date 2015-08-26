@@ -66,7 +66,7 @@ function validateTableSelection(obj){
 	  if ( document.getElementById(tableSet[index]) != null) {
 		  if(document.getElementById(tableSet[index]).checked) {
 			  return true;
-		  }		  
+		  }
 	  }
 	  index+=1;
 	 }
@@ -107,7 +107,7 @@ function validateAddDataSourceForm(){
         if(!ValidateDataSourceProperties()) {
         	return false;
         }
-        
+
     }else if(document.getElementById('datasourceType').value == 'EXCEL'){
         if(document.getElementById('excel_datasource').value == ''){
             CARBON.showWarningDialog('Excel File Location is mandatory');
@@ -218,7 +218,7 @@ function validateQueryId(obj){
         return false;
     }
     return true;
-    
+
   }
 
 function validateFieldsForEvents(obj){
@@ -282,7 +282,7 @@ function validateAddQueryFormSave(obj) {
         CARBON.showWarningDialog('Select the datasource');
         return  false;
     }
-    
+
     var reWhiteSpace = new RegExp("^[a-zA-Z0-9_]+$");
     // Validate for alphanumeric characters and underscores
     if (!reWhiteSpace.test(queryId)) {
@@ -290,7 +290,7 @@ function validateAddQueryFormSave(obj) {
         document.getElementById('queryId').readOnly = false;
         return false;
     }
-    
+
     if(document.getElementById('RDFRow').style.display == '') {
         if(document.getElementById('sparql').value == '') {
             CARBON.showWarningDialog('Sparql is mandatory');
@@ -401,16 +401,16 @@ function validateAddQueryFormSave(obj) {
             return  false;
         }
     }
-    
+
     if(document.getElementById('noOutputmappings') != null )  {
         if((document.getElementById('outputTypeId').value == 'xml') && (document.getElementById('txtDataServiceWrapElement').value != '' ||  document.getElementById('txtDataServiceRowName').value != '' )){
             CARBON.showWarningDialog('Can not insert result elements without Output Mappings. Insert Output Mappings to proceed.');
             return  false;
         }
     }
-    
+
     var status = true;
-    
+
     if (document.getElementById('outputTypeId').value == 'json') {
     	var data = document.getElementById('jsonMapping').value;
     	$.ajax({
@@ -434,9 +434,9 @@ function validateAddQueryFormSave(obj) {
 	                status = false;
 	            }
 	        }
-	    });	    
+	    });
     }
-    
+
     return status;
 }
 
@@ -544,7 +544,7 @@ function showTables(obj, document) {
         	customDataSourceType = customDataSourceTypeObj.value;
         }
     }
-    
+
     var rdbmsNjndi = 'none';
     var inputMappings = 'none';
     var inputMappingsButton = 'none';
@@ -639,7 +639,7 @@ function showTables(obj, document) {
     document.getElementById('MongoDBQueryRow').style.display = mongoDB;
     document.getElementById('returnGeneratedKeysRow').style.display = csv;
     //document.getElementById('autoResponseRow').style.display = autoResponse;
-    
+
 }
 
 function setJDBCValues(obj, document) {
@@ -670,7 +670,7 @@ function validateOutputMappingFields(obj){
             CARBON.showWarningDialog('Enter value to RDF Base URI');
         }
         return false;
-    } 
+    }
     if(queryId == ''){
         CARBON.showWarningDialog('Query id is required prior adding an output mapping');
         return false;
@@ -745,7 +745,7 @@ function validateAddEvent(){
         CARBON.showWarningDialog('Enter Target Topic');
         return false;
     }
-    
+
     return true;
 }
 
@@ -792,18 +792,18 @@ function validatRDFeOutputMappingMandatoryFields(){
                 CARBON.showWarningDialog('Complex Type Element Name field is required prior adding an output mapping');
                 return false;
             }
-        	
+
         } else {
         	var outputField = document.getElementById('txtDataServiceOMElementName').value;
             if(outputField == ''){
                 CARBON.showWarningDialog('Output field name is required prior adding an output mapping!!');
                 return false;
-            } 
+            }
             if (!isNaN(outputField)) {
            	 	CARBON.showWarningDialog('Output field name cannot be numeric');
            	 	return false;
-            }	
-           
+            }
+
         }
         return true;
     }
@@ -826,14 +826,14 @@ function validateOutputMappingMandatoryFields(){
                 CARBON.showWarningDialog('Complex Type Element Name field is required prior adding an output mapping');
                 return false;
             }
-        	
+
         } else {
             var outputField = document.getElementById('txtDataServiceOMElementName').value;
             if(outputField == ''){
                 CARBON.showWarningDialog('Output field name is required prior adding an output mapping');
                 return false;
             }
-            
+
             if (!isNaN(outputField)) {
            	 	CARBON.showWarningDialog('Output field name cannot be numeric');
            	 	return false;
@@ -845,7 +845,7 @@ function validateOutputMappingMandatoryFields(){
             if (document.getElementById('datasourceValue1').value == '' && document.getElementById('datasourceValue2').value == ''){
             	CARBON.showWarningDialog('Column name / query-param is required for adding an output mapping');
                 return false;
-            } 
+            }
         }
         return true;
     }else{
@@ -934,7 +934,7 @@ function onEnableXAChange(document){
 
 function onModeChange(document){
 	var multipleMode = document.getElementById("mode");
-    if (getCheckedValue(multipleMode) == "Single") {    	
+    if (getCheckedValue(multipleMode) == "Single") {
     	document.getElementById('txServiceNameRow').style.display = '';
     } else {
     	document.getElementById('txServiceNameRow').style.display = 'none';
@@ -964,7 +964,7 @@ function getCheckedValue(radioObj) {
 
 function onUseAppServerChange(document) {
 	var useAppServerBtn = document.getElementById("useAppServerTS");
-    if (getCheckedValue(useAppServerBtn) == "true") {    	
+    if (getCheckedValue(useAppServerBtn) == "true") {
     	document.getElementById('txManagerNameRow').style.display = '';
     } else {
     	document.getElementById('txManagerNameRow').style.display = 'none';
@@ -1259,9 +1259,9 @@ function changeDataSourceType (obj, document) {
         return false;
 	} else {
 		location.href = 'addDataSource.jsp?selectedType='+selectedType+'&configId='+selectedDS+'&ds=edit&flag=edit_changed';
-	}	
-	
-		
+	}
+
+
 }
 
 function changeXADataSourceEngine (obj, document) {
@@ -1350,7 +1350,7 @@ function changeAddValidatorFields(obj,document) {
     document.getElementById('patternValidatorElementsRow').style.display = visiblePattern;
     document.getElementById('customValidatorElementsRow').style.display = visibleCustom;
     document.getElementById('addValidator').style.display = '';
-    
+
     document.getElementById('max').value = "";
     document.getElementById('min').value = "";
     document.getElementById('pattern').value = "";
@@ -1365,7 +1365,7 @@ function toggleValidators(validatorName, i, document) {
 	var pattern = "";
 	propertyString = document.getElementById('propString'+i).value;
 	var properties = propertyString.split(" ");
-	
+
 	if (validatorName == "Length Validator") {
 		validatorName = "validateLength";
 	} else if (validatorName == "Long Range Validator") {
@@ -1378,16 +1378,16 @@ function toggleValidators(validatorName, i, document) {
 		validatorName = "validateCustom";
 	}
 	document.getElementById('validatorList').value=validatorName;
-	
+
 	document.getElementById('validators').style.display = '';
-    if(validatorName == "validateLength" || validatorName == "validateLongRange" 
+    if(validatorName == "validateLength" || validatorName == "validateLongRange"
     	|| validatorName == "validateDoubleRange") {
     	var minNameValue = properties[0].split("=");
         var maxNameValue = properties[1].split("=");
-    	   	
+
     	minValue = minNameValue[1];
     	maxValue = maxNameValue[1];
-    	
+
         visibleRangeVal = '';
         visibleCustom = 'none';
         visiblePattern = 'none';
@@ -1395,7 +1395,7 @@ function toggleValidators(validatorName, i, document) {
     if(validatorName == 'validatePattern') {
     	var patternSplitIndex = properties[0].indexOf("=");
     	pattern = properties[0].substring(patternSplitIndex + 1);
-    	
+
         visibleRangeVal = 'none';
         visibleCustom = 'none';
         visiblePattern = '';
@@ -1403,7 +1403,7 @@ function toggleValidators(validatorName, i, document) {
     if(validatorName == 'validateCustom'){
     	var classNameValue = properties[0].split("=");
     	customClass = classNameValue[1];
-    	
+
         visibleCustom = '';
         visiblePattern = 'none';
         visibleRangeVal = 'none';
@@ -1413,13 +1413,13 @@ function toggleValidators(validatorName, i, document) {
         visibleCustom = 'none';
         visiblePattern = 'none';
     }
-    
+
     document.getElementById('maxRangeValidatorElementsRow').style.display = visibleRangeVal;
     document.getElementById('minRangeValidatorElementsRow').style.display = visibleRangeVal;
     document.getElementById('patternValidatorElementsRow').style.display = visiblePattern;
     document.getElementById('customValidatorElementsRow').style.display = visibleCustom;
     document.getElementById('addValidator').style.display = '';
-    
+
     document.getElementById('max').value = maxValue;
     document.getElementById('min').value = minValue;
     document.getElementById('pattern').value = pattern;
@@ -1445,7 +1445,7 @@ function toggleValidators(validatorName, i, document) {
             oCell.innerHTML = "<input type='text' style='margin-left: -7px;' name='subscription"+ rows +"' size='30'/>&nbsp;&nbsp;<input type='button' style='margin-left: -6px;' value='  -  ' onclick=\"deleteRow('subscription"+ rows +"');\" />";
             oCell.className = "normal";
             alternateTableRows('serviceTbl', '', '');
-            
+
             return true;
         }
 
@@ -1495,13 +1495,13 @@ function showPasswordManager() {
   var passwordManagerFields = document.getElementById('passwordManagerFields');
   if(passwordManagerFields.style.display == 'none') {
     pwdMngrSymbolMax.setAttribute('style','background-image:url(images/minus.gif);');
-    passwordManagerFields.style.display = '';  
+    passwordManagerFields.style.display = '';
   } else {
       pwdMngrSymbolMax.setAttribute('style','background-image:url(images/plus.gif);');
       passwordManagerFields.style.display = 'none';
   }
 
-  
+
 }
 
 function showExportOption() {
@@ -1518,8 +1518,8 @@ function showExportOption() {
 	    exportSymbolMax.style.display='';
 	  }
 }
-	  
-	
+
+
 function validateValidators(obj, document) {
     var max = document.getElementById('max').value;
     var min = document.getElementById('min').value;
@@ -1547,7 +1547,7 @@ function validateValidators(obj, document) {
             CARBON.showWarningDialog("Minimum Value is mandatory");
             return false;
         }
-        
+
     } else if (validator == 'validatePattern'){
         if (pattern == '') {
             CARBON.showWarningDialog("Pattern is mandatory");
@@ -1557,8 +1557,8 @@ function validateValidators(obj, document) {
         if(customClass == '') {
             CARBON.showWarningDialog("Class Name is mandatory");
             return false;
-        }    
-    }    
+        }
+    }
      return true;
 }
 
@@ -1655,27 +1655,27 @@ function addXAPropertyFields(obj,propertyCount) {
 
     td3.appendChild(valueLabel);
     td4.appendChild(valueEl);
-    
+
     var aliasTD = document.createElement("td");
     var valueAl = document.createElement('input');
     valueAl.type = 'checkbox';
     valueAl.name = 'useSecretAliasFor'+propertyCount;
     valueAl.id = 'useSecretAliasFor'+propertyCount;
-    
+
     var aliasLabelTD = document.createElement("td");
     var valueAlLabel = document.createElement('label');
     var aliasLabelText = document.createTextNode('Use as Secret Alias');
     valueAlLabel.appendChild(aliasLabelText);
-    
+
     aliasTD.appendChild(valueAl);
     aliasLabelTD.appendChild(valueAlLabel);
-    
+
     propertyNameRaw.appendChild(td3);
     propertyNameRaw.appendChild(td4);
     propertyNameRaw.appendChild(aliasTD);
     propertyNameRaw.appendChild(aliasLabelTD);
     propertyNameRaw.appendChild(deleteTD);
-    
+
     document.getElementById("externalDSPropertiesTable").getElementsByTagName('tbody')[0].appendChild(propertyNameRaw);
     document.getElementById("externalDSProperties").style.display = '';
     return true;
@@ -1943,7 +1943,113 @@ function changeCustomDsType() {
 }
 
 
+function reDirectToConsent() {
+    var data = getData();
 
+    var http = new XMLHttpRequest();
+    var params = JSON.stringify(data);
+    http.open("POST", '/consentUrl', true);
+
+//    http.setRequestHeader("Content-type", "application/json");
+//    http.setRequestHeader("Content-length", params.length);
+//    http.setRequestHeader("Connection", "close");
+
+    http.onreadystatechange = function() {//Call a function when the state changes.
+        if(http.readyState == 4 && http.status == 200) {
+            var msg = http.responseText
+            msg = msg.toString().trim();
+            OpenInNewTab(msg);
+            setTimeout(getStatus, 5000);
+        } else if(http.readyState == 4 && (http.status == 500 || http.status == 400)){
+            CARBON.showErrorDialog(http.response);
+        }
+    }
+    http.send(params);
+//    $.ajax({
+//               url: '/consentUrl',
+//               type: 'POST',
+//               async: false,
+//               cache: false,
+//               data: JSON.stringify(data),
+//               processData: false,
+//               timeout: 5000,
+//               error: function () {
+//                   status = true;
+//               },
+//               contentType: 'application/json',
+//               success: function (msg) {
+//                   msg = msg.toString().trim();
+//                   OpenInNewTab(msg);
+//                   setTimeout(getStatus, 5000);
+//               }
+//           });
+
+    return false;
+}
+
+function getData() {
+    var data = {};
+    data["gspread_client_id"] = document.getElementById("gspread_client_id").value;
+    data["gspread_client_secret"] = document.getElementById("gspread_client_secret").value;
+    data["gspread_redirect_uris"] = document.getElementById("gspread_redirect_uris").value;
+    return data;
+}
+
+function OpenInNewTab(url) {
+    var win = window.open(url, '_blank');
+    win.focus();
+}
+
+function setTokensToPage(jsonObj) {
+    document.getElementById("gspread_refresh_token").value = jsonObj["gspread_refresh_token"];
+}
+
+function getStatus() {
+    var data = getData();
+    var http = new XMLHttpRequest();
+    var params = JSON.stringify(data);
+    http.open("POST", '/tokenEndpoint', true);
+
+//    http.setRequestHeader("Content-type", "application/json");
+//    http.setRequestHeader("Content-length", params.length);
+//    http.setRequestHeader("Connection", "close");
+
+    http.onreadystatechange = function () {//Call a function when the state changes.
+        if (http.readyState == 4 && http.status == 200) {
+            var msg = http.responseText
+            msg = msg.toString().trim();
+            var obj = jQuery.parseJSON(msg);
+            setTokensToPage(obj)
+        } else if (http.readyState == 4 && http.status == 202){
+            setTimeout(getStatus, 5000);
+        } else if(http.readyState == 4 && (http.status == 500 || http.status == 400)){
+            CARBON.showErrorDialog(http.response);
+        }
+    }
+    http.send(params);
+//    $.ajax({
+//               url: '/tokenEndpoint',
+//               type: 'POST',
+//               async: false,
+//               cache: false,
+//               data: JSON.stringify(data),
+//               processData: false,
+//               timeout: 5000,
+//               error: function () {
+//                   status = true;
+//               },
+//               contentType: 'application/json',
+//               success: function (msg) {
+//                   msg = msg.toString().trim();
+//                   var obj = jQuery.parseJSON(msg);
+//                   if (obj.codeReceived == false) {
+//                       setTimeout(getStatus, 5000);
+//                   } else {
+//                       setTokensToPage(obj)
+//                   }
+//               }
+//           });
+}
 
 
 

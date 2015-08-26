@@ -1,0 +1,63 @@
+<!--
+  ~ Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<component xmlns="http://products.wso2.org/carbon">
+
+    <menus>
+        <menu>
+            <id>google_token_menu</id>
+            <i18n-key>google.tokengen.menu.text</i18n-key>
+            <i18n-bundle>org.wso2.carbon.dataservices.google.tokengen.ui.i18n.Resources</i18n-bundle>
+            <parent-menu>tools_menu</parent-menu>
+            <link>../tokengen/tokenGenerator.jsp</link>
+            <region>region5</region>
+            <order>10</order>
+            <style-class>tools</style-class>
+            <icon>../tokengen/images/data-services.gif</icon>
+        </menu>
+    </menus>
+
+    <servlets>
+        <servlet id="AuthCodeReceiverServlet">
+            <servlet-name>AuthCodeReceiver</servlet-name>
+            <url-pattern>/authCodeReceiver</url-pattern>
+            <display-name>Auth Code Callback Servlet</display-name>
+            <servlet-class>org.wso2.carbon.dataservices.google.tokengen.servlet.AuthCodeReceiver</servlet-class>
+        </servlet>
+        <servlet id="ConsentUrl">
+            <servlet-name>ConsentUrl</servlet-name>
+            <url-pattern>/consentUrl</url-pattern>
+            <display-name>Consent URL</display-name>
+            <servlet-class>org.wso2.carbon.dataservices.google.tokengen.servlet.ConsentUrl</servlet-class>
+        </servlet>
+        <servlet id="TokenEndpoint">
+            <servlet-name>TokenEndpoint</servlet-name>
+            <url-pattern>/tokenEndpoint</url-pattern>
+            <display-name>Token Endpoint URL</display-name>
+            <servlet-class>org.wso2.carbon.dataservices.google.tokengen.servlet.TokenEndpoint</servlet-class>
+        </servlet>
+    </servlets>
+    <framework-configuration>
+        <bypass>
+            <authentication>
+                <link>/authCodeReceiver</link>
+                <link>/consentUrl</link>
+                <link>/tokenEndpoint</link>
+            </authentication>
+        </bypass>
+    </framework-configuration>
+</component>
+

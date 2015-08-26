@@ -59,6 +59,28 @@
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.core</artifactId>
         </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.google.api-client</groupId>-->
+            <!--<artifactId>google-api-client</artifactId>-->
+            <!--&lt;!&ndash;<version>1.18.0-rc</version>&ndash;&gt;-->
+            <!--<version>1.20.0</version>-->
+        <!--</dependency>-->
+        <dependency>
+            <groupId>commons-codec.wso2</groupId>
+            <artifactId>commons-codec</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.com.google.api-client</groupId>
+            <artifactId>google-api-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.com.google.oauth-client</groupId>
+            <artifactId>google-oauth-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.com.google.http-client</groupId>
+            <artifactId>google-http-client</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -91,7 +113,14 @@
                             org.apache.commons.logging;version="${carbon.commons.logging.imp.pkg.version}",
                             org.wso2.carbon.context;version="${carbon.kernel.imp.pkg.version}",
                             org.wso2.carbon.utils.multitenancy;version="${carbon.kernel.imp.pkg.version}",
-                            org.osgi.service.component;version="${osgi.service.imp.pkg.version}"
+                            org.osgi.service.component;version="${osgi.service.imp.pkg.version}",
+                            org.apache.commons.codec.binary;version="${commons-codec.orbit.imp.pkg.version}",
+                            com.google.api.client.googleapis.auth.oauth2;version="${google-api-client.orbit.imp.pkg.version}",
+                            com.google.api.client.auth.oauth2;version="${google-oauth-client.orbit.imp.pkg.version}",
+                            com.google.api.client.http;version="${google-http-client.orbit.imp.pkg.version}",
+                            com.google.api.client.http.javanet;version="${google-http-client.orbit.imp.pkg.version}",
+                            com.google.api.client.json.jackson2;version="${google-http-client.orbit.imp.pkg.version}",
+                            com.google.api.client.json;version="${google-http-client.orbit.imp.pkg.version}"
                         </Import-Package>
                         <!--<DynamicImport-Package>*</DynamicImport-Package>-->
                     </instructions>

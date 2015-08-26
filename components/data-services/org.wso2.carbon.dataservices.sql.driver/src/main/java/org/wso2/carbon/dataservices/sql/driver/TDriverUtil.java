@@ -18,11 +18,8 @@
  */
 package org.wso2.carbon.dataservices.sql.driver;
 
-import com.google.gdata.client.Query;
 import com.google.gdata.client.spreadsheet.*;
-import com.google.gdata.data.IFeed;
-import com.google.gdata.data.spreadsheet.*;
-import com.google.gdata.util.ServiceException;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -62,6 +59,9 @@ public class TDriverUtil {
         driverProperties.add(Constants.DRIVER_PROPERTIES.PASSWORD);
         driverProperties.add(Constants.DRIVER_PROPERTIES.DATA_SOURCE_TYPE);
         driverProperties.add(Constants.DRIVER_PROPERTIES.MAX_COLUMNS);
+        driverProperties.add(Constants.GSPREAD_PROPERTIES.CLIENT_ID);
+        driverProperties.add(Constants.GSPREAD_PROPERTIES.CLIENT_SECRET);
+        driverProperties.add(Constants.GSPREAD_PROPERTIES.REFRESH_TOKEN);
     }
 
     public static List<String> getAvailableDriverProperties() {
@@ -80,9 +80,10 @@ public class TDriverUtil {
             case EXCEL:
                 return getExcelHeaders(connection, tableName);
             case GSPREAD:
-                return getGSpreadHeaders(connection, tableName);
+                TGSpreadFeedUtil feedUtil = new TGSpreadFeedUtil(connection);
+                return feedUtil.getGSpreadHeaders(tableName);
             case CUSTOM:
-                return getCustomHeaders(connection, tableName);                
+                return getCustomHeaders(connection, tableName);
             default:
                 throw new SQLException("Invalid query type: " + type);
         }
@@ -117,33 +118,6 @@ public class TDriverUtil {
     	DataTable table = ((TCustomConnection) connection).getDataSource().getDataTable(sheetName);
     	return table.getHeaders();
     }
-    
-    private static ColumnInfo[] getGSpreadHeaders(Connection connection,
-                                                  String sheetName) throws SQLException {
-        WorksheetEntry currentWorksheet;
-        List<ColumnInfo> columns = new ArrayList<ColumnInfo>();
-
-        if (!(connection instanceof TGSpreadConnection)) {
-            throw new SQLException("Invalid connection type");
-        }
-        currentWorksheet = getCurrentWorkSheetEntry(connection, sheetName);
-        if (currentWorksheet == null) {
-            throw new SQLException("Worksheet '" + sheetName + "' does not exist");
-        }
-        CellFeed cellFeed = getCellFeed(connection, currentWorksheet);
-        for (CellEntry cell : cellFeed.getEntries()) {
-            if (!getCellPosition(cell.getId()).startsWith("R1")) {
-                break;
-            }
-            ColumnInfo column =
-                    new ColumnInfo(cell.getTextContent().getContent().getPlainText());
-            column.setTableName(sheetName);
-            column.setSqlType(cell.getContent().getType());
-            column.setId(getColumnIndex(cell.getId()) - 1);
-            columns.add(column);
-        }
-        return columns.toArray(new ColumnInfo[columns.size()]);
-    }
 
     public static int getColumnIndex(String id) {
         String tmp = getCellPosition(id);
@@ -161,28 +135,6 @@ public class TDriverUtil {
         return id.substring(id.lastIndexOf("/") + 1);
     }
 
-    public static CellFeed getCellFeed(Connection connection,
-                                       WorksheetEntry currentWorkSheet) throws SQLException {
-        SpreadsheetService service = ((TGSpreadConnection) connection).getSpreadSheetService();
-        CellQuery cellQuery = new CellQuery(currentWorkSheet.getCellFeedUrl());
-        return getFeed(service, cellQuery, CellFeed.class);
-    }
-
-    public static WorksheetEntry getCurrentWorkSheetEntry(Connection connection,
-                                                          String sheetName) throws SQLException {
-    	SpreadsheetEntry spreadsheetEntry = ((TGSpreadConnection) connection).getSpreadSheetFeed().getEntries().get(0);
-        WorksheetQuery worksheetQuery =
-                TDriverUtil.createWorkSheetQuery(spreadsheetEntry.getWorksheetFeedUrl());
-        WorksheetFeed worksheetFeed = getFeed(((TGSpreadConnection) connection).getSpreadSheetService(), worksheetQuery,
-                WorksheetFeed.class);
-    	for (WorksheetEntry entry : worksheetFeed.getEntries()) {
-            if (sheetName.equals(entry.getTitle().getPlainText())) {
-                return entry;
-            }
-        }
-        return null;
-    }
-
     public static SpreadsheetQuery createSpreadSheetQuery(String spreadSheetName,
                                                           URL spreadSheetFeedUrl) {
         SpreadsheetQuery spreadsheetQuery = new SpreadsheetQuery(spreadSheetFeedUrl);
@@ -195,17 +147,6 @@ public class TDriverUtil {
         return new WorksheetQuery(workSheetFeedUrl);
     }
 
-    public static <F extends IFeed> F getFeed(SpreadsheetService service, Query query,
-                                              Class<F> feedClass) throws SQLException {
-        try {
-            return service.getFeed(query, feedClass);
-        } catch (IOException e) {
-            throw new SQLException("Error occurred while retrieving the feed", e);
-        } catch (ServiceException e) {
-            throw new SQLException("Error occurred while retrieving the feed", e);
-        }
-    }
-
     public static ParamInfo findParam(ColumnInfo columnInfo, ParamInfo[] params) {
         ParamInfo param = null;
         for (ParamInfo tmpParam : params) {
@@ -215,13 +156,6 @@ public class TDriverUtil {
             }
         }
         return param;
-    }
-
-    public static ListFeed getListFeed(Connection connection,
-                                       WorksheetEntry currentWorkSheet) throws SQLException {
-        SpreadsheetService service = ((TGSpreadConnection) connection).getSpreadSheetService();
-        ListQuery listQuery = new ListQuery(currentWorkSheet.getListFeedUrl());
-        return getFeed(service, listQuery, ListFeed.class);
     }
 
     public static void writeRecords(Workbook workbook, String filePath) throws SQLException {

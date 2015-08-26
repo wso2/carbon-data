@@ -18,10 +18,10 @@
  */
 package org.wso2.carbon.dataservices.sql.driver.query.delete;
 
-import com.google.gdata.client.spreadsheet.SpreadsheetService;
 import com.google.gdata.data.spreadsheet.*;
 import com.google.gdata.util.ServiceException;
 import org.wso2.carbon.dataservices.sql.driver.TGSpreadConnection;
+import org.wso2.carbon.dataservices.sql.driver.TGSpreadFeedUtil;
 
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -54,14 +54,13 @@ public class GSpreadDeleteQuery extends DeleteQuery {
     private synchronized int executeSQL() throws SQLException {
         int count = 0;
 
-        SpreadsheetService spreadsheetService =
-                ((TGSpreadConnection) getConnection()).getSpreadSheetService();
+        TGSpreadFeedUtil feedUtil = new TGSpreadFeedUtil(getConnection());
         SpreadsheetFeed spreadsheetFeed =
                 ((TGSpreadConnection) getConnection()).getSpreadSheetFeed();
         SpreadsheetEntry spreadsheet = spreadsheetFeed.getEntries().get(0);
         try {
             WorksheetFeed worksheetFeed =
-                    spreadsheetService.getFeed(spreadsheet.getWorksheetFeedUrl(),
+                    feedUtil.getFeed(spreadsheet.getWorksheetFeedUrl(),
                             WorksheetFeed.class);
             WorksheetEntry currentWorksheet = null;
             for (WorksheetEntry tmp : worksheetFeed.getEntries()) {
@@ -74,7 +73,7 @@ public class GSpreadDeleteQuery extends DeleteQuery {
                 throw new SQLException("Sheet '" + getTargetTableName() + "' does not exist");
             }
             ListFeed listFeed =
-                    spreadsheetService.getFeed(currentWorksheet.getListFeedUrl(), ListFeed.class);
+                    feedUtil.getFeed(currentWorksheet.getListFeedUrl(), ListFeed.class);
             Set<Integer> rowKeys = this.getResultantRows().keySet();
 
             for (Integer rowKey : rowKeys) {

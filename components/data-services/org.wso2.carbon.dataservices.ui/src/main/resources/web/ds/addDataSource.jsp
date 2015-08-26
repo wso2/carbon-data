@@ -381,12 +381,21 @@ private Config addNotAvailableFunctions(Config config,String selectedType, HttpS
 		if (config.getPropertyValue(DBConstants.GSpread.VISIBILITY) == null) {
 			 config.addProperty(DBConstants.GSpread.VISIBILITY, "");
 		}
-		if (config.getPropertyValue(DBConstants.GSpread.USERNAME) == null) {
-			 config.addProperty(DBConstants.GSpread.USERNAME, "");
-		}
-		if (config.getPropertyValue(DBConstants.GSpread.PASSWORD) == null) {
-			 config.addProperty(DBConstants.GSpread.PASSWORD, "");
-		}
+//		if (config.getPropertyValue(DBConstants.GSpread.USERNAME) == null) {
+//			 config.addProperty(DBConstants.GSpread.USERNAME, "");
+//		}
+//		if (config.getPropertyValue(DBConstants.GSpread.PASSWORD) == null) {
+//			 config.addProperty(DBConstants.GSpread.PASSWORD, "");
+//		}
+        if (config.getPropertyValue(DBConstants.GSpread.CLIENT_ID) == null) {
+            config.addProperty(DBConstants.GSpread.CLIENT_ID, "");
+        }
+        if (config.getPropertyValue(DBConstants.GSpread.CLIENT_SECRET) == null) {
+            config.addProperty(DBConstants.GSpread.CLIENT_SECRET, "");
+        }
+        if (config.getPropertyValue(DBConstants.GSpread.REFRESH_TOKEN) == null) {
+            config.addProperty(DBConstants.GSpread.REFRESH_TOKEN, "");
+        }
 	} else if (DBConstants.DataSourceTypes.CARBON.equals(selectedType)) {
     	if (config.getPropertyValue(DBConstants.CarbonDatasource.NAME) == null) {
 			 config.addProperty(DBConstants.CarbonDatasource.NAME, "");
@@ -766,8 +775,11 @@ private String getSheetName(String gSpreadJDBCUrl) {
                     newConfig.addProperty(DBConstants.RDBMS.PASSWORD, "");
                 	newConfig.addProperty(DBConstants.GSpread.DATASOURCE, "");
 	                newConfig.addProperty(DBConstants.GSpread.VISIBILITY, "");
-	                newConfig.addProperty(DBConstants.GSpread.USERNAME, "");
-	                newConfig.addProperty(DBConstants.GSpread.PASSWORD, "");
+//	                newConfig.addProperty(DBConstants.GSpread.USERNAME, "");
+//	                newConfig.addProperty(DBConstants.GSpread.PASSWORD, "");
+                    newConfig.addProperty(DBConstants.GSpread.CLIENT_ID, "");
+                    newConfig.addProperty(DBConstants.GSpread.CLIENT_SECRET, "");
+                    newConfig.addProperty(DBConstants.GSpread.REFRESH_TOKEN, "");
                 } else if (DBConstants.DataSourceTypes.CARBON.equals(selectedType)) {
                     newConfig.addProperty(DBConstants.CarbonDatasource.NAME, "");
 
@@ -930,8 +942,11 @@ private String getSheetName(String gSpreadJDBCUrl) {
                 } else if (DBConstants.DataSourceTypes.GDATA_SPREADSHEET.equals(selectedType)) {
                     conf.addProperty(DBConstants.GSpread.DATASOURCE, "");
                     conf.addProperty(DBConstants.GSpread.VISIBILITY, "");
-                    conf.addProperty(DBConstants.GSpread.USERNAME, "");
-                    conf.addProperty(DBConstants.GSpread.PASSWORD, "");
+//                    conf.addProperty(DBConstants.GSpread.USERNAME, "");
+//                    conf.addProperty(DBConstants.GSpread.PASSWORD, "");
+                    conf.addProperty(DBConstants.GSpread.CLIENT_ID, "");
+                    conf.addProperty(DBConstants.GSpread.CLIENT_SECRET, "");
+                    conf.addProperty(DBConstants.GSpread.REFRESH_TOKEN, "");
                 } else if (DBConstants.DataSourceTypes.CARBON.equals(selectedType)) {
                     conf.addProperty(DBConstants.CarbonDatasource.NAME, "");
 
@@ -2604,6 +2619,21 @@ private String getSheetName(String gSpreadJDBCUrl) {
 <%
     }   }
 %>
+<%if ("GDATA_SPREADSHEET".equals(dataSourceType)) {%>
+<table class="styledLeft noBorders" cellspacing="0" width="100%">
+    <tr>
+        <td style="width:150px"><fmt:message key="gspread_redirect_uris"/><span
+                class="required">*</span></td>
+        <td align="left">
+            <input id="gspread_redirect_uris"
+                   name="gspread_redirect_uris"
+                   value="https://localhost:9443/tokenService"
+                   type="text"/>
+        </td>
+    </tr>
+</table>
+
+<%} %>
 
 <table id="buttonTable" class="styledLeft noBorders" cellspacing="0" width="100%">
 <tr>
@@ -2647,6 +2677,8 @@ private String getSheetName(String gSpreadJDBCUrl) {
 
         <%} else if ("GDATA_SPREADSHEET".equals(dataSourceType)) {%>
         <div id="spreadsheetConnectionTestMsgDiv" style="display: none;"></div>
+        <input class="button" type="button" value="<fmt:message key="gspread_generate_tokens"/>"
+               onclick="reDirectToConsent();return false;"/>
         <input class="button" type="button" value="<fmt:message key="datasource.test.connection"/>"
                onclick="testSpreadsheetConnection();return false;"/>
         <script type="text/javascript">
@@ -2692,6 +2724,8 @@ private String getSheetName(String gSpreadJDBCUrl) {
                 }
                 return str;
             }
+
+
             
         </script>
 

@@ -491,6 +491,11 @@ public final class DBConstants {
         public static final String PASSWORD = "gspread_password";
         public static final String VISIBILITY = "gspread_visibility";
         public static final String DATASOURCE = "gspread_datasource";
+        public static final String CLIENT_ID = "gspread_client_id";
+        public static final String CLIENT_SECRET = "gspread_client_secret";
+        public static final String ACCESS_TOKEN = "gspread_access_token";
+        public static final String REDIRECT_URIS = "gspread_redirect_uris";
+        public static final String REFRESH_TOKEN = "gspread_refresh_token";
         public static final String WORKSHEET_NUMBER = "worksheetnumber";
         public static final String STARTING_ROW = "startingrow";
         public static final String MAX_ROW_COUNT = "maxrowcount";

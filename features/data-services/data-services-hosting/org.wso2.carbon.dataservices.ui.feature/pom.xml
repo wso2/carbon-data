@@ -59,6 +59,11 @@
             <artifactId>org.wso2.carbon.ndatasource.ui.feature</artifactId>
             <type>zip</type>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.data</groupId>
+            <artifactId>org.wso2.carbon.dataservices.google.tokengen.ui</artifactId>
+            <version>4.3.1-SNAPSHOT</version>
+        </dependency>
 
     </dependencies>
 
@@ -88,6 +93,7 @@
                                 <bundleDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.ui</bundleDef>
                                 <bundleDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.stub</bundleDef>
                                 <bundleDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.fileupload.stub</bundleDef>
+                                <bundleDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.google.tokengen.ui</bundleDef>
                             </bundles>
                             <importBundles>
                                 <importBundleDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.common</importBundleDef>

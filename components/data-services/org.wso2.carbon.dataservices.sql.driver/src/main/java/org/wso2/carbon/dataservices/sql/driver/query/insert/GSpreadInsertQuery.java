@@ -23,6 +23,7 @@ import com.google.gdata.data.spreadsheet.ListFeed;
 import com.google.gdata.data.spreadsheet.WorksheetEntry;
 import com.google.gdata.util.ServiceException;
 import org.wso2.carbon.dataservices.sql.driver.TDriverUtil;
+import org.wso2.carbon.dataservices.sql.driver.TGSpreadFeedUtil;
 import org.wso2.carbon.dataservices.sql.driver.query.ColumnInfo;
 import org.wso2.carbon.dataservices.sql.driver.query.ParamInfo;
 
@@ -69,13 +70,14 @@ public class GSpreadInsertQuery extends InsertQuery {
 
     private synchronized int executeSQL() throws SQLException {
         int count = 1;
+        TGSpreadFeedUtil feedUtil = new TGSpreadFeedUtil(getConnection());
         WorksheetEntry currentWorkSheet =
-                TDriverUtil.getCurrentWorkSheetEntry(getConnection(), getTargetTableName());
+                feedUtil.getCurrentWorkSheetEntry(getTargetTableName());
         if (currentWorkSheet == null) {
             throw new SQLException("WorkSheet '" + getTargetTableName() + "' does not exist");
         }
 
-        ListFeed listFeed = TDriverUtil.getListFeed(getConnection(), currentWorkSheet);
+        ListFeed listFeed = feedUtil.getListFeed(currentWorkSheet);
         ListEntry row = new ListEntry();
         for (ColumnInfo column : TDriverUtil.getHeaders(getConnection(), getTargetTableName())) {
             ParamInfo matchingParam = TDriverUtil.findParam(column, getParameters());

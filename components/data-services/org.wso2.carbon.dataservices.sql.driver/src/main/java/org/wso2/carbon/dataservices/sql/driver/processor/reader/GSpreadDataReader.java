@@ -22,6 +22,7 @@ import com.google.gdata.data.spreadsheet.*;
 import org.wso2.carbon.dataservices.sql.driver.TConnection;
 import org.wso2.carbon.dataservices.sql.driver.TDriverUtil;
 import org.wso2.carbon.dataservices.sql.driver.TGSpreadConnection;
+import org.wso2.carbon.dataservices.sql.driver.TGSpreadFeedUtil;
 import org.wso2.carbon.dataservices.sql.driver.parser.Constants;
 import org.wso2.carbon.dataservices.sql.driver.query.ColumnInfo;
 
@@ -47,7 +48,8 @@ public class GSpreadDataReader extends AbstractFixedDataReader {
         List<WorksheetEntry> workSheets = workSheetFeed.getEntries();
         for (WorksheetEntry workSheet : workSheets) {
             DataRow dataRow = null;
-            CellFeed cellFeed = TDriverUtil.getCellFeed(gsConnection, workSheet);
+            TGSpreadFeedUtil feedUtil = new TGSpreadFeedUtil(gsConnection);
+            CellFeed cellFeed = feedUtil.getCellFeed(workSheet);
 
             ColumnInfo[] headers = this.extractHeaders(workSheet);
             DataTable result = new FixedDataTable(workSheet.getTitle().getPlainText(), headers);
@@ -126,7 +128,8 @@ public class GSpreadDataReader extends AbstractFixedDataReader {
             return headers.toArray(new ColumnInfo[headers.size()]);
         }
 
-        CellFeed cellFeed = TDriverUtil.getCellFeed(getConnection(), currentWorkSheet);
+        TGSpreadFeedUtil feedUtil = new TGSpreadFeedUtil(getConnection());
+        CellFeed cellFeed = feedUtil.getCellFeed(currentWorkSheet);
         for (CellEntry cell : cellFeed.getEntries()) {
             if (!TDriverUtil.getCellPosition(cell.getId()).startsWith("R1")) {
                 break;

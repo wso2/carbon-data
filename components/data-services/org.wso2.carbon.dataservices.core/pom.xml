@@ -49,6 +49,10 @@
             <artifactId>org.wso2.carbon.event.core</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.wso2.orbit.org.apache.olingo</groupId>
+            <artifactId>odata-server</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.wso2.carbon.commons</groupId>
             <artifactId>org.wso2.carbon.transaction.manager</artifactId>
         </dependency>
@@ -83,6 +87,10 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.equinox</groupId>
+            <artifactId>javax.servlet</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.derby.wso2</groupId>
@@ -246,6 +254,7 @@
                         </Export-Package>
                         <Import-Package>
                             !org.wso2.carbon.dataservices.core.*,
+                            javax.servlet.http;version="${javax.servlet.imp.pkg.version}",
                             com.google.gdata.client;version="${gdata-core.orbit.imp.pkg.version}",
                             com.google.gdata.data;version="${gdata-core.orbit.imp.pkg.version}",
                             com.google.gdata.client.spreadsheet;version="${gdata-spreadsheet.orbit.imp.pkg.version}",
@@ -337,7 +346,17 @@
                             com.google.api.client.googleapis.auth.oauth2;version="${google-api-client.orbit.imp.pkg.version}",
                             com.google.api.client.http;version="${google-http-client.orbit.imp.pkg.version}",
                             com.google.api.client.http.javanet;version="${google-http-client.orbit.imp.pkg.version}",
-                            com.google.api.client.json.jackson2;version="${google-http-client.orbit.imp.pkg.version}"
+                            com.google.api.client.json.jackson2;version="${google-http-client.orbit.imp.pkg.version}",
+                            org.apache.olingo.commons.api;version="${olingo.orbit.imp.pkg.version}",
+                            org.apache.olingo.commons.api.edm;version="${olingo.orbit.imp.pkg.version}",
+                            org.apache.olingo.commons.api.edm.provider;version="${olingo.orbit.imp.pkg.version}",
+                            org.apache.olingo.commons.api.data;version="${olingo.orbit.imp.pkg.version}",
+                            org.apache.olingo.commons.api.http;version="${olingo.orbit.imp.pkg.version}",
+                            org.apache.olingo.server.api;version="${olingo.orbit.imp.pkg.version}",
+                            org.apache.olingo.server.core;version="${olingo.orbit.imp.pkg.version}",
+                            org.apache.olingo.server.core.requests;version="${olingo.orbit.imp.pkg.version}",
+                            org.apache.olingo.server.core.responses;version="${olingo.orbit.imp.pkg.version}",
+                            org.apache.olingo.server.core.uri.parser;version="${olingo.orbit.imp.pkg.version}"
                             <!--javax.transaction todo need to check this and add if needed. this needs jboss transactions, but for now it's not included in the server-->
                             <!--org.apache.axis2.*; version="${apache.axis2.orbit.imp.pkg.version}"-->
                         </Import-Package>

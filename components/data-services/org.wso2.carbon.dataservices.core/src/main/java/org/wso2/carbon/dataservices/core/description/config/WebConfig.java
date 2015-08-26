@@ -28,6 +28,7 @@ import org.wso2.carbon.dataservices.common.DBConstants;
 import org.wso2.carbon.dataservices.core.DBUtils;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
 import org.wso2.carbon.dataservices.core.engine.DataService;
+import org.wso2.carbon.dataservices.core.odata.ODataDataHandler;
 import org.xml.sax.InputSource;
 
 import java.io.ByteArrayInputStream;
@@ -47,8 +48,8 @@ public class WebConfig extends Config {
     /*path of the web harvest configuration exists*/
     private String webHarvestConfigPath;
 
-    public WebConfig(DataService dataService, String configId, Map<String, String> properties) {
-        super(dataService, configId, DBConstants.DataSourceTypes.WEB, properties);
+    public WebConfig(DataService dataService, String configId, Map<String, String> properties, boolean odataEnable) {
+        super(dataService, configId, DBConstants.DataSourceTypes.WEB, properties, odataEnable);
         this.webHarvestConfigPath = this.getProperty("web_harvest_config");
     }
 
@@ -100,5 +101,10 @@ public class WebConfig extends Config {
     public void close() {
     	/* nothing to close */
     }
-    
+
+    @Override
+    public ODataDataHandler createODataHandler() throws DataServiceFault {
+        throw new DataServiceFault("Expose as OData Service feature doesn't support for the " + getConfigId() +
+                                   " Datasource.");
+    }
 }

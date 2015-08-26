@@ -23,9 +23,14 @@ import org.wso2.carbon.dataservices.common.DBConstants;
 import org.wso2.carbon.dataservices.common.DBConstants.DataSourceTypes;
 import org.wso2.carbon.dataservices.core.DBUtils;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
-import org.wso2.carbon.dataservices.core.custom.datasource.*;
+import org.wso2.carbon.dataservices.core.custom.datasource.DataColumn;
+import org.wso2.carbon.dataservices.core.custom.datasource.DataRow;
+import org.wso2.carbon.dataservices.core.custom.datasource.DataTable;
+import org.wso2.carbon.dataservices.core.custom.datasource.FixedDataRow;
+import org.wso2.carbon.dataservices.core.custom.datasource.TabularDataBasedDS;
 import org.wso2.carbon.dataservices.core.custom.datasource.TabularDataBasedDS.FilterOperator;
 import org.wso2.carbon.dataservices.core.engine.DataService;
+import org.wso2.carbon.dataservices.core.odata.ODataDataHandler;
 import org.wso2.carbon.dataservices.sql.driver.TConnectionFactory;
 import org.wso2.carbon.dataservices.sql.driver.TCustomConnection;
 import org.wso2.carbon.dataservices.sql.driver.parser.Constants;
@@ -33,13 +38,18 @@ import org.wso2.carbon.dataservices.sql.driver.processor.reader.DataCell;
 import org.wso2.carbon.dataservices.sql.driver.query.ColumnInfo;
 
 import javax.sql.DataSource;
-import java.sql.SQLFeatureNotSupportedException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Types;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
+import java.util.Set;
 import java.util.logging.Logger;
 
 /**
@@ -48,10 +58,10 @@ import java.util.logging.Logger;
 public class TabularDataBasedConfig extends SQLConfig {
 	
 	private CustomSQLDataSource dataSource;
-	
-	public TabularDataBasedConfig(DataService dataService, String configId,
-			Map<String, String> properties) throws DataServiceFault {
-		super(dataService, configId, DataSourceTypes.CUSTOM_TABULAR, properties);
+
+	public TabularDataBasedConfig(DataService dataService, String configId, Map<String, String> properties,
+	                              boolean odataEnable) throws DataServiceFault {
+		super(dataService, configId, DataSourceTypes.CUSTOM_TABULAR, properties, odataEnable);
 		String dsClass = properties.get(DBConstants.CustomDataSource.DATA_SOURCE_TABULAR_CLASS);
 		try {
 			TabularDataBasedDS customDS = (TabularDataBasedDS) Class.forName(dsClass).newInstance();
@@ -97,7 +107,13 @@ public class TabularDataBasedConfig extends SQLConfig {
 	public void close() {
 		this.dataSource.close();
 	}
-	
+
+	@Override
+	public ODataDataHandler createODataHandler() throws DataServiceFault {
+		throw new DataServiceFault("Expose as OData Service feature doesn't support for the " + getConfigId() +
+		                           " Datasource.");
+	}
+
 	/**
 	 * Custom SQL data source implementation.
 	 */
@@ -384,5 +400,5 @@ public class TabularDataBasedConfig extends SQLConfig {
 		}
 		
 	}
-	
+
 }

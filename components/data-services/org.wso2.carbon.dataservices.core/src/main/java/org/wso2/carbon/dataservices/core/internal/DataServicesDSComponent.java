@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
+import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
 import org.wso2.carbon.dataservices.core.description.event.EventTrigger;
 import org.wso2.carbon.event.core.EventBroker;
@@ -32,7 +33,7 @@ import org.wso2.carbon.securevault.SecretCallbackHandlerService;
 import org.wso2.carbon.transaction.manager.TransactionManagerDummyService;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.utils.Axis2ConfigurationContextObserver;
-import org.wso2.carbon.context.CarbonContext;
+import org.wso2.carbon.utils.ConfigurationContextService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +56,9 @@ import java.util.List;
  * interface="org.wso2.carbon.registry.core.service.TenantRegistryLoader"
  * cardinality="1..1" policy="dynamic" bind="setTenantRegistryLoader"
  * unbind="unsetTenantRegistryLoader"
+ * @scr.reference name="configuration.context.service"
+ * interface="org.wso2.carbon.utils.ConfigurationContextService" cardinality="0..1"
+ * policy="dynamic" bind="setConfigurationContextService" unbind="unsetConfigurationContextService"
  */
 public class DataServicesDSComponent {
 
@@ -72,6 +76,8 @@ public class DataServicesDSComponent {
     
     private static TenantRegistryLoader tenantRegLoader;
 
+    private static ConfigurationContextService contextService;
+
     private static Object dsComponentLock = new Object(); /* class level lock for controlling synchronized access to static variables */
 
     /* this is to keep event trigger objects which are not registered for subscription*/
@@ -84,11 +90,10 @@ public class DataServicesDSComponent {
         try {
             BundleContext bundleContext = ctxt.getBundleContext();
             bundleContext.registerService(Axis2ConfigurationContextObserver.class.getName(),
-                    new DSAxis2ConfigurationContextObserver(), null);
-            bundleContext.registerService(DSDummyService.class.getName(), new DSDummyService(),
-                    null);
+                                          new DSAxis2ConfigurationContextObserver(), null);
+            bundleContext.registerService(DSDummyService.class.getName(), new DSDummyService(), null);
             bundleContext.registerService(TransactionManagerDummyService.class.getName(),
-                    new TransactionManagerDummyService(), null);
+                                          new TransactionManagerDummyService(), null);
             log.debug("Data Services bundle is activated ");
         } catch (Throwable e) {
             log.error(e.getMessage(), e);
@@ -228,5 +233,16 @@ public class DataServicesDSComponent {
     public static TenantRegistryLoader getTenantRegistryLoader(){
         return DataServicesDSComponent.tenantRegLoader;
     }
-    
+
+    protected void setConfigurationContextService(ConfigurationContextService contextService) {
+        DataServicesDSComponent.contextService = contextService;
+    }
+
+    protected void unsetConfigurationContextService(ConfigurationContextService contextService) {
+        DataServicesDSComponent.contextService = null;
+    }
+
+    public static ConfigurationContextService getContextService() {
+        return contextService;
+    }
 }

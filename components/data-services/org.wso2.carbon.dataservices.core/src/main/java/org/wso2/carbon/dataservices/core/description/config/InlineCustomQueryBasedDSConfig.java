@@ -18,9 +18,6 @@
  */
 package org.wso2.carbon.dataservices.core.description.config;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.axiom.om.util.AXIOMUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,6 +27,10 @@ import org.wso2.carbon.dataservices.core.DBUtils;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
 import org.wso2.carbon.dataservices.core.custom.datasource.CustomQueryBasedDS;
 import org.wso2.carbon.dataservices.core.engine.DataService;
+import org.wso2.carbon.dataservices.core.odata.ODataDataHandler;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class represents a data services custom query based in-line data source configuration.
@@ -39,10 +40,10 @@ public class InlineCustomQueryBasedDSConfig extends CustomQueryBasedDSConfig {
 	private static final Log log = LogFactory.getLog(InlineCustomQueryBasedDSConfig.class);
 	
 	private CustomQueryBasedDS dataSource;
-	
-	public InlineCustomQueryBasedDSConfig(DataService dataService, String configId, 
-			Map<String, String> properties) throws DataServiceFault {
-		super(dataService, configId, DataSourceTypes.CUSTOM_QUERY, properties);
+
+	public InlineCustomQueryBasedDSConfig(DataService dataService, String configId, Map<String, String> properties,
+	                                      boolean odataEnable) throws DataServiceFault {
+		super(dataService, configId, DataSourceTypes.CUSTOM_QUERY, properties, odataEnable);
 		String dsClass = properties.get(DBConstants.CustomDataSource.DATA_SOURCE_QUERY_CLASS);
 		try {
 			this.dataSource = (CustomQueryBasedDS) Class.forName(dsClass).newInstance();
@@ -75,6 +76,12 @@ public class InlineCustomQueryBasedDSConfig extends CustomQueryBasedDSConfig {
 	@Override
 	public boolean isActive() {
 		return true;
+	}
+
+	@Override
+	public ODataDataHandler createODataHandler() throws DataServiceFault {
+		throw new DataServiceFault("Expose as OData Service feature doesn't support for the " + getConfigId() +
+		                           " Datasource.");
 	}
 
 }

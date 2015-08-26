@@ -24,11 +24,12 @@ import org.wso2.carbon.dataservices.common.DBConstants;
 import org.wso2.carbon.dataservices.common.DBConstants.DataSourceTypes;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
 import org.wso2.carbon.dataservices.core.custom.datasource.CustomQueryDataSourceReader;
-import org.wso2.carbon.dataservices.core.custom.datasource.TabularDataBasedDS;
 import org.wso2.carbon.dataservices.core.custom.datasource.CustomTabularDataSourceReader;
+import org.wso2.carbon.dataservices.core.custom.datasource.TabularDataBasedDS;
 import org.wso2.carbon.dataservices.core.description.config.TabularDataBasedConfig.CustomSQLDataSource;
 import org.wso2.carbon.dataservices.core.engine.DataService;
 import org.wso2.carbon.dataservices.core.internal.DataServicesDSComponent;
+import org.wso2.carbon.dataservices.core.odata.ODataDataHandler;
 import org.wso2.carbon.ndatasource.common.DataSourceException;
 import org.wso2.carbon.ndatasource.core.CarbonDataSource;
 import org.wso2.carbon.ndatasource.core.DataSourceService;
@@ -50,10 +51,10 @@ public class SQLCarbonDataSourceConfig extends SQLConfig {
 	private DataSource dataSource;
 	
 	private String dataSourceName;
-		
-	public SQLCarbonDataSourceConfig(DataService dataService, String configId,
-			Map<String, String> properties) throws DataServiceFault {
-		super(dataService, configId, DataSourceTypes.CARBON, properties);
+
+	public SQLCarbonDataSourceConfig(DataService dataService, String configId, Map<String, String> properties,
+	                                 boolean odataEnable) throws DataServiceFault {
+		super(dataService, configId, DataSourceTypes.CARBON, properties, odataEnable);
 		this.dataSourceName = properties.get(DBConstants.CarbonDatasource.NAME);
         this.dataSource = initDataSource();
         if (!dataService.isServiceInactive()) {
@@ -64,6 +65,20 @@ public class SQLCarbonDataSourceConfig extends SQLConfig {
                                            e.getMessage());
             }
         }
+	}
+
+	public SQLCarbonDataSourceConfig(DataService dataService, String configId, Map<String, String> properties)
+			throws DataServiceFault {
+		super(dataService, configId, DataSourceTypes.CARBON, properties, false);
+		this.dataSourceName = properties.get(DBConstants.CarbonDatasource.NAME);
+		if (!dataService.isServiceInactive()) {
+			try {
+				this.initSQLDataSource();
+			} catch (SQLException e) {
+				throw new DataServiceFault(e, DBConstants.FaultCodes.CONNECTION_UNAVAILABLE_ERROR,
+				                           e.getMessage());
+			}
+		}
 	}
 
 	@Override
@@ -195,6 +210,11 @@ public class SQLCarbonDataSourceConfig extends SQLConfig {
 	public void close() {
 		/* nothing to close */
 	}
-    
+
+	@Override
+	public ODataDataHandler createODataHandler() throws DataServiceFault {
+		throw new DataServiceFault("Expose as OData Service feature doesn't support for the " + getConfigId() +
+		                           " Datasource.");
+	}
 }
 

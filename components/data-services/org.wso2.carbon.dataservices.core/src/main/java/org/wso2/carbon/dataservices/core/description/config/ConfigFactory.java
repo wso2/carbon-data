@@ -20,7 +20,16 @@ package org.wso2.carbon.dataservices.core.description.config;
 
 import org.apache.axiom.om.OMElement;
 import org.wso2.carbon.dataservices.common.DBConstants;
-import org.wso2.carbon.dataservices.common.DBConstants.*;
+import org.wso2.carbon.dataservices.common.DBConstants.CSV;
+import org.wso2.carbon.dataservices.common.DBConstants.DBSFields;
+import org.wso2.carbon.dataservices.common.DBConstants.DataSourceTypes;
+import org.wso2.carbon.dataservices.common.DBConstants.Excel;
+import org.wso2.carbon.dataservices.common.DBConstants.GSpread;
+import org.wso2.carbon.dataservices.common.DBConstants.MongoDB;
+import org.wso2.carbon.dataservices.common.DBConstants.RDBMS;
+import org.wso2.carbon.dataservices.common.DBConstants.RDBMS_OLD;
+import org.wso2.carbon.dataservices.common.DBConstants.RDF;
+import org.wso2.carbon.dataservices.common.DBConstants.SPARQL;
 import org.wso2.carbon.dataservices.core.DBUtils;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
 import org.wso2.carbon.dataservices.core.custom.datasource.CustomQueryDataSourceReader;
@@ -46,112 +55,112 @@ public class ConfigFactory {
 		Map<String, String> properties = DBUtils.extractProperties(configEl);
 		String configId = getConfigId(configEl);
 		String configType = getConfigType(properties);
-		
+		boolean odataEnable = isODataEnable(configEl);
 		if (DataSourceTypes.RDBMS.equals(configType)) {
-			return getRDBMSConfig(dataService, configId, properties);
+			return getRDBMSConfig(dataService, configId, properties, odataEnable);
 		} else if (DataSourceTypes.JNDI.equals(configType)) {
-			return getJNDIConfig(dataService, configId, properties);
-		}  else if (DataSourceTypes.MONGODB.equals(configType)) {
-            return getMongoConfig(dataService, configId, properties);
-        } else if (DataSourceTypes.EXCEL.equals(configType)) {
-			return getExcelConfig(dataService, configId, properties);
+			return getJNDIConfig(dataService, configId, properties, odataEnable);
+		} else if (DataSourceTypes.MONGODB.equals(configType)) {
+			return getMongoConfig(dataService, configId, properties, odataEnable);
+		} else if (DataSourceTypes.EXCEL.equals(configType)) {
+			return getExcelConfig(dataService, configId, properties, odataEnable);
 		} else if (DataSourceTypes.RDF.equals(configType)) {
-			return getRDFConfig(dataService, configId, properties);
+			return getRDFConfig(dataService, configId, properties, odataEnable);
 		} else if (DataSourceTypes.SPARQL.equals(configType)) {
-            return getSparqlEndpointConfig(dataService, configId, properties);
-        } else if (DataSourceTypes.CSV.equals(configType)) {
-			return getCSVConfig(dataService, configId, properties);
+			return getSparqlEndpointConfig(dataService, configId, properties, odataEnable);
+		} else if (DataSourceTypes.CSV.equals(configType)) {
+			return getCSVConfig(dataService, configId, properties, odataEnable);
 		} else if (DataSourceTypes.GDATA_SPREADSHEET.equals(configType)) {
-			return getGSpreadConfig(dataService, configId, properties);
+			return getGSpreadConfig(dataService, configId, properties, odataEnable);
 		} else if (DataSourceTypes.CARBON.equals(configType)) {
-			return getCarbonDataSourceConfig(dataService, configId, properties);
+			return getCarbonDataSourceConfig(dataService, configId, properties, odataEnable);
 		} else if (DataSourceTypes.WEB.equals(configType)) {
-            return getWebConfig(dataService, configId, properties);
-        } else if (DataSourceTypes.CUSTOM_TABULAR.equals(configType)) {
-            return getCustomTabularConfig(dataService, configId, properties);
-        } else if (DataSourceTypes.CUSTOM_QUERY.equals(configType)) {
-            return getCustomQueryConfig(dataService, configId, properties);
-        } else if (DataSourceTypes.CASSANDRA.equals(configType)) {
-            return getCassandraConfig(dataService, configId, properties);
-        }
+			return getWebConfig(dataService, configId, properties, odataEnable);
+		} else if (DataSourceTypes.CUSTOM_TABULAR.equals(configType)) {
+			return getCustomTabularConfig(dataService, configId, properties, odataEnable);
+		} else if (DataSourceTypes.CUSTOM_QUERY.equals(configType)) {
+			return getCustomQueryConfig(dataService, configId, properties, odataEnable);
+		} else if (DataSourceTypes.CASSANDRA.equals(configType)) {
+			return getCassandraConfig(dataService, configId, properties, odataEnable);
+		}
 		
 		return null;
 	}
-	
-	private static RDBMSConfig getRDBMSConfig(DataService dataService, String configId, 
-			Map<String, String> properties) throws DataServiceFault {
-		RDBMSConfig config = new RDBMSConfig(dataService, configId, properties);
-		return config;
-	}
-	
-	private static JNDIConfig getJNDIConfig(DataService dataService, String configId, 
-			Map<String, String> properties) throws DataServiceFault {
-		JNDIConfig config = new JNDIConfig(dataService, configId, properties);
+
+	private static RDBMSConfig getRDBMSConfig(DataService dataService, String configId, Map<String, String> properties,
+	                                          boolean odataEnable) throws DataServiceFault {
+		RDBMSConfig config = new RDBMSConfig(dataService, configId, properties, odataEnable);
 		return config;
 	}
 
-    private static MongoConfig getMongoConfig(DataService dataService, String configId,
-                                            Map<String, String> properties) throws DataServiceFault {
-        MongoConfig config = new MongoConfig(dataService, configId, properties);
-        return config;
-    }
-	
-	private static ExcelConfig getExcelConfig(DataService dataService, String configId, 
-			Map<String, String> properties) throws DataServiceFault {
-		ExcelConfig config = new ExcelConfig(dataService, configId, properties);
+	private static JNDIConfig getJNDIConfig(DataService dataService, String configId, Map<String, String> properties,
+	                                        boolean odataEnable) throws DataServiceFault {
+		JNDIConfig config = new JNDIConfig(dataService, configId, properties, odataEnable);
 		return config;
 	}
-	
-	private static RDFConfig getRDFConfig(DataService dataService, String configId, 
-			Map<String, String> properties) throws DataServiceFault {
-		RDFConfig config = new RDFConfig(dataService, configId, properties);
+
+	private static MongoConfig getMongoConfig(DataService dataService, String configId, Map<String, String> properties,
+	                                          boolean odataEnable) throws DataServiceFault {
+		MongoConfig config = new MongoConfig(dataService, configId, properties, odataEnable);
+		return config;
+	}
+
+	private static ExcelConfig getExcelConfig(DataService dataService, String configId, Map<String, String> properties,
+	                                          boolean odataEnable) throws DataServiceFault {
+		ExcelConfig config = new ExcelConfig(dataService, configId, properties, odataEnable);
+		return config;
+	}
+
+	private static RDFConfig getRDFConfig(DataService dataService, String configId, Map<String, String> properties,
+	                                      boolean odataEnable) throws DataServiceFault {
+		RDFConfig config = new RDFConfig(dataService, configId, properties, odataEnable);
 		return config;
 	}
 
     private static SparqlEndpointConfig getSparqlEndpointConfig(DataService dataService, String configId,
-			Map<String, String> properties) throws DataServiceFault {
-		SparqlEndpointConfig config = new SparqlEndpointConfig(dataService, configId, properties);
+			Map<String, String> properties, boolean odataEnable) throws DataServiceFault {
+		SparqlEndpointConfig config = new SparqlEndpointConfig(dataService, configId, properties, odataEnable);
 		return config;
 	}
 	
 	private static CSVConfig getCSVConfig(DataService dataService, String configId, 
-			Map<String, String> properties) throws DataServiceFault {
-		CSVConfig config = new CSVConfig(dataService, configId, properties);
+			Map<String, String> properties, boolean odataEnable) throws DataServiceFault {
+		CSVConfig config = new CSVConfig(dataService, configId, properties, odataEnable);
 		return config;
 	}
-	
-	private static CassandraConfig getCassandraConfig(DataService dataService, String configId, 
-            Map<String, String> properties) throws DataServiceFault {
-	    CassandraConfig config = new CassandraConfig(dataService, configId, properties);
-        return config;
-    }
+
+	private static CassandraConfig getCassandraConfig(DataService dataService, String configId,
+	                                                  Map<String, String> properties, boolean odataEnable) throws DataServiceFault {
+		CassandraConfig config = new CassandraConfig(dataService, configId, properties, odataEnable);
+		return config;
+	}
 
     private static WebConfig getWebConfig(DataService dataService, String configId,
-             Map<String, String> properties) throws DataServiceFault {
-        WebConfig config = new WebConfig(dataService, configId, properties);
+             Map<String, String> properties, boolean odataEnable) throws DataServiceFault {
+        WebConfig config = new WebConfig(dataService, configId, properties, odataEnable);
         return config;
     }
     
     private static TabularDataBasedConfig getCustomTabularConfig(DataService dataService, String configId,
-            Map<String, String> properties) throws DataServiceFault {
-        TabularDataBasedConfig config = new TabularDataBasedConfig(dataService, configId, properties);
+            Map<String, String> properties, boolean odataEnable) throws DataServiceFault {
+        TabularDataBasedConfig config = new TabularDataBasedConfig(dataService, configId, properties, odataEnable);
         return config;
     }
     
     private static InlineCustomQueryBasedDSConfig getCustomQueryConfig(DataService dataService, String configId,
-            Map<String, String> properties) throws DataServiceFault {
-    	InlineCustomQueryBasedDSConfig config = new InlineCustomQueryBasedDSConfig(dataService, configId, properties);
+            Map<String, String> properties, boolean odataEnable) throws DataServiceFault {
+    	InlineCustomQueryBasedDSConfig config = new InlineCustomQueryBasedDSConfig(dataService, configId, properties, odataEnable);
         return config;
     }
 
 	private static GSpreadConfig getGSpreadConfig(DataService dataService, String configId, 
-			Map<String, String> properties) throws DataServiceFault {
-		GSpreadConfig config = new GSpreadConfig(dataService, configId, properties);
+			Map<String, String> properties, boolean odataEnable) throws DataServiceFault {
+		GSpreadConfig config = new GSpreadConfig(dataService, configId, properties, odataEnable);
 		return config;
 	}
 	
 	private static Config getCarbonDataSourceConfig(DataService dataService, 
-			String configId, Map<String, String> properties) throws DataServiceFault {
+			String configId, Map<String, String> properties, boolean odataEnable) throws DataServiceFault {
 		DataSourceService dataSourceService = DataServicesDSComponent.getDataSourceService();
 		try {
 			String name = properties.get(DBConstants.CarbonDatasource.NAME);
@@ -162,9 +171,9 @@ public class ConfigFactory {
 		    String dsType = cds.getDSMInfo().getDefinition().getType();
 		    if (RDBMSDataSourceConstants.RDBMS_DATASOURCE_TYPE.equals(dsType) ||
 		    		CustomTabularDataSourceReader.DATA_SOURCE_TYPE.equals(dsType)) {
-		    	return new SQLCarbonDataSourceConfig(dataService, configId, properties);
+			    return new SQLCarbonDataSourceConfig(dataService, configId, properties, odataEnable);
 		    } else if (CustomQueryDataSourceReader.DATA_SOURCE_TYPE.equals(dsType)) {
-		    	return new CustomQueryCarbonDataSourceConfig(dataService, configId, properties);
+		    	return new CustomQueryCarbonDataSourceConfig(dataService, configId, properties, odataEnable);
 		    } else {
 		    	throw new DataServiceFault("Unsupported Carbon data source type '" + dsType + "'");
 		    }
@@ -183,7 +192,16 @@ public class ConfigFactory {
 		}
 		return configId;
 	}
-		
+
+	private static boolean isODataEnable(OMElement configEl) {
+		String odataConfig = configEl.getAttributeValue(new QName(DBSFields.ENABLE_ODATA));
+		if (odataConfig == null) {
+			return false;
+		} else {
+			return Boolean.valueOf(odataConfig);
+		}
+	}
+
 	private static String getConfigType(Map<String, String> properties) throws DataServiceFault {
 		if ((properties.get(RDBMS.DRIVER_CLASSNAME) != null) || (properties.get(RDBMS_OLD.DRIVER) != null) ||
 				(properties.get(RDBMS.DATASOURCE_CLASSNAME) != null) || 

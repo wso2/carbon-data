@@ -39,6 +39,8 @@ public class Config extends DataServiceConfigurationElement {
     
     private boolean useSecretAliasForPassword;
 
+    private boolean exposeAsODataService;
+
     public void setProperties(ArrayList<Property> properties) {
         this.properties = new ArrayList<Property>();
         for (Property prop : properties) {
@@ -153,7 +155,16 @@ public class Config extends DataServiceConfigurationElement {
     public void setId(String id) {
         this.id = id;
     }
-    
+
+    public boolean isExposeAsODataService() {
+        return exposeAsODataService;
+    }
+
+    public void setExposeAsOData(boolean value) {
+        exposeAsODataService = value;
+    }
+
+
     public boolean isUseSecretAliasForPassword() {
 		return useSecretAliasForPassword;
 	}
@@ -171,6 +182,7 @@ public class Config extends DataServiceConfigurationElement {
         OMElement confEl = fac.createOMElement("config", null);
         if (this.getId() != null) {
             confEl.addAttribute("id", this.getId(), null);
+            confEl.addAttribute(DBSFields.ENABLE_ODATA, String.valueOf(exposeAsODataService), null);
         }
         /* build properties */
         Iterator<Property> iterator = this.getProperties().iterator();

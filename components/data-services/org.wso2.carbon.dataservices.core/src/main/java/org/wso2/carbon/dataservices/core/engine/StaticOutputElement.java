@@ -236,7 +236,7 @@ public class StaticOutputElement extends OutputElement {
         if (paramValue == null) {
         	return;
         }
-        if (escapeNonPrintableChar) {
+        if (escapeNonPrintableChar && paramValue.getScalarValue() != null) {
             paramValue.setScalarValue(paramValue.getScalarValue().replaceAll(NON_PRINTABLE_CHARS, "?"));
         }
         /* export it if told, and only if it's boxcarring */

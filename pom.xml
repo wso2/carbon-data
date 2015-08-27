@@ -1078,7 +1078,7 @@
         <ojdbc.version>6</ojdbc.version> <!--todo need to check for latest - rajith-->
         <cassandra-jdbc.orbit.version>1.2.5.wso2v1</cassandra-jdbc.orbit.version>
 
-        <mongo-java-driver.orbit.version>3.0.0.wso2v1</mongo-java-driver.orbit.version>
+        <mongo-java-driver.orbit.version>3.0.0.wso2v2</mongo-java-driver.orbit.version>
         <mongo-java-driver.orbit.imp.pkg.version>[3.0.0,3.0.3)</mongo-java-driver.orbit.imp.pkg.version> <!--todo change this to appropriate version range ([2.11.4.wso2v1,2.12.0)) after osgi bundle is corrected - rajith-->
 
         <jongo.orbit.version>1.2.0.wso2v1</jongo.orbit.version>

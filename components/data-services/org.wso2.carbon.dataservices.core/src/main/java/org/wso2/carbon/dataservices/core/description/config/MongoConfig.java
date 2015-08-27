@@ -161,30 +161,35 @@ public class MongoConfig extends Config {
         return result;
     }
 
-    private MongoCredential createCredential(Map<String, String> properties) {
+    private MongoCredential createCredential(Map<String, String> properties) throws DataServiceFault {
         MongoCredential credential = null;
         String authenticationType = properties.get(DBConstants.MongoDB.AUTHENTICATION_TYPE);
         String username = properties.get(DBConstants.MongoDB.USERNAME);
         String password = properties.get(DBConstants.MongoDB.PASSWORD);
         String database = properties.get(DBConstants.MongoDB.DATABASE);
-        switch (authenticationType) {
-            case DBConstants.MongoDB.MongoAuthenticationTypes.PLAIN:
-                credential = MongoCredential.createPlainCredential(username, database, password.toCharArray());
-                break;
-            case DBConstants.MongoDB.MongoAuthenticationTypes.SCRAM_SHA_1:
-                credential = MongoCredential.createScramSha1Credential(username, database, password.toCharArray());
-                break;
-            case DBConstants.MongoDB.MongoAuthenticationTypes.MONGODB_CR:
-                credential = MongoCredential.createMongoCRCredential(username, database, password.toCharArray());
-                break;
-            case DBConstants.MongoDB.MongoAuthenticationTypes.GSSAPI:
-                credential = MongoCredential.createGSSAPICredential(username);
-                break;
-            case DBConstants.MongoDB.MongoAuthenticationTypes.MONGODB_X509:
-                credential = MongoCredential.createMongoX509Credential(username);
-                break;
+        if (authenticationType != null) {
+            switch (authenticationType) {
+                case DBConstants.MongoDB.MongoAuthenticationTypes.PLAIN:
+                    credential = MongoCredential.createPlainCredential(username, database, password.toCharArray());
+                    break;
+                case DBConstants.MongoDB.MongoAuthenticationTypes.SCRAM_SHA_1:
+                    credential = MongoCredential.createScramSha1Credential(username, database, password.toCharArray());
+                    break;
+                case DBConstants.MongoDB.MongoAuthenticationTypes.MONGODB_CR:
+                    credential = MongoCredential.createMongoCRCredential(username, database, password.toCharArray());
+                    break;
+                case DBConstants.MongoDB.MongoAuthenticationTypes.GSSAPI:
+                    credential = MongoCredential.createGSSAPICredential(username);
+                    break;
+                case DBConstants.MongoDB.MongoAuthenticationTypes.MONGODB_X509:
+                    credential = MongoCredential.createMongoX509Credential(username);
+                    break;
+            }
+            return credential;
+        } else {
+            throw new DataServiceFault(
+                    "The data source param '" + DBConstants.MongoDB.AUTHENTICATION_TYPE + "' is required");
         }
-        return credential;
     }
 
     public String[] getServers() {

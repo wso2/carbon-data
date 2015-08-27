@@ -148,7 +148,7 @@
         } else if (query != null && operation != null && action.equals("edit")) {
             // when editing a operation load only with-params in callQuery
             CallQuery callQuery = operation.getCallQuery();
-            if (!param.equals("qparam")) {
+            if (!param.isEmpty() && !param.equals("qparam")) {
                 if (callQuery != null) {
                     withParamsList = (ArrayList<WithParam>) callQuery.getWithParams();
                 }

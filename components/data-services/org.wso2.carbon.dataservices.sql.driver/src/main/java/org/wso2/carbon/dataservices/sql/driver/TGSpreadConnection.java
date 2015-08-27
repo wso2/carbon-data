@@ -64,8 +64,6 @@ public class TGSpreadConnection extends TConnection {
 
     private boolean requireAuth;
 
-//    private Registry registry = null;
-
     private SpreadsheetFeed spreadSheetFeed;
 
     private WorksheetFeed worksheetFeed;
@@ -73,60 +71,39 @@ public class TGSpreadConnection extends TConnection {
     public TGSpreadConnection(Properties props) throws SQLException {
         super(props);
         this.spreadSheetName = props.getProperty(Constants.DRIVER_PROPERTIES.SHEET_NAME);
-//        if (SQLDriverDSComponent.getRegistryService() == null) {
-//            log.warn("GSpreadConfig.getFeed(): Registry service is not available, authentication keys won't be shared");
-//        } else {
-//            try {
-//                registry = SQLDriverDSComponent.getRegistryService()
-//                        .getGovernanceSystemRegistry(TDriverUtil.getCurrentTenantId());
-//            } catch (RegistryException e) {
-//                log.warn("GSpreadConfig.getFeed(): Error in retrieving gov registry, authentication keys won't be shared");
-//            }
-//        }
-        try {
-            this.clientId = URLDecoder.decode(props.getProperty(Constants.GSPREAD_PROPERTIES.CLIENT_ID), "UTF-8");
-            this.clientSecret = URLDecoder.decode(props.getProperty(Constants.GSPREAD_PROPERTIES.CLIENT_SECRET), "UTF-8");
-            this.refreshToken = URLDecoder.decode(props.getProperty(Constants.GSPREAD_PROPERTIES.REFRESH_TOKEN), "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new SQLException("Error in retrieving Authentication information " + e.getMessage(), e);
+        this.visibility = props.getProperty(Constants.DRIVER_PROPERTIES.VISIBILITY);
+        this.requireAuth = Constants.ACCESS_MODE_PRIVATE.equals(visibility);
+        if (requireAuth) {
+            this.clientId = props.getProperty(Constants.GSPREAD_PROPERTIES.CLIENT_ID);
+            this.clientSecret = props.getProperty(Constants.GSPREAD_PROPERTIES.CLIENT_SECRET);
+            this.refreshToken = props.getProperty(Constants.GSPREAD_PROPERTIES.REFRESH_TOKEN);
+            if (this.clientId == null || this.clientId.isEmpty()){
+                throw new SQLException("Valid Client id not provided");
+            }
+            if (this.clientSecret == null || this.clientSecret.isEmpty()){
+                throw new SQLException("Valid Client secret not provided");
+            }
+            if (this.refreshToken == null || this.refreshToken.isEmpty()){
+                throw new SQLException("Valid refresh token not provided");
+            }
+            try {
+                this.clientId = URLDecoder.decode(this.clientId, "UTF-8");
+                this.clientSecret = URLDecoder.decode(this.clientSecret, "UTF-8");
+                this.refreshToken = URLDecoder.decode(this.refreshToken, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                throw new SQLException("Error in retrieving Authentication information " + e.getMessage(), e);
+            }
         }
         if (spreadSheetName == null) {
             throw new SQLException("Spread Sheet name is not provided");
         }
-        this.visibility = props.getProperty(Constants.DRIVER_PROPERTIES.VISIBILITY);
+
         this.visibility = (visibility != null) ? visibility : Constants.ACCESS_MODE_PRIVATE;
         if (!this.checkVisibility(visibility)) {
             throw new SQLException("Invalid access mode '" + visibility + "' is provided");
         }
         this.service = new SpreadsheetService(Constants.SPREADSHEET_SERVICE_NAME);
         this.service.setCookieManager(null);
-        this.requireAuth = Constants.ACCESS_MODE_PRIVATE.equals(visibility);
-
-//        if (Constants.ACCESS_MODE_PRIVATE.equals(visibility)) {
-//            try {
-//                HttpTransport httpTransport = new NetHttpTransport();
-//                JacksonFactory jsonFactory = new JacksonFactory();
-//                GoogleCredential credential = new GoogleCredential.Builder()
-//                        .setClientSecrets(this.clientId, this.clientSecret)
-//                        .setTransport(httpTransport)
-//                        .setJsonFactory(jsonFactory)
-//                        .build();
-//                credential.setAccessToken(this.accessToken);
-//                credential.setRefreshToken(this.refreshToken);
-//                credential.refreshToken();
-////                this.service.setUserCredentials(this.getUsername(), this.getPassword());
-////                this.service.setUserToken(((GoogleAuthTokenFactory.UserToken)
-////                        service.getAuthTokenFactory().
-////                                getAuthToken()).getValue());
-//                this.service.setOAuth2Credentials(credential);
-////            } catch (AuthenticationException e) {
-////                throw new SQLException("Error occurred while authenticating user to access the " +
-////                        "spread sheet", e);
-//            } catch (Exception e){
-//                throw new SQLException("Error occurred while authenticating user to access the " +
-//                        "spread sheet", e);
-//            }
-//        }
         this.spreadSheetFeed = this.extractSpreadSheetFeed();
         this.worksheetFeed = this.extractWorkSheetFeed();
     }
@@ -170,10 +147,6 @@ public class TGSpreadConnection extends TConnection {
     public boolean isRequireAuth() {
         return requireAuth;
     }
-
-//    public Registry getRegistry() {
-//        return registry;
-//    }
 
     public WorksheetFeed getWorksheetFeed() {
         return worksheetFeed;
@@ -267,8 +240,6 @@ public class TGSpreadConnection extends TConnection {
         boolean requireAuth = Constants.ACCESS_MODE_PRIVATE.equals(visibility);
         TGSpreadFeedUtil feedUtil = new TGSpreadFeedUtil(this);
         return feedUtil.getFeed(worksheetQuery, WorksheetFeed.class);
-//        return TDriverUtil.getFeed(this.getSpreadSheetService(), worksheetQuery,
-//                WorksheetFeed.class);
     }
 
     private SpreadsheetEntry extractSpreadSheetEntryFromUrl() throws SQLException {
@@ -298,8 +269,6 @@ public class TGSpreadConnection extends TConnection {
                 TDriverUtil.createSpreadSheetQuery(this.getSpreadSheetName(), spreadSheetFeedUrl);
         TGSpreadFeedUtil feedUtil = new TGSpreadFeedUtil(this);
         return feedUtil.getFeed(spreadSheetQuery, SpreadsheetFeed.class);
-//        return TDriverUtil.getFeed(getSpreadSheetService(), spreadSheetQuery,
-//                SpreadsheetFeed.class);
     }
 
 }

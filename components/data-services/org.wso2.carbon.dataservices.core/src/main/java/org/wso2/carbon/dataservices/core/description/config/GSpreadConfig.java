@@ -94,9 +94,7 @@ public class GSpreadConfig extends Config {
 		}
 		String extractedQuery = documentURI.getQuery();
         if (extractedQuery == null) {
-            String message = "Error Generating Query for given Document:" + documentURL;
-            log.warn(message);
-            throw new DataServiceFault(message);
+            return getKeyForNewSpreadsheetURLFormat(documentURL);
         }
         int i1 = extractedQuery.lastIndexOf("key=");
         int i2 = extractedQuery.indexOf("&", i1);

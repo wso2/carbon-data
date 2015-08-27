@@ -39,6 +39,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.regex.Pattern" %>
 <%@ page import="java.util.regex.Matcher" %>
+<%@ page import="org.wso2.carbon.dataservices.sql.driver.parser.Constants" %>
 
 <fmt:bundle basename="org.wso2.carbon.dataservices.ui.i18n.Resources">
 <script type="text/javascript" src="../ajax/js/prototype.js"></script>
@@ -141,6 +142,12 @@ private boolean isFieldMandatory(String propertName) {
 	} else if (propertName.equals(DBConstants.GSpread.VISIBILITY)) {
 		return true;
 	} else if (propertName.equals(DBConstants.GSpread.WORKSHEET_NUMBER)) {
+		return true;
+	} else if (propertName.equals(DBConstants.GSpread.CLIENT_ID)) {
+		return true;
+	} else if (propertName.equals(DBConstants.GSpread.CLIENT_SECRET)) {
+		return true;
+	} else if (propertName.equals(DBConstants.GSpread.REFRESH_TOKEN)) {
 		return true;
 	} else if (propertName.equals(DBConstants.Excel.DATASOURCE)) {
 		return true;
@@ -645,6 +652,37 @@ private String getSheetName(String gSpreadJDBCUrl) {
 		} 
 	}
 	return "";
+}
+
+private String getClientId(String gSpreadJDBCUrl) {
+    String params[] = gSpreadJDBCUrl.split(";");
+    for (String param : params){
+        String subParams[] = param.split("=");
+        if (subParams.length > 1 && subParams[0].equals(Constants.GSPREAD_PROPERTIES.CLIENT_ID)) {
+            return subParams[1];
+        }
+    }
+    return "";
+}
+private String getClientSecret(String gSpreadJDBCUrl) {
+    String params[] = gSpreadJDBCUrl.split(";");
+    for (String param : params){
+        String subParams[] = param.split("=");
+        if (subParams.length > 1 && subParams[0].equals(Constants.GSPREAD_PROPERTIES.CLIENT_SECRET)) {
+            return subParams[1];
+        }
+    }
+    return "";
+}
+private String getRefreshToken(String gSpreadJDBCUrl) {
+    String params[] = gSpreadJDBCUrl.split(";");
+    for (String param : params){
+        String subParams[] = param.split("=");
+        if (subParams.length > 1 && subParams[0].equals(Constants.GSPREAD_PROPERTIES.REFRESH_TOKEN)) {
+            return subParams[1];
+        }
+    }
+    return "";
 }
 %>
 
@@ -1578,6 +1616,7 @@ private String getSheetName(String gSpreadJDBCUrl) {
 
 <%
     if (propertyIterator != null) {
+        String jdbcUrl = "";
         while (propertyIterator.hasNext()) {
             Property property = (Property) propertyIterator.next();
             String propertyName = property.getName();
@@ -1585,6 +1624,9 @@ private String getSheetName(String gSpreadJDBCUrl) {
 
             if(property.getValue() instanceof String){
                propertyValue = (String)property.getValue();
+                if (propertyName.equals(RDBMS.URL)){
+                    jdbcUrl = propertyValue;
+                }
             }   else if (property.getValue() instanceof ArrayList) {
                     if (propertyName.equals(RDBMS.DATASOURCE_PROPS) && isXAType) {
                        Iterator<Property> iterator = ((ArrayList<Property>)property.getValue()).iterator();
@@ -1667,7 +1709,8 @@ private String getSheetName(String gSpreadJDBCUrl) {
         } %>
 
 <% boolean trshow = true;
-   if ((propertyName.equals("gspread_username") || propertyName.equals("gspread_password"))
+   if ((propertyName.equals("gspread_client_id") || propertyName.equals("gspread_client_secret")
+        || propertyName.equals("gspread_refresh_token"))
            && (visibility == null || visibility.equals("public"))) {
          trshow = false;
     }
@@ -1726,9 +1769,7 @@ private String getSheetName(String gSpreadJDBCUrl) {
             ||propertyName.equals(DBConstants.CustomDataSource.DATA_SOURCE_QUERY_CLASS)
             ||propertyName.equals(DBConstants.CustomDataSource.DATA_SOURCE_TABULAR_CLASS)) && 
             	!(propertyName.equals(DBConstants.GSpread.DATASOURCE) && useQueryMode) &&
-            	!(propertyName.equals("gspread_visibility") && useQueryMode) &&
-            	!(propertyName.equals("gspread_username") && useQueryMode) &&
-            	!(propertyName.equals("gspread_password") && useQueryMode)
+            	!(propertyName.equals("gspread_visibility") && useQueryMode)
             ){%>
     <td class="leftCol-small" style="white-space: nowrap;">
         <fmt:message key="<%=propertyName%>"/><%=(isFieldMandatory(propertyName)?"<font color=\"red\">*</font>":"")%>
@@ -2148,32 +2189,32 @@ private String getSheetName(String gSpreadJDBCUrl) {
 					        </tr>
 					     <%} %>
                  	<%} else if (propertyName.equals(RDBMS.USERNAME) && dataSourceType.equals("GDATA_SPREADSHEET")) { %>
-                 		<tr id="tr:querymode_gspread_username"  style='display:<%=(!visibility.equals("public")?"":"none") %>'>
-                 			<td class="leftCol-small" style="white-space: nowrap;">
-                 				<fmt:message key="<%=DBConstants.GSpread.USERNAME%>"/><%=(isFieldMandatory(DBConstants.GSpread.USERNAME)?"<font color=\"red\">*</font>":"")%>
-        					</td>
-                 			<td><input type="text" size="50" id="<%=DBConstants.GSpread.USERNAME %>" name="<%=DBConstants.GSpread.USERNAME %>" value="<%=propertyValue%>" /></td>
-                 		</tr>
+                 		<%--<tr id="tr:querymode_gspread_username"  style='display:<%=(!visibility.equals("public")?"":"none") %>'>--%>
+                 			<%--<td class="leftCol-small" style="white-space: nowrap;">--%>
+                 				<%--<fmt:message key="<%=DBConstants.GSpread.USERNAME%>"/><%=(isFieldMandatory(DBConstants.GSpread.USERNAME)?"<font color=\"red\">*</font>":"")%>--%>
+        					<%--</td>--%>
+                 			<%--<td><input type="text" size="50" id="<%=DBConstants.GSpread.USERNAME %>" name="<%=DBConstants.GSpread.USERNAME %>" value="<%=propertyValue%>" /></td>--%>
+                 		<%--</tr>--%>
                  	<%} else if (propertyName.equals(RDBMS.PASSWORD) && dataSourceType.equals("GDATA_SPREADSHEET")) { %>
-                 		<tr id="tr:querymode_gspread_password" style='display:<%=(!visibility.equals("public")?"":"none") %>'>
-                 			<td class="leftCol-small" style="white-space: nowrap;">
-        						<fmt:message key="<%=DBConstants.GSpread.PASSWORD%>"/><%=(isFieldMandatory(DBConstants.GSpread.PASSWORD)?"<font color=\"red\">*</font>":"")%>
-        					</td>
-                 			<td>
-                 			<%if(useSecretAlias) {%>
-                 				<input type="text" size="50" id="pwdalias" name="pwdalias" value="<%=propertyValue%>">
-                 				<input type="password" size="50" id="<%=DBConstants.GSpread.PASSWORD %>" name="<%=DBConstants.GSpread.PASSWORD %>" value="<%=propertyValue%>" style="display:none"/>
-                 				<input type="checkbox" id="useSecretAlias" name="useSecretAlias" onclick="getUseSecretAliasValue(this, '<%=DBConstants.GSpread.PASSWORD%>')" checked/>
-	               				<fmt:message key="usePasswordAlias"/>
-                 			<%} else {%>
-                 				<input type="text" size="50" id="pwdalias" name="pwdalias" value="<%=propertyValue%>" style="display:none">
-                 				<input type="password" size="50" id="<%=DBConstants.GSpread.PASSWORD %>" name="<%=DBConstants.GSpread.PASSWORD %>" value="<%=propertyValue%>" />
-                 				<input type="checkbox" id="useSecretAlias" name="useSecretAlias" onclick="getUseSecretAliasValue(this, '<%=DBConstants.GSpread.PASSWORD%>')"/>
-	               				<fmt:message key="usePasswordAlias"/>
-                 			<%} %>
-                 			<input type="hidden" id="useSecretAliasValue" name="useSecretAliasValue" size="50" value="<%=useSecretAlias%>">
-                 			</td>
-                 		</tr>
+                 		<%--<tr id="tr:querymode_gspread_password" style='display:<%=(!visibility.equals("public")?"":"none") %>'>--%>
+                 			<%--<td class="leftCol-small" style="white-space: nowrap;">--%>
+        						<%--<fmt:message key="<%=DBConstants.GSpread.PASSWORD%>"/><%=(isFieldMandatory(DBConstants.GSpread.PASSWORD)?"<font color=\"red\">*</font>":"")%>--%>
+        					<%--</td>--%>
+                 			<%--<td>--%>
+                 			<%--<%if(useSecretAlias) {%>--%>
+                 				<%--<input type="text" size="50" id="pwdalias" name="pwdalias" value="<%=propertyValue%>">--%>
+                 				<%--<input type="password" size="50" id="<%=DBConstants.GSpread.PASSWORD %>" name="<%=DBConstants.GSpread.PASSWORD %>" value="<%=propertyValue%>" style="display:none"/>--%>
+                 				<%--<input type="checkbox" id="useSecretAlias" name="useSecretAlias" onclick="getUseSecretAliasValue(this, '<%=DBConstants.GSpread.PASSWORD%>')" checked/>--%>
+	               				<%--<fmt:message key="usePasswordAlias"/>--%>
+                 			<%--<%} else {%>--%>
+                 				<%--<input type="text" size="50" id="pwdalias" name="pwdalias" value="<%=propertyValue%>" style="display:none">--%>
+                 				<%--<input type="password" size="50" id="<%=DBConstants.GSpread.PASSWORD %>" name="<%=DBConstants.GSpread.PASSWORD %>" value="<%=propertyValue%>" />--%>
+                 				<%--<input type="checkbox" id="useSecretAlias" name="useSecretAlias" onclick="getUseSecretAliasValue(this, '<%=DBConstants.GSpread.PASSWORD%>')"/>--%>
+	               				<%--<fmt:message key="usePasswordAlias"/>--%>
+                 			<%--<%} %>--%>
+                 			<%--<input type="hidden" id="useSecretAliasValue" name="useSecretAliasValue" size="50" value="<%=useSecretAlias%>">--%>
+                 			<%--</td>--%>
+                 		<%--</tr>--%>
                  	<%} %>
                  <% }%> 
                  
@@ -2620,14 +2661,14 @@ private String getSheetName(String gSpreadJDBCUrl) {
     }   }
 %>
 <%if ("GDATA_SPREADSHEET".equals(dataSourceType)) {%>
-<table class="styledLeft noBorders" cellspacing="0" width="100%">
+<table id="tbl:gspread_redirect_uris" style='display:<%=((!(visibility == null || visibility.equals("public")))?"":"none")%>' class="styledLeft noBorders" cellspacing="0" width="100%">
     <tr>
         <td style="width:150px"><fmt:message key="gspread_redirect_uris"/><span
                 class="required">*</span></td>
         <td align="left">
             <input id="gspread_redirect_uris"
                    name="gspread_redirect_uris"
-                   value="https://localhost:9443/tokenService"
+                   value="https://localhost:9443/authCodeReceiver"
                    type="text"/>
         </td>
     </tr>
@@ -2677,7 +2718,7 @@ private String getSheetName(String gSpreadJDBCUrl) {
 
         <%} else if ("GDATA_SPREADSHEET".equals(dataSourceType)) {%>
         <div id="spreadsheetConnectionTestMsgDiv" style="display: none;"></div>
-        <input class="button" type="button" value="<fmt:message key="gspread_generate_tokens"/>"
+        <input id="btn:gspread_generate_tokens" class="button" type="button" style='display:<%=((!(visibility == null || visibility.equals("public")))?"":"none")%>' value="<fmt:message key="gspread_generate_tokens"/>"
                onclick="reDirectToConsent();return false;"/>
         <input class="button" type="button" value="<fmt:message key="datasource.test.connection"/>"
                onclick="testSpreadsheetConnection();return false;"/>

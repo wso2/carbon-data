@@ -64,6 +64,10 @@
             <groupId>commons-io.wso2</groupId>
             <artifactId>commons-io</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.data</groupId>
+            <artifactId>org.wso2.carbon.dataservices.sql.driver</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -91,6 +95,7 @@
                             org.apache.axiom.om.impl.builder;version="${axiom.orbit.imp.pkg.version}",
                             org.wso2.carbon.dataservices.common;version="${dataservices.imp.pkg.version}",
                             org.wso2.carbon.dataservices.common.conf;version="${dataservices.imp.pkg.version}",
+                            org.wso2.carbon.dataservices.sql.driver.parser;version="${dataservices.imp.pkg.version}",
                             org.apache.axis2;version="${apache.axis2.orbit.imp.pkg.version}",
                             org.apache.axis2.client;version="${apache.axis2.orbit.imp.pkg.version}",
                             org.apache.axis2.context;version="${apache.axis2.orbit.imp.pkg.version}",

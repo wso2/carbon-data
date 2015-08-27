@@ -1212,8 +1212,11 @@ function gspreadVisibiltyOnChange(obj, document) {
     } else {
         dval = "none";
     }
-    document.getElementById('tr:gspread_username').style.display = dval;
-    document.getElementById('tr:gspread_password').style.display = dval;
+    document.getElementById('tr:gspread_client_id').style.display = dval;
+    document.getElementById('tr:gspread_client_secret').style.display = dval;
+    document.getElementById('tr:gspread_refresh_token').style.display = dval;
+    document.getElementById('tbl:gspread_redirect_uris').style.display = dval;
+    document.getElementById('btn:gspread_generate_tokens').style.display = dval;
 }
 
 function gspreadVisibiltyOnChangeQMode(obj, document) {

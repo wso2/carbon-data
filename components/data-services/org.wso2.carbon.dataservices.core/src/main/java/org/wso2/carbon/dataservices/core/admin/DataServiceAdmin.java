@@ -264,7 +264,10 @@ public class DataServiceAdmin extends AbstractAdmin {
 			String message = "Driver class " + driverClass + " can not be loaded";
 			log.error(message, e);
 			return message;
-		} finally {
+		} catch (Exception e) {
+            String message = "Could not connect to database " + jdbcURL + ", Error message - " + e.getMessage();
+            return message;
+        } finally {
 			if (connection != null) {
 				try {
 					connection.close();

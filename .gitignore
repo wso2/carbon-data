@@ -3,5 +3,4 @@ target
 .classpath
 .settings
 .project
-*.i??
 .idea

@@ -70,15 +70,16 @@ public class SQLCarbonDataSourceConfig extends SQLConfig {
 	public SQLCarbonDataSourceConfig(DataService dataService, String configId, Map<String, String> properties)
 			throws DataServiceFault {
 		super(dataService, configId, DataSourceTypes.CARBON, properties, false);
-		this.dataSourceName = properties.get(DBConstants.CarbonDatasource.NAME);
-		if (!dataService.isServiceInactive()) {
-			try {
-				this.initSQLDataSource();
-			} catch (SQLException e) {
-				throw new DataServiceFault(e, DBConstants.FaultCodes.CONNECTION_UNAVAILABLE_ERROR,
-				                           e.getMessage());
-			}
-		}
+        this.dataSourceName = properties.get(DBConstants.CarbonDatasource.NAME);
+        this.dataSource = initDataSource();
+        if (!dataService.isServiceInactive()) {
+            try {
+                this.initSQLDataSource();
+            } catch (SQLException e) {
+                throw new DataServiceFault(e, DBConstants.FaultCodes.CONNECTION_UNAVAILABLE_ERROR,
+                                           e.getMessage());
+            }
+        }
 	}
 
 	@Override

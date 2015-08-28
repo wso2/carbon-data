@@ -112,7 +112,7 @@
                         <Import-Package>
                             !org.wso2.carbon.dataservices.ui.fileupload.stub.*
                         </Import-Package>
-                        <!--<DynamicImport-Package>*</DynamicImport-Package>-->
+                        <DynamicImport-Package>*</DynamicImport-Package> <!-- todo need to correct -->
                     </instructions>
                 </configuration>
                      </plugin>

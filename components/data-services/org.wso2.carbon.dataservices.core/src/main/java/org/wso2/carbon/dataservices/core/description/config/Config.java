@@ -18,9 +18,11 @@
  */
 package org.wso2.carbon.dataservices.core.description.config;
 
-import java.util.Map;
-
+import org.wso2.carbon.dataservices.core.DataServiceFault;
 import org.wso2.carbon.dataservices.core.engine.DataService;
+import org.wso2.carbon.dataservices.core.odata.ODataDataHandler;
+
+import java.util.Map;
 
 /**
  * Represents a config in a data service.
@@ -34,13 +36,15 @@ public abstract class Config {
 	private Map<String, String> properties;
 	
 	private DataService dataService;
-	
-	public Config(DataService dataService, String configId, String type, 
-			Map<String, String> properties) {
+
+	private boolean oDataEnabled;
+
+	public Config(DataService dataService, String configId, String type, Map<String, String> properties, boolean oDataEnabled) {
 		this.dataService = dataService;
 		this.configId = configId;
 		this.type = type;
 		this.properties = properties;
+		this.oDataEnabled = oDataEnabled;
 	}
 	
 	public DataService getDataService() {
@@ -71,5 +75,10 @@ public abstract class Config {
 	public abstract boolean isActive();
 	
 	public abstract void close();
-	
+
+	public abstract ODataDataHandler createODataHandler() throws DataServiceFault;
+
+	public boolean isODataEnabled() {
+		return oDataEnabled;
+	}
 }

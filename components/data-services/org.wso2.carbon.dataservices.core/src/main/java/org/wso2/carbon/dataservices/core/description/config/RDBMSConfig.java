@@ -18,31 +18,49 @@
  */
 package org.wso2.carbon.dataservices.core.description.config;
 
-import java.sql.SQLException;
-import java.util.Map;
-
 import org.wso2.carbon.dataservices.common.DBConstants;
 import org.wso2.carbon.dataservices.common.DBConstants.DataSourceTypes;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
 import org.wso2.carbon.dataservices.core.JDBCPoolSQLConfig;
 import org.wso2.carbon.dataservices.core.engine.DataService;
+import org.wso2.carbon.dataservices.core.odata.ODataDataHandler;
+import org.wso2.carbon.dataservices.core.odata.RDBMSDataHandler;
+
+import java.sql.SQLException;
+import java.util.Map;
 
 /**
  * This class represents a RDBMS based data source configuration.
  */
 public class RDBMSConfig extends JDBCPoolSQLConfig {
 
-	public RDBMSConfig(DataService dataService, String configId, Map<String, String> properties) 
+	public RDBMSConfig(DataService dataService, String configId, Map<String, String> properties, boolean odataEnable)
 			throws DataServiceFault {
-		super(dataService, configId, DataSourceTypes.RDBMS, properties);
+		super(dataService, configId, DataSourceTypes.RDBMS, properties, odataEnable);
 		if (!dataService.isServiceInactive()) {
-		    try {
-			    this.initSQLDataSource();
-		    } catch (SQLException e) {
-			    throw new DataServiceFault(e, DBConstants.FaultCodes.CONNECTION_UNAVAILABLE_ERROR,
-			    		e.getMessage());
-		    }
+			try {
+				this.initSQLDataSource();
+			} catch (SQLException e) {
+				throw new DataServiceFault(e, DBConstants.FaultCodes.CONNECTION_UNAVAILABLE_ERROR, e.getMessage());
+			}
 		}
 	}
-		
+
+	public RDBMSConfig(DataService dataService, String configId, Map<String, String> properties)
+			throws DataServiceFault {
+		super(dataService, configId, DataSourceTypes.RDBMS, properties, false);
+		if (!dataService.isServiceInactive()) {
+			try {
+				this.initSQLDataSource();
+			} catch (SQLException e) {
+				throw new DataServiceFault(e, DBConstants.FaultCodes.CONNECTION_UNAVAILABLE_ERROR, e.getMessage());
+			}
+		}
+	}
+
+	@Override
+	public ODataDataHandler createODataHandler() throws DataServiceFault {
+		return new RDBMSDataHandler(getDataSource(), getConfigId(), this.getDataService().getServiceNamespace());
+	}
+
 }

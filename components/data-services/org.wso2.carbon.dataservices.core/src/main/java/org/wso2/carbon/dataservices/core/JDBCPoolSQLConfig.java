@@ -18,26 +18,26 @@
  */
 package org.wso2.carbon.dataservices.core;
 
+import org.apache.axiom.om.util.AXIOMUtil;
+import org.apache.tomcat.jdbc.pool.DataSource;
+import org.wso2.carbon.dataservices.common.DBConstants.RDBMS;
+import org.wso2.carbon.dataservices.common.RDBMSUtils;
+import org.wso2.carbon.dataservices.core.description.config.SQLConfig;
+import org.wso2.carbon.dataservices.core.engine.DataService;
+import org.wso2.carbon.dataservices.core.odata.ODataDataHandler;
+import org.wso2.carbon.ndatasource.common.DataSourceException;
+import org.wso2.carbon.ndatasource.rdbms.RDBMSConfiguration;
+import org.wso2.carbon.ndatasource.rdbms.RDBMSConfiguration.DataSourceProperty;
+import org.wso2.carbon.ndatasource.rdbms.RDBMSDataSource;
+import org.wso2.carbon.ndatasource.rdbms.RDBMSDataSourceConstants;
+import org.wso2.carbon.ndatasource.rdbms.utils.RDBMSDataSourceUtils;
+
+import javax.xml.stream.XMLStreamException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import javax.xml.stream.XMLStreamException;
-
-import org.apache.axiom.om.util.AXIOMUtil;
-import org.apache.tomcat.jdbc.pool.DataSource;
-import org.wso2.carbon.dataservices.common.RDBMSUtils;
-import org.wso2.carbon.dataservices.common.DBConstants.RDBMS;
-import org.wso2.carbon.dataservices.core.description.config.SQLConfig;
-import org.wso2.carbon.dataservices.core.engine.DataService;
-import org.wso2.carbon.ndatasource.common.DataSourceException;
-import org.wso2.carbon.ndatasource.rdbms.RDBMSConfiguration;
-import org.wso2.carbon.ndatasource.rdbms.RDBMSDataSource;
-import org.wso2.carbon.ndatasource.rdbms.RDBMSDataSourceConstants;
-import org.wso2.carbon.ndatasource.rdbms.RDBMSConfiguration.DataSourceProperty;
-import org.wso2.carbon.ndatasource.rdbms.utils.RDBMSDataSourceUtils;
 
 /**
  * This class represents a Tomcat JDBC Pool based SQL data source configuration.
@@ -45,11 +45,10 @@ import org.wso2.carbon.ndatasource.rdbms.utils.RDBMSDataSourceUtils;
 public class JDBCPoolSQLConfig extends SQLConfig {
 
 	private DataSource dataSource;
-	
-	public JDBCPoolSQLConfig(DataService dataService, String configId,
-			String type, Map<String, String> properties)
-			throws DataServiceFault {
-		super(dataService, configId, type, RDBMSUtils.convertConfigPropsFromV2toV3(properties));
+
+	public JDBCPoolSQLConfig(DataService dataService, String configId, String type, Map<String, String> properties,
+	                         boolean odataEnable) throws DataServiceFault {
+		super(dataService, configId, type, RDBMSUtils.convertConfigPropsFromV2toV3(properties), odataEnable);
 	}
 	
 	@Override
@@ -147,4 +146,9 @@ public class JDBCPoolSQLConfig extends SQLConfig {
 		}
 	}
 
+	@Override
+	public ODataDataHandler createODataHandler() throws DataServiceFault {
+		throw new DataServiceFault("Expose as OData Service feature doesn't support for the " + getConfigId() +
+		                           " Datasource.");
+	}
 }

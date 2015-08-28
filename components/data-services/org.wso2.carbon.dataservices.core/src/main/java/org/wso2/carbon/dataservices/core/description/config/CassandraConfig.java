@@ -27,14 +27,14 @@ import org.wso2.carbon.dataservices.core.DataServiceFault;
 import org.wso2.carbon.dataservices.core.engine.DataService;
 
 import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.Cluster.Builder;
 import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.HostDistance;
-import com.datastax.driver.core.QueryOptions;
-import com.datastax.driver.core.SocketOptions;
-import com.datastax.driver.core.Cluster.Builder;
 import com.datastax.driver.core.PoolingOptions;
 import com.datastax.driver.core.ProtocolOptions.Compression;
+import com.datastax.driver.core.QueryOptions;
 import com.datastax.driver.core.Session;
+import com.datastax.driver.core.SocketOptions;
 import com.datastax.driver.core.policies.ConstantReconnectionPolicy;
 import com.datastax.driver.core.policies.DefaultRetryPolicy;
 import com.datastax.driver.core.policies.DowngradingConsistencyRetryPolicy;
@@ -44,6 +44,12 @@ import com.datastax.driver.core.policies.LatencyAwarePolicy;
 import com.datastax.driver.core.policies.LoggingRetryPolicy;
 import com.datastax.driver.core.policies.RoundRobinPolicy;
 import com.datastax.driver.core.policies.TokenAwarePolicy;
+import org.wso2.carbon.dataservices.common.DBConstants;
+import org.wso2.carbon.dataservices.common.DBConstants.DataSourceTypes;
+import org.wso2.carbon.dataservices.core.DataServiceFault;
+import org.wso2.carbon.dataservices.core.engine.DataService;
+import org.wso2.carbon.dataservices.core.odata.CassandraDataHandler;
+import org.wso2.carbon.dataservices.core.odata.ODataDataHandler;
 
 /**
  * Cassandra-CQL data source implementation.
@@ -55,10 +61,10 @@ public class CassandraConfig extends Config {
     private Session session;
     
     private boolean nativeBatchRequestsSupported;
-        
-    public CassandraConfig(DataService dataService, String configId, 
-            Map<String, String> properties) throws DataServiceFault {
-        super(dataService, configId, DataSourceTypes.CASSANDRA, properties);
+
+    public CassandraConfig(DataService dataService, String configId, Map<String, String> properties,
+                           boolean odataEnable) throws DataServiceFault {
+        super(dataService, configId, DataSourceTypes.CASSANDRA, properties, odataEnable);
         Builder builder = Cluster.builder();
         this.populateSettings(builder, properties);
         String keyspace = properties.get(DBConstants.Cassandra.KEYSPACE);
@@ -75,7 +81,7 @@ public class CassandraConfig extends Config {
             throw new DataServiceFault(e, DBConstants.FaultCodes.CONNECTION_UNAVAILABLE_ERROR, e.getMessage());
         }
     }
-    
+
     public boolean isNativeBatchRequestsSupported() {
         return nativeBatchRequestsSupported;
     }
@@ -314,6 +320,11 @@ public class CassandraConfig extends Config {
     public synchronized void close() {
         this.session.close();
         this.cluster.close();
+    }
+
+    @Override
+    public ODataDataHandler createODataHandler() throws DataServiceFault {
+        return new CassandraDataHandler(getConfigId(), getSession(), getProperty(DBConstants.Cassandra.KEYSPACE));
     }
 
 }

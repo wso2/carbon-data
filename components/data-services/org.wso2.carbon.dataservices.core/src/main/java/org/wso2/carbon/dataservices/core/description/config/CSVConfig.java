@@ -26,6 +26,7 @@ import org.wso2.carbon.dataservices.common.DBConstants.DataSourceTypes;
 import org.wso2.carbon.dataservices.core.DBUtils;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
 import org.wso2.carbon.dataservices.core.engine.DataService;
+import org.wso2.carbon.dataservices.core.odata.ODataDataHandler;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -56,9 +57,9 @@ public class CSVConfig extends Config {
 
     private Map<Integer, String> columnMappings;
 
-    public CSVConfig(DataService dataService, String configId, Map<String, String> properties)
+    public CSVConfig(DataService dataService, String configId, Map<String, String> properties, boolean odataEnable)
             throws DataServiceFault {
-        super(dataService, configId, DataSourceTypes.CSV, properties);
+        super(dataService, configId, DataSourceTypes.CSV, properties, odataEnable);
 
         this.csvDataSourcePath = this.getProperty(DBConstants.CSV.DATASOURCE);
         String columnSeparatorStr = this.getProperty(DBConstants.CSV.COLUMN_SEPARATOR);
@@ -200,6 +201,12 @@ public class CSVConfig extends Config {
 
     public void close() {
         /* nothing to close */
+    }
+
+    @Override
+    public ODataDataHandler createODataHandler() throws DataServiceFault {
+        throw new DataServiceFault("Expose as OData Service feature doesn't support for the " + getConfigId() +
+                                   " Datasource.");
     }
 
 }

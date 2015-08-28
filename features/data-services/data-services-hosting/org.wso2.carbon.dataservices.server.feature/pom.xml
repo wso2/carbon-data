@@ -58,6 +58,14 @@
             <artifactId>guava</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.wso2.orbit.org.apache.olingo</groupId>
+            <artifactId>odata-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-io.wso2</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.wso2.orbit.org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>
         </dependency>
@@ -126,6 +134,14 @@
             <artifactId>commons-pool</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.wso2.orbit.org.antlr</groupId>
+            <artifactId>antlr4-runtime</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.wso2.carbon.commons</groupId>
             <artifactId>org.wso2.carbon.event.server.feature</artifactId>
             <type>zip</type>
@@ -154,10 +170,86 @@
             <groupId>org.wso2.orbit.com.google.http-client</groupId>
             <artifactId>google-http-client</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.data</groupId>
+            <artifactId>org.wso2.carbon.dataservices.odata</artifactId>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.data</groupId>
+            <artifactId>org.wso2.carbon.dataservices.odata.endpoint</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.10</version>
+                <executions>
+                    <execution>
+                        <id>copy</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.wso2.carbon.data</groupId>
+                                    <artifactId>org.wso2.carbon.dataservices.odata</artifactId>
+                                    <type>war</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${basedir}/src/main/resources/</outputDirectory>
+                                    <destFileName>odataservices.war</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                            <!-- other configurations here -->
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>src</directory>
+                            <followSymlinks>false</followSymlinks>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>src/main/resources</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>resources</directory>
+                                    <includes>
+                                        <include>odataservices.war</include>
+                                        <include>p2.inf</include>
+                                        <include>build.properties</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.wso2.maven</groupId>
                 <artifactId>carbon-p2-plugin</artifactId>
@@ -182,6 +274,7 @@
                                 <bundleDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.core</bundleDef>
                                 <bundleDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.common</bundleDef>
                                 <bundleDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.sql.driver</bundleDef>
+                                <bundleDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.odata.endpoint</bundleDef>
                                 <bundleDef>com.google.gdata.wso2:gdata-core</bundleDef>
                                 <bundleDef>com.google.gdata.wso2:gdata-spreadsheet</bundleDef>
                                 <bundleDef>com.google.guava:guava</bundleDef>
@@ -205,6 +298,9 @@
                                 <bundleDef>org.wso2.orbit.com.google.api-client:google-api-client</bundleDef>
                                 <bundleDef>org.wso2.orbit.com.google.oauth-client:google-oauth-client</bundleDef>
                                 <bundleDef>org.wso2.orbit.com.google.http-client:google-http-client</bundleDef>
+                                <bundleDef>org.wso2.orbit.org.apache.olingo:odata-server</bundleDef>
+                                <bundleDef>org.wso2.orbit.org.antlr:antlr4-runtime</bundleDef>
+                                <bundleDef>org.wso2.orbit.org.apache.commons:commons-lang3</bundleDef>
                             </bundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.service.mgt.server:${carbon-deployment.version}</importFeatureDef>

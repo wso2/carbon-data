@@ -35,6 +35,7 @@ import org.wso2.carbon.ndatasource.core.DataSourceService;
 import org.wso2.carbon.ndatasource.rdbms.RDBMSDataSourceConstants;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +56,14 @@ public class SQLCarbonDataSourceConfig extends SQLConfig {
 		super(dataService, configId, DataSourceTypes.CARBON, properties);
 		this.dataSourceName = properties.get(DBConstants.CarbonDatasource.NAME);
         this.dataSource = initDataSource();
+        if (!dataService.isServiceInactive()) {
+            try {
+                this.initSQLDataSource();
+            } catch (SQLException e) {
+                throw new DataServiceFault(e, DBConstants.FaultCodes.CONNECTION_UNAVAILABLE_ERROR,
+                                           e.getMessage());
+            }
+        }
 	}
 
 	@Override

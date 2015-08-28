@@ -48,7 +48,7 @@ public class CodeHolder {
     }
 
     /**
-     * Method to add authCode to the map when user accept the consent
+     * Method to add authCode to the map when user accept the consent.
      *
      * @param sessionId
      * @param code

@@ -46,7 +46,6 @@ public class TokenEndpoint extends HttpServlet {
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) {
-        System.out.println("****************  authcode req " + System.currentTimeMillis());
         AuthCode authCode = CodeHolder.getInstance().getAuthCodeForSession(request.getSession().getId());
         String responseMsg = "";
         JSONObject resJson = new JSONObject();
@@ -86,11 +85,8 @@ public class TokenEndpoint extends HttpServlet {
                     GoogleTokenResponse googleTokenResponse
                             = new GoogleAuthorizationCodeTokenRequest(httpTransport, jsonFactory, "https://www.googleapis.com/oauth2/v3/token", clientId, clientSecret,
                                                                       authCode.getAuthCode(), redirectURIs).execute();
-//                System.out.println("Token expires in: " + googleTokenResponse.getExpiresInSeconds() + " seconds!");
                     resJson.append(DBConstants.GSpread.ACCESS_TOKEN, googleTokenResponse.getAccessToken());
                     resJson.append(DBConstants.GSpread.REFRESH_TOKEN, googleTokenResponse.getRefreshToken());
-                    String sample = resJson.toString();
-                    System.out.println(sample);
                     responseMsg = resJson.toString();
                     responseStatus = HttpStatus.SC_OK;
                 }

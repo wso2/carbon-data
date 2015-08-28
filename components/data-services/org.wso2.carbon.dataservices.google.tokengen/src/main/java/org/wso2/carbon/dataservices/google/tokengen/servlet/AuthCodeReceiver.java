@@ -25,14 +25,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * AuthCode receiver servlet Which will get hit when auth code received
+ * AuthCode receiver servlet Which will get hit when auth code received.
  */
 public class AuthCodeReceiver extends HttpServlet {
     private static final Log log = LogFactory.getLog(AuthCodeReceiver.class);
 
     @Override
     public void service(HttpServletRequest req, HttpServletResponse resp) {
-        log.info("*******************************************");
+        log.debug("Auth code received for the Google Authentication code request");
         CodeHolder tokenGen = CodeHolder.getInstance();
         tokenGen.addCodeToMap(req.getSession().getId(), req.getParameter("code"), req.getParameter("error"));
     }

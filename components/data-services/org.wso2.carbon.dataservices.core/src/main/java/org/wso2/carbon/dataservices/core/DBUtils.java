@@ -415,6 +415,21 @@ public class DBUtils {
     }
 
     /**
+     * Returns whether or not to apply fetch size for the given jdbc connection
+     */
+    public static boolean getChangeFetchSizeForRDBMS(String jdbcUrl) {
+        if (jdbcUrl == null) {
+            return false;
+        }
+        String rdbms = RDBMSUtils.getRDBMSEngine(jdbcUrl);
+        if (rdbms.equals(RDBMSEngines.MYSQL)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * Create a Timestamp object from the given timestamp string.
      */
     public static Timestamp getTimestamp(String value) throws ParseException {

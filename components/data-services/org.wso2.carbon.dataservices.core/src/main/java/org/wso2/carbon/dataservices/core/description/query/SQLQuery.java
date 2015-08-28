@@ -102,7 +102,7 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
 
     private int paramCount;
 
-    private int optimalRSFetchSize;
+    private FetchSizeProperty fetchSizeProperty;
 
     private boolean hasFetchDirection;
 
@@ -204,9 +204,12 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
          * conditions
          */
         this.resultOnlyOutParams = this.calculateResultOnlyOutParams();
-        /* set the optimal JDBC result set fetch size */
-        this.optimalRSFetchSize = DBUtils.getOptimalRSFetchSizeForRDBMS(this.getConfig()
-                .getProperty(RDBMS.URL));
+        /* set the optimal JDBC result set fetch size for mysql */
+        if (DBUtils.getChangeFetchSizeForRDBMS(this.getConfig().getProperty(RDBMS.URL))) {
+            this.fetchSizeProperty = new FetchSizeProperty(true, Integer.MIN_VALUE);
+        } else {
+            this.fetchSizeProperty = new FetchSizeProperty(false, 0);
+        }
         /* set batch update support for this query */
         try {
             this.hasBatchQuerySupport = this.getDataService().isBatchRequestsEnabled()
@@ -543,8 +546,8 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
         return queryTimeout;
     }
 
-    public int getOptimalRSFetchSize() {
-        return optimalRSFetchSize;
+    public FetchSizeProperty getFetchSizeProperty() {
+        return fetchSizeProperty;
     }
 
     private void checkRefCursor(List<QueryParam> queryParams) {
@@ -1374,8 +1377,8 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
                          * scenario of streaming and OUT parameters, so the
                          * possibility is there for other DBMSs
                          */
-                        if (!this.hasOutParams()) {
-                            stmt.setFetchSize(this.getOptimalRSFetchSize());
+                        if (!this.hasOutParams() && this.getFetchSizeProperty().isChangeFetchSize()) {
+                            stmt.setFetchSize(this.getFetchSizeProperty().getFetchSize());
                         }
                     }
                 } catch (Throwable e) {
@@ -2280,6 +2283,28 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
 
         public String getColumnRemarks() {
             return columnRemarks;
+        }
+    }
+
+    /**
+     * Internal class to hold fetch size and whether to set fetch size for connection.
+     */
+    public class FetchSizeProperty {
+        private boolean changeFetchSize;
+
+        private int fetchSize;
+
+        public FetchSizeProperty(boolean changeFetchSize, int fetchSize){
+            this.changeFetchSize = changeFetchSize;
+            this.fetchSize = fetchSize;
+        }
+
+        public boolean isChangeFetchSize() {
+            return changeFetchSize;
+        }
+
+        public int getFetchSize() {
+            return fetchSize;
         }
     }
 

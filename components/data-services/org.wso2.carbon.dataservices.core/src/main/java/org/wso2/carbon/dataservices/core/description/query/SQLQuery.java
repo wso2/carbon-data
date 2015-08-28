@@ -1541,6 +1541,8 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
         } catch (ParseException e) {
             throw new DataServiceFault(e, "Incorrect Time format for parameter : " + paramName
                     + ". Time should be in the format hh:mm:ss");
+        } catch (DataServiceFault e) {
+            throw new DataServiceFault(e, "Error processing parameter - " + paramName + ", Error - " + e.getMessage());
         }
         if ("IN".equals(paramType)) {
             if (queryType == SQLQuery.DS_QUERY_TYPE_NORMAL) {
@@ -1661,6 +1663,8 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
                     + "yyyy-MM-dd'T'hh:mm:ss.sss'+'hh:mm, " + "yyyy-MM-dd'T'hh:mm:ss.sss'-'hh:mm, "
                     + "yyyy-MM-dd'T'hh:mm:ss.sss'Z', " + "yyyy-MM-dd hh:mm:ss.SSSSSS or "
                     + "yyyy-MM-dd hh:mm:ss");
+        } catch (DataServiceFault e) {
+            throw new DataServiceFault(e, "Error processing parameter - " + paramName + ", Error - " + e.getMessage());
         }
         if ("IN".equals(paramType)) {
             if (queryType == SQLQuery.DS_QUERY_TYPE_NORMAL) {

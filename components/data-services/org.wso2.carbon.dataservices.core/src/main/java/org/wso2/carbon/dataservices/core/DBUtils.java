@@ -432,14 +432,20 @@ public class DBUtils {
     /**
      * Create a Timestamp object from the given timestamp string.
      */
-    public static Timestamp getTimestamp(String value) throws ParseException {
+    public static Timestamp getTimestamp(String value) throws DataServiceFault, ParseException {
+        if (value == null || value.isEmpty()){
+            throw new DataServiceFault("Empty string or null value was found as timeStamp.");
+        }
         return new Timestamp(ConverterUtil.convertToDateTime(value).getTimeInMillis());
     }
 
     /**
      * Create a Time object from the given time string.
      */
-    public static Time getTime(String value) throws ParseException {
+    public static Time getTime(String value) throws DataServiceFault, ParseException {
+        if (value == null || value.isEmpty()){
+            throw new DataServiceFault("Empty string or null value was found as time.");
+        }
         return new Time(ConverterUtil.convertToTime(value).getAsCalendar().getTimeInMillis());
     }
 
@@ -939,12 +945,16 @@ public class DBUtils {
 	            throws DataServiceFault {
 		Object[] result = new Object[params.size()];
 		InternalParam param;
-		for (int i = 0; i < result.length; i++) {
-			param = params.get(i);
-			result[i] = convertInputParamValue(param.getValue().getValueAsString(), 
-					param.getSqlType());
-		}
-		return result;
+        for (int i = 0; i < result.length; i++) {
+            param = params.get(i);
+            try {
+                result[i] = convertInputParamValue(param.getValue().getValueAsString(),
+                                                   param.getSqlType());
+            } catch (DataServiceFault dataServiceFault) {
+                throw new DataServiceFault(dataServiceFault, "Error processing parameter - " + param.getName() + ", Error - " + dataServiceFault.getMessage());
+            }
+        }
+        return result;
 	}
 	
 	/**

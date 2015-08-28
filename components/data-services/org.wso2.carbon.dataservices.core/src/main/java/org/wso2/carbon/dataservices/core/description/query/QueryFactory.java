@@ -408,8 +408,10 @@ public class QueryFactory {
 			keyColumns = extractKeyColumns(queryEl);
 		    result = getResultFromQueryElement(dataService, queryEl);
 		    inputNamespace = extractQueryInputNamespace(dataService, result, queryEl);
-		} catch (Exception e) {
+		} catch (XMLStreamException e) {
 			throw new DataServiceFault(e, "Error in parsing SQL query element");
+		} catch (SQLException e) {
+			throw new DataServiceFault(e, DBConstants.FaultCodes.CONNECTION_UNAVAILABLE_ERROR, e.getMessage());
 		}
 		SQLQuery query = new SQLQuery(dataService, queryId, configId, returnGeneratedKeys, isReturnUpdatedRowCount, keyColumns,
 				             sql, getQueryParamsFromQueryElement(queryEl), result, eventTriggers[0], eventTriggers[1],

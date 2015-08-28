@@ -81,7 +81,7 @@ public class MongoConfig extends Config {
             this.getMongoClient().getDatabase(database);
             this.jongo = new Jongo(this.getMongoClient().getDB(database));
         } catch (Exception e) {
-            throw new DataServiceFault(e);
+            throw new DataServiceFault(e, DBConstants.FaultCodes.CONNECTION_UNAVAILABLE_ERROR, e.getMessage());
         }
 
     }

@@ -16,20 +16,6 @@
 
 <component xmlns="http://products.wso2.org/carbon">
 
-    <menus>
-        <menu>
-            <id>google_token_menu</id>
-            <i18n-key>google.tokengen.menu.text</i18n-key>
-            <i18n-bundle>org.wso2.carbon.dataservices.google.tokengen.ui.i18n.Resources</i18n-bundle>
-            <parent-menu>tools_menu</parent-menu>
-            <link>../tokengen/tokenGenerator.jsp</link>
-            <region>region5</region>
-            <order>10</order>
-            <style-class>tools</style-class>
-            <icon>../tokengen/images/data-services.gif</icon>
-        </menu>
-    </menus>
-
     <servlets>
         <servlet id="AuthCodeReceiverServlet">
             <servlet-name>AuthCodeReceiver</servlet-name>

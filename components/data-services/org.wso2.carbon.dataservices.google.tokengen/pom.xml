@@ -75,16 +75,14 @@
                         <Private-Package>
                         </Private-Package>
                         <Export-Package>
-                            org.wso2.carbon.dataservices.google.tokengen.ui;version="${project.version}",
                             org.wso2.carbon.dataservices.google.tokengen.ui.util;version="${project.version}",
-                            org.wso2.carbon.dataservices.google.tokengen.ui.i18n;version="${project.version}",
                             org.wso2.carbon.dataservices.google.tokengen.servlet;version="${project.version}",
                             org.wso2.carbon.dataservices.google.tokengen.servlet.util;version="${project.version}"
                         </Export-Package>
                         <Carbon-Component>UIBundle</Carbon-Component>
                         <Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
                         <Import-Package>
-                            !org.wso2.carbon.dataservices.token.*,
+                            !org.wso2.carbon.dataservices.google.*,
                             org.apache.commons.logging;version="${carbon.commons.logging.imp.pkg.version}",
                             org.wso2.carbon.dataservices.common;version="${dataservices.imp.pkg.version}",
                             com.hp.hpl.jena.sparql.lib.org.json;version="${jena-arq.orbit.imp.pkg.version}",

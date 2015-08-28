@@ -294,6 +294,9 @@ public abstract class ExpressionQuery extends Query {
 		int resultParamCount = paramCount;
 		for (int i = 1; i <= paramCount; i++) {
 			tmpParam = params.getParam(i);
+            if (tmpParam == null) {
+                throw new RuntimeException("Parameters are not Defined Correctly, missing parameter ordinal - " + i );
+            }
 			if (DBConstants.DataTypes.QUERY_STRING.equals(tmpParam.getSqlType())) {
 				paramIndex = paramIndices[i - 1] + currentParamIndexDiff;
 				tmpValue = params.getParam(i).getValue().getScalarValue();

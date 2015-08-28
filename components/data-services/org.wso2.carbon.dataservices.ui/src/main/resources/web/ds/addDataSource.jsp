@@ -1708,7 +1708,18 @@ private String getRefreshToken(String gSpreadJDBCUrl) {
         <%}
         } %>
 
-<% boolean trshow = true;
+<%
+    if ((propertyName.equals(DBConstants.GSpread.CLIENT_ID) || propertyName.equals(DBConstants.GSpread.CLIENT_SECRET)
+         || propertyName.equals(DBConstants.GSpread.REFRESH_TOKEN)) && useQueryMode && flag.equals("edit")) {
+        if (propertyName.equals(DBConstants.GSpread.CLIENT_ID)) {
+            propertyValue = getClientId(jdbcUrl);
+        } else if (propertyName.equals(DBConstants.GSpread.CLIENT_SECRET)) {
+            propertyValue = getClientSecret(jdbcUrl);
+        } else if (propertyName.equals(DBConstants.GSpread.REFRESH_TOKEN)) {
+            propertyValue = getRefreshToken(jdbcUrl);
+        }
+    }
+    boolean trshow = true;
    if ((propertyName.equals("gspread_client_id") || propertyName.equals("gspread_client_secret")
         || propertyName.equals("gspread_refresh_token"))
            && (visibility == null || visibility.equals("public"))) {
@@ -2685,7 +2696,7 @@ private String getRefreshToken(String gSpreadJDBCUrl) {
                onclick="testConnection();return false;"/>
         <script type="text/javascript">
             function displayMsg(msg) {
-            	var successMsg  =  new RegExp("^Database connection is successfull with driver class");
+            	var successMsg  =  new RegExp("^Database connection is successful with driver class");
             	if (msg.search(successMsg)==-1) //if match failed
             	{
             		CARBON.showErrorDialog(msg);

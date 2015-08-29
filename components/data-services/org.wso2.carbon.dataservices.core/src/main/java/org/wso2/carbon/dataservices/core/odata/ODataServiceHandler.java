@@ -56,7 +56,7 @@ public class ODataServiceHandler {
 	private ODataHttpHandler handler;
 
 	public ODataServiceHandler(ODataDataHandler dataHandler, String namespace, String configID)
-			throws DataServiceFault {
+			throws ODataServiceFault {
 		ODataAdapter processor = new ODataAdapter(dataHandler, namespace, configID);
 		OData odata = OData4Impl.newInstance();
 		ServiceMetadata edm = odata.createServiceMetadata(processor.getEdmProvider(), new ArrayList<EdmxReference>());
@@ -68,7 +68,7 @@ public class ODataServiceHandler {
 	 * This method process the http servlet request and send the response.
 	 *
 	 * @param req             HTTPServletRequest
-	 * @param resp            HTTPServletResponce
+	 * @param resp            HTTPServletResponse
 	 * @param serviceRootPath Service root Path
 	 */
 	public void process(HttpServletRequest req, HttpServletResponse resp, String serviceRootPath) {

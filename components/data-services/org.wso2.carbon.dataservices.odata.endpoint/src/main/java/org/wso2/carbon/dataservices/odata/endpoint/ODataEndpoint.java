@@ -18,7 +18,9 @@ package org.wso2.carbon.dataservices.odata.endpoint;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.core.multitenancy.utils.TenantAxisUtils;
+import org.wso2.carbon.dataservices.core.odata.ODataServiceFault;
 import org.wso2.carbon.dataservices.core.odata.ODataServiceHandler;
 import org.wso2.carbon.dataservices.core.odata.ODataServiceRegistry;
 
@@ -37,34 +39,38 @@ public class ODataEndpoint {
 	 */
 	public static void process(HttpServletRequest req, HttpServletResponse resp) {
 		String tenantDomain = TenantAxisUtils.getTenantDomain(req.getRequestURI());
-		String[] serviceParams = getServiceDetails(req.getRequestURI(), tenantDomain);
-		String serviceRootPath;
-		if (serviceParams != null) {
-			if (tenantDomain == null) {
-				tenantDomain = "carbon.super";
-				serviceRootPath = "/" + serviceParams[0] + "/" + serviceParams[1];
-			} else {
-				serviceRootPath = "/t/" + tenantDomain + "/" + serviceParams[0] + "/" + serviceParams[1];
-			}
-			String serviceKey = serviceParams[0] + serviceParams[1];
-			ODataServiceRegistry registry = ODataServiceRegistry.getInstance();
-			ODataServiceHandler handler = registry.getServiceHandler(serviceKey, tenantDomain);
-			if (handler != null) {
-				if (log.isDebugEnabled()) {
-					log.debug(serviceRootPath + " Service invoked.");
+		try {
+			String[] serviceParams = getServiceDetails(req.getRequestURI(), tenantDomain);
+			String serviceRootPath;
+			if (serviceParams != null) {
+				if (tenantDomain == null) {
+					tenantDomain = MultitenantConstants.SUPER_TENANT_DOMAIN_NAME;
+					serviceRootPath = "/" + serviceParams[0] + "/" + serviceParams[1];
+				} else {
+					serviceRootPath = "/t/" + tenantDomain + "/" + serviceParams[0] + "/" + serviceParams[1];
 				}
-				handler.process(req, resp, serviceRootPath);
+				String serviceKey = serviceParams[0] + serviceParams[1];
+				ODataServiceRegistry registry = ODataServiceRegistry.getInstance();
+				ODataServiceHandler handler = registry.getServiceHandler(serviceKey, tenantDomain);
+				if (handler != null) {
+					if (log.isDebugEnabled()) {
+						log.debug(serviceRootPath + " Service invoked.");
+					}
+					handler.process(req, resp, serviceRootPath);
+				} else {
+					if (log.isDebugEnabled()) {
+						log.debug("Couldn't find the ODataService Handler for " + serviceRootPath + " Service.");
+					}
+					resp.setStatus(501);
+				}
 			} else {
 				if (log.isDebugEnabled()) {
-					log.debug("Couldn't find the ODataService Handler for " + serviceRootPath + " Service.");
+					log.debug("Couldn't find the Service.");
 				}
-				resp.setStatus(501);
+				resp.setStatus(400);
 			}
-		} else {
-			if (log.isDebugEnabled()) {
-				log.debug("Couldn't find the Service.");
-			}
-			resp.setStatus(400);
+		} catch (ODataServiceFault oDataServiceFault) {
+			log.error(oDataServiceFault);
 		}
 	}
 
@@ -75,15 +81,15 @@ public class ODataEndpoint {
 	 * @param tenantDomain Tenant domain
 	 * @return String Array String[0] ServiceName, String[1] ConfigID
 	 */
-	private static String[] getServiceDetails(String uri, String tenantDomain) {
+	private static String[] getServiceDetails(String uri, String tenantDomain) throws ODataServiceFault {
 		String odataServices;
 		String odataServiceName;
 		String odataServiceUri;
 		String configID;
 		if (tenantDomain == null) {
-			odataServices = "odataservices/";
+			odataServices = "odata/";
 		} else {
-			odataServices = "odataservices/t/" + tenantDomain + "/";
+			odataServices = "odata/t/" + tenantDomain + "/";
 		}
 		int index = uri.indexOf(odataServices);
 		if (-1 != index) {
@@ -95,14 +101,9 @@ public class ODataEndpoint {
 					odataServiceName = params[0];
 					configID = params[1];
 					return new String[] { odataServiceName, configID };
-				} else {
-					return null;
 				}
-			} else {
-				return null;
 			}
-		} else {
-			return null;
 		}
+		throw new ODataServiceFault("Bad odata request");
 	}
 }

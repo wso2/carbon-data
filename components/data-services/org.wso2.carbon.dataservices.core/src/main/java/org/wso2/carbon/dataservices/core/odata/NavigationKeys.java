@@ -14,21 +14,27 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.dataservices.odata;
+package org.wso2.carbon.dataservices.core.odata;
 
-import org.wso2.carbon.dataservices.core.odata.ODataServiceFault;
-import org.wso2.carbon.dataservices.odata.endpoint.ODataEndpoint;
+/**
+ * This class stores the primary key in the exported table and stores the related foreign key in the imported table.
+ */
+public class NavigationKeys {
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+	private String primaryKey;
 
-public class ODataServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
+	private String foreignKey;
 
-	@Override
-	public void service(HttpServletRequest req, HttpServletResponse resp) {
-		ODataEndpoint.process(req, resp);
+	public NavigationKeys(String primaryKey, String foreignKey) {
+		this.primaryKey = primaryKey;
+		this.foreignKey = foreignKey;
 	}
 
+	public String getPrimaryKey() {
+		return primaryKey;
+	}
+
+	public String getForeignKey() {
+		return foreignKey;
+	}
 }

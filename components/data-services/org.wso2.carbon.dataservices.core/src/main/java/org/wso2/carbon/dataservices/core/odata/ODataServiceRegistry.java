@@ -19,8 +19,8 @@ package org.wso2.carbon.dataservices.core.odata;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.core.multitenancy.utils.TenantAxisUtils;
-import org.wso2.carbon.dataservices.core.DataServiceFault;
 import org.wso2.carbon.dataservices.core.internal.DataServicesDSComponent;
 import org.wso2.carbon.utils.ConfigurationContextService;
 
@@ -33,7 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ODataServiceRegistry {
 	private static Log log = LogFactory.getLog(ODataServiceRegistry.class);
 
-	private static ODataServiceRegistry serviceRegistry;
+	private static ODataServiceRegistry instance;
 
 	private Map<String, ConcurrentHashMap<String, ODataServiceHandler>> registry = new ConcurrentHashMap<>();
 
@@ -42,53 +42,51 @@ public class ODataServiceRegistry {
 	}
 
 	public static ODataServiceRegistry getInstance() {
-		if (serviceRegistry == null) {
+		if (instance == null) {
 			synchronized (ODataServiceRegistry.class) {
-				if (serviceRegistry == null) {
-					serviceRegistry = new ODataServiceRegistry();
-
+				if (instance == null) {
+					instance = new ODataServiceRegistry();
 				}
 			}
 		}
-		return serviceRegistry;
+		return instance;
 	}
 
-	public void registerODataService(String dataServiceName, ODataServiceHandler handler, String tenantDomain)
-			throws DataServiceFault {
-		ConcurrentHashMap<String, ODataServiceHandler> oDataServiceHandlerMap = registry.get(tenantDomain);
+	public void registerODataService(String dataServiceName, ODataServiceHandler handler, String tenantDomain) {
+		ConcurrentHashMap<String, ODataServiceHandler> oDataServiceHandlerMap = this.registry.get(tenantDomain);
 		if (oDataServiceHandlerMap == null) {
 			oDataServiceHandlerMap = new ConcurrentHashMap<>();
-			registry.put(tenantDomain, oDataServiceHandlerMap);
+			this.registry.put(tenantDomain, oDataServiceHandlerMap);
 		}
 		oDataServiceHandlerMap.putIfAbsent(dataServiceName, handler);
 	}
 
 	public ODataServiceHandler getServiceHandler(String serviceKey, String tenantDomain) {
 		// Load tenant configs
-		if (null == registry.get(tenantDomain) && !"carbon.super".equals(tenantDomain)) {
+		if (null == this.registry.get(tenantDomain) &&
+		    !MultitenantConstants.SUPER_TENANT_DOMAIN_NAME.equals(tenantDomain)) {
 			try {
 				ConfigurationContextService contextService = DataServicesDSComponent.getContextService();
 				ConfigurationContext configContext;
-				if (contextService != null) {
+				if (null != contextService) {
 					// Getting server's configContext instance
 					configContext = contextService.getServerConfigContext();
 					TenantAxisUtils.getTenantConfigurationContext(tenantDomain, configContext);
 				} else {
-					throw new Exception(
-							"ConfigurationContext is not found while loading org.wso2.carbon.transport.fix bundle");
+					throw new ODataServiceFault("ConfigurationContext is not found.");
 				}
 			} catch (Exception e) {
-				log.error("Error while activating FIX transport management bundle", e);
+				log.error("ConfigurationContext is not found.", e);
 			}
 		}
-		if (registry.get(tenantDomain) != null) {
-			return registry.get(tenantDomain).get(serviceKey);
+		if (this.registry.get(tenantDomain) != null) {
+			return this.registry.get(tenantDomain).get(serviceKey);
 		} else {
 			return null;
 		}
 	}
 
 	public void removeODataService(String tenantDomain, String serviceName) {
-		registry.get(tenantDomain).remove(serviceName);
+		this.registry.get(tenantDomain).remove(serviceName);
 	}
 }

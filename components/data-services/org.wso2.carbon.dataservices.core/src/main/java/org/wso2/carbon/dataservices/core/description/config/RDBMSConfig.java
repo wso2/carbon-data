@@ -24,6 +24,7 @@ import org.wso2.carbon.dataservices.core.DataServiceFault;
 import org.wso2.carbon.dataservices.core.JDBCPoolSQLConfig;
 import org.wso2.carbon.dataservices.core.engine.DataService;
 import org.wso2.carbon.dataservices.core.odata.ODataDataHandler;
+import org.wso2.carbon.dataservices.core.odata.ODataServiceFault;
 import org.wso2.carbon.dataservices.core.odata.RDBMSDataHandler;
 
 import java.sql.SQLException;
@@ -60,7 +61,7 @@ public class RDBMSConfig extends JDBCPoolSQLConfig {
 
 	@Override
 	public ODataDataHandler createODataHandler() throws DataServiceFault {
-		return new RDBMSDataHandler(getDataSource(), getConfigId(), this.getDataService().getServiceNamespace());
+		return new RDBMSDataHandler(getDataSource(), getConfigId());
 	}
 
 }

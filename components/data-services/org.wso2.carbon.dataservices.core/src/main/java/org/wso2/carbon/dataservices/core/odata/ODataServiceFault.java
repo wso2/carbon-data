@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.dataservices.odata;
+package org.wso2.carbon.dataservices.core.odata;
 
-import org.wso2.carbon.dataservices.core.odata.ODataServiceFault;
-import org.wso2.carbon.dataservices.odata.endpoint.ODataEndpoint;
+import org.wso2.carbon.dataservices.core.DataServiceFault;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+public class ODataServiceFault extends DataServiceFault {
+	public ODataServiceFault(Exception nestedException, String dsFaultMessage) {
+		super(nestedException, "OData Service Fault : " + dsFaultMessage);
+	}
 
-public class ODataServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-
-	@Override
-	public void service(HttpServletRequest req, HttpServletResponse resp) {
-		ODataEndpoint.process(req, resp);
+	public ODataServiceFault(String dsFaultMessage) {
+		super("OData Service Fault : " + dsFaultMessage);
 	}
 
 }

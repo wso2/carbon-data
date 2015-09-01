@@ -102,6 +102,7 @@
                             !org.wso2.carbon.dataservices.sql.driver.*,
                             org.apache.poi.ss.usermodel;version="${poi.orbit.imp.pkg.version}",
                             org.apache.poi.hssf.usermodel;version="${poi.orbit.imp.pkg.version}",
+                            org.apache.poi.openxml4j.exceptions;version="${poi.orbit.imp.pkg.version}",
                             com.google.gdata.data;version="${gdata-core.orbit.imp.pkg.version}",
                             com.google.gdata.data.spreadsheet;version="${gdata-spreadsheet.orbit.imp.pkg.version}",
                             com.google.gdata.client;version="${gdata-core.orbit.imp.pkg.version}",

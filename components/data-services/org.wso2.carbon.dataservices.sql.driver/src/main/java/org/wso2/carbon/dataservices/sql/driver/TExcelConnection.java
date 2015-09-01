@@ -19,7 +19,9 @@
 package org.wso2.carbon.dataservices.sql.driver;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.wso2.carbon.dataservices.sql.driver.parser.Constants;
 
 import java.io.*;
@@ -48,11 +50,11 @@ public class TExcelConnection extends TConnection {
         Workbook workbook;
         try {
             InputStream fin = TDriverUtil.getInputStreamFromPath(filePath);
-            workbook = new HSSFWorkbook(fin);
+            workbook = WorkbookFactory.create(fin);
         } catch (FileNotFoundException e) {
             throw new SQLException("Could not locate the EXCEL datasource in the provided " +
                     "location", e);
-        } catch (IOException e) {
+        } catch (IOException | InvalidFormatException e) {
             throw new SQLException("Error occurred while initializing the EXCEL datasource", e);
         }
         return workbook;

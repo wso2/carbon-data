@@ -101,10 +101,10 @@
             <groupId>org.apache.poi.wso2</groupId>
             <artifactId>poi-ooxml</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.apache.poi.wso2</groupId>
-            <artifactId>ooxml-spreadsheet-schemas</artifactId>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.apache.poi.wso2</groupId>-->
+            <!--<artifactId>ooxml-spreadsheet-schemas</artifactId>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>com.hp.hpl.jena.wso2</groupId>
             <artifactId>arq</artifactId>
@@ -287,7 +287,7 @@
                                 <bundleDef>com.datastax.cassandra.wso2:cassandra-driver-core</bundleDef>
                                 <bundleDef>org.apache.poi.wso2:poi</bundleDef>
                                 <bundleDef>org.apache.poi.wso2:poi-ooxml</bundleDef>
-                                <bundleDef>org.apache.poi.wso2:ooxml-spreadsheet-schemas</bundleDef>
+                                <!--<bundleDef>org.apache.poi.wso2:ooxml-spreadsheet-schemas</bundleDef>-->
                                 <bundleDef>com.hp.hpl.jena.wso2:arq</bundleDef>
                                 <bundleDef>org.webharvest.wso2:webharvest-core</bundleDef>
                                 <bundleDef>net.sf.saxon.wso2:saxon</bundleDef>

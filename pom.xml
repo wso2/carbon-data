@@ -385,11 +385,11 @@
                 <artifactId>poi-ooxml</artifactId>
                 <version>${poi-ooxml.orbit.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.apache.poi.wso2</groupId>
-                <artifactId>ooxml-spreadsheet-schemas</artifactId>
-                <version>${ooxml-spreadsheet-schemas.orbit.version}</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>org.apache.poi.wso2</groupId>-->
+                <!--<artifactId>ooxml-spreadsheet-schemas</artifactId>-->
+                <!--<version>${ooxml-spreadsheet-schemas.orbit.version}</version>-->
+            <!--</dependency>-->
 
             <dependency>
                 <groupId>org.wso2.carbon.data</groupId>
@@ -1119,7 +1119,7 @@
         <!--<poi-scratchpad.orbit.version>3.9.0.wso2v1</poi-scratchpad.orbit.version>-->
         <!--<poi-scratchpad.orbit.imp.pkg.version>[3.9.0.wso2v1,4.0.0)</poi-scratchpad.orbit.imp.pkg.version>-->
 
-        <ooxml-spreadsheet-schemas.orbit.version>1.1.wso2v1</ooxml-spreadsheet-schemas.orbit.version>
+        <!--<ooxml-spreadsheet-schemas.orbit.version>1.1.wso2v1</ooxml-spreadsheet-schemas.orbit.version>-->
 
         <webharvest-core.orbit.version>2.0.0.wso2v2</webharvest-core.orbit.version>
         <webharvest-core.orbit.imp.pkg.version>0.0.0</webharvest-core.orbit.imp.pkg.version> <!--todo change this to appropriate version range ([2.0.0.wso2v2,2.1.0)) after osgi bundle is corrected - rajith-->

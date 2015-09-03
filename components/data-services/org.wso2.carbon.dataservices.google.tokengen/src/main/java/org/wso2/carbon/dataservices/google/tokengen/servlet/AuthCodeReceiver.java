@@ -32,7 +32,9 @@ public class AuthCodeReceiver extends HttpServlet {
 
     @Override
     public void service(HttpServletRequest req, HttpServletResponse resp) {
-        log.debug("Auth code received for the Google Authentication code request");
+        if (log.isDebugEnabled()) {
+            log.debug("Auth code received for the Google Authentication code request");
+        }
         CodeHolder tokenGen = CodeHolder.getInstance();
         tokenGen.addCodeToMap(req.getSession().getId(), req.getParameter("code"), req.getParameter("error"));
     }

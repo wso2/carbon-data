@@ -82,13 +82,16 @@ public class TokenEndpoint extends HttpServlet {
                     JacksonFactory jsonFactory = new JacksonFactory();
 
                     // Step 2: Exchange auth code for tokens
-                    GoogleTokenResponse googleTokenResponse
-                            = new GoogleAuthorizationCodeTokenRequest(httpTransport, jsonFactory, "https://www.googleapis.com/oauth2/v3/token", clientId, clientSecret,
-                                                                      authCode.getAuthCode(), redirectURIs).execute();
+                    GoogleTokenResponse googleTokenResponse = new GoogleAuthorizationCodeTokenRequest(
+                            httpTransport, jsonFactory, "https://www.googleapis.com/oauth2/v3/token",
+                            clientId, clientSecret, authCode.getAuthCode(), redirectURIs).execute();
                     resJson.append(DBConstants.GSpread.ACCESS_TOKEN, googleTokenResponse.getAccessToken());
                     resJson.append(DBConstants.GSpread.REFRESH_TOKEN, googleTokenResponse.getRefreshToken());
                     responseMsg = resJson.toString();
                     responseStatus = HttpStatus.SC_OK;
+                    if (log.isDebugEnabled()) {
+                        log.debug("Access token request successfully served for client id " + clientId);
+                    }
                 }
             } catch (JSONException e) {
                 responseStatus = HttpStatus.SC_INTERNAL_SERVER_ERROR;

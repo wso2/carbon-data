@@ -41,6 +41,9 @@ public class ConsentUrl extends HttpServlet {
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) {
+        if (log.isDebugEnabled()) {
+            log.debug("Request Received for consent URL");
+        }
         StringBuffer jb = new StringBuffer();
         JSONObject jsonObject;
         String line = null;

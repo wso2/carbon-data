@@ -155,12 +155,18 @@ public abstract class ExpressionQuery extends Query {
 	}
 
 	private List<String> extractParamNames(String query, Set<String> queryParams) {
+		boolean doubleQuoteExists = false;
+		boolean singleQuoteExists = false;
 		List<String> paramNames = new ArrayList<String>();
 		String tmpParam;
 		for (int i = 0; i < query.length(); i++) {
-			if (query.charAt(i) == '?') {
+			if (query.charAt(i) == '\'') {
+				singleQuoteExists = !singleQuoteExists;
+			} else if (query.charAt(i) == '\"') {
+				doubleQuoteExists = !doubleQuoteExists;
+			} else if (query.charAt(i) == '?' && !(doubleQuoteExists || singleQuoteExists)) {
 				paramNames.add("?");
-			} else if (query.charAt(i) == ':') {
+			} else if (query.charAt(i) == ':' && !(doubleQuoteExists || singleQuoteExists)) {
 				/* check if the string is at the end */
 				if (i + 1 < query.length()) {
 					/*
@@ -183,8 +189,14 @@ public abstract class ExpressionQuery extends Query {
 
 	private int calculateParamCount(String query) {
 		int n = 0;
+		boolean doubleQuoteExists = false;
+		boolean singleQuoteExists = false;
 		for (char ch : query.toCharArray()) {
-			if (ch == '?') {
+			if (ch == '\'') {
+				singleQuoteExists = !singleQuoteExists;
+			} else if (ch == '\"') {
+				doubleQuoteExists = !doubleQuoteExists;
+			} else if (ch == '?' && !(doubleQuoteExists || singleQuoteExists)) {
 				n++;
 			}
 		}
@@ -251,9 +263,15 @@ public abstract class ExpressionQuery extends Query {
 	private Object[] expandQuery(int start, int count, String query) {
 		StringBuilder result = new StringBuilder();
 		int n = query.length();
+		boolean doubleQuoteExists = false;
+		boolean singleQuoteExists = false;
 		int end = n;
 		for (int i = start; i < n; i++) {
-			if (query.charAt(i) == '?') {
+			if (query.charAt(i) == '\'') {
+				singleQuoteExists = !singleQuoteExists;
+			} else if (query.charAt(i) == '\"') {
+				doubleQuoteExists = !doubleQuoteExists;
+			} else if (query.charAt(i) == '?' && !(doubleQuoteExists || singleQuoteExists)) {
 				result.append(query.substring(0, i));
 				result.append(this.generateQuestionMarks(count));
 				end = result.length() + 1;
@@ -320,9 +338,15 @@ public abstract class ExpressionQuery extends Query {
 
 	private Integer[] extractQueryParamIndices(String query) {
 		List<Integer> result = new ArrayList<Integer>();
+		boolean doubleQuoteExists = false;
+		boolean singleQuoteExists = false;
 		char[] data = query.toCharArray();
 		for (int i = 0; i < data.length; i++) {
-			if (data[i] == '?') {
+			if (data[i] == '\'') {
+				singleQuoteExists = !singleQuoteExists;
+			} else if (data[i] == '\"') {
+				doubleQuoteExists = !doubleQuoteExists;
+			} else if (data[i] == '?' && !(doubleQuoteExists || singleQuoteExists)) {
 				result.add(i);
 			}
 		}

@@ -26,6 +26,7 @@ import org.wso2.carbon.dataservices.core.custom.datasource.CustomQueryDataSource
 import org.wso2.carbon.dataservices.core.engine.DataService;
 import org.wso2.carbon.dataservices.core.internal.DataServicesDSComponent;
 import org.wso2.carbon.dataservices.core.odata.ODataDataHandler;
+import org.wso2.carbon.dataservices.core.odata.ODataServiceFault;
 import org.wso2.carbon.ndatasource.common.DataSourceException;
 import org.wso2.carbon.ndatasource.core.CarbonDataSource;
 import org.wso2.carbon.ndatasource.core.DataSourceService;
@@ -94,8 +95,8 @@ public class CustomQueryCarbonDataSourceConfig extends CustomQueryBasedDSConfig 
 	}
 
 	@Override
-	public ODataDataHandler createODataHandler() throws DataServiceFault {
-		throw new DataServiceFault("Expose as OData Service feature doesn't support for the " + getConfigId() +
+	public ODataDataHandler createODataHandler() throws ODataServiceFault {
+		throw new ODataServiceFault("Expose as OData Service feature doesn't support for the " + getConfigId() +
 		                           " Datasource.");
 	}
 

@@ -188,7 +188,7 @@ private boolean isFieldMandatory(String propertName) {
 	}
 }
 
-Boolean isODataBool = false;
+Boolean isOData = false;
 private Config addNotAvailableFunctions(Config config,String selectedType, HttpServletRequest request) {
     String xaVal = request.getParameter ("xaVal");
 	if (DBConstants.DataSourceTypes.RDBMS.equals(selectedType)) {
@@ -205,9 +205,9 @@ private Config addNotAvailableFunctions(Config config,String selectedType, HttpS
 			 config.addProperty(DBConstants.RDBMS.PASSWORD, "");
 		 }
 	 	 if (config.isExposeAsODataService() == true) {
-			 isODataBool = true;
+			 isOData = true;
 		 } else {
-		 	isODataBool = false;
+		 	isOData = false;
 		 }
             if (config.getPropertyValue(DBConstants.RDBMS.DATASOURCE_CLASSNAME) == null) {
                 config.addProperty(DBConstants.RDBMS.DATASOURCE_CLASSNAME, "");
@@ -425,9 +425,9 @@ private Config addNotAvailableFunctions(Config config,String selectedType, HttpS
             config.addProperty(DBConstants.Cassandra.KEYSPACE, "");
         }
 		if (config.isExposeAsODataService() == true) {
-			isODataBool = true;
+			isOData = true;
 		} else {
-			isODataBool = false;
+			isOData = false;
 		}
         if (config.getPropertyValue(DBConstants.Cassandra.PORT) == null) {
             config.addProperty(DBConstants.Cassandra.PORT, "");
@@ -2412,12 +2412,12 @@ private String getRefreshToken(String gSpreadJDBCUrl) {
     }
     }
 %>
-<% if("RDBMS".equals(dataSourceType) || "Cassandra".equals(dataSourceType)) { %>
+<% if("RDBMS".equals(dataSourceType) || "Cassandra".equals(dataSourceType) || "CARBON_DATASOURCE".equals(dataSourceType)) { %>
 <tr>
     <td class="leftCol-small" style="white-space: nowrap;">
         Enable OData</td>
     <td>
-        <input type="checkbox" name="isOData" id="isOData" value="isOData" <%=(isODataBool==true ? "checked" : "") %>>
+        <input type="checkbox" name="isOData" id="isOData" value="isOData" <%=(isOData==true ? "checked" : "") %>>
     </td>
 </tr>
 <% } %>

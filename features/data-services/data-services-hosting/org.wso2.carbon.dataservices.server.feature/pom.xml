@@ -206,7 +206,7 @@
                                     <type>war</type>
                                     <overWrite>true</overWrite>
                                     <outputDirectory>${basedir}/src/main/resources/</outputDirectory>
-                                    <destFileName>odataservices.war</destFileName>
+                                    <destFileName>odata.war</destFileName>
                                 </artifactItem>
                             </artifactItems>
                             <!-- other configurations here -->
@@ -240,7 +240,7 @@
                                 <resource>
                                     <directory>resources</directory>
                                     <includes>
-                                        <include>odataservices.war</include>
+                                        <include>odata.war</include>
                                         <include>p2.inf</include>
                                         <include>build.properties</include>
                                     </includes>

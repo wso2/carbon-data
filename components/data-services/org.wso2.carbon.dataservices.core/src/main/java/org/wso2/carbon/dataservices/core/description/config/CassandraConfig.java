@@ -18,14 +18,6 @@
  */
 package org.wso2.carbon.dataservices.core.description.config;
 
-import java.util.Map;
-
-import com.datastax.driver.core.exceptions.NoHostAvailableException;
-import org.wso2.carbon.dataservices.common.DBConstants;
-import org.wso2.carbon.dataservices.common.DBConstants.DataSourceTypes;
-import org.wso2.carbon.dataservices.core.DataServiceFault;
-import org.wso2.carbon.dataservices.core.engine.DataService;
-
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Cluster.Builder;
 import com.datastax.driver.core.ConsistencyLevel;
@@ -35,6 +27,7 @@ import com.datastax.driver.core.ProtocolOptions.Compression;
 import com.datastax.driver.core.QueryOptions;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.SocketOptions;
+import com.datastax.driver.core.exceptions.NoHostAvailableException;
 import com.datastax.driver.core.policies.ConstantReconnectionPolicy;
 import com.datastax.driver.core.policies.DefaultRetryPolicy;
 import com.datastax.driver.core.policies.DowngradingConsistencyRetryPolicy;
@@ -50,6 +43,9 @@ import org.wso2.carbon.dataservices.core.DataServiceFault;
 import org.wso2.carbon.dataservices.core.engine.DataService;
 import org.wso2.carbon.dataservices.core.odata.CassandraDataHandler;
 import org.wso2.carbon.dataservices.core.odata.ODataDataHandler;
+import org.wso2.carbon.dataservices.core.odata.ODataServiceFault;
+
+import java.util.Map;
 
 /**
  * Cassandra-CQL data source implementation.
@@ -323,7 +319,7 @@ public class CassandraConfig extends Config {
     }
 
     @Override
-    public ODataDataHandler createODataHandler() throws DataServiceFault {
+    public ODataDataHandler createODataHandler() throws ODataServiceFault {
         return new CassandraDataHandler(getConfigId(), getSession(), getProperty(DBConstants.Cassandra.KEYSPACE));
     }
 

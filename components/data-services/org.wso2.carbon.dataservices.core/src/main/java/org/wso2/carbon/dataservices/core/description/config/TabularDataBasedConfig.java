@@ -31,6 +31,7 @@ import org.wso2.carbon.dataservices.core.custom.datasource.TabularDataBasedDS;
 import org.wso2.carbon.dataservices.core.custom.datasource.TabularDataBasedDS.FilterOperator;
 import org.wso2.carbon.dataservices.core.engine.DataService;
 import org.wso2.carbon.dataservices.core.odata.ODataDataHandler;
+import org.wso2.carbon.dataservices.core.odata.ODataServiceFault;
 import org.wso2.carbon.dataservices.sql.driver.TConnectionFactory;
 import org.wso2.carbon.dataservices.sql.driver.TCustomConnection;
 import org.wso2.carbon.dataservices.sql.driver.parser.Constants;
@@ -109,8 +110,8 @@ public class TabularDataBasedConfig extends SQLConfig {
 	}
 
 	@Override
-	public ODataDataHandler createODataHandler() throws DataServiceFault {
-		throw new DataServiceFault("Expose as OData Service feature doesn't support for the " + getConfigId() +
+	public ODataDataHandler createODataHandler() throws ODataServiceFault {
+		throw new ODataServiceFault("Expose as OData Service feature doesn't support for the " + getConfigId() +
 		                           " Datasource.");
 	}
 

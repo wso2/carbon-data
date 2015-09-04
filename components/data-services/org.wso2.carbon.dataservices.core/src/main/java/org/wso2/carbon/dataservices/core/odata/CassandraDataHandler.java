@@ -30,28 +30,39 @@ import org.apache.commons.codec.binary.Base64;
 import org.wso2.carbon.dataservices.common.DBConstants;
 import org.wso2.carbon.dataservices.core.DBUtils;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
-import org.wso2.carbon.dataservices.core.engine.DataEntry;
-import org.wso2.carbon.dataservices.core.engine.ParamValue;
+import org.wso2.carbon.dataservices.core.odata.DataColumn.ODataDataType;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * This class implements cassandra datasource related operations for ODataDataHandler.
  *
  * @see ODataDataHandler
- * @see AbstractExpressionDataHandler
  */
-public class CassandraDataHandler extends AbstractExpressionDataHandler {
+public class CassandraDataHandler implements ODataDataHandler {
+
+	/**
+	 * Table metadata.
+	 */
+	private Map<String, Map<String, DataColumn>> tableMetaData;
+
+	/**
+	 * Primary Keys of the Tables (Map<Table Name, List>).
+	 */
+	private Map<String, List<String>> primaryKeys;
+
+	/**
+	 * Config ID.
+	 */
+	private final String configID;
 
 	/**
 	 * List of Tables in the Database.
@@ -61,14 +72,14 @@ public class CassandraDataHandler extends AbstractExpressionDataHandler {
 	/**
 	 * Cassandra session.
 	 */
-	private Session session;
+	private final Session session;
 
 	/**
 	 * Cassandra keyspace.
 	 */
-	private String keyspace;
+	private final String keyspace;
 
-	public CassandraDataHandler(String configID, Session session, String keyspace) throws DataServiceFault {
+	public CassandraDataHandler(String configID, Session session, String keyspace) {
 		this.configID = configID;
 		this.session = session;
 		this.keyspace = keyspace;
@@ -78,67 +89,72 @@ public class CassandraDataHandler extends AbstractExpressionDataHandler {
 	}
 
 	@Override
-	public List<DataEntry> readTable(String tableName) throws DataServiceFault {
-		Statement statement = new SimpleStatement("Select * from " + keyspace + "." + tableName);
+	public List<ODataEntry> readTable(String tableName) throws ODataServiceFault {
+		Statement statement = new SimpleStatement("Select * from " + this.keyspace + "." + tableName);
 		ResultSet resultSet = this.session.execute(statement);
 		Iterator<Row> iterator = resultSet.iterator();
-		List<DataEntry> entryList = new ArrayList<>();
+		List<ODataEntry> entryList = new ArrayList<>();
 		ColumnDefinitions columnDefinitions = resultSet.getColumnDefinitions();
 		while (iterator.hasNext()) {
-			DataEntry dataEntry = createDataEntryFromRow(tableName, iterator.next(), columnDefinitions);
+			ODataEntry dataEntry = createDataEntryFromRow(tableName, iterator.next(), columnDefinitions);
 			entryList.add(dataEntry);
 		}
 		return entryList;
 	}
 
 	@Override
-	public List<DataEntry> readTableWithKeys(String tableName, DataEntry keys) throws DataServiceFault {
+	public List<ODataEntry> readTableWithKeys(String tableName, ODataEntry keys, boolean transactional)
+			throws ODataServiceFault {
+		List<ColumnMetadata> cassandraTableMetaData =
+				this.session.getCluster().getMetadata().getKeyspace(this.keyspace).getTable(tableName).getColumns();
 		List<String> pKeys = this.primaryKeys.get(tableName);
 		String query = createReadSqlWithKeys(tableName, keys);
-		List<Object> values = new ArrayList<>(getBindingKeyCount(query));
+		List<Object> values = new ArrayList<>();
 		for (String column : keys.getNames()) {
 			if (this.tableMetaData.get(tableName).keySet().contains(column) && pKeys.contains(column)) {
-				values = bindParams(this.tableMetaData.get(tableName).get(column).getColumnType(),
-				                    keys.getValue(column).getScalarValue(), values);
+				bindParams(column, keys.getValue(column), values, cassandraTableMetaData);
 			}
 		}
 		Statement statement = new SimpleStatement(query, values.toArray());
 		ResultSet resultSet = this.session.execute(statement);
-		List<DataEntry> entryList = new ArrayList<>();
+		List<ODataEntry> entryList = new ArrayList<>();
 		Iterator<Row> iterator = resultSet.iterator();
-		ColumnDefinitions defs = resultSet.getColumnDefinitions();
+		ColumnDefinitions definitions = resultSet.getColumnDefinitions();
 		while (iterator.hasNext()) {
-			DataEntry dataEntry = createDataEntryFromRow(tableName, iterator.next(), defs);
+			ODataEntry dataEntry = createDataEntryFromRow(tableName, iterator.next(), definitions);
 			entryList.add(dataEntry);
 		}
 		return entryList;
 	}
 
 	@Override
-	public String insertEntityInTable(String tableName, DataEntry entity) throws DataServiceFault {
-		String query = createInsertSQL(tableName, entity);
-		List<Object> values = new ArrayList<>(getBindingKeyCount(query));
+	public String insertEntityToTable(String tableName, ODataEntry entity) throws ODataServiceFault {
+		List<ColumnMetadata> cassandraTableMetaData =
+				this.session.getCluster().getMetadata().getKeyspace(this.keyspace).getTable(tableName).getColumns();
+		String query = createInsertCQL(tableName, entity);
+		List<Object> values = new ArrayList<>();
 		for (DataColumn column : this.tableMetaData.get(tableName).values()) {
-			if (entity.getNames().contains(column.getColumnName()) &&
-			    entity.getValue(column.getColumnName()).getScalarValue() != null) {
-				values = bindParams(column.getColumnType(), entity.getValue(column.getColumnName()).getScalarValue(),
-				                    values);
+			if (entity.getNames().contains(column.getColumnName()) && entity.getValue(column.getColumnName()) != null) {
+				bindParams(column.getColumnName(), entity.getValue(column.getColumnName()), values,
+				           cassandraTableMetaData);
 			}
 		}
 		Statement statement = new SimpleStatement(query, values.toArray());
 		this.session.execute(statement);
-		return generateETag(tableName, entity);
+		return ODataUtils.generateETag(this.configID, tableName, entity);
 	}
 
 	@Override
-	public void deleteEntityInTable(String tableName, DataEntry entity) throws DataServiceFault {
+	public void deleteEntityInTable(String tableName, ODataEntry entity, boolean transactional)
+			throws ODataServiceFault {
+		List<ColumnMetadata> cassandraTableMetaData =
+				this.session.getCluster().getMetadata().getKeyspace(this.keyspace).getTable(tableName).getColumns();
 		List<String> pKeys = this.primaryKeys.get(tableName);
-		String query = createDeleteSQL(tableName, entity);
-		List<Object> values = new ArrayList<>(getBindingKeyCount(query));
+		String query = createDeleteCQL(tableName);
+		List<Object> values = new ArrayList<>();
 		for (String column : entity.getNames()) {
-			if (this.tableMetaData.get(tableName).keySet().contains(column) && pKeys.contains(column)) {
-				values = bindParams(this.tableMetaData.get(tableName).get(column).getColumnType(),
-				                    entity.getValue(column).getScalarValue(), values);
+			if (pKeys.contains(column)) {
+				bindParams(column, entity.getValue(column), values, cassandraTableMetaData);
 			}
 		}
 		Statement statement = new SimpleStatement(query, values.toArray());
@@ -146,21 +162,21 @@ public class CassandraDataHandler extends AbstractExpressionDataHandler {
 	}
 
 	@Override
-	public void updateEntityInTable(String tableName, DataEntry newProperties) throws DataServiceFault {
+	public void updateEntityInTable(String tableName, ODataEntry newProperties, boolean transactional)
+			throws ODataServiceFault {
+		List<ColumnMetadata> cassandraTableMetaData =
+				this.session.getCluster().getMetadata().getKeyspace(this.keyspace).getTable(tableName).getColumns();
 		List<String> pKeys = this.primaryKeys.get(tableName);
-		String query = createUpdateEntitySQL(tableName, newProperties);
-		List<Object> values = new ArrayList<>(getBindingKeyCount(query));
+		String query = createUpdateEntityCQL(tableName, newProperties);
+		List<Object> values = new ArrayList<>();
 		for (String column : newProperties.getNames()) {
-			if (this.tableMetaData.get(tableName).keySet().contains(column) && !pKeys.contains(column) &&
-			    newProperties.getValue(column).getScalarValue() != null) {
-				values = bindParams(this.tableMetaData.get(tableName).get(column).getColumnType(),
-				                    newProperties.getValue(column).getScalarValue(), values);
+			if (this.tableMetaData.get(tableName).keySet().contains(column) && !pKeys.contains(column)) {
+				bindParams(column, newProperties.getValue(column), values, cassandraTableMetaData);
 			}
 		}
 		for (String column : newProperties.getNames()) {
-			if (this.tableMetaData.get(tableName).keySet().contains(column) && pKeys.contains(column)) {
-				values = bindParams(this.tableMetaData.get(tableName).get(column).getColumnType(),
-				                    newProperties.getValue(column).getScalarValue(), values);
+			if (pKeys.contains(column)) {
+				bindParams(column, newProperties.getValue(column), values, cassandraTableMetaData);
 			}
 		}
 		Statement statement = new SimpleStatement(query, values.toArray());
@@ -173,23 +189,22 @@ public class CassandraDataHandler extends AbstractExpressionDataHandler {
 	}
 
 	@Override
-	public void updatePropertyInTable(String tableName, DataEntry property) throws DataServiceFault {
-		DataColumn column = this.tableMetaData.get(tableName).get(property.getValue("propertyName").getScalarValue());
-		if (column != null) {
-			String sql =
-					"UPDATE " + tableName + " SET " + property.getValue("propertyName").getScalarValue() + "=" + "?";
+	public void updatePropertyInTable(String tableName, ODataEntry property, boolean transactional)
+			throws ODataServiceFault {
+		List<ColumnMetadata> cassandraTableMetaData =
+				this.session.getCluster().getMetadata().getKeyspace(this.keyspace).getTable(tableName).getColumns();
+		for (String column : property.getNames()) {
+			String sql = "UPDATE " + tableName + " SET " + column + "=" + "?";
 			List<Object> values = new ArrayList<>(1);
-			values = bindParams(column.getColumnType(), property.getValue("propertyValue").getScalarValue(), values);
+			bindParams(column, property.getValue(column), values, cassandraTableMetaData);
 			Statement statement = new SimpleStatement(sql, values.toArray());
-			session.execute(statement);
-		} else {
-			throw new DataServiceFault("Property didn't found to update");
+			this.session.execute(statement);
 		}
 	}
 
 	@Override
 	public List<String> getTableList() {
-		return tableList;
+		return this.tableList;
 	}
 
 	@Override
@@ -198,8 +213,18 @@ public class CassandraDataHandler extends AbstractExpressionDataHandler {
 	}
 
 	@Override
-	public Map<String, Map<String, List<String>>> getNavigationProperties() {
+	public Map<String, NavigationTable> getNavigationProperties() {
 		return null;
+	}
+
+	@Override
+	public void openTransaction() throws ODataServiceFault {
+
+	}
+
+	@Override
+	public void closeTransaction() {
+
 	}
 
 	/**
@@ -209,102 +234,103 @@ public class CassandraDataHandler extends AbstractExpressionDataHandler {
 	 * @param row               Row
 	 * @param columnDefinitions Column Definition
 	 * @return DataEntry
-	 * @throws DataServiceFault
+	 * @throws ODataServiceFault
 	 */
-	private DataEntry createDataEntryFromRow(String tableName, Row row, ColumnDefinitions columnDefinitions)
-			throws DataServiceFault {
-		List<String> pKeys = this.primaryKeys.get(tableName);
-		StringBuilder uniqueString = new StringBuilder();
-		ParamValue paramValue;
-		DataEntry entry = new DataEntry();
-		uniqueString.append(this.configID).append(tableName);
+	private ODataEntry createDataEntryFromRow(String tableName, Row row, ColumnDefinitions columnDefinitions)
+			throws ODataServiceFault {
+		String paramValue;
+		ODataEntry entry = new ODataEntry();
 		//Creating a unique string to represent the
-		for (int i = 0; i < columnDefinitions.size(); i++) {
-			String columnName = columnDefinitions.getName(i);
-			DataType columnType = columnDefinitions.getType(i);
-			uniqueString.append(columnName);
-			if (columnType.getName().equals(DataType.Name.ASCII)) {
-				paramValue = new ParamValue(row.getString(i));
-			} else if (columnType.getName().equals(DataType.Name.VARCHAR)) {
-				paramValue = new ParamValue(row.getString(i));
-			} else if (columnType.getName().equals(DataType.Name.TEXT)) {
-				paramValue = new ParamValue(row.getString(i));
-			} else if (columnType.getName().equals(DataType.Name.BIGINT)) {
-				paramValue = new ParamValue(row.isNull(i) ? null : ConverterUtil.convertToString(row.getLong(i)));
-			} else if (columnType.getName().equals(DataType.Name.BLOB)) {
-				paramValue = new ParamValue(this.base64EncodeByteBuffer(row.getBytes(i)));
-			} else if (columnType.getName().equals(DataType.Name.BOOLEAN)) {
-				paramValue = new ParamValue(row.isNull(i) ? null : ConverterUtil.convertToString(row.getBool(i)));
-			} else if (columnType.getName().equals(DataType.Name.COUNTER)) {
-				paramValue = new ParamValue(row.isNull(i) ? null : ConverterUtil.convertToString(row.getLong(i)));
-			} else if (columnType.getName().equals(DataType.Name.CUSTOM)) {
-				paramValue = new ParamValue(this.base64EncodeByteBuffer(row.getBytes(i)));
-			} else if (columnType.getName().equals(DataType.Name.DECIMAL)) {
-				paramValue = new ParamValue(row.isNull(i) ? null : ConverterUtil.convertToString(row.getDecimal(i)));
-			} else if (columnType.getName().equals(DataType.Name.DOUBLE)) {
-				paramValue = new ParamValue(row.isNull(i) ? null : ConverterUtil.convertToString(row.getDouble(i)));
-			} else if (columnType.getName().equals(DataType.Name.FLOAT)) {
-				paramValue = new ParamValue(row.isNull(i) ? null : ConverterUtil.convertToString(row.getFloat(i)));
-			} else if (columnType.getName().equals(DataType.Name.INET)) {
-				paramValue = new ParamValue(row.getInet(i).toString());
-			} else if (columnType.getName().equals(DataType.Name.INT)) {
-				paramValue = new ParamValue(row.isNull(i) ? null : ConverterUtil.convertToString(row.getInt(i)));
-			} else if (columnType.getName().equals(DataType.Name.LIST)) {
-				paramValue = new ParamValue(Arrays.toString(row.getList(i, Object.class).toArray()));
-			} else if (columnType.getName().equals(DataType.Name.MAP)) {
-				paramValue = new ParamValue(row.getMap(i, Object.class, Object.class).toString());
-			} else if (columnType.getName().equals(DataType.Name.SET)) {
-				paramValue = new ParamValue(row.getSet(i, Object.class).toString());
-			} else if (columnType.getName().equals(DataType.Name.TIMESTAMP)) {
-				paramValue = new ParamValue(ConverterUtil.convertToString(row.getDate(i)));
-			} else if (columnType.getName().equals(DataType.Name.TIMEUUID)) {
-				paramValue = new ParamValue(ConverterUtil.convertToString(row.getUUID(i)));
-			} else if (columnType.getName().equals(DataType.Name.UUID)) {
-				paramValue = new ParamValue(ConverterUtil.convertToString(row.getUUID(i)));
-			} else if (columnType.getName().equals(DataType.Name.VARINT)) {
-				paramValue = new ParamValue(ConverterUtil.convertToString(row.getVarint(i)));
-			} else {
-				paramValue = new ParamValue(row.getString(i));
+		try {
+			for (int i = 0; i < columnDefinitions.size(); i++) {
+				String columnName = columnDefinitions.getName(i);
+				DataType columnType = columnDefinitions.getType(i);
+
+				switch (columnType.getName()) {
+					case ASCII:
+						paramValue = row.getString(i);
+						break;
+					case BIGINT:
+						paramValue = row.isNull(i) ? null : ConverterUtil.convertToString(row.getLong(i));
+						break;
+					case BLOB:
+						paramValue = this.base64EncodeByteBuffer(row.getBytes(i));
+						break;
+					case BOOLEAN:
+						paramValue = row.isNull(i) ? null : ConverterUtil.convertToString(row.getBool(i));
+						break;
+					case COUNTER:
+						paramValue = row.isNull(i) ? null : ConverterUtil.convertToString(row.getLong(i));
+						break;
+					case DECIMAL:
+						paramValue = row.isNull(i) ? null : ConverterUtil.convertToString(row.getDecimal(i));
+						break;
+					case DOUBLE:
+						paramValue = row.isNull(i) ? null : ConverterUtil.convertToString(row.getDouble(i));
+						break;
+					case FLOAT:
+						paramValue = row.isNull(i) ? null : ConverterUtil.convertToString(row.getFloat(i));
+						break;
+					case INET:
+						paramValue = row.getInet(i).toString();
+						break;
+					case INT:
+						paramValue = row.isNull(i) ? null : ConverterUtil.convertToString(row.getInt(i));
+						break;
+					case TEXT:
+						paramValue = row.getString(i);
+						break;
+					case TIMESTAMP:
+						paramValue = ConverterUtil.convertToString(row.getDate(i));
+						break;
+					case UUID:
+						paramValue = ConverterUtil.convertToString(row.getUUID(i));
+						break;
+					case VARCHAR:
+						paramValue = row.getString(i);
+						break;
+					case VARINT:
+						paramValue = row.isNull(i) ? null : ConverterUtil.convertToString(row.getVarint(i));
+						break;
+					case TIMEUUID:
+						paramValue = ConverterUtil.convertToString(row.getUUID(i));
+						break;
+					case LIST:
+						paramValue = Arrays.toString(row.getList(i, Object.class).toArray());
+						break;
+					case SET:
+						paramValue = row.getSet(i, Object.class).toString();
+						break;
+					case MAP:
+						paramValue = row.getMap(i, Object.class, Object.class).toString();
+						break;
+					case UDT:
+						paramValue = row.getUDTValue(i).toString();
+						break;
+					case TUPLE:
+						paramValue = row.getTupleValue(i).toString();
+						break;
+					case CUSTOM:
+						paramValue = this.base64EncodeByteBuffer(row.getBytes(i));
+						break;
+					default:
+						paramValue = row.getString(i);
+						break;
+				}
+				entry.addValue(columnName, paramValue);
 			}
-			entry.addValue(columnName, paramValue);
-			if (pKeys.contains(columnName)) {
-				uniqueString.append(columnName).append(paramValue.getScalarValue());
-			}
-			if (pKeys.isEmpty()) {
-				uniqueString.append(columnName).append(paramValue.getScalarValue());
-			}
+		} catch (DataServiceFault dataServiceFault) {
+			throw new ODataServiceFault(dataServiceFault, "Error occurred when creating OData entry.");
 		}
 		//Set E-Tag to the entity
-		entry.addValue("ETag", new ParamValue(UUID.nameUUIDFromBytes((uniqueString.toString()).getBytes()).toString()));
-		//Set to default
-		uniqueString.setLength(0);
+		entry.addValue("ETag", ODataUtils.generateETag(this.configID, tableName, entry));
 		return entry;
-	}
-
-	private String base64EncodeByteBuffer(ByteBuffer byteBuffer) throws DataServiceFault {
-		byte[] data = byteBuffer.array();
-		byte[] base64Data = Base64.encodeBase64(data);
-		try {
-			return new String(base64Data, DBConstants.DEFAULT_CHAR_SET_TYPE);
-		} catch (UnsupportedEncodingException e) {
-			throw new DataServiceFault(e, "Error in encoding result binary data: " + e.getMessage());
-		}
-	}
-
-	private ByteBuffer base64DecodeByteBuffer(String data) throws DataServiceFault {
-		try {
-			byte[] buff = Base64.decodeBase64(data.getBytes(DBConstants.DEFAULT_CHAR_SET_TYPE));
-			ByteBuffer result = ByteBuffer.allocate(buff.length);
-			result.put(buff);
-			return result;
-		} catch (UnsupportedEncodingException e) {
-			throw new DataServiceFault(e, "Error in decoding input base64 data: " + e.getMessage());
-		}
 	}
 
 	private List<String> generateTableList() {
 		List<String> tableList = new ArrayList<>();
-		for (TableMetadata tableMetadata : session.getCluster().getMetadata().getKeyspace(keyspace).getTables()) {
+		for (TableMetadata tableMetadata : this.session.getCluster().getMetadata().getKeyspace(this.keyspace)
+		                                               .getTables()) {
 			tableList.add(tableMetadata.getName());
 		}
 		return tableList;
@@ -323,7 +349,7 @@ public class CassandraDataHandler extends AbstractExpressionDataHandler {
 		return primaryKeyMap;
 	}
 
-	private Map<String, Map<String, DataColumn>> generateMetaData() throws DataServiceFault {
+	private Map<String, Map<String, DataColumn>> generateMetaData() {
 		Map<String, Map<String, DataColumn>> metadata = new HashMap<>();
 		for (String tableName : this.tableList) {
 			Map<String, DataColumn> dataColumnMap = new HashMap<>();
@@ -346,134 +372,136 @@ public class CassandraDataHandler extends AbstractExpressionDataHandler {
 		return metadata;
 	}
 
-	private List<Object> bindParams(int type, String value, List<Object> values) throws DataServiceFault {
-		switch (type) {
-			case Types.VARCHAR:
-				values.add(value);
+	private void bindParams(String columnName, String value, List<Object> values, List<ColumnMetadata> metaData)
+			throws ODataServiceFault {
+		DataType.Name dataType = null;
+		for (ColumnMetadata columnMetadata : metaData) {
+			if (columnMetadata.getName().equals(columnName)) {
+				dataType = columnMetadata.getType().getName();
 				break;
-			case Types.BIGINT:
-				values.add(value == null ? null : Long.parseLong(value));
-				break;
-			case Types.BLOB:
-				values.add(value == null ? null : this.base64DecodeByteBuffer(value));
-				break;
-			case Types.BOOLEAN:
-				values.add(value == null ? null : Boolean.parseBoolean(value));
-				break;
-			case Types.DECIMAL:
-				values.add(new BigDecimal(value));
-				break;
-			case Types.DOUBLE:
-				values.add(Double.parseDouble(value));
-				break;
-			case Types.FLOAT:
-				values.add(Float.parseFloat(value));
-				break;
-			case Types.INTEGER:
-				values.add(Integer.parseInt(value));
-				break;
-			case Types.TIMESTAMP:
-				values.add(DBUtils.getDate(value));
-				break;
+			}
 		}
-		return values;
+		if (dataType == null) {
+			throw new ODataServiceFault("Error occurred when binding data. DataType was missing for " +
+			                            columnName + " column.");
+		}
+		try {
+			switch (dataType) {
+				case ASCII:
+				/* fall through */
+				case TEXT:
+				/* fall through */
+				case VARCHAR:
+				/* fall through */
+				case TIMEUUID:
+				/* fall through */
+				case UUID:
+					values.add(value);
+					break;
+				case BIGINT:
+				/* fall through */
+				case VARINT:
+				/* fall through */
+				case COUNTER:
+					values.add(value == null ? null : value);
+					break;
+				case BLOB:
+					values.add(value == null ? null : this.base64DecodeByteBuffer(value));
+					break;
+				case BOOLEAN:
+					values.add(value == null ? null : Boolean.parseBoolean(value));
+					break;
+				case DECIMAL:
+					values.add(new BigDecimal(value));
+					break;
+				case DOUBLE:
+					values.add(Double.parseDouble(value));
+					break;
+				case FLOAT:
+					values.add(Float.parseFloat(value));
+					break;
+				case INT:
+					values.add(Integer.parseInt(value));
+					break;
+				case TIMESTAMP:
+					values.add(DBUtils.getDate(value));
+					break;
+				default:
+					values.add(value);
+					break;
+			}
+		} catch (DataServiceFault dataServiceFault) {
+			throw new ODataServiceFault(dataServiceFault, "Error occurred when binding data.");
+		}
 	}
 
-	private int getDataType(DataType.Name dataTypeName) throws DataServiceFault {
-		int dataType;
+	private ODataDataType getDataType(DataType.Name dataTypeName) {
+		ODataDataType dataType;
 		switch (dataTypeName) {
 			case ASCII:
+				/* fall through */
 			case TEXT:
+				/* fall through */
 			case VARCHAR:
+				/* fall through */
 			case TIMEUUID:
+				/* fall through */
 			case UUID:
-				dataType = Types.VARCHAR;
+				dataType = ODataDataType.STRING;
 				break;
 			case BIGINT:
+				/* fall through */
 			case VARINT:
+				/* fall through */
 			case COUNTER:
-				dataType = Types.BIGINT;
+				dataType = ODataDataType.INT64;
 				break;
 			case BLOB:
-				dataType = Types.BLOB;
+				dataType = ODataDataType.BINARY;
 				break;
 			case BOOLEAN:
-				dataType = Types.BOOLEAN;
+				dataType = ODataDataType.BOOLEAN;
 				break;
 			case DECIMAL:
-				dataType = Types.DECIMAL;
+				/* fall through */
+			case FLOAT:
+				dataType = ODataDataType.DECIMAL;
 				break;
 			case DOUBLE:
-				dataType = Types.DOUBLE;
+				dataType = ODataDataType.DOUBLE;
 				break;
-			case FLOAT:
-				dataType = Types.FLOAT;
-				break;
-			case INET:
-				throw new DataServiceFault("INET Data Type is not supported for OData Services");
 			case INT:
-				dataType = Types.INTEGER;
+				dataType = ODataDataType.INT32;
 				break;
 			case TIMESTAMP:
-				dataType = Types.TIMESTAMP;
+				dataType = ODataDataType.TIMEOFDAY;
 				break;
-			case LIST:
-				throw new DataServiceFault("LIST Data Type is not supported for OData Services");
-			case SET:
-				throw new DataServiceFault("SET Data Type is not supported for OData Services");
-			case MAP:
-				throw new DataServiceFault("MAP Data Type is not supported for OData Services");
-			case UDT:
-				throw new DataServiceFault("UDT Data Type is not supported for OData Services");
-			case TUPLE:
-				throw new DataServiceFault("TUPLE Data Type is not supported for OData Services");
-			case CUSTOM:
-				throw new DataServiceFault("CUSTOM Data Type is not supported for OData Services");
 			default:
-				throw new DataServiceFault("Data Type is not supported for OData Services");
+				dataType = ODataDataType.STRING;
+				break;
 		}
 		return dataType;
 	}
 
-	private int getBindingKeyCount(String query) {
-		int count = 0;
-		for (int i = 0; i < query.length(); i++) {
-			if (i != 0 && i != query.length() - 1) {
-				if (query.charAt(i) == '?' && query.charAt(i - 1) == ' ' && query.charAt(i - 1) == ' ') {
-					count++;
-				}
-			} else {
-				if (query.charAt(i) == '?') {
-					count++;
-				}
-			}
-		}
-		return count;
-	}
-
 	/**
-	 * This method creates a SQL query to update data.
+	 * This method creates a CQL query to update data.
 	 *
 	 * @param tableName Name of the table
 	 * @param entry     update entry
 	 * @return sql Query
-	 * @throws DataServiceFault
 	 */
-	private String createUpdateEntitySQL(String tableName, DataEntry entry) throws DataServiceFault {
-		List<String> pKeys = primaryKeys.get(tableName);
+	private String createUpdateEntityCQL(String tableName, ODataEntry entry) {
+		List<String> pKeys = this.primaryKeys.get(tableName);
 		StringBuilder sql = new StringBuilder();
 		sql.append("UPDATE ").append(tableName).append(" SET ");
 		boolean propertyMatch = false;
-		for (DataColumn column : tableMetaData.get(tableName).values()) {
-			if (entry.getValue(column.getColumnName()).getScalarValue() != null &&
-			    !pKeys.contains(column.getColumnName())) {
-				if (propertyMatch) {
-					sql.append(",");
-				}
-				if (!pKeys.contains(column.getColumnName())) {
-					sql.append(column.getColumnName()).append(" = ").append(" ? ");
-					propertyMatch = true;
-				}
+		for (String column : entry.getNames()) {
+			if (propertyMatch) {
+				sql.append(",");
+			}
+			if (!pKeys.contains(column)) {
+				sql.append(column).append(" = ").append(" ? ");
+				propertyMatch = true;
 			}
 		}
 		sql.append(" WHERE ");
@@ -490,17 +518,17 @@ public class CassandraDataHandler extends AbstractExpressionDataHandler {
 	}
 
 	/**
-	 * This method creates a SQL query to insert data in table.
+	 * This method creates a CQL query to insert data in table.
 	 *
 	 * @param tableName Name of the table
 	 * @return sqlQuery
 	 */
-	private String createInsertSQL(String tableName, DataEntry entry) throws DataServiceFault {
+	private String createInsertCQL(String tableName, ODataEntry entry) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("INSERT INTO ").append(tableName).append(" (");
 		boolean propertyMatch = false;
-		for (DataColumn column : tableMetaData.get(tableName).values()) {
-			if (entry.getValue(column.getColumnName()).getScalarValue() != null) {
+		for (DataColumn column : this.tableMetaData.get(tableName).values()) {
+			if (entry.getValue(column.getColumnName()) != null) {
 				if (propertyMatch) {
 					sql.append(",");
 				}
@@ -510,7 +538,7 @@ public class CassandraDataHandler extends AbstractExpressionDataHandler {
 		}
 		sql.append(" ) VALUES ( ");
 		propertyMatch = false;
-		for (DataColumn column : tableMetaData.get(tableName).values()) {
+		for (DataColumn column : this.tableMetaData.get(tableName).values()) {
 			if (propertyMatch) {
 				sql.append(",");
 			}
@@ -520,4 +548,70 @@ public class CassandraDataHandler extends AbstractExpressionDataHandler {
 		sql.append(" ) ");
 		return sql.toString();
 	}
+
+	/**
+	 * This method creates CQL query to read data with keys.
+	 *
+	 * @param tableName Name of the table
+	 * @param keys      Keys
+	 * @return sql Query
+	 */
+	private String createReadSqlWithKeys(String tableName, ODataEntry keys) {
+		StringBuilder sql = new StringBuilder();
+		sql.append("SELECT * FROM ").append(tableName).append(" WHERE ");
+		boolean propertyMatch = false;
+		for (DataColumn column : this.tableMetaData.get(tableName).values()) {
+			if (keys.getValue(column.getColumnName()) != null) {
+				if (propertyMatch) {
+					sql.append(" AND ");
+				}
+				sql.append(column.getColumnName()).append(" = ").append(" ? ");
+				propertyMatch = true;
+			}
+		}
+		return sql.toString();
+	}
+
+	/**
+	 * This method creates CQL query to delete data.
+	 *
+	 * @param tableName Name of the table
+	 * @return sql Query
+	 */
+	private String createDeleteCQL(String tableName) {
+		StringBuilder sql = new StringBuilder();
+		sql.append("DELETE FROM ").append(tableName).append(" WHERE ");
+		List<String> pKeys = this.primaryKeys.get(tableName);
+		boolean propertyMatch = false;
+		for (String key : pKeys) {
+			if (propertyMatch) {
+				sql.append(" AND ");
+			}
+			sql.append(key).append(" = ").append(" ? ");
+			propertyMatch = true;
+		}
+		return sql.toString();
+	}
+
+	private String base64EncodeByteBuffer(ByteBuffer byteBuffer) throws ODataServiceFault {
+		byte[] data = byteBuffer.array();
+		byte[] base64Data = Base64.encodeBase64(data);
+		try {
+			return new String(base64Data, DBConstants.DEFAULT_CHAR_SET_TYPE);
+		} catch (UnsupportedEncodingException e) {
+			throw new ODataServiceFault(e, "Error in encoding result binary data: " + e.getMessage());
+		}
+	}
+
+	private ByteBuffer base64DecodeByteBuffer(String data) throws ODataServiceFault {
+		try {
+			byte[] buff = Base64.decodeBase64(data.getBytes(DBConstants.DEFAULT_CHAR_SET_TYPE));
+			ByteBuffer result = ByteBuffer.allocate(buff.length);
+			result.put(buff);
+			return result;
+		} catch (UnsupportedEncodingException e) {
+			throw new ODataServiceFault(e, "Error in decoding input base64 data: " + e.getMessage());
+		}
+	}
+
 }

@@ -16,7 +16,6 @@
 
 package org.wso2.carbon.dataservices.core.odata;
 
-import org.wso2.carbon.dataservices.core.DataServiceFault;
 import org.wso2.carbon.dataservices.core.engine.DataEntry;
 
 import java.util.List;
@@ -33,10 +32,10 @@ public interface ODataDataHandler {
 	 *
 	 * @param tableName Name of the table
 	 * @return EntityCollection
-	 * @throws DataServiceFault
+	 * @throws ODataServiceFault
 	 * @see DataEntry
 	 */
-	List<DataEntry> readTable(String tableName) throws DataServiceFault;
+	List<ODataEntry> readTable(String tableName) throws ODataServiceFault;
 
 	/**
 	 * This method read the table with Keys and return.
@@ -45,37 +44,38 @@ public interface ODataDataHandler {
 	 * @param tableName Name of the table
 	 * @param keys      Keys to check
 	 * @return EntityCollection
-	 * @throws DataServiceFault
+	 * @throws ODataServiceFault
 	 * @see DataEntry
 	 */
-	List<DataEntry> readTableWithKeys(String tableName, DataEntry keys) throws DataServiceFault;
+	List<ODataEntry> readTableWithKeys(String tableName, ODataEntry keys, boolean transactional)
+			throws ODataServiceFault;
 
 	/**
 	 * This method inserts entity to table.
 	 *
 	 * @param tableName Name of the table
 	 * @param entity    Entity
-	 * @throws DataServiceFault
+	 * @throws ODataServiceFault
 	 */
-	String insertEntityInTable(String tableName, DataEntry entity) throws DataServiceFault;
+	String insertEntityToTable(String tableName, ODataEntry entity) throws ODataServiceFault;
 
 	/**
 	 * This method deletes entity from table.
 	 *
 	 * @param tableName Name of the table
 	 * @param entity    Entity
-	 * @throws DataServiceFault
+	 * @throws ODataServiceFault
 	 */
-	void deleteEntityInTable(String tableName, DataEntry entity) throws DataServiceFault;
+	void deleteEntityInTable(String tableName, ODataEntry entity, boolean transactional) throws ODataServiceFault;
 
 	/**
 	 * This method updates entity in table.
 	 *
-	 * @param tableName          Name of the table
-	 * @param newProperties      New Properties
-	 * @throws DataServiceFault
+	 * @param tableName     Name of the table
+	 * @param newProperties New Properties
+	 * @throws ODataServiceFault
 	 */
-	void updateEntityInTable(String tableName, DataEntry newProperties) throws DataServiceFault;
+	void updateEntityInTable(String tableName, ODataEntry newProperties, boolean transactional) throws ODataServiceFault;
 
 	/**
 	 * This method return database table metadata.
@@ -92,9 +92,9 @@ public interface ODataDataHandler {
 	 *
 	 * @param tableName Name of the table
 	 * @param property  Property
-	 * @throws DataServiceFault
+	 * @throws ODataServiceFault
 	 */
-	void updatePropertyInTable(String tableName, DataEntry property) throws DataServiceFault;
+	void updatePropertyInTable(String tableName, ODataEntry property, boolean transactional) throws ODataServiceFault;
 
 	/**
 	 * This method return names of all the tables in the database.
@@ -112,10 +112,13 @@ public interface ODataDataHandler {
 	Map<String, List<String>> getPrimaryKeys();
 
 	/**
-	 * This method returns the navigation property map, which contains the foreign keys of the tables.
-	 * Return a map with table names as the keys and the values contains maps with table names as keys and
+	 * This method returns the navigation property map, which contains the Navigation table which contains the all the navigation paths from the table,
 	 *
 	 * @return NavigationProperty Map
 	 */
-	Map<String, Map<String, List<String>>> getNavigationProperties();
+	Map<String, NavigationTable> getNavigationProperties();
+
+	void openTransaction() throws ODataServiceFault;
+
+	void closeTransaction() throws ODataServiceFault;
 }

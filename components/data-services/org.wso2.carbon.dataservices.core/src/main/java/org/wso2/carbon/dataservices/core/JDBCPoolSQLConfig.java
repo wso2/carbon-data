@@ -25,6 +25,7 @@ import org.wso2.carbon.dataservices.common.RDBMSUtils;
 import org.wso2.carbon.dataservices.core.description.config.SQLConfig;
 import org.wso2.carbon.dataservices.core.engine.DataService;
 import org.wso2.carbon.dataservices.core.odata.ODataDataHandler;
+import org.wso2.carbon.dataservices.core.odata.ODataServiceFault;
 import org.wso2.carbon.ndatasource.common.DataSourceException;
 import org.wso2.carbon.ndatasource.rdbms.RDBMSConfiguration;
 import org.wso2.carbon.ndatasource.rdbms.RDBMSConfiguration.DataSourceProperty;
@@ -148,7 +149,7 @@ public class JDBCPoolSQLConfig extends SQLConfig {
 
 	@Override
 	public ODataDataHandler createODataHandler() throws DataServiceFault {
-		throw new DataServiceFault("Expose as OData Service feature doesn't support for the " + getConfigId() +
+		throw new ODataServiceFault("Expose as OData Service feature doesn't support for the " + getConfigId() +
 		                           " Datasource.");
 	}
 }

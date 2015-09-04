@@ -285,31 +285,6 @@ public class DBDeployer extends AbstractDeployer {
     }
 
 	/**
-	 * This method return the config id from the dbs File.
-	 *
-	 * @param file dbs File
-	 * @return config ID
-	 * @throws FileNotFoundException
-	 * @throws XMLStreamException
-	 * @throws DataServiceFault
-	 */
-	private String getConfigIDFromDSContents(File file)
-			throws FileNotFoundException, XMLStreamException, DataServiceFault {
-		StAXOMBuilder builder = new StAXOMBuilder(new FileInputStream(file.getAbsoluteFile()));
-		OMElement serviceEl = builder.getDocumentElement();
-		String configId = null;
-		for (Iterator itr = serviceEl.getChildrenWithName(new QName(DBSFields.CONFIG)); itr.hasNext(); ) {
-			configId = ((OMElement) itr.next()).getAttributeValue(new QName(DBSFields.ID));
-		}
-		builder.close();
-		if (DBUtils.isEmptyString(configId)) {
-			throw new DataServiceFault(
-					"Service config id cannot be determined for the data service at '" + file.getAbsolutePath() + "'");
-		}
-		return configId;
-	}
-
-	/**
 	 * Creates a timer with a one minute delay, for re-deploying a data service.
 	 */
 	private void sheduleRedeploy(DeploymentFileData deploymentFileData, AxisService service) {

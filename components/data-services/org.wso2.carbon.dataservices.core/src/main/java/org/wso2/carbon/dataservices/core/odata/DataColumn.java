@@ -17,7 +17,7 @@
 package org.wso2.carbon.dataservices.core.odata;
 
 /**
- * This class represents a data column properties.
+ * This class represents a data column properties. This class is used to store column specific data to create odata service.
  */
 public class DataColumn {
 
@@ -27,9 +27,9 @@ public class DataColumn {
 	private String columnName;
 
 	/**
-	 * Data type of the table column - java.sql.Types.
+	 * Data type of the table column.
 	 */
-	private int columnType;
+	private ODataDataType columnType;
 
 	/**
 	 * Ordinal position of the table column.
@@ -61,7 +61,7 @@ public class DataColumn {
 	 */
 	private int maxLength;
 
-	public DataColumn(String columnName, int columnType, int order, boolean isNullable, int length) {
+	public DataColumn(String columnName, ODataDataType columnType, int order, boolean isNullable, int length) {
 		this.columnName = columnName;
 		this.columnType = columnType;
 		this.ordinalPosition = order;
@@ -69,19 +69,54 @@ public class DataColumn {
 		this.maxLength = length;
 	}
 
-	public DataColumn(String columnName, int columnType, boolean isNullable) {
+	public DataColumn(String columnName, ODataDataType columnType, boolean isNullable) {
 		this.columnName = columnName;
 		this.columnType = columnType;
 		this.nullable = isNullable;
-		// cassandra doesn't have a limitation of length.
-		this.maxLength = 2147483647;
+		this.maxLength = Integer.MAX_VALUE;
+	}
+
+	public enum ODataDataType {
+		BINARY,
+		BOOLEAN,
+		BYTE,
+		SBYTE,
+		DATE,
+		DATE_TIMEOFFSET,
+		TIMEOFDAY,
+		DURATION,
+		DECIMAL,
+		SINGLE,
+		DOUBLE,
+		GUID,
+		INT16,
+		INT32,
+		INT64,
+		STRING,
+		STREAM,
+		GEOGRAPHY,
+		GEOGRAPHY_POINT,
+		GEOGRAPHY_LINE_STRING,
+		GEOGRAPHY_POLYGON,
+		GEOGRAPHY_MULTIPOINT,
+		GEOGRAPHY_MULTILINE_STRING,
+		GEOGRAPHY_MULTIPOLYGON,
+		GEOGRAPHY_COLLECTION,
+		GEOMETRY,
+		GEOMETRY_POINT,
+		GEOMETRY_LINE_STRING,
+		GEOMETRY_POLYGON,
+		GEOMETRY_MULTIPOINT,
+		GEOMETRY_MULTILINE_STRING,
+		GEOMETRY_MULTIPOLYGON,
+		GEOMETRY_COLLECTION
 	}
 
 	public String getColumnName() {
 		return columnName;
 	}
 
-	public int getColumnType() {
+	public ODataDataType getColumnType() {
 		return columnType;
 	}
 

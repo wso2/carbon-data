@@ -25,6 +25,7 @@ public class AuthCode implements Serializable {
 
     private String authCode;
     private String errorCode;
+    private long insertedTime;
 
     public String getAuthCode() {
         return authCode;
@@ -40,5 +41,13 @@ public class AuthCode implements Serializable {
 
     public void setErrorCode(String errorCode) {
         this.errorCode = errorCode;
+    }
+
+    public long getInsertedTime() {
+        return insertedTime;
+    }
+
+    public void setInsertedTime(long insertedTime) {
+        this.insertedTime = insertedTime;
     }
 }

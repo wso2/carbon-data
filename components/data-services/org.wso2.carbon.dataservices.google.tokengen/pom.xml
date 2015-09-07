@@ -66,6 +66,10 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.felix</groupId>
+                <artifactId>maven-scr-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <extensions>true</extensions>
                 <configuration>
@@ -73,14 +77,15 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Private-Package>
+                            org.wso2.carbon.dataservices.google.tokengen.servlet.internal
                         </Private-Package>
                         <Export-Package>
-                            org.wso2.carbon.dataservices.google.tokengen.ui.util;version="${project.version}",
+                            !org.wso2.carbon.dataservices.google.tokengen.servlet.internal,
                             org.wso2.carbon.dataservices.google.tokengen.servlet;version="${project.version}",
                             org.wso2.carbon.dataservices.google.tokengen.servlet.util;version="${project.version}"
                         </Export-Package>
                         <Carbon-Component>UIBundle</Carbon-Component>
-                        <Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
+                        <!--<Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>-->
                         <Import-Package>
                             !org.wso2.carbon.dataservices.google.*,
                             org.apache.commons.logging;version="${carbon.commons.logging.imp.pkg.version}",
@@ -97,9 +102,13 @@
                             com.google.api.client.repackaged.com.google.common.base;version="${google-http-client.orbit.imp.pkg.version}",
                             com.google.api.client.extensions.java6.auth.oauth2;version="${google-oauth-client.orbit.imp.pkg.version}",
                             com.google.api.client.util.store;version="${google-http-client.orbit.imp.pkg.version}",
+                            org.osgi.framework;version="${osgi.imp.pkg.version}",
+                            org.osgi.service.component;version="${osgi.service.imp.pkg.version}",
+                            com.hazelcast.core;version="${hazelcast.orbit.imp.pkg.version}",
                             javax.servlet.*
                             <!--*;resolution:=optional-->
                         </Import-Package>
+                        <!--<DynamicImport-Package>*</DynamicImport-Package>-->
                     </instructions>
                 </configuration>
             </plugin>

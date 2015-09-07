@@ -18,9 +18,9 @@ package org.wso2.carbon.dataservices.google.tokengen.servlet.util;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.dataservices.common.conf.DynamicAuthConfiguration;
 import org.wso2.carbon.dataservices.google.tokengen.servlet.internal.GoogleTokenGenDSComponent;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -50,10 +50,10 @@ public class CodeHolder implements Runnable {
         }
         //retry interval 1 hour
         long interval = 1;
-        //expiration time in milliseconds
+        //expiration time in milliseconds - default set to 30 mins.
         expirationTime = 1000 * 60 * 30;
         globalExecutorService = Executors.newSingleThreadScheduledExecutor();
-        globalExecutorService.scheduleAtFixedRate(this, interval, interval, TimeUnit.MILLISECONDS);
+        globalExecutorService.scheduleAtFixedRate(this, interval, interval, TimeUnit.HOURS);
     }
 
     /**
@@ -98,12 +98,10 @@ public class CodeHolder implements Runnable {
      */
     private void cleanupMap() {
         long currentTime = System.currentTimeMillis();
-        Iterator<Map.Entry<String,AuthCode>> iter = authCodes.entrySet().iterator();
-        while (iter.hasNext()) {
-            Map.Entry entry = iter.next();
-            AuthCode code = (AuthCode)entry.getValue();
+        for (String key : new ArrayList<String>(authCodes.keySet())) {
+            AuthCode code = authCodes.get(key);
             if ((currentTime - code.getInsertedTime()) > expirationTime) {
-                iter.remove();
+                authCodes.remove(key);
             }
         }
     }
@@ -113,7 +111,7 @@ public class CodeHolder implements Runnable {
         try {
             this.cleanupMap();
         } catch (Exception e) {
-            log.warn("Error occurred while cleaning up Oauth code map, Error - " + e.getMessage(), e);
+            log.warn("Error occurred while cleaning up OAuth code map, Error - " + e.getMessage(), e);
         }
     }
 }

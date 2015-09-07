@@ -68,7 +68,7 @@ public class GSpreadDataReader extends AbstractFixedDataReader {
                 }
                 if (rowId != 1 && dataRow != null) {
                     DataCell dataCell =
-                            new DataCell(TDriverUtil.getColumnIndex(cell.getId()) - 1,
+                            new DataCell(TDriverUtil.getColumnIndex(cell.getId()),
                                     cell.getContent().getType(),
                                     cell.getTextContent().getContent().getPlainText());
 
@@ -134,7 +134,7 @@ public class GSpreadDataReader extends AbstractFixedDataReader {
             if (!TDriverUtil.getCellPosition(cell.getId()).startsWith("R1")) {
                 break;
             }
-            int columnIndex = TDriverUtil.getColumnIndex(cell.getId()) - 1;
+            int columnIndex = TDriverUtil.getColumnIndex(cell.getId());
             headers.add(new ColumnInfo(
                     columnIndex, cell.getTextContent().getContent().getPlainText(),
                     currentWorkSheet.getTitle().getPlainText(), Types.VARCHAR, columnIndex));

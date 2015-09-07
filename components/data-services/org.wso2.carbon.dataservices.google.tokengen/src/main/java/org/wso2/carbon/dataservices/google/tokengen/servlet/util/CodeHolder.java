@@ -16,23 +16,44 @@
  */
 package org.wso2.carbon.dataservices.google.tokengen.servlet.util;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.dataservices.common.conf.DynamicAuthConfiguration;
+import org.wso2.carbon.dataservices.google.tokengen.servlet.internal.GoogleTokenGenDSComponent;
+
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This is the singleton class which holds auth codes received from different clients.
  */
-public class CodeHolder {
-
+public class CodeHolder implements Runnable {
+    private static final Log log = LogFactory.getLog(CodeHolder.class);
     private static CodeHolder tokenGen;
+    private ScheduledExecutorService globalExecutorService;
+    private long expirationTime;
 
     private Map<String,AuthCode> authCodes;
 
     /**
-     * Private constructor to make the class singleton.
+     * Private constructor to make the class singleton and start the cleanup process.
      */
     private CodeHolder(){
-        authCodes = new HashMap<String,AuthCode>(2);
+        if (GoogleTokenGenDSComponent.getHazelcastInstance() != null) {
+            authCodes = GoogleTokenGenDSComponent.getHazelcastInstance().getMap("GOOGLE_TOKENGEN_AUTHCODE_HOLDER");
+        } else {
+            authCodes = new HashMap<String,AuthCode>(2);
+        }
+        //retry interval 1 hour
+        long interval = 1;
+        //expiration time in milliseconds
+        expirationTime = 1000 * 60 * 30;
+        globalExecutorService = Executors.newSingleThreadScheduledExecutor();
+        globalExecutorService.scheduleAtFixedRate(this, interval, interval, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -58,6 +79,7 @@ public class CodeHolder {
         AuthCode authCode = new AuthCode();
         authCode.setAuthCode(code);
         authCode.setErrorCode(error);
+        authCode.setInsertedTime(System.currentTimeMillis());
         authCodes.put(sessionId,authCode);
     }
 
@@ -69,5 +91,29 @@ public class CodeHolder {
      */
     public AuthCode getAuthCodeForSession(String sessionId) {
         return authCodes.remove(sessionId);
+    }
+
+    /**
+     * Helper method to cleanup Oauth code map from time to time.
+     */
+    private void cleanupMap() {
+        long currentTime = System.currentTimeMillis();
+        Iterator<Map.Entry<String,AuthCode>> iter = authCodes.entrySet().iterator();
+        while (iter.hasNext()) {
+            Map.Entry entry = iter.next();
+            AuthCode code = (AuthCode)entry.getValue();
+            if ((currentTime - code.getInsertedTime()) > expirationTime) {
+                iter.remove();
+            }
+        }
+    }
+
+    @Override
+    public void run() {
+        try {
+            this.cleanupMap();
+        } catch (Exception e) {
+            log.warn("Error occurred while cleaning up Oauth code map, Error - " + e.getMessage(), e);
+        }
     }
 }

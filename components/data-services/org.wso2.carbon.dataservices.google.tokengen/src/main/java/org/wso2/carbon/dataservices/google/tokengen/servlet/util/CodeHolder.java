@@ -100,8 +100,10 @@ public class CodeHolder implements Runnable {
         long currentTime = System.currentTimeMillis();
         for (String key : new ArrayList<String>(authCodes.keySet())) {
             AuthCode code = authCodes.get(key);
-            if ((currentTime - code.getInsertedTime()) > expirationTime) {
-                authCodes.remove(key);
+            if (code != null) {
+                if ((currentTime - code.getInsertedTime()) > expirationTime) {
+                    authCodes.remove(key);
+                }
             }
         }
     }

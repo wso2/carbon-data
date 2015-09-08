@@ -2195,7 +2195,7 @@ private String getRefreshToken(String gSpreadJDBCUrl) {
 					        		<fmt:message key="<%=DBConstants.GSpread.VISIBILITY%>"/><%=(isFieldMandatory(DBConstants.GSpread.VISIBILITY)?"<font color=\"red\">*</font>":"")%>
 					        	</td>
 					        	<td>
-			                 		<select id="<%=DBConstants.GSpread.VISIBILITY%>" name="<%=DBConstants.GSpread.VISIBILITY%>" onchange="javascript:gspreadVisibiltyOnChangeQMode(this,document);return false;">
+			                 		<select id="<%=DBConstants.GSpread.VISIBILITY%>" name="<%=DBConstants.GSpread.VISIBILITY%>" onchange="javascript:gspreadVisibiltyOnChange(this,document);return false;">
 							            <% if (getVisibility(propertyValue).equals("private")) { %>
 							            <option value="private" selected="selected">Private</option>
 							            <% } else { %>

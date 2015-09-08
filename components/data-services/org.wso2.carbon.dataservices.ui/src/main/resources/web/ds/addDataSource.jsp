@@ -2421,6 +2421,18 @@ private String getRefreshToken(String gSpreadJDBCUrl) {
     </td>
 </tr>
 <% } %>
+<%if ("GDATA_SPREADSHEET".equals(dataSourceType)) {%>
+    <tr id="tr:gspread_redirect_uris" style='display:<%=((!(visibility == null || visibility.equals("public")))?"":"none")%>'>
+        <td style="width:150px"><fmt:message key="gspread_redirect_uris"/><span
+                class="required">*</span></td>
+        <td align="left">
+            <input id="gspread_redirect_uris" size="50"
+                   name="gspread_redirect_uris"
+                   value="https://localhost:9443/authCodeReceiver"
+                   type="text"/>
+        </td>
+    </tr>
+<%} %>
 </table>
 
 <% if (DBConstants.DataSourceTypes.RDBMS.equals(selectedType)) { %>
@@ -2691,21 +2703,7 @@ private String getRefreshToken(String gSpreadJDBCUrl) {
 <%
     }   }
 %>
-<%if ("GDATA_SPREADSHEET".equals(dataSourceType)) {%>
-<table id="tbl:gspread_redirect_uris" style='display:<%=((!(visibility == null || visibility.equals("public")))?"":"none")%>' class="styledLeft noBorders" cellspacing="0" width="100%">
-    <tr>
-        <td style="width:150px"><fmt:message key="gspread_redirect_uris"/><span
-                class="required">*</span></td>
-        <td align="left">
-            <input id="gspread_redirect_uris"
-                   name="gspread_redirect_uris"
-                   value="https://localhost:9443/authCodeReceiver"
-                   type="text"/>
-        </td>
-    </tr>
-</table>
 
-<%} %>
 
 <table id="buttonTable" class="styledLeft noBorders" cellspacing="0" width="100%">
 <tr>

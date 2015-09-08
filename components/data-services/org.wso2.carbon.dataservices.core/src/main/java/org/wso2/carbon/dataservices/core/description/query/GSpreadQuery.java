@@ -100,7 +100,7 @@ public class GSpreadQuery extends Query {
 	}
 	
 	public GSpreadResultSet retrieveData() throws Exception {
-		URL worksheetUrl = new URL(this.getConfig().generateWorksheetFeedURL());
+		URL worksheetUrl = this.getConfig().generateWorksheetFeedURL();
 		WorksheetFeed feedw = this.getConfig().getFeed(worksheetUrl, WorksheetFeed.class);
 		WorksheetEntry worksheetEntry = feedw.getEntries().get(this.getWorksheetNumber() - 1);			
 		CellFeed feedc = this.getConfig().getFeed(worksheetEntry.getCellFeedUrl(), CellFeed.class);			

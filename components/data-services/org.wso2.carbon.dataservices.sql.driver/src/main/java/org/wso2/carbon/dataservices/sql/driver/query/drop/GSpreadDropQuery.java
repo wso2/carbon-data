@@ -20,7 +20,8 @@ package org.wso2.carbon.dataservices.sql.driver.query.drop;
 
 import com.google.gdata.data.spreadsheet.WorksheetEntry;
 import com.google.gdata.util.ServiceException;
-import org.wso2.carbon.dataservices.sql.driver.TGSpreadFeedUtil;
+import org.wso2.carbon.dataservices.sql.driver.TDriverUtil;
+import org.wso2.carbon.dataservices.sql.driver.TGSpreadConnection;
 
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -52,9 +53,8 @@ public class GSpreadDropQuery extends DropQuery {
     }
 
     private synchronized void executeSQL() throws SQLException {
-        TGSpreadFeedUtil feedUtil = new TGSpreadFeedUtil(getConnection());
         WorksheetEntry currentWorkSheet =
-                feedUtil.getCurrentWorkSheetEntry(this.getTableName());
+                TDriverUtil.getCurrentWorkSheetEntry((TGSpreadConnection) getConnection(), this.getTableName());
 
         if (currentWorkSheet == null) {
             throw new SQLException("WorkSheet named '" + this.getTableName() + "' does not exist");

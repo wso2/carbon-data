@@ -22,7 +22,8 @@ import com.google.gdata.data.spreadsheet.ListEntry;
 import com.google.gdata.data.spreadsheet.ListFeed;
 import com.google.gdata.data.spreadsheet.WorksheetEntry;
 import com.google.gdata.util.ServiceException;
-import org.wso2.carbon.dataservices.sql.driver.TGSpreadFeedUtil;
+import org.wso2.carbon.dataservices.sql.driver.TDriverUtil;
+import org.wso2.carbon.dataservices.sql.driver.TGSpreadConnection;
 import org.wso2.carbon.dataservices.sql.driver.processor.reader.DataRow;
 import org.wso2.carbon.dataservices.sql.driver.query.ColumnInfo;
 
@@ -62,14 +63,14 @@ public class GSpreadUpdateQuery extends UpdateQuery {
         } else {
             result = getCondition().process(getTargetTable());
         }
-        TGSpreadFeedUtil feedUtil = new TGSpreadFeedUtil(getConnection());
+        TGSpreadConnection connection = (TGSpreadConnection) getConnection();
         WorksheetEntry currentWorkSheet =
-                feedUtil.getCurrentWorkSheetEntry(getTargetTableName());
+                TDriverUtil.getCurrentWorkSheetEntry(connection, getTargetTableName());
         if (currentWorkSheet == null) {
             throw new SQLException("WorkSheet '" + getTargetTableName() + "' does not exist");
         }
 
-        ListFeed listFeed = feedUtil.getListFeed(currentWorkSheet);
+        ListFeed listFeed = TDriverUtil.getListFeed(connection, currentWorkSheet);
         for (Map.Entry<Integer, DataRow> row : result.entrySet()) {
             ListEntry listEntry = listFeed.getEntries().get(row.getKey() - 1);
             for (ColumnInfo column : getTargetColumns()) {

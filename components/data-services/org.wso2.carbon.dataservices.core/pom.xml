@@ -317,6 +317,7 @@
                             org.jongo;version="${jongo.orbit.imp.pkg.version}",
                             org.wso2.carbon.dataservices.sql.driver;version="${dataservices.imp.pkg.version}",
                             org.wso2.carbon.dataservices.sql.driver.parser;version="${dataservices.imp.pkg.version}",
+                            org.wso2.carbon.dataservices.sql.driver.util;version="${dataservices.imp.pkg.version}",
                             org.wso2.carbon.dataservices.sql.driver.processor.reader;version="${dataservices.imp.pkg.version}",
                             org.wso2.carbon.dataservices.sql.driver.query;version="${dataservices.imp.pkg.version}",
                             org.json;version="${webharvest-core.orbit.imp.pkg.version}",

@@ -19,6 +19,12 @@
 package org.wso2.carbon.dataservices.sql.driver;
 
 import com.google.gdata.client.spreadsheet.*;
+import com.google.gdata.data.spreadsheet.CellEntry;
+import com.google.gdata.data.spreadsheet.CellFeed;
+import com.google.gdata.data.spreadsheet.ListFeed;
+import com.google.gdata.data.spreadsheet.SpreadsheetEntry;
+import com.google.gdata.data.spreadsheet.WorksheetEntry;
+import com.google.gdata.data.spreadsheet.WorksheetFeed;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -80,8 +86,7 @@ public class TDriverUtil {
             case EXCEL:
                 return getExcelHeaders(connection, tableName);
             case GSPREAD:
-                TGSpreadFeedUtil feedUtil = new TGSpreadFeedUtil(connection);
-                return feedUtil.getGSpreadHeaders(tableName);
+                return getGSpreadHeaders(connection, tableName);
             case CUSTOM:
                 return getCustomHeaders(connection, tableName);
             default:
@@ -111,6 +116,60 @@ public class TDriverUtil {
             columns.add(column);
         }
         return columns.toArray(new ColumnInfo[columns.size()]);
+    }
+
+    private static ColumnInfo[] getGSpreadHeaders(Connection connection,
+                                                  String sheetName) throws SQLException {
+        WorksheetEntry currentWorksheet;
+        List<ColumnInfo> columns = new ArrayList<ColumnInfo>();
+
+        if (!(connection instanceof TGSpreadConnection)) {
+            throw new SQLException("Invalid connection type");
+        }
+        currentWorksheet = getCurrentWorkSheetEntry((TGSpreadConnection) connection, sheetName);
+        if (currentWorksheet == null) {
+            throw new SQLException("Worksheet '" + sheetName + "' does not exist");
+        }
+        CellFeed cellFeed = getGSpreadCellFeed((TGSpreadConnection) connection, currentWorksheet);
+        for (CellEntry cell : cellFeed.getEntries()) {
+            if (!getCellPosition(cell.getId()).startsWith("R1")) {
+                break;
+            }
+            ColumnInfo column =
+                    new ColumnInfo(cell.getTextContent().getContent().getPlainText());
+            column.setTableName(sheetName);
+            column.setSqlType(cell.getContent().getType());
+            column.setId(getColumnIndex(cell.getId()) - 1);
+            columns.add(column);
+        }
+        return columns.toArray(new ColumnInfo[columns.size()]);
+    }
+
+    public static WorksheetEntry getCurrentWorkSheetEntry(TGSpreadConnection connection,
+                                                          String sheetName) throws SQLException {
+        SpreadsheetEntry spreadsheetEntry = connection.getSpreadSheetFeed().getEntries().get(0);
+        WorksheetQuery worksheetQuery =
+                TDriverUtil.createWorkSheetQuery(spreadsheetEntry.getWorksheetFeedUrl());
+        WorksheetFeed worksheetFeed = connection.getFeedProcessor().getFeed(worksheetQuery,
+                                                                            WorksheetFeed.class);
+        for (WorksheetEntry entry : worksheetFeed.getEntries()) {
+            if (sheetName.equals(entry.getTitle().getPlainText())) {
+                return entry;
+            }
+        }
+        return null;
+    }
+
+    public static CellFeed getGSpreadCellFeed(TGSpreadConnection connection,
+                                       WorksheetEntry currentWorkSheet) throws SQLException {
+        CellQuery cellQuery = new CellQuery(currentWorkSheet.getCellFeedUrl());
+        return connection.getFeedProcessor().getFeed(cellQuery, CellFeed.class);
+    }
+
+    public static ListFeed getListFeed(TGSpreadConnection connection,
+                                       WorksheetEntry currentWorkSheet) throws SQLException {
+        ListQuery listQuery = new ListQuery(currentWorkSheet.getListFeedUrl());
+        return connection.getFeedProcessor().getFeed(listQuery, ListFeed.class);
     }
 
     private static ColumnInfo[] getCustomHeaders(Connection connection,

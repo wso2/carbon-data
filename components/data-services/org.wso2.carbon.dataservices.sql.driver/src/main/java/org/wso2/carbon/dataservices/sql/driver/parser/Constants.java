@@ -123,6 +123,7 @@ public final class Constants {
     public static final String VALUE = "VALUE";
     public static final String PARAM_VALUE = "PARAM_VALUE";
 
+    public static final String BASE_WORKSHEET_URL = "https://spreadsheets.google.com/feeds/worksheets/";
     public static final String SPREADSHEET_FEED_BASE_URL = "https://spreadsheets.google.com/feeds/spreadsheets/";
     public static final String SPREADSHEET_SERVICE_NAME = "WSO2SQLDriver";
 

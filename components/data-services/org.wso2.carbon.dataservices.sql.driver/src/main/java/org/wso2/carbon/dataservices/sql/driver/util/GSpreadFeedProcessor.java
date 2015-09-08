@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.wso2.carbon.dataservices.sql.driver.util;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
@@ -5,32 +21,22 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.gdata.client.Query;
-import com.google.gdata.client.spreadsheet.CellQuery;
-import com.google.gdata.client.spreadsheet.ListQuery;
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
-import com.google.gdata.client.spreadsheet.WorksheetQuery;
 import com.google.gdata.data.IEntry;
 import com.google.gdata.data.IFeed;
-import com.google.gdata.data.spreadsheet.CellEntry;
-import com.google.gdata.data.spreadsheet.CellFeed;
-import com.google.gdata.data.spreadsheet.ListFeed;
-import com.google.gdata.data.spreadsheet.SpreadsheetEntry;
-import com.google.gdata.data.spreadsheet.WorksheetEntry;
-import com.google.gdata.data.spreadsheet.WorksheetFeed;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.dataservices.sql.driver.TDriverUtil;
-import org.wso2.carbon.dataservices.sql.driver.TGSpreadConnection;
 import org.wso2.carbon.dataservices.sql.driver.internal.SQLDriverDSComponent;
-import org.wso2.carbon.dataservices.sql.driver.query.ColumnInfo;
+import org.wso2.carbon.dataservices.sql.driver.parser.Constants;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.Resource;
 
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URL;
-import java.sql.Connection;
+import java.net.URLDecoder;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Helper class to manipulate feed requests with access tokens
@@ -45,9 +51,9 @@ public class GSpreadFeedProcessor {
 
     private String accessToken;
 
-    private String refReshToken;
+    private String refreshToken;
 
-    private boolean requireAuth;
+    private String visibility = Constants.ACCESS_MODE_PRIVATE;
 
     private SpreadsheetService service;
 
@@ -55,40 +61,72 @@ public class GSpreadFeedProcessor {
         this.clientId = clientId;
     }
 
+    public String getClientId() {
+        return clientId;
+    }
+
     public void setClientSecret(String clientSecret) {
         this.clientSecret = clientSecret;
     }
 
-    public void setAccessToken(String accessToken) {
-        this.accessToken = accessToken;
+    public String getClientSecret() {
+        return clientSecret;
     }
 
-    public void setRefReshToken(String refReshToken) {
-        this.refReshToken = refReshToken;
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 
-    public void setRequireAuth(boolean requireAuth) {
-        this.requireAuth = requireAuth;
+    public String getRefreshToken() {
+        return refreshToken;
     }
 
     public void setService(SpreadsheetService service) {
         this.service = service;
     }
 
+    public SpreadsheetService getService() {
+        return service;
+    }
+
     private String charSetType = "UTF-8";
 
-    private TGSpreadConnection connection;
+    private String baseRegistryOauthTokenPath = "/repository/components/org.wso2.carbon.dataservices.sql.driver/tokens/";
 
-    public static final String BASE_REGISTRY_AUTH_TOKEN_PATH = "/repository/components/org.wso2.carbon.dataservices.sql.driver/tokens/";
-
-    public GSpreadFeedProcessor(Connection connection) {
-        this.connection = (TGSpreadConnection)connection;
+    public GSpreadFeedProcessor(String clientId, String clientSecret, String refReshToken,
+                                String visibility, String baseRegistryOauthTokenPath) throws SQLException {
+        this.clientId = clientId;
+        this.clientSecret = clientSecret;
+        this.refreshToken = refReshToken;
+        this.visibility = visibility;
+        if (!this.checkVisibility()) {
+            throw new SQLException("Invalid access mode '" + visibility + "' is provided");
+        }
+        if (requiresAuth()) {
+            if (this.clientId == null || this.clientId.isEmpty()){
+                throw new SQLException("Valid Client id not provided");
+            }
+            if (this.clientSecret == null || this.clientSecret.isEmpty()){
+                throw new SQLException("Valid Client secret not provided");
+            }
+            if (this.refreshToken == null || this.refreshToken.isEmpty()){
+                throw new SQLException("Valid refresh token not provided");
+            }
+            try {
+                this.clientId = URLDecoder.decode(this.clientId, "UTF-8");
+                this.clientSecret = URLDecoder.decode(this.clientSecret, "UTF-8");
+                this.refreshToken = URLDecoder.decode(this.refreshToken, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                throw new SQLException("Error in retrieving Authentication information " + e.getMessage(), e);
+            }
+        }
+        this.baseRegistryOauthTokenPath = baseRegistryOauthTokenPath;
     }
 
 
     public <E extends IEntry> E insert(URL feedUrl, E entry) throws SQLException {
         try {
-            if (this.requireAuth) {
+            if (this.requiresAuth()) {
                 if (this.accessToken != null) {
                     this.authenticateWithAccessToken();
                     try {
@@ -130,7 +168,7 @@ public class GSpreadFeedProcessor {
      */
     public <F extends IFeed> F getFeed(URL feedUrl, Class<F> feedClass) throws SQLException {
         try {
-            if (this.requireAuth) {
+            if (this.requiresAuth()) {
                 if (this.accessToken != null) {
                     this.authenticateWithAccessToken();
                     try {
@@ -172,7 +210,7 @@ public class GSpreadFeedProcessor {
      */
     public <F extends IFeed> F getFeed(Query query, Class<F> feedClass) throws SQLException {
         try {
-            if (this.requireAuth) {
+            if (this.requiresAuth()) {
                 if (this.accessToken != null) {
                     this.authenticateWithAccessToken();
                     try {
@@ -217,7 +255,7 @@ public class GSpreadFeedProcessor {
     private void refreshAndAuthenticate() throws Exception {
         GoogleCredential credential = getBaseCredential();
         credential.setAccessToken(this.accessToken);
-        credential.setRefreshToken(this.refReshToken);
+        credential.setRefreshToken(this.refreshToken);
         credential.refreshToken();
         this.accessToken = credential.getAccessToken();
         this.service.setOAuth2Credentials(credential);
@@ -246,10 +284,10 @@ public class GSpreadFeedProcessor {
 //		 * it doesn't have "=" characters by making the source data
 //		 * a multiple of 3, thus not to have any padding data.
 //		 */
-        String resPath = BASE_REGISTRY_AUTH_TOKEN_PATH
+        String resPath = this.baseRegistryOauthTokenPath
                 + "configs/"
                 + "user_auth_token/users/"
-                + this.connection.getClientId();
+                + this.clientId;
         return resPath;
     }
 
@@ -315,53 +353,28 @@ public class GSpreadFeedProcessor {
         registry.commitTransaction();
     }
 
-    public ColumnInfo[] getGSpreadHeaders(String sheetName) throws SQLException {
-        WorksheetEntry currentWorksheet;
-        List<ColumnInfo> columns = new ArrayList<ColumnInfo>();
 
-        if (!(this.connection instanceof TGSpreadConnection)) {
-            throw new SQLException("Invalid connection type");
-        }
-        currentWorksheet = getCurrentWorkSheetEntry(sheetName);
-        if (currentWorksheet == null) {
-            throw new SQLException("Worksheet '" + sheetName + "' does not exist");
-        }
-        CellFeed cellFeed = getCellFeed(currentWorksheet);
-        for (CellEntry cell : cellFeed.getEntries()) {
-            if (!TDriverUtil.getCellPosition(cell.getId()).startsWith("R1")) {
-                break;
-            }
-            ColumnInfo column =
-                    new ColumnInfo(cell.getTextContent().getContent().getPlainText());
-            column.setTableName(sheetName);
-            column.setSqlType(cell.getContent().getType());
-            column.setId(TDriverUtil.getColumnIndex(cell.getId()) - 1);
-            columns.add(column);
-        }
-        return columns.toArray(new ColumnInfo[columns.size()]);
+    public URL getSpreadSheetFeedUrl() throws MalformedURLException {
+        return new URL(Constants.SPREADSHEET_FEED_BASE_URL + this.visibility + "/full");
     }
 
-    public CellFeed getCellFeed(WorksheetEntry currentWorkSheet) throws SQLException {
-        CellQuery cellQuery = new CellQuery(currentWorkSheet.getCellFeedUrl());
-        return getFeed(cellQuery, CellFeed.class);
+    public URL generateWorksheetFeedURL(String key) throws MalformedURLException {
+        return new URL(Constants.BASE_WORKSHEET_URL + key + "/" +
+               this.visibility + "/basic");
     }
 
-    public WorksheetEntry getCurrentWorkSheetEntry(String sheetName) throws SQLException {
-        SpreadsheetEntry spreadsheetEntry = this.connection.getSpreadSheetFeed().getEntries().get(0);
-        WorksheetQuery worksheetQuery =
-                TDriverUtil.createWorkSheetQuery(spreadsheetEntry.getWorksheetFeedUrl());
-        WorksheetFeed worksheetFeed = getFeed(worksheetQuery,
-                WorksheetFeed.class);
-        for (WorksheetEntry entry : worksheetFeed.getEntries()) {
-            if (sheetName.equals(entry.getTitle().getPlainText())) {
-                return entry;
-            }
-        }
-        return null;
+    /**
+     * method to check whether authentication is required or not
+     *
+     * @return true if authentication is required else false
+     */
+    public boolean requiresAuth() {
+        return (this.visibility != null &&
+                this.visibility.equals(Constants.ACCESS_MODE_PRIVATE));
     }
 
-    public ListFeed getListFeed(WorksheetEntry currentWorkSheet) throws SQLException {
-        ListQuery listQuery = new ListQuery(currentWorkSheet.getListFeedUrl());
-        return getFeed(listQuery, ListFeed.class);
+    private boolean checkVisibility() {
+        return (Constants.ACCESS_MODE_PRIVATE.equals(this.visibility) ||
+                Constants.ACCESS_MODE_PUBLIC.equals(this.visibility));
     }
 }

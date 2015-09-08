@@ -18,10 +18,6 @@
  */
 package org.wso2.carbon.dataservices.core.description.config;
 
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
 import com.google.gdata.data.IFeed;
 import org.apache.commons.logging.Log;
@@ -29,19 +25,18 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.dataservices.common.DBConstants;
 import org.wso2.carbon.dataservices.common.DBConstants.DataSourceTypes;
 import org.wso2.carbon.dataservices.common.DBConstants.GSpread;
-import org.wso2.carbon.dataservices.common.DBConstants.GSpreadVisibility;
 import org.wso2.carbon.dataservices.core.DBUtils;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
 import org.wso2.carbon.dataservices.core.engine.DataService;
-import org.wso2.carbon.dataservices.core.internal.DataServicesDSComponent;
 import org.wso2.carbon.dataservices.core.odata.ODataDataHandler;
 import org.wso2.carbon.dataservices.core.odata.ODataServiceFault;
-import org.wso2.carbon.registry.core.Registry;
-import org.wso2.carbon.registry.core.Resource;
+import org.wso2.carbon.dataservices.sql.driver.util.GSpreadFeedProcessor;
 
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.Map;
 
 /**
@@ -55,33 +50,30 @@ public class GSpreadConfig extends Config {
 
 	public static final String BASE_REGISTRY_AUTH_TOKEN_PATH = "/repository/components/org.wso2.carbon.dataservices.core/services/";
 
-    private String clientId;
-
-    private String clientSecret;
-
-    private String accessToken;
-
-    private String refreshToken;
-
-	private String visibility;
-
 	private String key;
 
-	private SpreadsheetService service;
+    private GSpreadFeedProcessor feedProcessor;
 
 	public GSpreadConfig(DataService dataService, String configId, Map<String, String> properties, boolean odataEnable)
 			throws DataServiceFault {
 		super(dataService, configId, DataSourceTypes.GDATA_SPREADSHEET, properties, odataEnable);
 
-		this.clientId = DBUtils.resolvePasswordValue(this.getDataService(), this.getProperty(GSpread.CLIENT_ID));
-		this.clientSecret = DBUtils.resolvePasswordValue(this.getDataService(), this.getProperty(GSpread.CLIENT_SECRET));
-//		this.accessToken = DBUtils.resolvePasswordValue(this.getDataService(), this.getProperty(GSpread.ACCESS_TOKEN));
-		this.refreshToken = DBUtils.resolvePasswordValue(this.getDataService(), this.getProperty(GSpread.REFRESH_TOKEN));
-		this.visibility = this.getProperty(DBConstants.GSpread.VISIBILITY);
-		this.key = extractKey(this.getProperty(GSpread.DATASOURCE));
+        this.key = extractKey(this.getProperty(GSpread.DATASOURCE));
+
+        String clientId = DBUtils.resolvePasswordValue(this.getDataService(), this.getProperty(GSpread.CLIENT_ID));
+        String clientSecret = DBUtils.resolvePasswordValue(this.getDataService(), this.getProperty(GSpread.CLIENT_SECRET));
+        String refreshToken = DBUtils.resolvePasswordValue(this.getDataService(), this.getProperty(GSpread.REFRESH_TOKEN));
+        String visibility = this.getProperty(DBConstants.GSpread.VISIBILITY);
+
+        try {
+            this.feedProcessor = new GSpreadFeedProcessor(clientId, clientSecret, refreshToken,
+                                                          visibility, BASE_REGISTRY_AUTH_TOKEN_PATH);
+        } catch (SQLException e) {
+            throw new DataServiceFault(e, "Error initialising GSpread feed Processor, " + e.getMessage());
+        }
 		if (!dataService.isServiceInactive()) {
-		    this.service = new SpreadsheetService(this.getDataService().getName() +
-		    		":" + this.getConfigId());
+            this.feedProcessor.setService(new SpreadsheetService(this.getDataService().getName() +
+                                                                 ":" + this.getConfigId()));
 		}
 	}
 
@@ -123,193 +115,22 @@ public class GSpreadConfig extends Config {
         return resultKey;
     }
 
-	public String generateWorksheetFeedURL() {
-		return GSpreadConfig.BASE_WORKSHEET_URL + key + "/" +
-				this.getVisibility() + "/basic";
+	public URL generateWorksheetFeedURL() throws MalformedURLException {
+        return this.feedProcessor.generateWorksheetFeedURL(key);
 	}
 
 	public String getKey() {
 		return key;
 	}
 
-    public String getAccessToken() {
-        return accessToken;
+
+    public <F extends IFeed> F getFeed(URL feedUrl, Class<F> feedClass) throws Exception {
+        return feedProcessor.getFeed(feedUrl,feedClass);
     }
-
-    public String getRefreshToken() {
-        return refreshToken;
-    }
-
-	private SpreadsheetService getService() {
-		return service;
-	}
-
-	public String getVisibility() {
-		return visibility;
-	}
-
-	private String generateAuthTokenResourcePath() {
-		String resPath = BASE_REGISTRY_AUTH_TOKEN_PATH
-			+ this.getDataService().getName()
-			+ "/configs/"
-			+ this.getConfigId() + "/user_auth_token/users/"
-			+ this.clientId;
-		return resPath;
-	}
-
-	/**
-	 * Returns the resource associated with the current gspread config user authentication token.
-	 * the resource path is :-
-	 * "/repository/components/org.wso2.carbon.dataservices.core/services/[service_id]/configs/[config_id]/user_auth_token"
-	 */
-	private Resource getAuthTokenResource(Registry registry) throws Exception {
-		if (registry == null) {
-			return null;
-		}
-		String resPath = this.generateAuthTokenResourcePath();
-		if (!registry.resourceExists(resPath)) {
-			return null;
-		}
-		return registry.get(resPath);
-	}
-
-    /**
-     * Helper method to get current access token resides in the registry.
-     *
-     * @return accessToken retrieved from registry
-     * @throws Exception
-     */
-	private String getAccessTokenFromRegistry() throws Exception {
-        if (DataServicesDSComponent.getRegistryService() == null) {
-            String msg = "GSpreadConfig.getFeed(): Registry service is not available, authentication key sharing fails";
-            log.error(msg);
-            throw new DataServiceFault(msg);
-        }
-        //using conf registry since we can use that to share the token between nodes
-        Registry registry = DataServicesDSComponent.getRegistryService()
-                .getConfigSystemRegistry(DBUtils.getCurrentTenantId());
-		Resource authTokenRes = this.getAuthTokenResource(registry);
-		if (authTokenRes != null) {
-			Object content = authTokenRes.getContent();
-			if (content != null) {
-				return new String((byte[]) content, DBConstants.DEFAULT_CHAR_SET_TYPE);
-			}
-		}
-		return null;
-	}
-
-    /**
-     * helper method to save new access token to registry
-     *
-     * @throws Exception
-     */
-	private void saveTokenToRegistry() throws Exception {
-        if (DataServicesDSComponent.getRegistryService() == null) {
-            String msg = "GSpreadConfig.getFeed(): Registry service is not available, authentication key sharing fails";
-            log.error(msg);
-            throw new DataServiceFault(msg);
-        }
-        //using conf registry since we can use that to share the token between nodes
-        Registry registry = DataServicesDSComponent.getRegistryService()
-                .getConfigSystemRegistry(DBUtils.getCurrentTenantId());
-		registry.beginTransaction();
-		Resource res = registry.newResource();
-		res.setContent(this.accessToken.getBytes(DBConstants.DEFAULT_CHAR_SET_TYPE));
-		registry.put(this.generateAuthTokenResourcePath(), res);
-		registry.commitTransaction();
-	}
-
-    /**
-     * This method has the logic implemented to use access token to access spreadsheet api
-     * and it will be shared between cluster nodes via registry as well. this will refresh the access token
-     * if access tokens stored in memory and registry are expired, then it will store the new access token
-     * in registry so that it will be shared among nodes.
-     *
-     * @param feedUrl
-     * @param feedClass
-     * @param <F>
-     * @return feed
-     * @throws Exception
-     */
-	public <F extends IFeed> F getFeed(URL feedUrl, Class<F> feedClass) throws Exception {
-        if (this.requiresAuth()) {
-            if (this.accessToken != null) {
-                this.authenticateWithAccessToken();
-                try {
-                    return this.getService().getFeed(feedUrl, feedClass);
-                } catch (Exception e) {
-                    log.warn("GSpreadConfig.getFeed(): Failed to retrieve Feeds with current AccessToken ", e);
-                }
-                String accessTokenFromRegistry = this.getAccessTokenFromRegistry();
-                if (accessTokenFromRegistry != null && this.accessToken != accessTokenFromRegistry) {
-                    this.accessToken = accessTokenFromRegistry;
-                    this.authenticateWithAccessToken();
-                    try {
-                        return this.getService().getFeed(feedUrl, feedClass);
-                    } catch (Exception e) {
-                        log.warn("GSpreadConfig.getFeed(): Failed to retrieve Feeds with AccessToken from registry ", e);
-                    }
-                }
-            }
-            this.refreshAndAuthenticate();
-            this.saveTokenToRegistry();
-            return this.getService().getFeed(feedUrl, feedClass);
-        }
-        return this.getService().getFeed(feedUrl, feedClass);
-	}
-
-    /**
-     * helper method to authenticate using just access token
-     */
-    private void authenticateWithAccessToken() {
-        GoogleCredential credential = getBaseCredential();
-        credential.setAccessToken(this.accessToken);
-        service.setOAuth2Credentials(credential);
-    }
-
-    /**
-     * helper method to refresh the access token and authenticate
-     *
-     * @throws Exception
-     */
-    private void refreshAndAuthenticate() throws Exception {
-        GoogleCredential credential = getBaseCredential();
-        credential.setAccessToken(this.accessToken);
-        credential.setRefreshToken(this.refreshToken);
-        credential.refreshToken();
-        this.accessToken = credential.getAccessToken();
-        service.setOAuth2Credentials(credential);
-    }
-
-    /**
-     * helper method to get the base credential object
-     *
-     * @return credential
-     */
-    private GoogleCredential getBaseCredential(){
-        HttpTransport httpTransport = new NetHttpTransport();
-        JacksonFactory jsonFactory = new JacksonFactory();
-        GoogleCredential credential = new GoogleCredential.Builder()
-                .setClientSecrets(this.clientId, this.clientSecret)
-                .setTransport(httpTransport)
-                .setJsonFactory(jsonFactory)
-                .build();
-        return credential;
-    }
-
-    /**
-     * method to check whether authentication is required or not
-     *
-     * @return true if authentication is required else false
-     */
-	private boolean requiresAuth() {
-		return (this.getVisibility() != null &&
-				this.getVisibility().equals(GSpreadVisibility.PRIVATE));
-	}
 
 	@Override
 	public boolean isActive() {
-		return this.getService() != null;
+		return this.feedProcessor.getService() != null;
 	}
 
 	public void close() {

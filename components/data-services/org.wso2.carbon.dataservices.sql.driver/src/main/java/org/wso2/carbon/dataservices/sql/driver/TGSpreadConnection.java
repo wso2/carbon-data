@@ -18,24 +18,16 @@
  */
 package org.wso2.carbon.dataservices.sql.driver;
 
-//import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
-//import com.google.api.client.http.HttpTransport;
-//import com.google.api.client.http.javanet.NetHttpTransport;
-//import com.google.api.client.json.jackson2.JacksonFactory;
-//import com.google.gdata.client.GoogleAuthTokenFactory;
 import com.google.gdata.client.spreadsheet.SpreadsheetQuery;
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
 import com.google.gdata.client.spreadsheet.WorksheetQuery;
 import com.google.gdata.data.spreadsheet.SpreadsheetEntry;
 import com.google.gdata.data.spreadsheet.SpreadsheetFeed;
 import com.google.gdata.data.spreadsheet.WorksheetFeed;
-import com.google.gdata.util.AuthenticationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.dataservices.sql.driver.internal.SQLDriverDSComponent;
 import org.wso2.carbon.dataservices.sql.driver.parser.Constants;
-import org.wso2.carbon.registry.core.Registry;
-import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.dataservices.sql.driver.util.GSpreadFeedProcessor;
 
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -48,48 +40,32 @@ import java.util.Properties;
 public class TGSpreadConnection extends TConnection {
     private static final Log log = LogFactory.getLog(TGSpreadConnection.class);
 
-    private String visibility = Constants.ACCESS_MODE_PRIVATE;
-
-    private SpreadsheetService service;
-
     private String spreadSheetName;
-
-    private String clientId;
-
-    private String clientSecret;
-
-    private String refreshToken;
-
-    private String accessToken;
-
-    private boolean requireAuth;
 
     private SpreadsheetFeed spreadSheetFeed;
 
     private WorksheetFeed worksheetFeed;
 
+    private GSpreadFeedProcessor feedProcessor;
+
     public TGSpreadConnection(Properties props) throws SQLException {
         super(props);
         this.spreadSheetName = props.getProperty(Constants.DRIVER_PROPERTIES.SHEET_NAME);
-        this.visibility = props.getProperty(Constants.DRIVER_PROPERTIES.VISIBILITY);
-        this.requireAuth = Constants.ACCESS_MODE_PRIVATE.equals(visibility);
-        if (requireAuth) {
-            this.clientId = props.getProperty(Constants.GSPREAD_PROPERTIES.CLIENT_ID);
-            this.clientSecret = props.getProperty(Constants.GSPREAD_PROPERTIES.CLIENT_SECRET);
-            this.refreshToken = props.getProperty(Constants.GSPREAD_PROPERTIES.REFRESH_TOKEN);
-            if (this.clientId == null || this.clientId.isEmpty()){
-                throw new SQLException("Valid Client id not provided");
-            }
-            if (this.clientSecret == null || this.clientSecret.isEmpty()){
-                throw new SQLException("Valid Client secret not provided");
-            }
-            if (this.refreshToken == null || this.refreshToken.isEmpty()){
-                throw new SQLException("Valid refresh token not provided");
-            }
+
+        String visibility = props.getProperty(Constants.DRIVER_PROPERTIES.VISIBILITY);
+        visibility = (visibility != null) ? visibility : Constants.ACCESS_MODE_PRIVATE;
+        String clientId = props.getProperty(Constants.GSPREAD_PROPERTIES.CLIENT_ID);
+        String clientSecret = props.getProperty(Constants.GSPREAD_PROPERTIES.CLIENT_SECRET);
+        String refreshToken = props.getProperty(Constants.GSPREAD_PROPERTIES.REFRESH_TOKEN);
+
+
+        feedProcessor = new GSpreadFeedProcessor(clientId, clientSecret, refreshToken, visibility,
+                                                 Constants.SPREADSHEET_FEED_BASE_URL);
+        if (feedProcessor.requiresAuth()) {
             try {
-                this.clientId = URLDecoder.decode(this.clientId, "UTF-8");
-                this.clientSecret = URLDecoder.decode(this.clientSecret, "UTF-8");
-                this.refreshToken = URLDecoder.decode(this.refreshToken, "UTF-8");
+                this.feedProcessor.setClientId(URLDecoder.decode(this.feedProcessor.getClientId(), "UTF-8"));
+                this.feedProcessor.setClientSecret(URLDecoder.decode(this.feedProcessor.getClientSecret(), "UTF-8"));
+                this.feedProcessor.setRefreshToken(URLDecoder.decode(this.feedProcessor.getRefreshToken(), "UTF-8"));
             } catch (UnsupportedEncodingException e) {
                 throw new SQLException("Error in retrieving Authentication information " + e.getMessage(), e);
             }
@@ -98,54 +74,20 @@ public class TGSpreadConnection extends TConnection {
             throw new SQLException("Spread Sheet name is not provided");
         }
 
-        this.visibility = (visibility != null) ? visibility : Constants.ACCESS_MODE_PRIVATE;
-        if (!this.checkVisibility(visibility)) {
-            throw new SQLException("Invalid access mode '" + visibility + "' is provided");
-        }
-        this.service = new SpreadsheetService(Constants.SPREADSHEET_SERVICE_NAME);
-        this.service.setCookieManager(null);
+        SpreadsheetService service = new SpreadsheetService(Constants.SPREADSHEET_SERVICE_NAME);
+        service.setCookieManager(null);
+        this.feedProcessor.setService(service);
+
         this.spreadSheetFeed = this.extractSpreadSheetFeed();
         this.worksheetFeed = this.extractWorkSheetFeed();
-    }
-
-    public SpreadsheetService getSpreadSheetService() {
-        return service;
-    }
-
-    public String getVisibility() {
-        return visibility;
     }
 
     public String getSpreadSheetName() {
         return spreadSheetName;
     }
 
-    public SpreadsheetService getService() {
-        return service;
-    }
-
-    public String getClientId() {
-        return clientId;
-    }
-
-    public String getClientSecret() {
-        return clientSecret;
-    }
-
-    public String getRefreshToken() {
-        return refreshToken;
-    }
-
-    public String getAccessToken() {
-        return accessToken;
-    }
-
-    public synchronized void setAccessToken(String accessToken) {
-        this.accessToken = accessToken;
-    }
-
-    public boolean isRequireAuth() {
-        return requireAuth;
+    public GSpreadFeedProcessor getFeedProcessor() {
+        return feedProcessor;
     }
 
     public WorksheetFeed getWorksheetFeed() {
@@ -154,11 +96,6 @@ public class TGSpreadConnection extends TConnection {
 
     public SpreadsheetFeed getSpreadSheetFeed() {
         return spreadSheetFeed;
-    }
-
-    private boolean checkVisibility(String visibility) {
-        return (Constants.ACCESS_MODE_PRIVATE.equals(visibility) ||
-                Constants.ACCESS_MODE_PUBLIC.equals(visibility));
     }
 
     @Override
@@ -237,16 +174,14 @@ public class TGSpreadConnection extends TConnection {
         }
         WorksheetQuery worksheetQuery =
                 TDriverUtil.createWorkSheetQuery(spreadsheetEntry.getWorksheetFeedUrl());
-        boolean requireAuth = Constants.ACCESS_MODE_PRIVATE.equals(visibility);
-        TGSpreadFeedUtil feedUtil = new TGSpreadFeedUtil(this);
-        return feedUtil.getFeed(worksheetQuery, WorksheetFeed.class);
+        return this.feedProcessor.getFeed(worksheetQuery, WorksheetFeed.class);
     }
 
     private SpreadsheetEntry extractSpreadSheetEntryFromUrl() throws SQLException {
         try {
-            URL spreadSheetFeedUrl = this.getSpreadSheetFeedUrl();
+            URL spreadSheetFeedUrl = this.feedProcessor.getSpreadSheetFeedUrl();
             SpreadsheetFeed feed =
-                    this.getSpreadSheetService().getFeed(spreadSheetFeedUrl, SpreadsheetFeed.class);
+                    this.feedProcessor.getFeed(spreadSheetFeedUrl, SpreadsheetFeed.class);
             List<SpreadsheetEntry> entries = feed.getEntries();
             return (entries != null && entries.size() > 0) ? entries.get(0) : null;
         } catch (Exception e) {
@@ -254,21 +189,16 @@ public class TGSpreadConnection extends TConnection {
         }
     }
 
-    private URL getSpreadSheetFeedUrl() throws MalformedURLException {
-        return new URL(Constants.SPREADSHEET_FEED_BASE_URL + getVisibility() + "/full");
-    }
-
     private SpreadsheetFeed extractSpreadSheetFeed() throws SQLException {
         URL spreadSheetFeedUrl;
         try {
-            spreadSheetFeedUrl = this.getSpreadSheetFeedUrl();
+            spreadSheetFeedUrl = this.feedProcessor.getSpreadSheetFeedUrl();
         } catch (MalformedURLException e) {
             throw new SQLException("Error occurred while constructing the Spread Sheet Feed URL");
         }
         SpreadsheetQuery spreadSheetQuery =
                 TDriverUtil.createSpreadSheetQuery(this.getSpreadSheetName(), spreadSheetFeedUrl);
-        TGSpreadFeedUtil feedUtil = new TGSpreadFeedUtil(this);
-        return feedUtil.getFeed(spreadSheetQuery, SpreadsheetFeed.class);
+        return this.feedProcessor.getFeed(spreadSheetQuery, SpreadsheetFeed.class);
     }
 
 }

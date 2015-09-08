@@ -23,7 +23,7 @@ import com.google.gdata.data.PlainTextConstruct;
 import com.google.gdata.data.spreadsheet.*;
 import com.google.gdata.util.ServiceException;
 import org.wso2.carbon.dataservices.sql.driver.TGSpreadConnection;
-import org.wso2.carbon.dataservices.sql.driver.TGSpreadFeedUtil;
+import org.wso2.carbon.dataservices.sql.driver.util.GSpreadFeedProcessor;
 
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -60,7 +60,7 @@ public class GSpreadCreateQuery extends CreateQuery {
         CellFeed cellFeed;
 
         TGSpreadConnection gspreadCon = (TGSpreadConnection) getConnection();
-        TGSpreadFeedUtil feedUtil = new TGSpreadFeedUtil(gspreadCon);
+        GSpreadFeedProcessor feedProcessor = gspreadCon.getFeedProcessor();
         if (isWorkSheetExists(gspreadCon)) {
             throw new SQLException("A sheet named '" + this.getTableName() + "' already exists");
         }
@@ -70,19 +70,13 @@ public class GSpreadCreateQuery extends CreateQuery {
         newWorkSheet.setRowCount(1);
         newWorkSheet.setColCount(this.getColumns().size());
 
-//        try {
-            currentSpreadSheet = gspreadCon.getSpreadSheetFeed().getEntries().get(0);
-            feedUtil.insert(currentSpreadSheet.getWorksheetFeedUrl(),
-                    newWorkSheet);
-            currentWorkSheet = this.getCurrentWorksheetEntry(gspreadCon);
-//        } catch (ServiceException e) {
-//            throw new SQLException("Error occurred while adding worksheet to the WorkSheetFeed", e);
-//        } catch (IOException e) {
-//            throw new SQLException("Error occurred while adding worksheet to the WorkSheetFeed", e);
-//        }
+        currentSpreadSheet = gspreadCon.getSpreadSheetFeed().getEntries().get(0);
+        feedProcessor.insert(currentSpreadSheet.getWorksheetFeedUrl(),
+                             newWorkSheet);
+        currentWorkSheet = this.getCurrentWorksheetEntry(gspreadCon);
 
         try {
-            cellFeed = feedUtil.getFeed(currentWorkSheet.getCellFeedUrl(),
+            cellFeed = feedProcessor.getFeed(currentWorkSheet.getCellFeedUrl(),
                     CellFeed.class);
             for (int i = 0; i < this.getColumns().size(); i++) {
                 CellEntry cell = new CellEntry(1, i + 1, this.getColumns().get(i).getName());
@@ -109,26 +103,17 @@ public class GSpreadCreateQuery extends CreateQuery {
 
     private WorksheetEntry getCurrentWorksheetEntry(TGSpreadConnection conn) throws SQLException {
         WorksheetEntry currentWorksheetEntry = null;
-//        try {
-            SpreadsheetEntry currentSpreadsheetEntry =
-                    conn.getSpreadSheetFeed().getEntries().get(0);
-            TGSpreadFeedUtil feedUtil = new TGSpreadFeedUtil(conn);
-            WorksheetFeed worksheetFeed =
-                    feedUtil.getFeed(
-                            currentSpreadsheetEntry.getWorksheetFeedUrl(), WorksheetFeed.class);
-            for (WorksheetEntry worksheetEntry : worksheetFeed.getEntries()) {
-                if (this.getTableName().equals(worksheetEntry.getTitle().getPlainText())) {
-                    currentWorksheetEntry = worksheetEntry;
-                    break;
-                }
+        SpreadsheetEntry currentSpreadsheetEntry =
+                conn.getSpreadSheetFeed().getEntries().get(0);
+        WorksheetFeed worksheetFeed =
+                conn.getFeedProcessor().getFeed(
+                        currentSpreadsheetEntry.getWorksheetFeedUrl(), WorksheetFeed.class);
+        for (WorksheetEntry worksheetEntry : worksheetFeed.getEntries()) {
+            if (this.getTableName().equals(worksheetEntry.getTitle().getPlainText())) {
+                currentWorksheetEntry = worksheetEntry;
+                break;
             }
-//        } catch (IOException e) {
-//            throw new SQLException("Error occurred while retrieving the current work sheet " +
-//                    "entry", e);
-//        } catch (ServiceException e) {
-//            throw new SQLException("Error occurred while retrieving the current work sheet " +
-//                    "entry", e);
-//        }
+        }
         return currentWorksheetEntry;
     }
 

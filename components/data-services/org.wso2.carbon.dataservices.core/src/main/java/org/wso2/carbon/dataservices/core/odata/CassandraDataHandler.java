@@ -105,8 +105,8 @@ public class CassandraDataHandler implements ODataDataHandler {
 	@Override
 	public List<ODataEntry> readTableWithKeys(String tableName, ODataEntry keys, boolean transactional)
 			throws ODataServiceFault {
-		List<ColumnMetadata> cassandraTableMetaData =
-				this.session.getCluster().getMetadata().getKeyspace(this.keyspace).getTable(tableName).getColumns();
+		List<ColumnMetadata> cassandraTableMetaData = this.session.getCluster().getMetadata().getKeyspace(this.keyspace)
+		                                                          .getTable(tableName).getColumns();
 		List<String> pKeys = this.primaryKeys.get(tableName);
 		String query = createReadSqlWithKeys(tableName, keys);
 		List<Object> values = new ArrayList<>();
@@ -129,8 +129,8 @@ public class CassandraDataHandler implements ODataDataHandler {
 
 	@Override
 	public String insertEntityToTable(String tableName, ODataEntry entity) throws ODataServiceFault {
-		List<ColumnMetadata> cassandraTableMetaData =
-				this.session.getCluster().getMetadata().getKeyspace(this.keyspace).getTable(tableName).getColumns();
+		List<ColumnMetadata> cassandraTableMetaData = this.session.getCluster().getMetadata().getKeyspace(this.keyspace)
+		                                                          .getTable(tableName).getColumns();
 		String query = createInsertCQL(tableName, entity);
 		List<Object> values = new ArrayList<>();
 		for (DataColumn column : this.tableMetaData.get(tableName).values()) {
@@ -145,10 +145,10 @@ public class CassandraDataHandler implements ODataDataHandler {
 	}
 
 	@Override
-	public void deleteEntityInTable(String tableName, ODataEntry entity, boolean transactional)
+	public void deleteEntityInTable(String tableName, ODataEntry entity)
 			throws ODataServiceFault {
-		List<ColumnMetadata> cassandraTableMetaData =
-				this.session.getCluster().getMetadata().getKeyspace(this.keyspace).getTable(tableName).getColumns();
+		List<ColumnMetadata> cassandraTableMetaData = this.session.getCluster().getMetadata().getKeyspace(this.keyspace)
+		                                                          .getTable(tableName).getColumns();
 		List<String> pKeys = this.primaryKeys.get(tableName);
 		String query = createDeleteCQL(tableName);
 		List<Object> values = new ArrayList<>();
@@ -162,10 +162,33 @@ public class CassandraDataHandler implements ODataDataHandler {
 	}
 
 	@Override
-	public void updateEntityInTable(String tableName, ODataEntry newProperties, boolean transactional)
+	public boolean deleteEntityInTableTransactional(String tableName, ODataEntry entity)
 			throws ODataServiceFault {
-		List<ColumnMetadata> cassandraTableMetaData =
-				this.session.getCluster().getMetadata().getKeyspace(this.keyspace).getTable(tableName).getColumns();
+
+		List<ColumnMetadata> cassandraTableMetaData = this.session.getCluster().getMetadata().getKeyspace(this.keyspace)
+		                                                          .getTable(tableName).getColumns();
+		List<String> pKeys = this.primaryKeys.get(tableName);
+		String query = createDeleteTransactionalCQL(tableName, entity);
+		List<Object> values = new ArrayList<>();
+		for (String column : entity.getNames()) {
+			if (pKeys.contains(column)) {
+				bindParams(column, entity.getValue(column), values, cassandraTableMetaData);
+			}
+		}
+		for (String column : entity.getNames()) {
+			if (!pKeys.contains(column)) {
+				bindParams(column, entity.getValue(column), values, cassandraTableMetaData);
+			}
+		}
+		Statement statement = new SimpleStatement(query, values.toArray());
+		ResultSet result = this.session.execute(statement);
+		return result.wasApplied();
+	}
+
+	@Override
+	public void updateEntityInTable(String tableName, ODataEntry newProperties) throws ODataServiceFault {
+		List<ColumnMetadata> cassandraTableMetaData = this.session.getCluster().getMetadata().getKeyspace(this.keyspace)
+		                                                          .getTable(tableName).getColumns();
 		List<String> pKeys = this.primaryKeys.get(tableName);
 		String query = createUpdateEntityCQL(tableName, newProperties);
 		List<Object> values = new ArrayList<>();
@@ -184,6 +207,35 @@ public class CassandraDataHandler implements ODataDataHandler {
 	}
 
 	@Override
+	public boolean updateEntityInTableTransactional(String tableName, ODataEntry oldProperties, ODataEntry newProperties)
+			throws ODataServiceFault {
+		List<ColumnMetadata> cassandraTableMetaData = this.session.getCluster().getMetadata().getKeyspace(this.keyspace)
+		                                                          .getTable(tableName).getColumns();
+		List<String> pKeys = this.primaryKeys.get(tableName);
+		String query = createUpdateEntityTransactionalCQL(tableName, oldProperties, newProperties);
+		List<Object> values = new ArrayList<>();
+		for (String column : newProperties.getNames()) {
+			if (this.tableMetaData.get(tableName).keySet().contains(column) && !pKeys.contains(column)) {
+				bindParams(column, newProperties.getValue(column), values, cassandraTableMetaData);
+			}
+		}
+		for (String column : oldProperties.getNames()) {
+			if (pKeys.contains(column)) {
+				bindParams(column, oldProperties.getValue(column), values, cassandraTableMetaData);
+			}
+		}
+		for (String column : oldProperties.getNames()) {
+			if (!pKeys.contains(column)) {
+				bindParams(column, oldProperties.getValue(column), values, cassandraTableMetaData);
+			}
+		}
+		Statement statement = new SimpleStatement(query, values.toArray());
+		ResultSet result = this.session.execute(statement);
+		return result.wasApplied();
+	}
+
+
+	@Override
 	public Map<String, Map<String, DataColumn>> getTableMetadata() {
 		return this.tableMetaData;
 	}
@@ -191,8 +243,8 @@ public class CassandraDataHandler implements ODataDataHandler {
 	@Override
 	public void updatePropertyInTable(String tableName, ODataEntry property, boolean transactional)
 			throws ODataServiceFault {
-		List<ColumnMetadata> cassandraTableMetaData =
-				this.session.getCluster().getMetadata().getKeyspace(this.keyspace).getTable(tableName).getColumns();
+		List<ColumnMetadata> cassandraTableMetaData = this.session.getCluster().getMetadata().getKeyspace(this.keyspace)
+		                                                          .getTable(tableName).getColumns();
 		for (String column : property.getNames()) {
 			String sql = "UPDATE " + tableName + " SET " + column + "=" + "?";
 			List<Object> values = new ArrayList<>(1);
@@ -412,19 +464,19 @@ public class CassandraDataHandler implements ODataDataHandler {
 					values.add(value == null ? null : Boolean.parseBoolean(value));
 					break;
 				case DECIMAL:
-					values.add(new BigDecimal(value));
+					values.add(value == null ? null :new BigDecimal(value));
 					break;
 				case DOUBLE:
-					values.add(Double.parseDouble(value));
+					values.add(value == null ? null :Double.parseDouble(value));
 					break;
 				case FLOAT:
-					values.add(Float.parseFloat(value));
+					values.add(value == null ? null :Float.parseFloat(value));
 					break;
 				case INT:
-					values.add(Integer.parseInt(value));
+					values.add(value == null ? null :Integer.parseInt(value));
 					break;
 				case TIMESTAMP:
-					values.add(DBUtils.getDate(value));
+					values.add(value == null ? null :DBUtils.getDate(value));
 					break;
 				default:
 					values.add(value);
@@ -486,16 +538,16 @@ public class CassandraDataHandler implements ODataDataHandler {
 	/**
 	 * This method creates a CQL query to update data.
 	 *
-	 * @param tableName Name of the table
-	 * @param entry     update entry
+	 * @param tableName     Name of the table
+	 * @param newProperties update entry
 	 * @return sql Query
 	 */
-	private String createUpdateEntityCQL(String tableName, ODataEntry entry) {
+	private String createUpdateEntityCQL(String tableName, ODataEntry newProperties) {
 		List<String> pKeys = this.primaryKeys.get(tableName);
 		StringBuilder sql = new StringBuilder();
 		sql.append("UPDATE ").append(tableName).append(" SET ");
 		boolean propertyMatch = false;
-		for (String column : entry.getNames()) {
+		for (String column : newProperties.getNames()) {
 			if (propertyMatch) {
 				sql.append(",");
 			}
@@ -513,6 +565,53 @@ public class CassandraDataHandler implements ODataDataHandler {
 			}
 			sql.append(key).append(" = ").append(" ? ");
 			propertyMatch = true;
+		}
+		return sql.toString();
+	}
+
+
+	/**
+	 * This method creates a CQL query to update data.
+	 *
+	 * @param tableName     Name of the table
+	 * @param oldProperties old Properties
+	 * @param newProperties update entry
+	 * @return sql Query
+	 */
+	private String createUpdateEntityTransactionalCQL(String tableName, ODataEntry oldProperties, ODataEntry newProperties) {
+		List<String> pKeys = this.primaryKeys.get(tableName);
+		StringBuilder sql = new StringBuilder();
+		sql.append("UPDATE ").append(tableName).append(" SET ");
+		boolean propertyMatch = false;
+		for (String column : newProperties.getNames()) {
+			if (propertyMatch) {
+				sql.append(",");
+			}
+			if (!pKeys.contains(column)) {
+				sql.append(column).append(" = ").append(" ? ");
+				propertyMatch = true;
+			}
+		}
+		sql.append(" WHERE ");
+		// Handling keys
+		propertyMatch = false;
+		for (String key : pKeys) {
+			if (propertyMatch) {
+				sql.append(" AND ");
+			}
+			sql.append(key).append(" = ").append(" ? ");
+			propertyMatch = true;
+		}
+		sql.append(" IF ");
+		propertyMatch = false;
+		for (String column : oldProperties.getNames()) {
+			if (!pKeys.contains(column)) {
+				if (propertyMatch) {
+					sql.append(" AND ");
+				}
+				sql.append(column).append(" = ").append(" ? ");
+				propertyMatch = true;
+			}
 		}
 		return sql.toString();
 	}
@@ -589,6 +688,40 @@ public class CassandraDataHandler implements ODataDataHandler {
 			}
 			sql.append(key).append(" = ").append(" ? ");
 			propertyMatch = true;
+		}
+		return sql.toString();
+	}
+
+	/**
+	 * This method creates CQL query to delete data.
+	 *
+	 * @param tableName Name of the table
+	 * @return sql Query
+	 */
+	private String createDeleteTransactionalCQL(String tableName, ODataEntry entry) {
+		StringBuilder sql = new StringBuilder();
+		sql.append("DELETE FROM ").append(tableName).append(" WHERE ");
+		List<String> pKeys = this.primaryKeys.get(tableName);
+		boolean propertyMatch = false;
+		for (String key : entry.getNames()) {
+			if (pKeys.contains(key)) {
+				if (propertyMatch) {
+					sql.append(" AND ");
+				}
+				sql.append(key).append(" = ").append(" ? ");
+				propertyMatch = true;
+			}
+		}
+		sql.append(" IF ");
+		propertyMatch = false;
+		for (String column : entry.getNames()) {
+			if (!pKeys.contains(column)) {
+				if (propertyMatch) {
+					sql.append(" AND ");
+				}
+				sql.append(column).append(" = ").append(" ? ");
+				propertyMatch = true;
+			}
 		}
 		return sql.toString();
 	}

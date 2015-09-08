@@ -322,8 +322,12 @@ public class ODataAdapter implements ServiceHandler {
 						.readTableWithKeys(entityType.getName(), wrapKeyParamToDataEntry(keys), true));
 				Entity entity = getEntity(entityType, set, keys, eTag);
 				if (entity != null) {
-					updateEntityWithETagMatched(entityType, changes, entity, merge);
-					response.writeUpdatedEntity();
+					boolean result = updateEntityWithETagMatched(entityType, changes, entity, merge);
+					if (result) {
+						response.writeUpdatedEntity();
+					} else {
+						response.writeNotModified();
+					}
 				} else {
 					response.writeNotFound(true);
 				}
@@ -348,7 +352,7 @@ public class ODataAdapter implements ServiceHandler {
 		we can do the update operation directly */
 		if ("*".equals(eTag)) {
 			try {
-				this.dataHandler.deleteEntityInTable(entityType.getName(), wrapKeyParamToDataEntry(keys), false);
+				this.dataHandler.deleteEntityInTable(entityType.getName(), wrapKeyParamToDataEntry(keys));
 				response.writeDeletedEntityOrReference();
 			} catch (ODataServiceFault e) {
 				log.error("Error in deleting entity", e);
@@ -360,9 +364,14 @@ public class ODataAdapter implements ServiceHandler {
 						.readTableWithKeys(entityType.getName(), wrapKeyParamToDataEntry(keys), true));
 				Entity entity = getEntity(entityType, set, keys, eTag);
 				if (entity != null) {
-					this.dataHandler.deleteEntityInTable(entityType.getName(),
-					                                     wrapEntityToDataEntry(entityType, entity), true);
-					response.writeDeletedEntityOrReference();
+					boolean result = this.dataHandler.deleteEntityInTableTransactional(entityType.getName(),
+					                                                                   wrapEntityToDataEntry(entityType,
+					                                                                                         entity));
+					if (result) {
+						response.writeDeletedEntityOrReference();
+					} else {
+						response.writeNotModified();
+					}
 				} else {
 					response.writeNotFound(true);
 				}
@@ -407,7 +416,7 @@ public class ODataAdapter implements ServiceHandler {
 					Entity entity = getEntity(entityType, set, keys, entityETag);
 					if (entity != null) {
 						this.dataHandler.deleteEntityInTable(entityType.getName(),
-						                                     wrapEntityToDataEntry(entityType, entity), true);
+						                                     wrapEntityToDataEntry(entityType, entity));
 					} else {
 						response.writeNotFound(true);
 						log.error("Error in updating property, E-Tag checksum didn't match");
@@ -653,50 +662,43 @@ public class ODataAdapter implements ServiceHandler {
 	 * @param merge          PUT/PATCH
 	 * @throws ODataApplicationException
 	 * @throws DataServiceFault
-	 * @see ODataDataHandler#updateEntityInTable(String, ODataEntry, boolean)
+	 * @see ODataDataHandler#updateEntityInTable(String, ODataEntry)
 	 */
-	private void updateEntityWithETagMatched(EdmEntityType edmEntityType, Entity entity, Entity existingEntity,
+	private boolean updateEntityWithETagMatched(EdmEntityType edmEntityType, Entity entity, Entity existingEntity,
 	                                         boolean merge) throws ODataApplicationException, DataServiceFault {
 		/* loop over all properties and replace the values with the values of the given payload
 		   Note: ignoring ComplexType, as we don't have it in wso2dss oData model */
-		List<Property> newProperties = existingEntity.getProperties();
+		List<Property> oldProperties = existingEntity.getProperties();
+		ODataEntry newProperties = new ODataEntry();
 		Map<String, EdmProperty> propertyMap = new HashMap<>();
-		for (Property existingProp : newProperties) {
-			String propName = existingProp.getName();
-			// ignore the key properties, they aren't updatable
-			if (isKey(edmEntityType, propName)) {
-				propertyMap.put(existingProp.getName(),
-				                (EdmProperty) edmEntityType.getProperty(existingProp.getName()));
+		for (String property : edmEntityType.getPropertyNames()) {
+			Property updateProperty = entity.getProperty(property);
+			EdmProperty propertyType = (EdmProperty) edmEntityType.getProperty(property);
+			if (isKey(edmEntityType, property)) {
+				propertyMap.put(property, (EdmProperty) edmEntityType.getProperty(property));
 				continue;
 			}
-			Property updateProperty = entity.getProperty(propName);
 			// the request payload might not consider ALL properties, so it can be null
 			if (updateProperty == null) {
 				// if a property has NOT been added to the request payload
 				// depending on the HttpMethod, our behavior is different
 				if (merge) {
 					// as of the OData spec, in case of PATCH, the existing property is not touched
-					propertyMap.put(existingProp.getName(),
-					                (EdmProperty) edmEntityType.getProperty(existingProp.getName()));
-					continue; // do nothing
+					propertyMap.put(property, (EdmProperty) edmEntityType.getProperty(property));
+					continue;
 				} else {
 					// as of the OData spec, in case of PUT, the existing property is set to null (or to default value)
-					existingProp.setValue(existingProp.getValueType(), null);
-					propertyMap.put(existingProp.getName(),
-					                (EdmProperty) edmEntityType.getProperty(existingProp.getName()));
-
+					propertyMap.put(property, (EdmProperty) edmEntityType.getProperty(property));
+					newProperties.addValue(property, null);
 					continue;
 				}
 			}
-			// change the value of the properties
-			existingProp.setValue(existingProp.getValueType(), updateProperty.getValue());
-			propertyMap.put(existingProp.getName(), (EdmProperty) edmEntityType.getProperty(existingProp.getName()));
-
+			propertyMap.put(property, (EdmProperty) edmEntityType.getProperty(property));
+			newProperties.addValue(property, readPrimitiveValueInString(propertyType, updateProperty.getValue()));
 		}
-		// write to the DB
-		this.dataHandler.updateEntityInTable(edmEntityType.getName(),
-		                                     wrapPropertiesToDataEntry(edmEntityType, newProperties, propertyMap),
-		                                     true);
+		return this.dataHandler.updateEntityInTableTransactional(edmEntityType.getName(),
+		                                                  wrapPropertiesToDataEntry(edmEntityType, oldProperties,
+		                                                                            propertyMap), newProperties);
 	}
 
 	/**
@@ -1429,9 +1431,8 @@ public class ODataAdapter implements ServiceHandler {
 			}
 			EdmProperty propertyType = (EdmProperty) edmEntityType.getProperty(property);
 			entry.addValue(property, readPrimitiveValueInString(propertyType, updateProperty.getValue()));
-
 		}
-		this.dataHandler.updateEntityInTable(edmEntityType.getName(), entry, false);
+		this.dataHandler.updateEntityInTable(edmEntityType.getName(), entry);
 	}
 
 	/**

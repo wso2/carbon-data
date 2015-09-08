@@ -66,7 +66,16 @@ public interface ODataDataHandler {
 	 * @param entity    Entity
 	 * @throws ODataServiceFault
 	 */
-	void deleteEntityInTable(String tableName, ODataEntry entity, boolean transactional) throws ODataServiceFault;
+	void deleteEntityInTable(String tableName, ODataEntry entity) throws ODataServiceFault;
+
+	/**
+	 * This method deletes the entity in table when transactional delete is necessary.
+	 *
+	 * @param tableName     Table Name
+	 * @param oldProperties Old Properties
+	 * @throws ODataServiceFault
+	 */
+	boolean deleteEntityInTableTransactional(String tableName, ODataEntry oldProperties) throws ODataServiceFault;
 
 	/**
 	 * This method updates entity in table.
@@ -75,7 +84,18 @@ public interface ODataDataHandler {
 	 * @param newProperties New Properties
 	 * @throws ODataServiceFault
 	 */
-	void updateEntityInTable(String tableName, ODataEntry newProperties, boolean transactional) throws ODataServiceFault;
+	void updateEntityInTable(String tableName, ODataEntry newProperties) throws ODataServiceFault;
+
+	/**
+	 * This method updates the entity in table when transactional update is necessary.
+	 *
+	 * @param tableName     Table Name
+	 * @param oldProperties Old Properties
+	 * @param newProperties New Properties
+	 * @throws ODataServiceFault
+	 */
+	boolean updateEntityInTableTransactional(String tableName, ODataEntry oldProperties, ODataEntry newProperties)
+			throws ODataServiceFault;
 
 	/**
 	 * This method return database table metadata.

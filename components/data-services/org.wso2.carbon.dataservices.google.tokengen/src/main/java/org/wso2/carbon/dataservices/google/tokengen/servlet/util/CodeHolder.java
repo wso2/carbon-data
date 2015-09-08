@@ -44,8 +44,10 @@ public class CodeHolder implements Runnable {
      */
     private CodeHolder(){
         if (GoogleTokenGenDSComponent.getHazelcastInstance() != null) {
+            log.info("Creating Hazelcast map to store OAuth Codes");
             authCodes = GoogleTokenGenDSComponent.getHazelcastInstance().getMap("GOOGLE_TOKENGEN_AUTHCODE_HOLDER");
         } else {
+            log.info("Creating simple HashMap to store OAuth Codes since clustering is not enabled");
             authCodes = new HashMap<String,AuthCode>(2);
         }
         //retry interval 1 hour

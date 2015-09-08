@@ -1944,43 +1944,32 @@ function changeCustomDsType() {
 function reDirectToConsent() {
     var data = getData();
 
-    var http = new XMLHttpRequest();
-    var params = JSON.stringify(data);
-    http.open("POST", '/consentUrl', true);
-
-//    http.setRequestHeader("Content-type", "application/json");
-//    http.setRequestHeader("Content-length", params.length);
-//    http.setRequestHeader("Connection", "close");
-
-    http.onreadystatechange = function() {//Call a function when the state changes.
-        if(http.readyState == 4 && http.status == 200) {
-            var msg = http.responseText
-            msg = msg.toString().trim();
-            OpenInNewTab(msg);
-            setTimeout(getStatus, 5000);
-        } else if(http.readyState == 4 && (http.status == 500 || http.status == 400)){
-            CARBON.showErrorDialog(http.response);
-        }
-    }
-    http.send(params);
-//    $.ajax({
-//               url: '/consentUrl',
-//               type: 'POST',
-//               async: false,
-//               cache: false,
-//               data: JSON.stringify(data),
-//               processData: false,
-//               timeout: 5000,
-//               error: function () {
-//                   status = true;
-//               },
-//               contentType: 'application/json',
-//               success: function (msg) {
-//                   msg = msg.toString().trim();
-//                   OpenInNewTab(msg);
-//                   setTimeout(getStatus, 5000);
-//               }
-//           });
+    jQuery.ajax({
+               url: '/consentUrl',
+               type: 'POST',
+               async: false,
+               cache: false,
+               data: JSON.stringify(data),
+               processData: false,
+               timeout: 5000,
+               error: function () {
+                   status = true;
+               },
+               contentType: 'application/json',
+               statusCode: {
+                   400: function (response) {
+                       alert(response.responseText);
+                   },
+                   500: function (response) {
+                       alert(response.responseText);
+                   }
+               },
+               success: function (msg) {
+                   msg = msg.toString().trim();
+                   OpenInNewTab(msg);
+                   setTimeout(getStatus, 5000);
+               }
+           });
 
     return false;
 }
@@ -2004,49 +1993,36 @@ function setTokensToPage(jsonObj) {
 
 function getStatus() {
     var data = getData();
-    var http = new XMLHttpRequest();
-    var params = JSON.stringify(data);
-    http.open("POST", '/tokenEndpoint', true);
-
-//    http.setRequestHeader("Content-type", "application/json");
-//    http.setRequestHeader("Content-length", params.length);
-//    http.setRequestHeader("Connection", "close");
-
-    http.onreadystatechange = function () {//Call a function when the state changes.
-        if (http.readyState == 4 && http.status == 200) {
-            var msg = http.responseText
-            msg = msg.toString().trim();
-            var obj = jQuery.parseJSON(msg);
-            setTokensToPage(obj)
-        } else if (http.readyState == 4 && http.status == 202){
-            setTimeout(getStatus, 5000);
-        } else if(http.readyState == 4 && (http.status == 500 || http.status == 400)){
-            CARBON.showErrorDialog(http.response);
-        }
-    }
-    http.send(params);
-//    $.ajax({
-//               url: '/tokenEndpoint',
-//               type: 'POST',
-//               async: false,
-//               cache: false,
-//               data: JSON.stringify(data),
-//               processData: false,
-//               timeout: 5000,
-//               error: function () {
-//                   status = true;
-//               },
-//               contentType: 'application/json',
-//               success: function (msg) {
-//                   msg = msg.toString().trim();
-//                   var obj = jQuery.parseJSON(msg);
-//                   if (obj.codeReceived == false) {
-//                       setTimeout(getStatus, 5000);
-//                   } else {
-//                       setTokensToPage(obj)
-//                   }
-//               }
-//           });
+    jQuery.ajax({
+               url: '/tokenEndpoint',
+               type: 'POST',
+               async: false,
+               cache: false,
+               data: JSON.stringify(data),
+               processData: false,
+               timeout: 5000,
+               error: function () {
+                   status = true;
+               },
+               contentType: 'application/json',
+               statusCode: {
+                   400: function (response) {
+                       alert(response.responseText);
+                   },
+                   500: function (response) {
+                       alert(response.responseText);
+                   }
+               },
+               success: function (msg) {
+                   msg = msg.toString().trim();
+                   var obj = jQuery.parseJSON(msg);
+                   if (!obj['gspread_access_token']) {
+                       setTimeout(getStatus, 5000);
+                   } else {
+                       setTokensToPage(obj)
+                   }
+               }
+           });
 }
 
 

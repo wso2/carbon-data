@@ -105,73 +105,111 @@ public class CassandraQuery extends ExpressionQuery {
 
     private BoundStatement bindParams(InternalParamCollection params) throws DataServiceFault {
         int count = params.getSize();
-        List<Object> values = new ArrayList<Object>(count);
+        List<Object> values = new ArrayList<>(count);
         InternalParam param;
         for (int i = 1; i <= count; i++) {
             param = params.getParam(i);
-            if (param.getSqlType().equals(DataTypes.STRING)) {
-                values.add(param.getValue().toString());
-            } else if (param.getSqlType().equals(DataTypes.BIGINT)) {
-                values.add(Long.parseLong(param.getValue().getValueAsString()));
-            } else if (param.getSqlType().equals(DataTypes.BINARY)) {
-                values.add(this.base64DecodeByteBuffer(param.getValue().getValueAsString()));
-            } else if (param.getSqlType().equals(DataTypes.BIT)) {
-                values.add(Boolean.parseBoolean(param.getValue().getValueAsString()));
-            } else if (param.getSqlType().equals(DataTypes.BLOB)) {
-                values.add(this.base64DecodeByteBuffer(param.getValue().getValueAsString()));
-            } else if (param.getSqlType().equals(DataTypes.BOOLEAN)) {
-                values.add(Boolean.parseBoolean(param.getValue().getValueAsString()));
-            } else if (param.getSqlType().equals(DataTypes.CHAR)) {
-                values.add(param.getValue().getValueAsString());
-            } else if (param.getSqlType().equals(DataTypes.CLOB)) {
-                values.add(param.getValue().getValueAsString());
-            } else if (param.getSqlType().equals(DataTypes.DATE)) {
-                values.add(DBUtils.getDate(param.getValue().getValueAsString()));
-            } else if (param.getSqlType().equals(DataTypes.DECIMAL)) {
-                values.add(new BigDecimal(param.getValue().getValueAsString()));
-            } else if (param.getSqlType().equals(DataTypes.DOUBLE)) {
-                values.add(Double.parseDouble(param.getValue().getValueAsString()));
-            } else if (param.getSqlType().equals(DataTypes.FLOAT)) {
-                values.add(Float.parseFloat(param.getValue().getValueAsString()));
-            } else if (param.getSqlType().equals(DataTypes.INTEGER)) {
-                values.add(Integer.parseInt(param.getValue().getValueAsString()));
-            } else if (param.getSqlType().equals(DataTypes.LONG)) {
-                values.add(Long.parseLong(param.getValue().getValueAsString()));
-            } else if (param.getSqlType().equals(DataTypes.LONG_VARBINARY)) {
-                values.add(this.base64DecodeByteBuffer(param.getValue().getValueAsString()));
-            } else if (param.getSqlType().equals(DataTypes.NUMERIC)) {
-                values.add(new BigDecimal(param.getValue().getValueAsString()));
-            } else if (param.getSqlType().equals(DataTypes.NVARCHAR)) {
-                values.add(param.getValue().getValueAsString());
-            } else if (param.getSqlType().equals(DataTypes.QUERY_STRING)) {
-                values.add(param.getValue().getValueAsString());
-            } else if (param.getSqlType().equals(DataTypes.REAL)) {
-                values.add(Float.parseFloat(param.getValue().getValueAsString()));
-            } else if (param.getSqlType().equals(DataTypes.SMALLINT)) {
-                values.add(Integer.parseInt(param.getValue().getValueAsString()));
-            } else if (param.getSqlType().equals(DataTypes.TEXT)) {
-                values.add(param.getValue().getValueAsString());
-            } else if (param.getSqlType().equals(DataTypes.TIME)) {
-                values.add(DBUtils.getDate(param.getValue().getValueAsString()));
-            } else if (param.getSqlType().equals(DataTypes.TIMESTAMP)) {
-                values.add(DBUtils.getDate(param.getValue().getValueAsString()));
-            } else if (param.getSqlType().equals(DataTypes.TINYINT)) {
-                values.add(Integer.parseInt(param.getValue().getValueAsString()));
-            } else if (param.getSqlType().equals(DataTypes.VARBINARY)) {
-                values.add(this.base64DecodeByteBuffer(param.getValue().getValueAsString()));
-            } else if (param.getSqlType().equals(DataTypes.VARCHAR)) {
-                values.add(param.getValue().getValueAsString());
-            } else if (param.getSqlType().equals(DataTypes.VARINT)) {
-                values.add(new BigInteger(param.getValue().getValueAsString()));
-            } else if (param.getSqlType().equals(DataTypes.UUID)) {
-                values.add(UUID.fromString(param.getValue().getValueAsString()));
-            } else if (param.getSqlType().equals(DataTypes.INETADDRESS)) {
-                try {
-                    values.add(InetAddress.getByName(param.getValue().getValueAsString()));
-                } catch (UnknownHostException e) {
-                    throw new DataServiceFault(e);
-                }
-            } 
+            switch (param.getSqlType()) {
+                case DataTypes.STRING:
+                    values.add(param.getValue().toString());
+                    break;
+                case DataTypes.BIGINT:
+                    values.add(param.getValue() == null ? null : Long.parseLong(param.getValue().getValueAsString()));
+                    break;
+                case DataTypes.BINARY:
+                    values.add(param.getValue() == null ? null :
+                               this.base64DecodeByteBuffer(param.getValue().getValueAsString()));
+                    break;
+                case DataTypes.BIT:
+                    values.add(param.getValue() == null ? null :
+                               Boolean.parseBoolean(param.getValue().getValueAsString()));
+                    break;
+                case DataTypes.BLOB:
+                    values.add(param.getValue() == null ? null :
+                               this.base64DecodeByteBuffer(param.getValue().getValueAsString()));
+                    break;
+                case DataTypes.BOOLEAN:
+                    values.add(param.getValue() == null ? null :
+                               Boolean.parseBoolean(param.getValue().getValueAsString()));
+                    break;
+                case DataTypes.CHAR:
+                    values.add(param.getValue() == null ? null : param.getValue().getValueAsString());
+                    break;
+                case DataTypes.CLOB:
+                    values.add(param.getValue() == null ? null : param.getValue().getValueAsString());
+                    break;
+                case DataTypes.DATE:
+                    values.add(param.getValue() == null ? null : DBUtils.getDate(param.getValue().getValueAsString()));
+                    break;
+                case DataTypes.DECIMAL:
+                    values.add(param.getValue() == null ? null : new BigDecimal(param.getValue().getValueAsString()));
+                    break;
+                case DataTypes.DOUBLE:
+                    values.add(param.getValue() == null ? null :
+                               Double.parseDouble(param.getValue().getValueAsString()));
+                    break;
+                case DataTypes.FLOAT:
+                    values.add(param.getValue() == null ? null : Float.parseFloat(param.getValue().getValueAsString()));
+                    break;
+                case DataTypes.INTEGER:
+                    values.add(param.getValue() == null ? null : Integer.parseInt(param.getValue().getValueAsString()));
+                    break;
+                case DataTypes.LONG:
+                    values.add(param.getValue() == null ? null : Long.parseLong(param.getValue().getValueAsString()));
+                    break;
+                case DataTypes.LONG_VARBINARY:
+                    values.add(param.getValue() == null ? null :
+                               this.base64DecodeByteBuffer(param.getValue().getValueAsString()));
+                    break;
+                case DataTypes.NUMERIC:
+                    values.add(param.getValue() == null ? null : new BigDecimal(param.getValue().getValueAsString()));
+                    break;
+                case DataTypes.NVARCHAR:
+                    values.add(param.getValue().getValueAsString());
+                    break;
+                case DataTypes.QUERY_STRING:
+                    values.add(param.getValue().getValueAsString());
+                    break;
+                case DataTypes.REAL:
+                    values.add(param.getValue() == null ? null : Float.parseFloat(param.getValue().getValueAsString()));
+                    break;
+                case DataTypes.SMALLINT:
+                    values.add(param.getValue() == null ? null : Integer.parseInt(param.getValue().getValueAsString()));
+                    break;
+                case DataTypes.TEXT:
+                    values.add(param.getValue().getValueAsString());
+                    break;
+                case DataTypes.TIME:
+                    values.add(param.getValue() == null ? null : DBUtils.getDate(param.getValue().getValueAsString()));
+                    break;
+                case DataTypes.TIMESTAMP:
+                    values.add(param.getValue() == null ? null : DBUtils.getDate(param.getValue().getValueAsString()));
+                    break;
+                case DataTypes.TINYINT:
+                    values.add(param.getValue() == null ? null : Integer.parseInt(param.getValue().getValueAsString()));
+                    break;
+                case DataTypes.VARBINARY:
+                    values.add(param.getValue() == null ? null :
+                               this.base64DecodeByteBuffer(param.getValue().getValueAsString()));
+                    break;
+                case DataTypes.VARCHAR:
+                    values.add(param.getValue().getValueAsString());
+                    break;
+                case DataTypes.VARINT:
+                    values.add(param.getValue() == null ? null : new BigInteger(param.getValue().getValueAsString()));
+                    break;
+                case DataTypes.UUID:
+                    values.add(param.getValue() == null ? null : UUID.fromString(param.getValue().getValueAsString()));
+                    break;
+                case DataTypes.INETADDRESS:
+                    try {
+                        values.add(param.getValue() == null ? null :
+                                   InetAddress.getByName(param.getValue().getValueAsString()));
+                    } catch (UnknownHostException e) {
+                        throw new DataServiceFault(e);
+                    }
+                    break;
+            }
         }
         return this.getStatement().bind(values.toArray());
     }

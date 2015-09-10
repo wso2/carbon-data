@@ -47,8 +47,7 @@ public interface ODataDataHandler {
 	 * @throws ODataServiceFault
 	 * @see DataEntry
 	 */
-	List<ODataEntry> readTableWithKeys(String tableName, ODataEntry keys, boolean transactional)
-			throws ODataServiceFault;
+	List<ODataEntry> readTableWithKeys(String tableName, ODataEntry keys) throws ODataServiceFault;
 
 	/**
 	 * This method inserts entity to table.
@@ -66,16 +65,7 @@ public interface ODataDataHandler {
 	 * @param entity    Entity
 	 * @throws ODataServiceFault
 	 */
-	void deleteEntityInTable(String tableName, ODataEntry entity) throws ODataServiceFault;
-
-	/**
-	 * This method deletes the entity in table when transactional delete is necessary.
-	 *
-	 * @param tableName     Table Name
-	 * @param oldProperties Old Properties
-	 * @throws ODataServiceFault
-	 */
-	boolean deleteEntityInTableTransactional(String tableName, ODataEntry oldProperties) throws ODataServiceFault;
+	boolean deleteEntityInTable(String tableName, ODataEntry entity) throws ODataServiceFault;
 
 	/**
 	 * This method updates entity in table.
@@ -84,7 +74,7 @@ public interface ODataDataHandler {
 	 * @param newProperties New Properties
 	 * @throws ODataServiceFault
 	 */
-	void updateEntityInTable(String tableName, ODataEntry newProperties) throws ODataServiceFault;
+	boolean updateEntityInTable(String tableName, ODataEntry newProperties) throws ODataServiceFault;
 
 	/**
 	 * This method updates the entity in table when transactional update is necessary.
@@ -114,7 +104,7 @@ public interface ODataDataHandler {
 	 * @param property  Property
 	 * @throws ODataServiceFault
 	 */
-	void updatePropertyInTable(String tableName, ODataEntry property, boolean transactional) throws ODataServiceFault;
+	void updatePropertyInTable(String tableName, ODataEntry property) throws ODataServiceFault;
 
 	/**
 	 * This method return names of all the tables in the database.
@@ -140,5 +130,7 @@ public interface ODataDataHandler {
 
 	void openTransaction() throws ODataServiceFault;
 
-	void closeTransaction() throws ODataServiceFault;
+	void commitTransaction() throws ODataServiceFault;
+
+	void rollbackTransaction() throws ODataServiceFault;
 }

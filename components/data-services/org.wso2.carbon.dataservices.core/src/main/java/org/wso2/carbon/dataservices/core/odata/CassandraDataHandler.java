@@ -79,6 +79,8 @@ public class CassandraDataHandler implements ODataDataHandler {
 	 */
 	private final String keyspace;
 
+	private boolean transactionAvailable;
+
 	public CassandraDataHandler(String configID, Session session, String keyspace) {
 		this.configID = configID;
 		this.session = session;
@@ -103,7 +105,7 @@ public class CassandraDataHandler implements ODataDataHandler {
 	}
 
 	@Override
-	public List<ODataEntry> readTableWithKeys(String tableName, ODataEntry keys, boolean transactional)
+	public List<ODataEntry> readTableWithKeys(String tableName, ODataEntry keys)
 			throws ODataServiceFault {
 		List<ColumnMetadata> cassandraTableMetaData = this.session.getCluster().getMetadata().getKeyspace(this.keyspace)
 		                                                          .getTable(tableName).getColumns();
@@ -145,8 +147,15 @@ public class CassandraDataHandler implements ODataDataHandler {
 	}
 
 	@Override
-	public void deleteEntityInTable(String tableName, ODataEntry entity)
-			throws ODataServiceFault {
+	public boolean deleteEntityInTable(String tableName, ODataEntry entity) throws ODataServiceFault {
+		if (transactionAvailable) {
+			return deleteEntityInTableTransactional(tableName, entity);
+		} else {
+			return deleteEntityTableNonTransactional(tableName, entity);
+		}
+	}
+
+	private boolean deleteEntityTableNonTransactional(String tableName, ODataEntry entity) throws ODataServiceFault {
 		List<ColumnMetadata> cassandraTableMetaData = this.session.getCluster().getMetadata().getKeyspace(this.keyspace)
 		                                                          .getTable(tableName).getColumns();
 		List<String> pKeys = this.primaryKeys.get(tableName);
@@ -158,13 +167,10 @@ public class CassandraDataHandler implements ODataDataHandler {
 			}
 		}
 		Statement statement = new SimpleStatement(query, values.toArray());
-		this.session.execute(statement);
+		ResultSet result = this.session.execute(statement);
+		return result.wasApplied();
 	}
-
-	@Override
-	public boolean deleteEntityInTableTransactional(String tableName, ODataEntry entity)
-			throws ODataServiceFault {
-
+	private boolean deleteEntityInTableTransactional(String tableName, ODataEntry entity) throws ODataServiceFault {
 		List<ColumnMetadata> cassandraTableMetaData = this.session.getCluster().getMetadata().getKeyspace(this.keyspace)
 		                                                          .getTable(tableName).getColumns();
 		List<String> pKeys = this.primaryKeys.get(tableName);
@@ -186,7 +192,7 @@ public class CassandraDataHandler implements ODataDataHandler {
 	}
 
 	@Override
-	public void updateEntityInTable(String tableName, ODataEntry newProperties) throws ODataServiceFault {
+	public boolean updateEntityInTable(String tableName, ODataEntry newProperties) throws ODataServiceFault {
 		List<ColumnMetadata> cassandraTableMetaData = this.session.getCluster().getMetadata().getKeyspace(this.keyspace)
 		                                                          .getTable(tableName).getColumns();
 		List<String> pKeys = this.primaryKeys.get(tableName);
@@ -203,10 +209,10 @@ public class CassandraDataHandler implements ODataDataHandler {
 			}
 		}
 		Statement statement = new SimpleStatement(query, values.toArray());
-		this.session.execute(statement);
+		ResultSet result = this.session.execute(statement);
+		return result.wasApplied();
 	}
 
-	@Override
 	public boolean updateEntityInTableTransactional(String tableName, ODataEntry oldProperties, ODataEntry newProperties)
 			throws ODataServiceFault {
 		List<ColumnMetadata> cassandraTableMetaData = this.session.getCluster().getMetadata().getKeyspace(this.keyspace)
@@ -241,7 +247,7 @@ public class CassandraDataHandler implements ODataDataHandler {
 	}
 
 	@Override
-	public void updatePropertyInTable(String tableName, ODataEntry property, boolean transactional)
+	public void updatePropertyInTable(String tableName, ODataEntry property)
 			throws ODataServiceFault {
 		List<ColumnMetadata> cassandraTableMetaData = this.session.getCluster().getMetadata().getKeyspace(this.keyspace)
 		                                                          .getTable(tableName).getColumns();
@@ -271,12 +277,21 @@ public class CassandraDataHandler implements ODataDataHandler {
 
 	@Override
 	public void openTransaction() throws ODataServiceFault {
-
+		this.transactionAvailable = true;
+		// doesn't support
 	}
 
 	@Override
-	public void closeTransaction() {
+	public void commitTransaction() {
+		this.transactionAvailable = false;
 
+		//doesn't support
+	}
+
+	@Override
+	public void rollbackTransaction() throws ODataServiceFault {
+		this.transactionAvailable = false;
+		//doesn't support
 	}
 
 	/**

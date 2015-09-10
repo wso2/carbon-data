@@ -411,8 +411,13 @@ private Config addNotAvailableFunctions(Config config,String selectedType, HttpS
         }
 	} else if (DBConstants.DataSourceTypes.CARBON.equals(selectedType)) {
     	if (config.getPropertyValue(DBConstants.CarbonDatasource.NAME) == null) {
-			 config.addProperty(DBConstants.CarbonDatasource.NAME, "");
-		 }
+    	    config.addProperty(DBConstants.CarbonDatasource.NAME, "");
+    	}
+    	if (config.isExposeAsODataService() == true) {
+    	    isOData = true;
+    	} else {
+    	    isOData = false;
+    	}
     } else if (DBConstants.DataSourceTypes.WEB.equals(selectedType)) {
     	if (config.getPropertyValue(DBConstants.WebDatasource.WEB_CONFIG) == null) {
 			 config.addProperty(DBConstants.WebDatasource.WEB_CONFIG, "");

@@ -39,6 +39,7 @@ public final class DBConstants {
     public static final String DB_SERVICE_EXTENSION = "local_org.wso2.ws.dataservice.db_service_extension";
     public static final String DB_SERVICE_EXTENSION_VALUE = "dbs";
     public static final String BATCH_OPERATON_NAME_SUFFIX = "_batch_req";
+    public static final String REQUEST_BOX_ELEMENT = "request_box";
     public static final String DEFAULT_CHAR_SET_TYPE = "UTF-8";
     public static final String DATA_SERVICES_JMX_DOMAIN = "org.wso2.carbon.dataservices.jmx";
     public static final String DEFAULT_CONFIG_ID = "default";

@@ -26,6 +26,7 @@ import org.wso2.carbon.dataservices.core.DBUtils;
 import org.wso2.carbon.dataservices.core.DSSessionManager;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
 import org.wso2.carbon.dataservices.core.boxcarring.TLParamStore;
+import org.wso2.carbon.dataservices.core.dispatch.DispatchStatus;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -240,7 +241,7 @@ public class StaticOutputElement extends OutputElement {
             paramValue.setScalarValue(paramValue.getScalarValue().replaceAll(NON_PRINTABLE_CHARS, "?"));
         }
         /* export it if told, and only if it's boxcarring */
-        if (this.getExport() != null && DSSessionManager.isBoxcarring()) {
+        if (this.getExport() != null && (DSSessionManager.isBoxcarring() || DispatchStatus.isBoxcarringRequest())) {
             this.exportParam(this.getExport(), paramValue.toString(), this.getExportType());
         }
         try {

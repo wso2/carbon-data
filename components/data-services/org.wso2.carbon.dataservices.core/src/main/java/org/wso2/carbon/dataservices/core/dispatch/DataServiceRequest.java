@@ -91,6 +91,11 @@ public abstract class DataServiceRequest {
 				DBConstants.DATA_SERVICE_OBJECT).getValue();
 		
 		DataServiceRequest dsRequest;
+        /* Check whether the request is collection of requests (request box), if so create RequestBoxRequest */
+        if (isRequestBoxRequest(requestName)) {
+            dsRequest = createRequestBoxRequest(dataService, requestName, inputMessage);
+            return dsRequest;
+        }
 		/* check if batch or single request */
 		if (isBatchRequest(inputMessage)) {
 			dsRequest = new BatchDataServiceRequest(
@@ -108,7 +113,7 @@ public abstract class DataServiceRequest {
 			/* wrap the current request in a boxcarring request */
 			dsRequest = new BoxcarringDataServiceRequest(dsRequest);
 		}
-		
+
 		return dsRequest;
 	}
 	
@@ -148,7 +153,7 @@ public abstract class DataServiceRequest {
 	
     /**
      * Checks if the given message is a batch request or not,
-     * a batch request contains service parameters in separate elements.
+     * a batch request contains service parameters in separate element todo need to check better approach than this(check element name which ends with batchreq)
      */
     private static boolean isBatchRequest(OMElement inputMessage) {
 		if (inputMessage != null) {
@@ -161,6 +166,16 @@ public abstract class DataServiceRequest {
 		}
     	return false;
     }
+
+//    private static boolean isBatchRequest(OMElement inputMessage) {
+//        if (inputMessage != null) {
+//            String elName = inputMessage.getLocalName();
+//            if (elName.endsWith(DBConstants.BATCH_OPERATON_NAME_SUFFIX)) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
     
     /**
      * Checks if the given request is a boxcarring request.
@@ -182,6 +197,20 @@ public abstract class DataServiceRequest {
     	}
     	return false;
     }
+
+    /**
+     * Helper method to determine whether the request is collection of requests.
+     *
+     * @param requestName name of the parent request
+     * @return true if this is a request containing multiple requests
+     */
+    private static boolean isRequestBoxRequest(String requestName) {
+        if (requestName.endsWith(DBConstants.REQUEST_BOX_ELEMENT)) {
+            return true;
+        }
+        return false;
+    }
+
 
     /**
      * Extracts the data service single request parameters from the incoming message.
@@ -236,6 +265,38 @@ public abstract class DataServiceRequest {
     		batchParams.add(getSingleInputValuesFromOM(paramEl));
     	}
     	return batchParams;
+    }
+
+    /**
+     * Helper method to generate the request box request using the incoming message.
+     *
+     * @param dataService to be used
+     * @param requestName of the original parent request
+     * @param inputMessage with other requests
+     * @return dsRequest which was generated
+     * @throws DataServiceFault
+     */
+    @SuppressWarnings("unchecked")
+    private static DataServiceRequest createRequestBoxRequest(DataService dataService, String requestName,
+                                                              OMElement inputMessage) throws DataServiceFault {
+        RequestBoxRequest dsRequest = new RequestBoxRequest(dataService, requestName);
+
+        Iterator<OMElement> paramItr = inputMessage.getChildElements();
+        OMElement paramEl;
+        while (paramItr.hasNext()) {
+            DataServiceRequest childRequest;
+            paramEl = paramItr.next();
+            if (isBatchRequest(paramEl)) {
+                childRequest = new BatchDataServiceRequest(
+                        dataService, paramEl.getLocalName(), getBatchInputValuesFromOM(paramEl));
+            } else {
+                childRequest = new SingleDataServiceRequest(
+                        dataService, paramEl.getLocalName(), getSingleInputValuesFromOM(paramEl));
+            }
+            dsRequest.addRequests(childRequest);
+        }
+        return dsRequest;
+
     }
     
     private static String getTextValueFromOMElement(OMElement omEl) {

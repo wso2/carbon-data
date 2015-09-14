@@ -23,6 +23,8 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
+import org.apache.axis2.transport.http.HTTPConstants;
+import org.wso2.carbon.dataservices.common.DBConstants;
 import org.wso2.carbon.dataservices.common.DBConstants.DBSFields;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
 import org.wso2.carbon.dataservices.core.description.query.QueryFactory;
@@ -79,5 +81,13 @@ public class ResourceFactory {
 		
 		return resource;
 	}
+
+    public static Resource createRequestBoxResource(DataService dataService) {
+        CallQuery callQueries = QueryFactory.createEmptyCallQuery(dataService);
+        ResourceID requestBoxResourceId = new ResourceID(DBConstants.REQUEST_BOX_ELEMENT, HTTPConstants.HTTP_METHOD_POST);
+        return new Resource(dataService, requestBoxResourceId,
+                             "Control resource for sending multiple requests at once",
+                             callQueries, false, null, false, false);
+    }
 	
 }

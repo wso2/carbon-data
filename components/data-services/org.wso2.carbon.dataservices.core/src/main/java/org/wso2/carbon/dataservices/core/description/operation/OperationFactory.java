@@ -23,10 +23,12 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
+import org.wso2.carbon.dataservices.common.DBConstants;
 import org.wso2.carbon.dataservices.common.DBConstants.BoxcarringOps;
 import org.wso2.carbon.dataservices.common.DBConstants.DBSFields;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
 import org.wso2.carbon.dataservices.core.description.query.QueryFactory;
+import org.wso2.carbon.dataservices.core.description.resource.Resource;
 import org.wso2.carbon.dataservices.core.engine.CallQuery;
 import org.wso2.carbon.dataservices.core.engine.DataService;
 
@@ -102,5 +104,11 @@ public class OperationFactory {
 				"Control operation for aborting a boxcarring session",
 				callQuery, false, null, false, false);
 	}
-	
+
+    public static Operation createRequestBoxOperation(DataService dataService) {
+        CallQuery callQueries = QueryFactory.createEmptyBoxcarCallQuery(dataService);
+        return new Operation(dataService, DBConstants.REQUEST_BOX_ELEMENT,
+                             "Control operation for sending multiple requests at once",
+                             callQueries, false, null, false, false);
+    }
 }

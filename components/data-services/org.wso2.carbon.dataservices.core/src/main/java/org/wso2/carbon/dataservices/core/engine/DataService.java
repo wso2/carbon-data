@@ -20,6 +20,7 @@ package org.wso2.carbon.dataservices.core.engine;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.dataservices.core.description.resource.ResourceFactory;
 import org.wso2.securevault.SecretResolver;
 import org.wso2.carbon.dataservices.common.DBConstants;
 import org.wso2.carbon.dataservices.common.DBConstants.DBSFields;
@@ -140,6 +141,7 @@ public class DataService {
     /**
      * States if boxcarring is enabled, if so, boxcarring related operations are
      * also created
+     * This is also used to identify requestBox requests
      */
     private boolean boxcarringEnabled;
 
@@ -191,6 +193,7 @@ public class DataService {
         /* add operations related to boxcarring */
         if (this.isBoxcarringEnabled()) {
             initBoxcarring();
+            initRequestBox();
         }
 
         /* initialize transaction manager */
@@ -242,6 +245,88 @@ public class DataService {
         this.addOperation(OperationFactory.createBeginBoxcarOperation(this));
         this.addOperation(OperationFactory.createEndBoxcarOperation(this));
         this.addOperation(OperationFactory.createAbortBoxcarOperation(this));
+    }
+
+    /**
+     * Helper method to initialise request box.
+     *
+     * @throws DataServiceFault
+     */
+    private void initRequestBox() throws DataServiceFault {
+        initRequestBoxForOperation();
+        initRequestBoxForResource();
+    }
+
+    /**
+     * Helper method to initialise request box operation, (if there are no operations already, then it will return
+     * without doing anything)
+     *
+     * @throws DataServiceFault
+     */
+    private void initRequestBoxForOperation() throws DataServiceFault {
+        if (this.getOperationNames().isEmpty()) {
+            if (log.isDebugEnabled()) {
+                log.debug("There are no Operations available in data service, So request box won't be generated for Operations");
+            }
+            return;
+        }
+        addEmptyQueryForRequestBox();
+        /* operation */
+        this.addOperation(OperationFactory.createRequestBoxOperation(this));
+    }
+
+    /**
+     * Helper method to initialise request box resource, (if there are no resources already, then it will return
+     * without doing anything)
+     *
+     * @throws DataServiceFault
+     */
+    private void initRequestBoxForResource() throws DataServiceFault {
+        if (this.getResourceIds().isEmpty()) {
+            if (log.isDebugEnabled()) {
+                log.debug("There are no Resources available in data service, So request box won't be generated for Resources");
+            }
+            return;
+        }
+        addEmptyQueryForRequestBox();
+        /* resource */
+        this.addResource(ResourceFactory.createRequestBoxResource(this));
+    }
+
+    /**
+     * Helper method to add empty query to be used for request box operation and resource.
+     *
+     * @throws DataServiceFault
+     */
+    private void addEmptyQueryForRequestBox() throws DataServiceFault {
+        if (this.getQuery(DBConstants.EMPTY_END_BOXCAR_QUERY_ID) != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Empty query already exist, returning without trying to add it again");
+            }
+            return;
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("Empty query does not exist, so adding it for used in request box operation/resource");
+        }
+        /* empty query for requestBox */
+        Result endRequestBoxResult = new Result("dummy", "dummy",
+                                                DBConstants.WSO2_DS_NAMESPACE, null, ResultTypes.XML);
+        endRequestBoxResult.setXsAny(true);
+        endRequestBoxResult.setDefaultElementGroup(new OutputElementGroup(null, null, null, null));
+        this.addQuery(new Query(this, DBConstants.EMPTY_END_BOXCAR_QUERY_ID,
+                                new ArrayList<QueryParam>(), endRequestBoxResult, null, null, null, null,
+                                this.getDefaultNamespace()) {
+            public Object runPreQuery(InternalParamCollection params, int queryLevel) {
+                return null;
+            }
+
+            @Override
+            public void runPostQuery(Object result, XMLStreamWriter xmlWriter,
+                                     InternalParamCollection params, int queryLevel) throws DataServiceFault {
+
+            }
+        });
+
     }
 
     /**

@@ -23,6 +23,7 @@ import org.apache.axis2.description.AxisOperation;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.description.java2wsdl.Java2WSDLConstants;
 import org.apache.axis2.description.java2wsdl.TypeTable;
+import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.axis2.wsdl.WSDLConstants;
 import org.apache.ws.commons.schema.*;
 import org.apache.ws.commons.schema.constants.Constants;
@@ -89,6 +90,18 @@ public class DataServiceDocLitWrappedSchemaGenerator {
         for (Resource resource : batchResources) {
             processRequest(cparams, resource);
         }
+        /* process requestBox operation (Only have one element) */
+        if (dataservice.isBoxcarringEnabled()) {
+            Operation requestBoxOperation = dataservice.getOperation(DBConstants.REQUEST_BOX_ELEMENT);
+            if (requestBoxOperation != null) {
+                processRequestBox(cparams, requestBoxOperation, (List<List<CallableRequest>>)(List<?>)allOps);
+            }
+            ResourceID requestBoxResourceId = new ResourceID(DBConstants.REQUEST_BOX_ELEMENT, HTTPConstants.HTTP_METHOD_POST);
+            Resource requestBoxResource = dataservice.getResource(requestBoxResourceId);
+            if (requestBoxResource != null) {
+                processRequestBox(cparams, requestBoxResource, (List<List<CallableRequest>>)(List<?>)allResources);
+            }
+        }
 				
 		/* set the schema */
 		axisService.addSchema(cparams.getSchemaMap().values());
@@ -106,7 +119,86 @@ public class DataServiceDocLitWrappedSchemaGenerator {
 		/* process output types */
 		processRequestOutput(cparams, request);
 	}
-	
+
+    /**
+     * Process RequestBox request //todo complete
+     * @param cparams The common parameters used in the schema generator
+     * @param request The request to be processed
+     */
+    private static void processRequestBox(CommonParams cparams, CallableRequest request, List<List<CallableRequest>> allOps)
+            throws DataServiceFault {
+		/* process input parameters */
+        processRequestBoxInput(cparams, request, allOps);
+		/* process output types */
+        processRequestOutput(cparams, request);
+    }
+
+
+    /**
+     * Process the given request's input parameters. //todo complete
+     * @param cparams The common parameters used in the schema generator
+     * @param request The request used to process the input
+     */
+    private static void processRequestBoxInput(CommonParams cparams, CallableRequest request, List<List<CallableRequest>> allOps)
+            throws DataServiceFault {
+        String requestName = request.getRequestName();
+        AxisOperation axisOp = cparams.getAxisService().getOperation(new QName(requestName));
+        CallQuery callQuery = request.getCallQuery();
+        Query query = callQuery.getQuery();
+        AxisMessage inMessage = axisOp.getMessage(WSDLConstants.MESSAGE_LABEL_IN_VALUE);
+        if (inMessage != null) {
+            inMessage.setName(requestName + Java2WSDLConstants.MESSAGE_SUFFIX);
+                /* create input message element */
+            XmlSchemaElement inputElement = createElement(cparams, query.getInputNamespace(),
+                                                          requestName, true);
+                /* complex type for input message element */
+            XmlSchemaComplexType inputComplexType = createComplexType(cparams,
+                                                                      query.getInputNamespace(), requestName, false);
+                /* set element type */
+            inputElement.setType(inputComplexType);
+                /* batch requests */
+            for (List<CallableRequest> callableRequests : allOps) {
+                for (CallableRequest callableRequest : callableRequests) {
+                    XmlSchemaElement nestedEl = new XmlSchemaElement();
+                    if (callableRequest != null) {
+                        if (!isBoxcarringOp(callableRequest.getRequestName())) {
+                            nestedEl.setRefName(cparams.getRequestInputElementMap().get(
+                                    callableRequest.getRequestName()));
+                            nestedEl.setMaxOccurs(Long.MAX_VALUE);
+                            addElementToComplexTypeSequence(cparams, inputComplexType,
+                                                       query.getInputNamespace(),
+                                                       nestedEl, false, false, true);
+                        }
+                    } else {
+                        throw new DataServiceFault("No parent operation for batch request: "
+                                                   + request.getRequestName());
+                    }
+                }
+            }
+                /* set the input element qname in message */
+            inMessage.setElementQName(inputElement.getQName());
+                /* store request name and element qname mapping */
+            cparams.getRequestInputElementMap().put(request.getRequestName(),
+                                                    inMessage.getElementQName());
+
+        }
+    }
+
+    /**
+     * Helper method to check whether operation is boxcarring operation or not.
+     *
+     * @param opName
+     * @return true if one of boxarring operations false otherwise
+     */
+    private static boolean isBoxcarringOp(String opName) {
+        if (opName.endsWith(DBConstants.BoxcarringOps.BEGIN_BOXCAR)
+            || opName.endsWith(DBConstants.BoxcarringOps.END_BOXCAR)
+            || opName.endsWith(DBConstants.BoxcarringOps.ABORT_BOXCAR)) {
+            return true;
+        }
+        return false;
+    }
+
 	/**
 	 * Process the given request's input parameters.
 	 * @param cparams The common parameters used in the schema generator
@@ -632,7 +724,7 @@ public class DataServiceDocLitWrappedSchemaGenerator {
 			XmlSchemaElement element, boolean elementRef, boolean isArrayElement,
 			boolean optional) {
 		XmlSchemaParticle particle = complexType.getParticle();
-		XmlSchemaSequence sequence;
+		XmlSchemaSequence sequence; //todo check this and put all
 		if (particle instanceof XmlSchemaSequence) {
 			sequence = (XmlSchemaSequence) particle;
 		} else {
@@ -654,6 +746,34 @@ public class DataServiceDocLitWrappedSchemaGenerator {
 		tmpElement.setMinOccurs(optional ? 0 : 1);
 		sequence.getItems().add(tmpElement);
 	}
+
+    private static void addElementToComplexTypeAll(CommonParams cparams,
+                                                        XmlSchemaComplexType complexType, String complexTypeNS,
+                                                        XmlSchemaElement element, boolean elementRef, boolean isArrayElement,
+                                                        boolean optional) {
+        XmlSchemaParticle particle = complexType.getParticle();
+        XmlSchemaAll sequence;
+        if (particle instanceof XmlSchemaAll) {
+            sequence = (XmlSchemaAll) particle;
+        } else {
+            sequence = new XmlSchemaAll();
+            complexType.setParticle(sequence);
+        }
+        XmlSchemaElement tmpElement;
+        if (elementRef) {
+            tmpElement = new XmlSchemaElement();
+            if (isArrayElement) {
+                tmpElement.setMaxOccurs(Long.MAX_VALUE);
+            }
+            tmpElement.setRefName(element.getQName());
+            resolveSchemaImports(cparams.getSchemaMap().get(
+                    complexTypeNS),	tmpElement.getRefName().getNamespaceURI());
+        } else {
+            tmpElement = element;
+        }
+        tmpElement.setMinOccurs(optional ? 0 : 1);
+        sequence.getItems().add(tmpElement);
+    }
 		
 	/**
 	 * Resolves schema imports by adding an schema import section to the host schema.
@@ -704,9 +824,9 @@ public class DataServiceDocLitWrappedSchemaGenerator {
 			tmpOp = dataservice.getOperation(opName);
 			if (tmpOp.isBatchRequest()) {
 				batchOperations.add(tmpOp);
-			} else {
-				normalOperations.add(tmpOp);
-			}
+			} else if (!opName.equals(DBConstants.REQUEST_BOX_ELEMENT)){
+                normalOperations.add(tmpOp);
+            }
 		}		
 		List<List<Operation>> allOps = new ArrayList<List<Operation>>();
 		allOps.add(normalOperations);
@@ -727,7 +847,7 @@ public class DataServiceDocLitWrappedSchemaGenerator {
 		    tmpRes = dataservice.getResource(rid);
 		    if (tmpRes.isBatchRequest()) {
 		        batchResources.add(tmpRes);
-		    } else {
+		    } else if (!rid.getPath().equals(DBConstants.REQUEST_BOX_ELEMENT)){
 		        normalResources.add(tmpRes);
 		    }
 		}

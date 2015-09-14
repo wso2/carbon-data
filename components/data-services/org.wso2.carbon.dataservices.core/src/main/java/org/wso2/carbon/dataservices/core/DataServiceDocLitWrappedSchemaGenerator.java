@@ -164,8 +164,8 @@ public class DataServiceDocLitWrappedSchemaGenerator {
                         if (!isBoxcarringOp(callableRequest.getRequestName())) {
                             nestedEl.setRefName(cparams.getRequestInputElementMap().get(
                                     callableRequest.getRequestName()));
-                            nestedEl.setMaxOccurs(Long.MAX_VALUE);
-                            addElementToComplexTypeSequence(cparams, inputComplexType,
+//                            nestedEl.setMaxOccurs(Long.MAX_VALUE);
+                            addElementToComplexTypeAll(cparams, inputComplexType,
                                                        query.getInputNamespace(),
                                                        nestedEl, false, false, true);
                         }
@@ -771,7 +771,8 @@ public class DataServiceDocLitWrappedSchemaGenerator {
         } else {
             tmpElement = element;
         }
-        tmpElement.setMinOccurs(optional ? 0 : 1);
+//        tmpElement.setMinOccurs(optional ? 0 : 1);
+        sequence.setMinOccurs(optional ? 0 : 1);
         sequence.getItems().add(tmpElement);
     }
 		

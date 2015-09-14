@@ -171,6 +171,8 @@ public class DataServiceFactory {
                 populateBatchOperations(dataService);
                 populateBatchResources(dataService);
             }
+            /* initialising requestBox operations and resources */
+//            dataService.initRequestBox();
 
             return dataService;
         } catch (DataServiceFault e) {

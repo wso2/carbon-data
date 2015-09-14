@@ -29,7 +29,7 @@ public class DispatchStatus {
             return false;
         }
     };
-    
+
     private static ThreadLocal<Boolean> boxcarringRequest = new ThreadLocal<Boolean>() {
         @Override
         protected synchronized Boolean initialValue() {

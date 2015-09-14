@@ -193,7 +193,8 @@ public class DataService {
         /* add operations related to boxcarring */
         if (this.isBoxcarringEnabled()) {
             initBoxcarring();
-            initRequestBox();
+//            addEmptyQueryForRequestBox();
+//            initRequestBoxForOperation();
         }
 
         /* initialize transaction manager */
@@ -252,7 +253,7 @@ public class DataService {
      *
      * @throws DataServiceFault
      */
-    private void initRequestBox() throws DataServiceFault {
+    public void initRequestBox() throws DataServiceFault {
         initRequestBoxForOperation();
         initRequestBoxForResource();
     }
@@ -333,6 +334,9 @@ public class DataService {
      * Initializes the data service object.
      */
     public void init() throws DataServiceFault {
+        if (this.isBoxcarringEnabled()) {
+            initRequestBox();
+        }
         /* init callable requests */
         for (CallableRequest callableRequest : this.getCallableRequests().values()) {
             callableRequest.getCallQuery().init();

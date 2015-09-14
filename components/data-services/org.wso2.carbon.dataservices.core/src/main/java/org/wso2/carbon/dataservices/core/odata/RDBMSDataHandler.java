@@ -18,6 +18,8 @@ package org.wso2.carbon.dataservices.core.odata;
 
 import org.apache.axis2.databinding.utils.ConverterUtil;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.dataservices.common.DBConstants;
 import org.wso2.carbon.dataservices.core.DBUtils;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
@@ -56,6 +58,7 @@ import java.util.Map;
  */
 public class RDBMSDataHandler implements ODataDataHandler {
 
+	private static final Log log = LogFactory.getLog(RDBMSDataHandler.class);
 	/**
 	 * Table metadata.
 	 */
@@ -83,7 +86,13 @@ public class RDBMSDataHandler implements ODataDataHandler {
 	 */
 	private List<String> tableList;
 
-	private Connection transactionalConnection;
+	private ThreadLocal<Connection> transactionalConnection = new ThreadLocal<Connection>() {
+		protected synchronized Connection initialValue() {
+			return null;
+		}
+	};
+
+	private boolean defaultAutoCommit;
 
 	/**
 	 * Navigation properties map <Target Table Name, Map<Source Table Name, List<String>).
@@ -106,23 +115,40 @@ public class RDBMSDataHandler implements ODataDataHandler {
 	@Override
 	public void openTransaction() throws ODataServiceFault {
 		try {
-			transactionalConnection = this.dataSource.getConnection();
-			transactionalConnection.setAutoCommit(false);
-			transactionalConnection.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
+			Connection connection = this.dataSource.getConnection();
+			this.defaultAutoCommit = connection.getAutoCommit();
+			connection.setAutoCommit(false);
+			connection.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
+			transactionalConnection.set(connection);
 		} catch (SQLException e) {
 			throw new ODataServiceFault(e, "Connection Error occurred.");
 		}
-
 	}
 
 	@Override
-	public void closeTransaction() throws ODataServiceFault {
+	public void commitTransaction() throws ODataServiceFault {
 		try {
-			transactionalConnection.setAutoCommit(true);
+			getTransactionalConnection().commit();
+			getTransactionalConnection().setAutoCommit(defaultAutoCommit);
 		} catch (SQLException e) {
-			throw new ODataServiceFault(e, "Connection Error occurred.");
+			throw new ODataServiceFault(e, "Connection Error occurred while committing.");
 		} finally {
-			releaseResources(null, null, transactionalConnection);
+			releaseResources(null, null, getTransactionalConnection());
+		}
+	}
+
+	private Connection getTransactionalConnection() {
+		return transactionalConnection.get();
+	}
+
+	@Override
+	public void rollbackTransaction() throws ODataServiceFault {
+		try {
+			getTransactionalConnection().rollback();
+			getTransactionalConnection().setAutoCommit(defaultAutoCommit);
+			releaseResources(null, null, getTransactionalConnection());
+		} catch (SQLException e) {
+			throw new ODataServiceFault(e, "Connection Error occurred while rollback");
 		}
 	}
 
@@ -168,61 +194,38 @@ public class RDBMSDataHandler implements ODataDataHandler {
 	@Override
 	public String insertEntityToTable(String tableName, ODataEntry entry) throws ODataServiceFault {
 		Connection connection = null;
-		PreparedStatement sql = null;
+		PreparedStatement statement = null;
 		try {
-			connection = this.dataSource.getConnection();
-			sql = connection.prepareStatement(createInsertSQL(tableName));
+			connection = initializeConnection();
+			statement = connection.prepareStatement(createInsertSQL(tableName));
 			int index = 1;
 			for (String column : this.rdbmsDataTypes.get(tableName).keySet()) {
 				String value = entry.getValue(column);
-				bindValuesToPreparedStatement(this.rdbmsDataTypes.get(tableName).get(column), value, index, sql);
+				bindValuesToPreparedStatement(this.rdbmsDataTypes.get(tableName).get(column), value, index, statement);
 				index++;
 			}
-			sql.execute();
+			statement.execute();
 			return ODataUtils.generateETag(this.configID, tableName, entry);
 		} catch (SQLException | ParseException e) {
 			throw new ODataServiceFault(e, "Error occurred while writing entities to " + tableName + " table.");
 		} finally {
-			releaseResources(null, sql, connection);
-		}
-	}
-
-	@Override
-	public List<ODataEntry> readTableWithKeys(String tableName, ODataEntry keys, boolean transactional)
-			throws ODataServiceFault {
-		if (transactional) {
-			return transactionalReadTableWithKeys(tableName, keys);
-		} else {
-			ResultSet resultSet = null;
-			Connection connection = null;
-			PreparedStatement statement = null;
+			releaseResources(null, statement, null);
 			try {
-				connection = this.dataSource.getConnection();
-				statement = connection.prepareStatement(createReadSqlWithKeys(tableName, keys));
-				int index = 1;
-				for (String column : this.rdbmsDataTypes.get(tableName).keySet()) {
-					if (keys.getNames().contains(column)) {
-						String value = keys.getValue(column);
-						bindValuesToPreparedStatement(this.rdbmsDataTypes.get(tableName).get(column), value, index,
-						                              statement);
-						index++;
-					}
-				}
-				resultSet = statement.executeQuery();
-				return createDataEntryCollectionFromRS(tableName, resultSet);
-			} catch (SQLException | ParseException e) {
-				throw new ODataServiceFault(e, "Error occurred while reading entities from " + tableName + " table.");
-			} finally {
-				releaseResources(resultSet, statement, connection);
+				releaseConnection(connection);
+			} catch (SQLException e) {
+				log.error(e);
 			}
 		}
 	}
 
-	private List<ODataEntry> transactionalReadTableWithKeys(String tableName, ODataEntry keys) throws ODataServiceFault {
+	@Override
+	public List<ODataEntry> readTableWithKeys(String tableName, ODataEntry keys) throws ODataServiceFault {
 		ResultSet resultSet = null;
+		Connection connection = null;
 		PreparedStatement statement = null;
 		try {
-			statement = transactionalConnection.prepareStatement(createReadSqlWithKeys(tableName, keys));
+			connection = initializeConnection();
+			statement = connection.prepareStatement(createReadSqlWithKeys(tableName, keys));
 			int index = 1;
 			for (String column : this.rdbmsDataTypes.get(tableName).keySet()) {
 				if (keys.getNames().contains(column)) {
@@ -238,6 +241,11 @@ public class RDBMSDataHandler implements ODataDataHandler {
 			throw new ODataServiceFault(e, "Error occurred while reading entities from " + tableName + " table.");
 		} finally {
 			releaseResources(resultSet, statement, null);
+			try {
+				releaseConnection(connection);
+			} catch (SQLException e) {
+				log.error(e);
+			}
 		}
 	}
 
@@ -421,149 +429,118 @@ public class RDBMSDataHandler implements ODataDataHandler {
 	}
 
 	@Override
-	public void updateEntityInTable(String tableName, ODataEntry newProperties, boolean transactional)
-			throws ODataServiceFault {
+	public boolean updateEntityInTable(String tableName, ODataEntry newProperties) throws ODataServiceFault {
 		List<String> pKeys = this.primaryKeys.get(tableName);
-		if (transactional) {
-			transactionalUpdateEntityInTable(tableName, newProperties, pKeys);
-		} else {
-			Connection connection = null;
-			PreparedStatement statement = null;
-			String value;
-			try {
-				connection = this.dataSource.getConnection();
-				statement = connection.prepareStatement(createUpdateEntitySQL(tableName,newProperties));
-				int index = 1;
-				for (String column : newProperties.getNames()) {
-					if (!pKeys.contains(column)) {
+		Connection connection = null;
+		PreparedStatement statement = null;
+		String value;
+		try {
+			connection = initializeConnection();
+			statement = connection.prepareStatement(createUpdateEntitySQL(tableName, newProperties));
+			int index = 1;
+			for (String column : newProperties.getNames()) {
+				if (!pKeys.contains(column)) {
+					value = newProperties.getValue(column);
+					bindValuesToPreparedStatement(this.rdbmsDataTypes.get(tableName).get(column), value, index,
+					                              statement);
+					index++;
+				}
+			}
+			for (String column : newProperties.getNames()) {
+				if (!pKeys.isEmpty()) {
+					if (pKeys.contains(column)) {
 						value = newProperties.getValue(column);
 						bindValuesToPreparedStatement(this.rdbmsDataTypes.get(tableName).get(column), value, index,
 						                              statement);
 						index++;
 					}
+				} else {
+					throw new ODataServiceFault("Error occurred while updating the entity to " + tableName +
+					                            " table. couldn't find keys in the table");
 				}
-				for (String column : newProperties.getNames()) {
-					if (!pKeys.isEmpty()) {
-						if (pKeys.contains(column)) {
-							value = newProperties.getValue(column);
-							bindValuesToPreparedStatement(this.rdbmsDataTypes.get(tableName).get(column), value, index,
-							                              statement);
-							index++;
-						}
-					} else {
-						throw new ODataServiceFault("Error occurred while updating the entity to " + tableName +
-						                            " table. couldn't find keys in the table");
-					}
-				}
-				statement.execute();
-			} catch (SQLException | ParseException e) {
-				throw new ODataServiceFault(e, "Error occurred while updating the entity to " + tableName + " table.");
-			} finally {
-				releaseResources(null, statement, connection);
+			}
+			statement.execute();
+			return true;
+		} catch (SQLException | ParseException e) {
+			throw new ODataServiceFault(e, "Error occurred while updating the entity to " + tableName + " table.");
+		} finally {
+			releaseResources(null, statement, null);
+			try {
+				releaseConnection(connection);
+			} catch (SQLException e) {
+				log.error(e);
 			}
 		}
 	}
 
-	private void transactionalUpdateEntityInTable(String tableName, ODataEntry newProperties, List<String> pKeys)
-			throws ODataServiceFault {
-		if (transactionalConnection != null) {
-			PreparedStatement statement = null;
-			String value;
-			try {
-				statement = transactionalConnection.prepareStatement(createUpdateEntitySQL(tableName, newProperties));
-				int index = 1;
-				for (String column : this.rdbmsDataTypes.get(tableName).keySet()) {
-					if (!pKeys.contains(column)) {
-						value = newProperties.getValue(column);
+	public boolean updateEntityInTableTransactional(String tableName, ODataEntry oldProperties,
+	                                                ODataEntry newProperties) throws ODataServiceFault {
+		List<String> pKeys = this.primaryKeys.get(tableName);
+		PreparedStatement statement = null;
+		String value;
+		try {
+			statement = getTransactionalConnection().prepareStatement(createUpdateEntitySQL(tableName, newProperties));
+			int index = 1;
+			for (String column : newProperties.getNames()) {
+				if (!pKeys.contains(column)) {
+					value = newProperties.getValue(column);
+					bindValuesToPreparedStatement(this.rdbmsDataTypes.get(tableName).get(column), value, index,
+					                              statement);
+					index++;
+				}
+			}
+			for (String column : oldProperties.getNames()) {
+				if (!pKeys.isEmpty()) {
+					if (pKeys.contains(column)) {
+						value = oldProperties.getValue(column);
 						bindValuesToPreparedStatement(this.rdbmsDataTypes.get(tableName).get(column), value, index,
 						                              statement);
 						index++;
 					}
+				} else {
+					throw new ODataServiceFault("Error occurred while updating the entity to " + tableName +
+					                            " table. couldn't find keys in the table");
 				}
-				for (String column : this.rdbmsDataTypes.get(tableName).keySet()) {
-					if (!pKeys.isEmpty()) {
-						if (pKeys.contains(column)) {
-							value = newProperties.getValue(column);
-							bindValuesToPreparedStatement(this.rdbmsDataTypes.get(tableName).get(column), value, index,
-							                              statement);
-							index++;
-						}
-					} else {
-						throw new ODataServiceFault("Error occurred while updating the entity to " + tableName +
-						                            " table. couldn't find keys in the table");
-					}
-				}
-				statement.execute();
-				transactionalConnection.commit();
-			} catch (SQLException | ParseException e) {
-				throw new ODataServiceFault(e, "Error occurred while updating the entity to " + tableName + " table.");
-			} finally {
-				releaseResources(null, statement, null);
 			}
-		} else {
-			throw new ODataServiceFault("Error occurred while updating the entity to " + tableName +
-			                            " table. transactional connection lost.");
+			statement.execute();
+			return true;
+		} catch (SQLException | ParseException e) {
+			throw new ODataServiceFault(e, "Error occurred while updating the entity to " + tableName + " table.");
+		} finally {
+			releaseResources(null, statement, null);
 		}
+
 	}
 
 	@Override
-	public void deleteEntityInTable(String tableName, ODataEntry entry, boolean transactional) throws ODataServiceFault {
+	public boolean deleteEntityInTable(String tableName, ODataEntry entry) throws ODataServiceFault {
 		List<String> pKeys = this.primaryKeys.get(tableName);
-		if (transactional) {
-			transactionalDeleteEntityInTable(tableName, entry, pKeys);
-		} else {
-			Connection connection = null;
-			PreparedStatement statement = null;
-			String value;
-			try {
-				connection = this.dataSource.getConnection();
-				statement = connection.prepareStatement(createDeleteSQL(tableName));
-				int index = 1;
-				for (String column : this.rdbmsDataTypes.get(tableName).keySet()) {
-					if (pKeys.contains(column)) {
-						value = entry.getValue(column);
-						bindValuesToPreparedStatement(this.rdbmsDataTypes.get(tableName).get(column), value, index,
-						                              statement);
-						index++;
-					}
-				}
-				statement.execute();
-			} catch (SQLException | ParseException e) {
-				throw new ODataServiceFault(e,
-				                            "Error occurred while deleting the entity from " + tableName + " table.");
-			} finally {
-				releaseResources(null, statement, connection);
-			}
-		}
-	}
-
-	private void transactionalDeleteEntityInTable(String tableName, ODataEntry entry, List<String> pKeys)
-			throws ODataServiceFault {
+		Connection connection = null;
 		PreparedStatement statement = null;
 		String value;
-		if (transactionalConnection != null) {
-			try {
-				statement = transactionalConnection.prepareStatement(createDeleteSQL(tableName));
-				int index = 1;
-				for (String column : this.rdbmsDataTypes.get(tableName).keySet()) {
-					if (pKeys.contains(column)) {
-						value = entry.getValue(column);
-						bindValuesToPreparedStatement(this.rdbmsDataTypes.get(tableName).get(column), value, index,
-						                              statement);
-						index++;
-					}
+		try {
+			connection = initializeConnection();
+			statement = connection.prepareStatement(createDeleteSQL(tableName));
+			int index = 1;
+			for (String column : this.rdbmsDataTypes.get(tableName).keySet()) {
+				if (pKeys.contains(column)) {
+					value = entry.getValue(column);
+					bindValuesToPreparedStatement(this.rdbmsDataTypes.get(tableName).get(column), value, index,
+					                              statement);
+					index++;
 				}
-				statement.execute();
-				transactionalConnection.commit();
-			} catch (SQLException | ParseException e) {
-				throw new ODataServiceFault(e,
-				                            "Error occurred while deleting the entity from " + tableName + " table.");
-			} finally {
-				releaseResources(null, statement, null);
 			}
-		} else {
-			throw new ODataServiceFault("Error occurred while deleting the entity from " + tableName +
-			                            " table.  transactional connection lost.");
+			statement.execute();
+			return true;
+		} catch (SQLException | ParseException e) {
+			throw new ODataServiceFault(e, "Error occurred while deleting the entity from " + tableName + " table.");
+		} finally {
+			releaseResources(null, statement, null);
+			try {
+				releaseConnection(connection);
+			} catch (SQLException e) {
+				log.error(e);
+			}
 		}
 	}
 
@@ -741,6 +718,7 @@ public class RDBMSDataHandler implements ODataDataHandler {
 		if (connection != null) {
 			try {
 				connection.close();
+				connection = null;
 			} catch (Exception ignore) {
 				// ignore
 			}
@@ -926,41 +904,27 @@ public class RDBMSDataHandler implements ODataDataHandler {
 	}
 
 	@Override
-	public void updatePropertyInTable(String tableName, ODataEntry property, boolean transactional)
+	public void updatePropertyInTable(String tableName, ODataEntry property)
 			throws ODataServiceFault {
 		for (String column : property.getNames()) {
 			if (this.rdbmsDataTypes.get(tableName).keySet().contains(column)) {
 				String sql = "UPDATE " + tableName + " SET " + column + "=" + "?";
-				if (transactional) {
-					PreparedStatement statement = null;
-					if (transactionalConnection != null) {
-						try {
-							statement = transactionalConnection.prepareStatement(sql);
-							bindValuesToPreparedStatement(this.rdbmsDataTypes.get(tableName).get(column),
-							                              property.getValue(column), 1, statement);
-							statement.executeUpdate();
-						} catch (SQLException | ParseException e) {
-							throw new ODataServiceFault(e,
-							                            "Error in updating the property in " + tableName + " table.");
-						} finally {
-							releaseResources(null, statement, null);
-						}
-					} else {
-						throw new ODataServiceFault("Error in updating the property in " + tableName + " table.");
-					}
-				} else {
-					Connection connection = null;
-					PreparedStatement statement = null;
+				Connection connection = null;
+				PreparedStatement statement = null;
+				try {
+					connection = initializeConnection();
+					statement = connection.prepareStatement(sql);
+					bindValuesToPreparedStatement(this.rdbmsDataTypes.get(tableName).get(column),
+					                              property.getValue(column), 1, statement);
+					statement.executeUpdate();
+				} catch (SQLException | ParseException e) {
+					throw new ODataServiceFault(e, "Error in updating the property in " + tableName + " table.");
+				} finally {
+					releaseResources(null, statement, null);
 					try {
-						connection = this.dataSource.getConnection();
-						statement = connection.prepareStatement(sql);
-						bindValuesToPreparedStatement(this.rdbmsDataTypes.get(tableName).get(column),
-						                              property.getValue(column), 1, statement);
-						statement.executeUpdate();
-					} catch (SQLException | ParseException e) {
-						throw new ODataServiceFault(e, "Error in updating the property in " + tableName + " table.");
-					} finally {
-						releaseResources(null, statement, connection);
+						releaseConnection(connection);
+					} catch (SQLException e) {
+						// ignore
 					}
 				}
 			} else {
@@ -1156,4 +1120,17 @@ public class RDBMSDataHandler implements ODataDataHandler {
 		return dataType;
 	}
 
+	private Connection initializeConnection() throws SQLException {
+		if (getTransactionalConnection() == null) {
+			return this.dataSource.getConnection();
+		}
+		return getTransactionalConnection();
+	}
+
+	private void releaseConnection(Connection connection) throws SQLException {
+		if (getTransactionalConnection() == null) {
+			connection.commit();
+			releaseResources(null, null, connection);
+		}
+	}
 }

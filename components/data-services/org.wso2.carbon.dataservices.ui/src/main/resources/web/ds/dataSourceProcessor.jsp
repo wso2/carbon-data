@@ -560,6 +560,7 @@
                         CarbonUIMessage.sendCarbonUIMessage(message, CarbonUIMessage.ERROR, request);
                         forwardTo = "addDataSource.jsp?configId=" + datasourceId + "&ordinal=1";
                     } else {
+                        dsConfig.setExposeAsOData(isOData);
                         updateConfiguration(dsConfig, DBConstants.CarbonDatasource.NAME, carbonDatasourceName);
                     }
                 } else if (DBConstants.DataSourceTypes.WEB.equals(datasourceType)) {

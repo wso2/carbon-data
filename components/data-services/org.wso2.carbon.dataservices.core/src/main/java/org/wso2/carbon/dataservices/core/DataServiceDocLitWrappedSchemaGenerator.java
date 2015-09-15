@@ -724,7 +724,7 @@ public class DataServiceDocLitWrappedSchemaGenerator {
 			XmlSchemaElement element, boolean elementRef, boolean isArrayElement,
 			boolean optional) {
 		XmlSchemaParticle particle = complexType.getParticle();
-		XmlSchemaSequence sequence; //todo check this and put all
+		XmlSchemaSequence sequence;
 		if (particle instanceof XmlSchemaSequence) {
 			sequence = (XmlSchemaSequence) particle;
 		} else {
@@ -747,6 +747,17 @@ public class DataServiceDocLitWrappedSchemaGenerator {
 		sequence.getItems().add(tmpElement);
 	}
 
+    /**
+     * Adds the given element to the complex type all
+     *
+     * @param cparams The common parameters used in the schema generator
+     * @param complexType The complex type to where the element to be added
+     * @param complexTypeNS The complex type namespace
+     * @param element The element to be added
+     * @param elementRef Tells if the element passed in should be added as an element reference
+     * @param isArrayElement Whether the element is an array or not
+     * @param optional Element is optional or not
+     */
     private static void addElementToComplexTypeAll(CommonParams cparams,
                                                         XmlSchemaComplexType complexType, String complexTypeNS,
                                                         XmlSchemaElement element, boolean elementRef, boolean isArrayElement,
@@ -848,7 +859,7 @@ public class DataServiceDocLitWrappedSchemaGenerator {
 		    tmpRes = dataservice.getResource(rid);
 		    if (tmpRes.isBatchRequest()) {
 		        batchResources.add(tmpRes);
-		    } else if (!rid.getPath().equals(DBConstants.REQUEST_BOX_ELEMENT)){
+		    } else if (!rid.getPath().endsWith(DBConstants.REQUEST_BOX_ELEMENT)){
 		        normalResources.add(tmpRes);
 		    }
 		}

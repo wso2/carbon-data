@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.wso2.carbon.data</groupId>
         <artifactId>data-services</artifactId>
-        <version>4.3.1-SNAPSHOT</version>
+        <version>4.3.1</version>
 	    <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -413,11 +413,10 @@
                                 <echo>######################################</echo>
                                 <echo>Coping carbon.xml</echo>
                                 <echo>######################################</echo>
-                                <mkdir dir="${basedir}/target/carbonHome"/>
-                                <mkdir dir="${basedir}/target/carbonHome/repository"/>
-                                <mkdir dir="${basedir}/target/carbonHome/repository/conf"/>
-                                <copy file="${basedir}/src/test/resources/carbon.xml"
-                                      tofile="${basedir}/target/carbonHome/repository/conf/carbon.xml"/>
+                                <mkdir dir="${basedir}/target/carbonHome" />
+                                <mkdir dir="${basedir}/target/carbonHome/repository" />
+                                <mkdir dir="${basedir}/target/carbonHome/repository/conf" />
+                                <copy file="${basedir}/src/test/resources/carbon.xml" tofile="${basedir}/target/carbonHome/repository/conf/carbon.xml" />
                             </tasks>
                         </configuration>
                         <goals>

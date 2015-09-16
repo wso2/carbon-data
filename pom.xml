@@ -10,7 +10,7 @@
     <groupId>org.wso2.carbon.data</groupId>
     <artifactId>carbon-data</artifactId>
     <packaging>pom</packaging>
-    <version>4.3.1-SNAPSHOT</version>
+    <version>4.3.2-SNAPSHOT</version>
     <name>WSO2 Carbon - Data repo Aggregator Pom</name>
     <url>http://wso2.org</url>
 
@@ -826,6 +826,12 @@
                 <artifactId>google-http-client</artifactId>
                 <version>${google-http-client.orbit.version}</version>
             </dependency>
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>servlet-api</artifactId>
+                <version>2.5</version>
+                <scope>provided</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -1063,9 +1069,9 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <dataservices.version>${project.version}</dataservices.version>
-        <dataservices.imp.pkg.version>[4.3.1-SNAPSHOT,4.4.0)</dataservices.imp.pkg.version>
-        <dataservices.package.export.version>4.3.1-SNAPSHOT</dataservices.package.export.version>
+        <dataservices.version>4.3.2-SNAPSHOT</dataservices.version>
+        <dataservices.imp.pkg.version>[4.3,4.4)</dataservices.imp.pkg.version>
+        <dataservices.package.export.version>4.3.1</dataservices.package.export.version>
 
         <carbon.kernel.version>4.4.0</carbon.kernel.version>
         <carbon.kernel.imp.pkg.version>[4.4,4.5)</carbon.kernel.imp.pkg.version>

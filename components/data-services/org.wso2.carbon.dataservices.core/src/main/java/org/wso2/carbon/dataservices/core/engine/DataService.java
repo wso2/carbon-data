@@ -192,7 +192,7 @@ public class DataService {
 
         /* add operations related to boxcarring */
         if (this.isBoxcarringEnabled()) {
-            initBoxcarring();
+//            initBoxcarring();
 //            addEmptyQueryForRequestBox();
 //            initRequestBoxForOperation();
         }
@@ -336,6 +336,7 @@ public class DataService {
     public void init() throws DataServiceFault {
         if (this.isBoxcarringEnabled()) {
             initRequestBox();
+            initBoxcarring();
         }
         /* init callable requests */
         for (CallableRequest callableRequest : this.getCallableRequests().values()) {

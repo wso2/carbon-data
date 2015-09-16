@@ -98,15 +98,6 @@ public interface ODataDataHandler {
 	Map<String, Map<String, DataColumn>> getTableMetadata();
 
 	/**
-	 * This method update property to table, which updates a single column of the table.
-	 *
-	 * @param tableName Name of the table
-	 * @param property  Property
-	 * @throws ODataServiceFault
-	 */
-	void updatePropertyInTable(String tableName, ODataEntry property) throws ODataServiceFault;
-
-	/**
 	 * This method return names of all the tables in the database.
 	 *
 	 * @return Table list.
@@ -128,9 +119,48 @@ public interface ODataDataHandler {
 	 */
 	Map<String, NavigationTable> getNavigationProperties();
 
+	/**
+	 * This method opens the transaction.
+	 *
+	 * @throws ODataServiceFault
+	 */
 	void openTransaction() throws ODataServiceFault;
 
+	/**
+	 * This method commits the transaction.
+	 *
+	 * @throws ODataServiceFault
+	 */
 	void commitTransaction() throws ODataServiceFault;
 
+	/**
+	 * This method rollbacks the transaction.
+	 *
+	 * @throws ODataServiceFault
+	 */
 	void rollbackTransaction() throws ODataServiceFault;
+
+	/**
+	 * This method updates the references of the table where the keys were imported.
+	 *
+	 * @param rootTableName       Root - Table Name
+	 * @param rootTableKeys       Root - Entity keys (Primary Keys)
+	 * @param navigationTable     Navigation - Table Name
+	 * @param navigationTableKeys Navigation - Entity Name (Primary Keys)
+	 * @throws ODataServiceFault
+	 */
+	void updateReference(String rootTableName, ODataEntry rootTableKeys, String navigationTable,
+	                     ODataEntry navigationTableKeys) throws ODataServiceFault;
+
+	/**
+	 * This method deletes the references of the table where the keys were imported.
+	 *
+	 * @param rootTableName       Root - Table Name
+	 * @param rootTableKeys       Root - Entity keys (Primary Keys)
+	 * @param navigationTable     Navigation - Table Name
+	 * @param navigationTableKeys Navigation - Entity Name (Primary Keys)
+	 * @throws ODataServiceFault
+	 */
+	void deleteReference(String rootTableName, ODataEntry rootTableKeys, String navigationTable,
+	                     ODataEntry navigationTableKeys) throws ODataServiceFault;
 }

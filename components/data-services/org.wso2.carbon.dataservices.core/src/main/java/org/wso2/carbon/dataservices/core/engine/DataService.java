@@ -190,13 +190,6 @@ public class DataService {
         this.boxcarringEnabled = boxcarringEnabled;
         this.containerUserTxName = containerUserTxName;
 
-        /* add operations related to boxcarring */
-        if (this.isBoxcarringEnabled()) {
-//            initBoxcarring();
-//            addEmptyQueryForRequestBox();
-//            initRequestBoxForOperation();
-        }
-
         /* initialize transaction manager */
         initXA();
         
@@ -334,6 +327,7 @@ public class DataService {
      * Initializes the data service object.
      */
     public void init() throws DataServiceFault {
+         /* add operations related to boxcarring and request Box */
         if (this.isBoxcarringEnabled()) {
             initRequestBox();
             initBoxcarring();

@@ -38,6 +38,11 @@ public class TExcelConnection extends TConnection {
     private Workbook workbook;
 
     /**
+     * The time in seconds which the lock will try waiting to acquire the lock for the file
+     */
+    private final int LOCK_TIMEOUT = 20;
+
+    /**
      * Lock used to lock the excel book while editing or modifying.
      */
     private static final Lock lock = new ReentrantLock();
@@ -85,7 +90,7 @@ public class TExcelConnection extends TConnection {
      * @throws SQLException
      */
     private synchronized void acquireLock() throws InterruptedException, SQLException {
-        if (lock.tryLock(20, TimeUnit.SECONDS)) {
+        if (lock.tryLock(LOCK_TIMEOUT, TimeUnit.SECONDS)) {
             if (log.isDebugEnabled()) {
                 lockCount++;
                 log.debug("Acquired the lock for the excel file to make it transactional, current lock count - " + lockCount);

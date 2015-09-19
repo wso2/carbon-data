@@ -50,6 +50,8 @@ public class ExcelDeleteQuery extends DeleteQuery {
 
     private int executeSQL() throws SQLException {
         TExcelConnection excelCon = (TExcelConnection)getConnection();
+        //begin transaction,
+        excelCon.beginExcelTransaction();
         Sheet currentWorkSheet = excelCon.getWorkbook().getSheet(getTargetTableName());
         for (Integer rowId : this.getResultantRows().keySet()) {
             currentWorkSheet.removeRow(currentWorkSheet.getRow(rowId + 1));

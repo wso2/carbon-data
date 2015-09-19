@@ -18,6 +18,8 @@
  */
 package org.wso2.carbon.dataservices.sql.driver;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -27,14 +29,28 @@ import org.wso2.carbon.dataservices.sql.driver.parser.Constants;
 import java.io.*;
 import java.sql.*;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class TExcelConnection extends TConnection {
+    private static final Log log = LogFactory.getLog(TExcelConnection.class);
 
     private Workbook workbook;
 
+    /**
+     * Lock used to lock the excel book while editing or modifying.
+     */
+    private static final Lock lock = new ReentrantLock();
+
+    //variable used for debug purposes
+    private static int lockCount = 0;
+
+    private String filePath;
+
     public TExcelConnection(Properties props) throws SQLException {
         super(props);
-        String filePath = (String) props.get(Constants.DRIVER_PROPERTIES.FILE_PATH);
+        filePath = (String) props.get(Constants.DRIVER_PROPERTIES.FILE_PATH);
         this.workbook = this.createConnectionToExcelDocument(filePath);
     }
 
@@ -49,21 +65,62 @@ public class TExcelConnection extends TConnection {
     private Workbook createConnectionToExcelDocument(String filePath) throws SQLException {
         Workbook workbook;
         try {
+            acquireLock();
             InputStream fin = TDriverUtil.getInputStreamFromPath(filePath);
             workbook = WorkbookFactory.create(fin);
         } catch (FileNotFoundException e) {
             throw new SQLException("Could not locate the EXCEL datasource in the provided " +
-                    "location", e);
+                                   "location", e);
         } catch (IOException | InvalidFormatException e) {
             throw new SQLException("Error occurred while initializing the EXCEL datasource", e);
+        } catch (InterruptedException e) {
+            throw new SQLException("Error Acquiring the lock for the workbook path - " + filePath, e);
         }
         return workbook;
+    }
+
+    /**
+     * Helper method to acquire a lock for the transaction purpose.
+     *
+     * @throws InterruptedException
+     * @throws SQLException
+     */
+    private synchronized void acquireLock() throws InterruptedException, SQLException {
+        if (lock.tryLock(20, TimeUnit.SECONDS)) {
+            if (log.isDebugEnabled()) {
+                lockCount++;
+                log.debug("Acquired the lock for the excel file to make it transactional, current lock count - " + lockCount);
+            }
+        } else {
+            throw new SQLException("Error acquiring lock for the excel file even after 20 second wait, filePath - " + this.filePath);
+        }
+    }
+
+    /**
+     * Helper method to release the acquired lock at the end of the transaction.
+     */
+    private synchronized void releaseLock() {
+        try {
+            lock.unlock();
+            if (log.isDebugEnabled()) {
+                lockCount--;
+                log.debug("Released the lock for excel file after the transaction, current lock count - " + lockCount);
+            }
+        } catch (IllegalMonitorStateException e) {
+            if (log.isDebugEnabled()) {
+                log.debug("Failed to release the lock as it is already released, lock count - " + lockCount, e);
+            }
+        } catch (Exception e) {
+            if (log.isDebugEnabled()) {
+                log.debug("Failed to release the lock as it is already released, lock count - " + lockCount, e);
+            }
+        }
     }
 
     public Workbook getWorkbook() {
         return workbook;
     }
-    
+
     public Statement createStatement(String sql) throws SQLException {
         return new TPreparedStatement(this, sql);
     }
@@ -104,7 +161,7 @@ public class TExcelConnection extends TConnection {
     @Override
     public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency,
                                          int resultSetHoldability) throws SQLException {
-        throw new SQLFeatureNotSupportedException("CallableStatements are not supported");  
+        throw new SQLFeatureNotSupportedException("CallableStatements are not supported");
     }
 
     @Override
@@ -122,8 +179,27 @@ public class TExcelConnection extends TConnection {
     @Override
     public PreparedStatement prepareStatement(String sql,
                                               String[] columnNames) throws SQLException {
-        return null;  
+        return null;
     }
 
+    /**
+     * Begin transaction method for Excel connections, This will reread the workbook and acquire the lock as well.
+     *
+     * @throws SQLException
+     */
+    public void beginExcelTransaction() throws SQLException {
+        this.workbook = this.createConnectionToExcelDocument(filePath);
+    }
 
+    public void commit() throws SQLException {
+        releaseLock();
+    }
+
+    public void rollback() throws SQLException {
+        releaseLock();
+    }
+
+    public void close() throws SQLException {
+        releaseLock();
+    }
 }

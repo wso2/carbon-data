@@ -54,6 +54,8 @@ public class ExcelCreateQuery extends CreateQuery {
 
     private synchronized void executeSQL() throws SQLException {
         TExcelConnection excelCon = (TExcelConnection)getConnection();
+        //begin transaction,
+        excelCon.beginExcelTransaction();
         if (excelCon.getWorkbook() == null) {
             throw new SQLException("Connection to EXCEL data source has not been established " +
                     "properly");

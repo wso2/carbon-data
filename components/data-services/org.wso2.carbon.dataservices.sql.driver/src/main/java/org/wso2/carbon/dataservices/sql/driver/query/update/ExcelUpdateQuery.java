@@ -64,7 +64,10 @@ public class ExcelUpdateQuery extends UpdateQuery {
         if (!(getConnection() instanceof TExcelConnection)) {
             throw new SQLException("Connection does not refer to a Excel connection");
         }
-        Workbook workbook = ((TExcelConnection) getConnection()).getWorkbook();
+        TExcelConnection excelConnection = (TExcelConnection) this.getConnection();
+        //begin transaction,
+        excelConnection.beginExcelTransaction();
+        Workbook workbook = excelConnection.getWorkbook();
         Sheet sheet = workbook.getSheet(getTargetTableName());
         if (sheet == null) {
             throw new SQLException("Excel sheet named '" + this.getTargetTableName() +

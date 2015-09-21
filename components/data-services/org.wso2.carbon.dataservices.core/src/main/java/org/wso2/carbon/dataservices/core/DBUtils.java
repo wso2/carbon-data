@@ -228,7 +228,7 @@ public class DBUtils {
      */
     public static String[] getUserRoles(MessageContext msgContext)
             throws DataServiceFault {
-        return getUserRoles(DBUtils.getUsername(msgContext));
+        return DataServicesDSComponent.getRoleRetriever().getRolesForUser(msgContext);
     }
     
     /**
@@ -267,6 +267,63 @@ public class DBUtils {
         } catch (Exception e) {
             String msg = "Error in retrieving the realm for the tenant id: " + tenantId
                     + ", username: " + username + ". " + e.getMessage();
+            log.error(msg);
+            throw new DataServiceFault(msg);
+        }
+    }
+
+
+    /**
+     * Retrieves all roles for a given tenantId to be used in role based filtering when creating dataservice.
+     *
+     * @return The user roles
+     * @throws DataServiceFault
+     */
+    public static String[] getAllRoles(int tenantId) throws DataServiceFault {
+        RegistryService registryService = DataServicesDSComponent.getRegistryService();
+        try {
+            UserRealm realm = registryService.getUserRealm(tenantId);
+            String roles[] = realm.getUserStoreManager().getRoleNames();
+            return roles;
+        } catch (Exception e) {
+            String msg = "Error in retrieving the realm for the tenant id: " + tenantId
+                         + ". " + e.getMessage();
+            log.error(msg);
+            throw new DataServiceFault(msg);
+        }
+    }
+
+    /**
+     * This method is to get current user tenant ID, This will be only called when creating data service with
+     * role based filtering. So a user will invoke this method hence there should be active session when this is
+     * called.
+     *
+     * @return tenantId
+     * @throws DataServiceFault
+     */
+    public static int getCurrentUserTenantId() throws DataServiceFault {
+        RealmService realmService = DataServicesDSComponent.getRealmService();
+        String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain();
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        try {
+            if (tenantId < MultitenantConstants.SUPER_TENANT_ID) {
+                tenantId = realmService.getTenantManager().getTenantId(tenantDomain);
+            }
+            if (tenantId < MultitenantConstants.SUPER_TENANT_ID) {
+                /* the tenant doesn't exist. */
+                log.error("The tenant doesn't exist. Tenant domain:" + tenantDomain);
+                throw new DataServiceFault("Access Denied. You are not authorized.");
+            }
+            if (!realmService.getTenantManager().isTenantActive(tenantId)) {
+                /* the tenant is not active. */
+                log.error("The tenant is not active. Tenant domain:" + tenantDomain);
+                throw new DataServiceFault("The tenant is not active. Tenant domain:"
+                                           + tenantDomain);
+            }
+            return tenantId;
+        } catch (Exception e) {
+            String msg = "Error in retrieving the realm for the tenant id: " + tenantId
+                         + ". " + e.getMessage();
             log.error(msg);
             throw new DataServiceFault(msg);
         }

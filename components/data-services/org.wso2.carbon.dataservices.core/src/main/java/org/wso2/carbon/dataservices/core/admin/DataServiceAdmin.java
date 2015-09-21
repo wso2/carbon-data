@@ -44,6 +44,7 @@ import org.wso2.carbon.dataservices.core.description.config.GSpreadConfig;
 import org.wso2.carbon.dataservices.core.description.query.QueryFactory;
 import org.wso2.carbon.dataservices.core.engine.DataService;
 import org.wso2.carbon.dataservices.core.engine.DataServiceSerializer;
+import org.wso2.carbon.dataservices.core.internal.DataServicesDSComponent;
 import org.wso2.carbon.dataservices.core.script.DSGenerator;
 import org.wso2.carbon.dataservices.core.script.PaginatedTableInfo;
 import org.wso2.carbon.dataservices.core.sqlparser.SQLParserUtil;
@@ -522,6 +523,21 @@ public class DataServiceAdmin extends AbstractAdmin {
             return "";
         } catch (DataServiceFault e) {
             return e.getDsFaultMessage();
+        }
+    }
+
+    /**
+     * Service method  to get all the user roles for use in role based filtering when creating data services.
+     *
+     * @return String array of roles
+     * @throws AxisFault
+     */
+    public String[] getAllRoles() throws AxisFault {
+        try {
+            int tenantId = DBUtils.getCurrentUserTenantId();
+            return DataServicesDSComponent.getRoleRetriever().getAllRoles(tenantId);
+        } catch (DataServiceFault e) {
+            throw new AxisFault("Error in retrieving role list: " + e.getMessage(), e);
         }
     }
     

@@ -171,4 +171,20 @@ public class DataServiceAdminClient {
         }
     }
 
+    /**
+     * Method to retrieve all user roles from the back end server.
+     *
+     * @return String array of user roles
+     * @throws Exception
+     */
+    public String[] getAllRoles() throws Exception {
+        try {
+            String[] roles =  stub.getAllRoles();
+            int p = 0;
+            return roles;
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
+    }
+
 }

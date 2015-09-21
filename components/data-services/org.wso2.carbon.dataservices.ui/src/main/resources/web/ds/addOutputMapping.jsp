@@ -26,6 +26,7 @@
 <%@ page import="org.apache.axis2.context.ConfigurationContext" %>
 <%@ page import="org.wso2.carbon.CarbonConstants" %>
 <%@ page import="org.wso2.carbon.user.mgt.stub.types.carbon.FlaggedName" %>
+<%@ page import="org.wso2.carbon.dataservices.ui.DataServiceAdminClient" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar" prefix="carbon" %>
 <jsp:include page="../dialog/display_messages.jsp"/>
@@ -115,9 +116,9 @@
     arrayName = (arrayName == null) ? "" : arrayName;
     requiredRoles = (requiredRoles == null) ? "" : requiredRoles;
     List<Query> queries = dataService.getQueries();
-    UserAdminClient client;
+    DataServiceAdminClient client;
 
-    FlaggedName[] userRoles = null;
+    String[] userRoles = null;
     if (mappingType.equals("")) {
         caption = "add";
     } else {
@@ -129,11 +130,10 @@
             (ConfigurationContext) config.getServletContext().getAttribute(CarbonConstants.CONFIGURATION_CONTEXT);
 
     try {
-        client = new UserAdminClient(cookie, backendServerURL, configContext);
-        FlaggedName[] userRoleData = client.getAllRolesNames("*", -1);
-        ArrayList<FlaggedName> userRoleDataList = new ArrayList<FlaggedName>(Arrays.asList(userRoleData));
-        userRoleDataList.remove(userRoleDataList.size() - 1);
-        userRoles = new FlaggedName[userRoleDataList.size()];
+        client = new DataServiceAdminClient(cookie, backendServerURL, configContext);
+        String[] userRoleData = client.getAllRoles();
+        ArrayList<String> userRoleDataList = new ArrayList<String>(Arrays.asList(userRoleData));
+        userRoles = new String[userRoleDataList.size()];
         userRoles = userRoleDataList.toArray(userRoles);
     } catch (Exception e) {
         e.printStackTrace();
@@ -736,10 +736,10 @@
                     if (userRoles != null) {
                         boolean selectRole;
 
-                        for (FlaggedName roles : userRoles) {
+                        for (String roles : userRoles) {
                             String roleName = null;
-                            if (!CarbonConstants.REGISTRY_ANONNYMOUS_ROLE_NAME.equals(roles.getItemName())) {
-                                roleName = roles.getItemName();
+                            if (!CarbonConstants.REGISTRY_ANONNYMOUS_ROLE_NAME.equals(roles)) {
+                                roleName = roles;
                             }
                             selectRole = false;
                             if (roleName != null) {

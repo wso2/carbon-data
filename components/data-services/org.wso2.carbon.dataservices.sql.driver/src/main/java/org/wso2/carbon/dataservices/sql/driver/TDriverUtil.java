@@ -18,6 +18,7 @@
  */
 package org.wso2.carbon.dataservices.sql.driver;
 
+import com.google.common.io.ByteStreams;
 import com.google.gdata.client.spreadsheet.*;
 import com.google.gdata.data.spreadsheet.CellEntry;
 import com.google.gdata.data.spreadsheet.CellFeed;
@@ -36,6 +37,7 @@ import org.wso2.carbon.dataservices.sql.driver.processor.reader.DataTable;
 import org.wso2.carbon.dataservices.sql.driver.query.ColumnInfo;
 import org.wso2.carbon.dataservices.sql.driver.query.ParamInfo;
 import org.wso2.carbon.dataservices.sql.driver.query.QueryFactory;
+import org.wso2.carbon.dataservices.sql.driver.util.WorkBookOutputWriter;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
@@ -217,17 +219,75 @@ public class TDriverUtil {
         return param;
     }
 
+    /**
+     * Method to write excel data to registry or file output streams.
+     *
+     * @param workbook
+     * @param filePath
+     * @throws SQLException
+     */
     public static void writeRecords(Workbook workbook, String filePath) throws SQLException {
-        FileOutputStream out = null;
+        OutputStream out = null;
+        PipedInputStream pin = null;
         try {
-            out = new FileOutputStream(filePath);
-            workbook.write(out);
+            if (isRegistryPath(filePath)) {
+                try {
+                    RegistryService registryService = SQLDriverDSComponent.getRegistryService();
+                    if (registryService == null) {
+                        throw new SQLException("DBUtils.getInputStreamFromPath(): Registry service is not available");
+                    }
+                    Registry registry;
+                    if (filePath.startsWith(CONF_REGISTRY_PATH_PREFIX)) {
+                        if (filePath.length() > CONF_REGISTRY_PATH_PREFIX.length()) {
+                            filePath = filePath.substring(CONF_REGISTRY_PATH_PREFIX.length());
+                            registry = registryService.getConfigSystemRegistry(getCurrentTenantId());
+                        } else {
+                            throw new SQLException("Empty configuration registry path given");
+                        }
+                    } else {
+                        if (filePath.length() > GOV_REGISTRY_PATH_PREFIX.length()) {
+                            filePath = filePath.substring(GOV_REGISTRY_PATH_PREFIX.length());
+                            registry = registryService.getGovernanceSystemRegistry(getCurrentTenantId());
+                        } else {
+                            throw new SQLException("Empty governance registry path given");
+                        }
+                    }
+                    if (registry.resourceExists(filePath)) {
+                        pin = new PipedInputStream();
+                        out = new PipedOutputStream(pin);
+                        new WorkBookOutputWriter(workbook,out).start();
+                        Resource serviceResource = registry.get(filePath);
+                        serviceResource.setContentStream(pin);
+                        registry.put(filePath, serviceResource);
+                    } else {
+                        throw new SQLException(
+                                "The given XSLT resource path at '" + filePath + "' does not exist");
+                    }
+                } catch (RegistryException e) {
+                    throw new SQLException(e);
+                }
+            } else {
+                File file = new File(filePath);
+                if (filePath.startsWith("." + File.separator) || filePath.startsWith(".." + File.separator)) {
+                /* this is a relative path */
+                    filePath = file.getAbsolutePath();
+                }
+                out = new FileOutputStream(filePath);
+                workbook.write(out);
+            }
         } catch (FileNotFoundException e) {
             throw new SQLException("Error occurred while locating the EXCEL datasource", e);
         } catch (IOException e) {
             throw new SQLException("Error occurred while writing the records to the EXCEL " +
-                    "data source", e);
+                                   "data source", e);
         } finally {
+            if (pin != null) {
+                try {
+                    pin.close();
+                } catch (IOException ignore) {
+
+                }
+            }
             if (out != null) {
                 try {
                     out.close();

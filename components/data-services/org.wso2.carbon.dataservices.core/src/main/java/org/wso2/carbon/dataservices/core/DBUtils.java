@@ -88,7 +88,7 @@ public class DBUtils {
 
     private static final Log log = LogFactory.getLog(DBUtils.class);
 
-    private static Pattern udtPattern = Pattern.compile("(.*?(\\[\\d\\]))");
+    private static Pattern udtPattern = Pattern.compile("(.*?(\\[\\d*\\]))");
 
     private static ScheduledExecutorService globalExecutorService = Executors
             .newSingleThreadScheduledExecutor();
@@ -954,7 +954,12 @@ public class DBUtils {
         Matcher m = udtPattern.matcher(param);
         if (m.find()) {
             String tmp = m.group();
-            return tmp.substring(0, tmp.length() - 3).trim();
+            Pattern patternToGetIndex = Pattern.compile("\\[\\d*\\]");
+            Matcher matcherToGetIndex = patternToGetIndex.matcher(tmp);
+            if (matcherToGetIndex.find()) {
+                int lengthOfIndexPart = matcherToGetIndex.group().length();
+                return tmp.substring(0, tmp.length() - lengthOfIndexPart).trim();
+            }
         }
         return null;
     }

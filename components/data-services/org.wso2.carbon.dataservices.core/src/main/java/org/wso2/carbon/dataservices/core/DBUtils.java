@@ -27,7 +27,10 @@ import org.apache.axiom.om.util.AXIOMUtil;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.databinding.utils.ConverterUtil;
+import org.apache.axis2.description.AxisService;
+import org.apache.axis2.description.Parameter;
 import org.apache.axis2.description.java2wsdl.TypeTable;
+import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
@@ -328,7 +331,7 @@ public class DBUtils {
             throw new DataServiceFault(msg);
         }
     }
-    
+
     public static boolean authenticate(String username, String password) throws DataServiceFault {
     	try {
             RegistryService registryService = DataServicesDSComponent.getRegistryService();
@@ -339,6 +342,50 @@ public class DBUtils {
     	} catch (Exception e) {
 			throw new DataServiceFault(e, "Error in authenticating user '" + username + "'");
 		}
+    }
+
+    /**
+     * Return data services
+     *
+     * @return names of the data services
+     * @throws AxisFault AxisFault
+     */
+    public static String[] getAvailableDS(AxisConfiguration axisConfiguration) throws AxisFault {
+        List<String> serviceList = new ArrayList<>();
+        Map<String, AxisService> map = axisConfiguration.getServices();
+        Set<String> set = map.keySet();
+        for (String serviceName : set) {
+            AxisService axisService = axisConfiguration.getService(serviceName);
+            Parameter parameter = axisService.getParameter(DBConstants.AXIS2_SERVICE_TYPE);
+            if (parameter != null) {
+                if (DBConstants.DB_SERVICE_TYPE.equals(parameter.getValue().toString())) {
+                    serviceList.add(serviceName);
+                }
+            }
+        }
+        return serviceList.toArray(new String[serviceList.size()]);
+    }
+
+    /**
+     * This method verifies whether there's an existing data service for the given name.
+     *
+     * @param axisConfiguration Axis configuration
+     * @param dataService       Data service
+     * @return Boolean (Is available)
+     * @throws AxisFault
+     */
+    public static boolean isAvailableDS(AxisConfiguration axisConfiguration, String dataService) throws AxisFault {
+        Map<String, AxisService> map = axisConfiguration.getServices();
+        AxisService axisService = map.get(dataService);
+        if (axisService != null) {
+            Parameter parameter = axisService.getParameter(DBConstants.AXIS2_SERVICE_TYPE);
+            if (parameter != null) {
+                if (DBConstants.DB_SERVICE_TYPE.equals(parameter.getValue().toString())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public static boolean isRegistryPath(String path) {

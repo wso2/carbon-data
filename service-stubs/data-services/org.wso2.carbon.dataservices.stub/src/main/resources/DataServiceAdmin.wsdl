@@ -1,8 +1,38 @@
+<!--
+  ~ Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
 <wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ns="http://admin.core.dataservices.carbon.wso2.org" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:ax290="http://script.core.dataservices.carbon.wso2.org/xsd" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://admin.core.dataservices.carbon.wso2.org">
     <wsdl:documentation>DataServiceAdmin</wsdl:documentation>
     <wsdl:types>
         <xs:schema xmlns:ax291="http://script.core.dataservices.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://admin.core.dataservices.carbon.wso2.org">
             <xs:import namespace="http://script.core.dataservices.carbon.wso2.org/xsd"/>
+            <xs:element name="getDataServiceContentAsString">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="serviceId" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getDataServiceContentAsStringResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
             <xs:element name="saveDataService">
                 <xs:complexType>
                     <xs:sequence>
@@ -48,15 +78,17 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getAvailableDS">
-                <xs:complexType>
-                    <xs:sequence/>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getAvailableDSResponse">
+            <xs:element name="isDSNameAvailable">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="dataService" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="isDSNameAvailableResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -255,26 +287,24 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getDataServiceContentAsString">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="serviceId" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getDataServiceContentAsStringResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
             <xs:element name="getAllRoles">
                 <xs:complexType>
                     <xs:sequence/>
                 </xs:complexType>
             </xs:element>
             <xs:element name="getAllRolesResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAvailableDS">
+                <xs:complexType>
+                    <xs:sequence/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAvailableDSResponse">
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string"/>
@@ -291,6 +321,12 @@
             </xs:complexType>
         </xs:schema>
     </wsdl:types>
+    <wsdl:message name="isDSNameAvailableRequest">
+        <wsdl:part name="parameters" element="ns:isDSNameAvailable"/>
+    </wsdl:message>
+    <wsdl:message name="isDSNameAvailableResponse">
+        <wsdl:part name="parameters" element="ns:isDSNameAvailableResponse"/>
+    </wsdl:message>
     <wsdl:message name="getdbSchemaListRequest">
         <wsdl:part name="parameters" element="ns:getdbSchemaList"/>
     </wsdl:message>
@@ -363,17 +399,17 @@
     <wsdl:message name="getInputMappingNamesResponse">
         <wsdl:part name="parameters" element="ns:getInputMappingNamesResponse"/>
     </wsdl:message>
-    <wsdl:message name="getDataServiceContentAsStringRequest">
-        <wsdl:part name="parameters" element="ns:getDataServiceContentAsString"/>
-    </wsdl:message>
-    <wsdl:message name="getDataServiceContentAsStringResponse">
-        <wsdl:part name="parameters" element="ns:getDataServiceContentAsStringResponse"/>
-    </wsdl:message>
     <wsdl:message name="testJDBCConnectionRequest">
         <wsdl:part name="parameters" element="ns:testJDBCConnection"/>
     </wsdl:message>
     <wsdl:message name="testJDBCConnectionResponse">
         <wsdl:part name="parameters" element="ns:testJDBCConnectionResponse"/>
+    </wsdl:message>
+    <wsdl:message name="getDataServiceContentAsStringRequest">
+        <wsdl:part name="parameters" element="ns:getDataServiceContentAsString"/>
+    </wsdl:message>
+    <wsdl:message name="getDataServiceContentAsStringResponse">
+        <wsdl:part name="parameters" element="ns:getDataServiceContentAsStringResponse"/>
     </wsdl:message>
     <wsdl:message name="getCarbonDataSourceNamesForTypesRequest">
         <wsdl:part name="parameters" element="ns:getCarbonDataSourceNamesForTypes"/>
@@ -400,6 +436,10 @@
         <wsdl:part name="parameters" element="ns:getPaginatedSchemaInfoResponse"/>
     </wsdl:message>
     <wsdl:portType name="DataServiceAdminPortType">
+        <wsdl:operation name="isDSNameAvailable">
+            <wsdl:input message="ns:isDSNameAvailableRequest" wsaw:Action="urn:isDSNameAvailable"/>
+            <wsdl:output message="ns:isDSNameAvailableResponse" wsaw:Action="urn:isDSNameAvailableResponse"/>
+        </wsdl:operation>
         <wsdl:operation name="getdbSchemaList">
             <wsdl:input message="ns:getdbSchemaListRequest" wsaw:Action="urn:getdbSchemaList"/>
             <wsdl:output message="ns:getdbSchemaListResponse" wsaw:Action="urn:getdbSchemaListResponse"/>
@@ -452,13 +492,13 @@
             <wsdl:output message="ns:getInputMappingNamesResponse" wsaw:Action="urn:getInputMappingNamesResponse"/>
             <wsdl:fault message="ns:DataServiceAdminException" name="DataServiceAdminException" wsaw:Action="urn:getInputMappingNamesDataServiceAdminException"/>
         </wsdl:operation>
-        <wsdl:operation name="getDataServiceContentAsString">
-            <wsdl:input message="ns:getDataServiceContentAsStringRequest" wsaw:Action="urn:getDataServiceContentAsString"/>
-            <wsdl:output message="ns:getDataServiceContentAsStringResponse" wsaw:Action="urn:getDataServiceContentAsStringResponse"/>
-        </wsdl:operation>
         <wsdl:operation name="testJDBCConnection">
             <wsdl:input message="ns:testJDBCConnectionRequest" wsaw:Action="urn:testJDBCConnection"/>
             <wsdl:output message="ns:testJDBCConnectionResponse" wsaw:Action="urn:testJDBCConnectionResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getDataServiceContentAsString">
+            <wsdl:input message="ns:getDataServiceContentAsStringRequest" wsaw:Action="urn:getDataServiceContentAsString"/>
+            <wsdl:output message="ns:getDataServiceContentAsStringResponse" wsaw:Action="urn:getDataServiceContentAsStringResponse"/>
         </wsdl:operation>
         <wsdl:operation name="getCarbonDataSourceNamesForTypes">
             <wsdl:input message="ns:getCarbonDataSourceNamesForTypesRequest" wsaw:Action="urn:getCarbonDataSourceNamesForTypes"/>
@@ -481,6 +521,15 @@
     </wsdl:portType>
     <wsdl:binding name="DataServiceAdminSoap11Binding" type="ns:DataServiceAdminPortType">
         <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="isDSNameAvailable">
+            <soap:operation soapAction="urn:isDSNameAvailable" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
         <wsdl:operation name="getdbSchemaList">
             <soap:operation soapAction="urn:getdbSchemaList" style="document"/>
             <wsdl:input>
@@ -601,8 +650,8 @@
                 <soap:fault use="literal" name="DataServiceAdminException"/>
             </wsdl:fault>
         </wsdl:operation>
-        <wsdl:operation name="testJDBCConnection">
-            <soap:operation soapAction="urn:testJDBCConnection" style="document"/>
+        <wsdl:operation name="getDataServiceContentAsString">
+            <soap:operation soapAction="urn:getDataServiceContentAsString" style="document"/>
             <wsdl:input>
                 <soap:body use="literal"/>
             </wsdl:input>
@@ -610,8 +659,8 @@
                 <soap:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
-        <wsdl:operation name="getDataServiceContentAsString">
-            <soap:operation soapAction="urn:getDataServiceContentAsString" style="document"/>
+        <wsdl:operation name="testJDBCConnection">
+            <soap:operation soapAction="urn:testJDBCConnection" style="document"/>
             <wsdl:input>
                 <soap:body use="literal"/>
             </wsdl:input>
@@ -664,6 +713,15 @@
     </wsdl:binding>
     <wsdl:binding name="DataServiceAdminSoap12Binding" type="ns:DataServiceAdminPortType">
         <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="isDSNameAvailable">
+            <soap12:operation soapAction="urn:isDSNameAvailable" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
         <wsdl:operation name="getdbSchemaList">
             <soap12:operation soapAction="urn:getdbSchemaList" style="document"/>
             <wsdl:input>
@@ -784,8 +842,8 @@
                 <soap12:fault use="literal" name="DataServiceAdminException"/>
             </wsdl:fault>
         </wsdl:operation>
-        <wsdl:operation name="testJDBCConnection">
-            <soap12:operation soapAction="urn:testJDBCConnection" style="document"/>
+        <wsdl:operation name="getDataServiceContentAsString">
+            <soap12:operation soapAction="urn:getDataServiceContentAsString" style="document"/>
             <wsdl:input>
                 <soap12:body use="literal"/>
             </wsdl:input>
@@ -793,8 +851,8 @@
                 <soap12:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
-        <wsdl:operation name="getDataServiceContentAsString">
-            <soap12:operation soapAction="urn:getDataServiceContentAsString" style="document"/>
+        <wsdl:operation name="testJDBCConnection">
+            <soap12:operation soapAction="urn:testJDBCConnection" style="document"/>
             <wsdl:input>
                 <soap12:body use="literal"/>
             </wsdl:input>
@@ -847,6 +905,15 @@
     </wsdl:binding>
     <wsdl:binding name="DataServiceAdminHttpBinding" type="ns:DataServiceAdminPortType">
         <http:binding verb="POST"/>
+        <wsdl:operation name="isDSNameAvailable">
+            <http:operation location="isDSNameAvailable"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
         <wsdl:operation name="getdbSchemaList">
             <http:operation location="getdbSchemaList"/>
             <wsdl:input>
@@ -952,8 +1019,8 @@
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
-        <wsdl:operation name="testJDBCConnection">
-            <http:operation location="testJDBCConnection"/>
+        <wsdl:operation name="getDataServiceContentAsString">
+            <http:operation location="getDataServiceContentAsString"/>
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
@@ -961,8 +1028,8 @@
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
-        <wsdl:operation name="getDataServiceContentAsString">
-            <http:operation location="getDataServiceContentAsString"/>
+        <wsdl:operation name="testJDBCConnection">
+            <http:operation location="testJDBCConnection"/>
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
@@ -1009,13 +1076,22 @@
     </wsdl:binding>
     <wsdl:service name="DataServiceAdmin">
         <wsdl:port name="DataServiceAdminHttpsSoap11Endpoint" binding="ns:DataServiceAdminSoap11Binding">
-            <soap:address location="https://172.17.42.1:9443/services/DataServiceAdmin.DataServiceAdminHttpsSoap11Endpoint/"/>
+            <soap:address location="https://localhost:9443/services/DataServiceAdmin.DataServiceAdminHttpsSoap11Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="DataServiceAdminHttpSoap11Endpoint" binding="ns:DataServiceAdminSoap11Binding">
+            <soap:address location="http://localhost:9763/services/DataServiceAdmin.DataServiceAdminHttpSoap11Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="DataServiceAdminHttpsSoap12Endpoint" binding="ns:DataServiceAdminSoap12Binding">
-            <soap12:address location="https://172.17.42.1:9443/services/DataServiceAdmin.DataServiceAdminHttpsSoap12Endpoint/"/>
+            <soap12:address location="https://localhost:9443/services/DataServiceAdmin.DataServiceAdminHttpsSoap12Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="DataServiceAdminHttpSoap12Endpoint" binding="ns:DataServiceAdminSoap12Binding">
+            <soap12:address location="http://localhost:9763/services/DataServiceAdmin.DataServiceAdminHttpSoap12Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="DataServiceAdminHttpsEndpoint" binding="ns:DataServiceAdminHttpBinding">
-            <http:address location="https://172.17.42.1:9443/services/DataServiceAdmin.DataServiceAdminHttpsEndpoint/"/>
+            <http:address location="https://localhost:9443/services/DataServiceAdmin.DataServiceAdminHttpsEndpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="DataServiceAdminHttpEndpoint" binding="ns:DataServiceAdminHttpBinding">
+            <http:address location="http://localhost:9763/services/DataServiceAdmin.DataServiceAdminHttpEndpoint/"/>
         </wsdl:port>
     </wsdl:service>
 </wsdl:definitions>

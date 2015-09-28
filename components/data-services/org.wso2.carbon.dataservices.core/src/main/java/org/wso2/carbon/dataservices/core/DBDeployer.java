@@ -101,6 +101,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -776,6 +777,12 @@ public class DBDeployer extends AbstractDeployer {
 			/* create the data service object from dbs */
 			DataService dataService = DataServiceFactory.createDataService(dbsElement, configFilePath);
 
+			String serviceName = dataService.getName();
+			if (DBUtils.isAvailableDS(axisConfig, serviceName)) {
+				throw new DataServiceFault("Data Service name is already exists. Please choose different name for \'" +
+				                           serviceName + "\' data service.");
+			}
+
 			/*create the odata service */
 			for (String configId : dataService.getConfigs().keySet()) {
 				Config config = dataService.getConfig(configId);
@@ -791,7 +798,6 @@ public class DBDeployer extends AbstractDeployer {
 			/* validate the data service */
 			this.validateDataService(dataService);
 
-			String serviceName = dataService.getName();
 			String interfaceName = serviceName + WSDL2Constants.INTERFACE_PREFIX;
 
 			AxisService axisService = new AxisService(serviceName);

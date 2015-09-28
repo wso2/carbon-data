@@ -65,6 +65,17 @@ public class DataServiceAdminClient {
     public String getCarbonDataSourceType(String dsName) throws RemoteException{
     	return stub.getCarbonDataSourceType(dsName);
     }
+
+    /**
+     * This method check whether data service name is already available.
+     *
+     * @param dataService Data service name
+     * @return Boolean value
+     * @throws RemoteException
+     */
+    public boolean isDSNameAvailable(String dataService) throws RemoteException {
+        return stub.isDSNameAvailable(dataService);
+    }
     
     public String[] getCarbonDataSourceNamesForTypes(String[] types) throws RemoteException{
     	return stub.getCarbonDataSourceNamesForTypes(types);
@@ -149,7 +160,7 @@ public class DataServiceAdminClient {
     
     /*
     add paginator here
-     */                                                
+     */
 
     public String[] getDSServiceList(String dataSourceId, String dbName, String[] schemas,
                                           String[] tableNames,String serviceNamespace) throws Exception{

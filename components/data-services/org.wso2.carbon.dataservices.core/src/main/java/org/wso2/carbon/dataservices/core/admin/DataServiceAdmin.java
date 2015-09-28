@@ -367,23 +367,21 @@ public class DataServiceAdmin extends AbstractAdmin {
 	 * Return data services
 	 *
 	 * @return names of the data services
-	 * @throws AxisFault
-	 *             AxisFault
+	 * @throws AxisFault AxisFault
 	 */
 	public String[] getAvailableDS() throws AxisFault {
-		List<String> serviceList = new ArrayList<String>();
-		Map<String, AxisService> map = getAxisConfig().getServices();
-		Set<String> set = map.keySet();
-		for (String serviceName : set) {
-			AxisService axisService = getAxisConfig().getService(serviceName);
-			Parameter parameter = axisService.getParameter(DBConstants.AXIS2_SERVICE_TYPE);
-			if (parameter != null) {
-				if (DBConstants.DB_SERVICE_TYPE.equals(parameter.getValue().toString())) {
-					serviceList.add(serviceName);
-				}
-			}
-		}
-		return serviceList.toArray(new String[serviceList.size()]);
+		return DBUtils.getAvailableDS(getAxisConfig());
+	}
+
+	/**
+	 * This method check whether data service name is already available.
+	 *
+	 * @param dataService Data Service Name
+	 * @return boolean value
+	 * @throws AxisFault
+	 */
+	public boolean isDSNameAvailable(String dataService) throws AxisFault {
+		return DBUtils.isAvailableDS(getAxisConfig(), dataService);
 	}
 
 	public String[] getCarbonDataSourceNames() {

@@ -12,25 +12,27 @@ function validateServiceDetailsForm(){
     }
     //Check for available dataservices
     var url = 'dataservice_available_ajaxprocessor.jsp?dataservice=' + encodeURIComponent(serviceName);
-    var available = false;
-    $.ajax({
-        type: 'GET',
-        url: url,
-        async: false,
-        cache: false,
-        timeout: 30000,
-        complete: function(r) {
-            var successMsg = new RegExp("^true");
-            if (r.responseText.search(successMsg) == 0) {
-                available = true;
+    if (!editingDataService) {
+        var available = false;
+        $.ajax({
+            type: 'GET',
+            url: url,
+            async: false,
+            cache: false,
+            timeout: 30000,
+            complete: function(r) {
+                var successMsg = new RegExp("^true");
+                if (r.responseText.search(successMsg) == 0) {
+                    available = true;
+                }
+
             }
+        });
 
+        if (available) {
+            CARBON.showWarningDialog("Data Service Name already exists. Please choose a different data service name");
+            return false;
         }
-    });
-
-    if(available){
-        CARBON.showWarningDialog("Data Service Name already exists. Please choose a different data service name");
-        return false;
     }
     return true;
 }

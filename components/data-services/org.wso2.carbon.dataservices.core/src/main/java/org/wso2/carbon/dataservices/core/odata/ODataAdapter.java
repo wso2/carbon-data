@@ -300,7 +300,7 @@ public class ODataAdapter implements ServiceHandler {
 			                                                   edmEntitySet.getEntityType())));
 			response.writeCreatedEntity(edmEntitySet, created);
 		} catch (DataServiceFault | SerializerException | URISyntaxException e) {
-			log.error(e);
+			log.error("Error occurred while creating entity", e);
 			throw new ODataApplicationException(e.getMessage(), 500, Locale.ENGLISH);
 		}
 	}
@@ -336,14 +336,15 @@ public class ODataAdapter implements ServiceHandler {
 					response.writeError(new ClientServerError().setStatusCode(412)
 					                                           .setMessage("E-Tag checksum didn't match."));
 				}
-			} catch (DataServiceFault dataServiceFault) {
-				log.error(dataServiceFault);
+			} catch (DataServiceFault e) {
+				log.error("Error occurred while updating entity", e);
 				response.writeNotModified();
 			} finally {
 				try {
 					finalizeConnection();
-				} catch (DataServiceFault dataServiceFault) {
-					log.error(dataServiceFault);
+				} catch (DataServiceFault e) {
+					log.error("Error occurred while updating entity", e);
+					response.writeNotModified();
 				}
 			}
 		}
@@ -361,7 +362,8 @@ public class ODataAdapter implements ServiceHandler {
 				this.dataHandler.deleteEntityInTable(entityType.getName(), wrapKeyParamToDataEntry(keys));
 				response.writeDeletedEntityOrReference();
 			} catch (ODataServiceFault e) {
-				log.error("Error in deleting entity", e);
+				log.error("Error occurred while deleting entity", e);
+				response.writeNotModified();
 			}
 		} else {
 			try {
@@ -382,12 +384,14 @@ public class ODataAdapter implements ServiceHandler {
 					                                           .setMessage("E-Tag checksum didn't match."));
 				}
 			} catch (DataServiceFault e) {
-				log.error("Error in deleting entity", e);
+				log.error("Error occurred while deleting entity", e);
+				response.writeNotModified();
 			} finally {
 				try {
 					finalizeConnection();
-				} catch (DataServiceFault dataServiceFault) {
-					//ignore
+				} catch (DataServiceFault e) {
+					log.error("Error occurred while deleting entity", e);
+					response.writeNotModified();
 				}
 			}
 		}
@@ -411,7 +415,8 @@ public class ODataAdapter implements ServiceHandler {
 						response.writePropertyUpdated();
 					}
 				} catch (DataServiceFault e) {
-					log.error("Error in updating property", e);
+					log.error("Error occurred while updating property", e);
+					response.writeNotModified();
 				}
 			} else {
 				List<UriParameter> keys = request.getKeyPredicates();
@@ -428,13 +433,14 @@ public class ODataAdapter implements ServiceHandler {
 						log.error("Error in updating property, E-Tag checksum didn't match");
 					}
 				} catch (DataServiceFault e) {
+					log.error("Error occurred while updating property", e);
 					response.writeNotModified();
-					log.error("Error in updating property", e);
 				} finally {
 					try {
 						finalizeConnection();
-					} catch (ODataServiceFault dataServiceFault) {
-						log.error(dataServiceFault);
+					} catch (ODataServiceFault e) {
+						log.error("Error occurred while updating property", e);
+						response.writeNotModified();
 					}
 				}
 			}
@@ -530,7 +536,7 @@ public class ODataAdapter implements ServiceHandler {
 
 	@Override
 	public void crossJoin(DataRequest dataRequest, List<String> entitySetNames, ODataResponse response) {
-		response.setStatusCode(200);
+		response.setStatusCode(501);
 	}
 
 	/**
@@ -581,7 +587,6 @@ public class ODataAdapter implements ServiceHandler {
 			entity.setETag(eTag);
 			return entity;
 		} catch (ODataServiceFault | ODataApplicationException e) {
-			log.error("Error in creating entity ", e);
 			throw new ODataServiceFault(e.getMessage());
 		}
 	}

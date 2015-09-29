@@ -130,7 +130,8 @@ public abstract class ExpressionQuery extends Query {
 
 	private void sortStringsByLength(List<String> values) {
 		Collections.sort(values, new Comparator<String>() {
-			@Override public int compare(String lhs, String rhs) {
+			@Override
+			public int compare(String lhs, String rhs) {
 				return lhs.length() - rhs.length();
 			}
 		});

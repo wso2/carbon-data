@@ -346,6 +346,7 @@ public class DSGenerator {
                tableList = getTableNamesList(mObject, dbName, null);
 			}
 			String str[] = tableList.toArray(new String[tableList.size()]);
+			connection.close();
 			return str;
 		} else {
 			return null;
@@ -383,6 +384,7 @@ public class DSGenerator {
 				schemaList.add(schemas.getString(DBConstants.DataServiceGenerator.TABLE_SCHEM));
 			}
 			String str[] = schemaList.toArray(new String[schemaList.size()]);
+			connection.close();
 			return str;
 		} else {
 			return null;

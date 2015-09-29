@@ -49,6 +49,7 @@
     String flag = request.getParameter("flag");
     flag = (flag == null) ? "" : flag;
     String description = "";
+    boolean editingDataService = false;
     boolean boxcarring = false;
     boolean batchRequest = false;
     boolean enableStreaming = true;
@@ -69,6 +70,7 @@
             detailedServiceName = serviceName;
             String[] path = serviceName.split("/");
             serviceName = path[path.length-1];
+            editingDataService = true;
             dataService.setServiceHierarchy(detailedServiceName);
         }
         try {
@@ -155,6 +157,7 @@
     } else {
         if (flag.equals("back")) {
             serviceName = dataService.getName();
+            editingDataService = true;
             description = dataService.getDescription();
             description = (description == null) ? "" : description;
             serviceNamespace = dataService.getServiceNamespace();
@@ -377,6 +380,7 @@
 </div>
 
 <script type="text/javascript">
+var editingDataService = <%=editingDataService %> ;
     function showAdvancedServiceDetailsConfigurations() {
         var symbolMax = document.getElementById('txManagerJNDINameMax');
         var advancedConfigFields = document.getElementById('txManagerNameRow');

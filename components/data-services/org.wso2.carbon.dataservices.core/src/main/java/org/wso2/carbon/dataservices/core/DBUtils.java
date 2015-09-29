@@ -345,10 +345,11 @@ public class DBUtils {
     }
 
     /**
-     * Return data services
+     * This method returns the available data services names.
      *
-     * @return names of the data services
-     * @throws AxisFault AxisFault
+     * @param axisConfiguration Axis configuration
+     * @return names of available data services
+     * @throws AxisFault
      */
     public static String[] getAvailableDS(AxisConfiguration axisConfiguration) throws AxisFault {
         List<String> serviceList = new ArrayList<>();

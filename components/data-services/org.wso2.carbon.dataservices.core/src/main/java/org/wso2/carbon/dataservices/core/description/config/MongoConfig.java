@@ -192,11 +192,13 @@ public class MongoConfig extends Config {
                 case DBConstants.MongoDB.MongoAuthenticationTypes.MONGODB_X509:
                     credential = MongoCredential.createMongoX509Credential(username);
                     break;
+                default:
+                    throw new DataServiceFault("Invalid Authentication type. ");
             }
             return credential;
         } else {
-            throw new DataServiceFault(
-                    "The data source param '" + DBConstants.MongoDB.AUTHENTICATION_TYPE + "' is required");
+            throw new DataServiceFault("The data source param '" + DBConstants.MongoDB.AUTHENTICATION_TYPE +
+                                       "' is required");
         }
     }
 

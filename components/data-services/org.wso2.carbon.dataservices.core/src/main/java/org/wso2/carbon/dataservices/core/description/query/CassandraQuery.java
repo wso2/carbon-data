@@ -210,7 +210,7 @@ public class CassandraQuery extends ExpressionQuery {
                     }
                     break;
                 default:
-                    throw new DataServiceFault("Invalid data type.");
+                    values.add(param.getValue().toString());
             }
         }
         return this.getStatement().bind(values.toArray());

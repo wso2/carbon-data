@@ -19,6 +19,7 @@ package org.wso2.carbon.dataservices.core.odata;
 import com.datastax.driver.core.ColumnDefinitions;
 import com.datastax.driver.core.ColumnMetadata;
 import com.datastax.driver.core.DataType;
+import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
@@ -37,8 +38,10 @@ import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -79,7 +82,23 @@ public class CassandraDataHandler implements ODataDataHandler {
 	 */
 	private final String keyspace;
 
-	private boolean transactionAvailable;
+	private ThreadLocal<Boolean> transactionAvailable = new ThreadLocal<Boolean>() {
+		protected synchronized Boolean initialValue() {
+			return false;
+		}
+	};
+
+	private static final int RECORD_INSERT_STATEMENTS_CACHE_SIZE = 10000;
+
+	private Map<String, PreparedStatement> preparedStatementMap = Collections
+			.synchronizedMap(new LinkedHashMap<String, PreparedStatement>() {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				protected boolean removeEldestEntry(final Map.Entry<String, PreparedStatement> eldest) {
+					return super.size() > RECORD_INSERT_STATEMENTS_CACHE_SIZE;
+				}
+			});
 
 	public CassandraDataHandler(String configID, Session session, String keyspace) {
 		this.configID = configID;
@@ -117,8 +136,12 @@ public class CassandraDataHandler implements ODataDataHandler {
 				bindParams(column, keys.getValue(column), values, cassandraTableMetaData);
 			}
 		}
-		Statement statement = new SimpleStatement(query, values.toArray());
-		ResultSet resultSet = this.session.execute(statement);
+		PreparedStatement statement = this.preparedStatementMap.get(query);
+		if (statement == null) {
+			statement = this.session.prepare(query);
+			this.preparedStatementMap.put(query, statement);
+		}
+		ResultSet resultSet = this.session.execute(statement.bind(values));
 		List<ODataEntry> entryList = new ArrayList<>();
 		Iterator<Row> iterator = resultSet.iterator();
 		ColumnDefinitions definitions = resultSet.getColumnDefinitions();
@@ -141,14 +164,18 @@ public class CassandraDataHandler implements ODataDataHandler {
 				           cassandraTableMetaData);
 			}
 		}
-		Statement statement = new SimpleStatement(query, values.toArray());
-		this.session.execute(statement);
+		PreparedStatement statement = this.preparedStatementMap.get(query);
+		if (statement == null) {
+			statement = this.session.prepare(query);
+			this.preparedStatementMap.put(query, statement);
+		}
+		this.session.execute(statement.bind(values));
 		return ODataUtils.generateETag(this.configID, tableName, entity);
 	}
 
 	@Override
 	public boolean deleteEntityInTable(String tableName, ODataEntry entity) throws ODataServiceFault {
-		if (transactionAvailable) {
+		if (transactionAvailable.get()) {
 			return deleteEntityInTableTransactional(tableName, entity);
 		} else {
 			return deleteEntityTableNonTransactional(tableName, entity);
@@ -166,10 +193,15 @@ public class CassandraDataHandler implements ODataDataHandler {
 				bindParams(column, entity.getValue(column), values, cassandraTableMetaData);
 			}
 		}
-		Statement statement = new SimpleStatement(query, values.toArray());
-		ResultSet result = this.session.execute(statement);
+		PreparedStatement statement = this.preparedStatementMap.get(query);
+		if (statement == null) {
+			statement = this.session.prepare(query);
+			this.preparedStatementMap.put(query, statement);
+		}
+		ResultSet result = this.session.execute(statement.bind(values));
 		return result.wasApplied();
 	}
+
 	private boolean deleteEntityInTableTransactional(String tableName, ODataEntry entity) throws ODataServiceFault {
 		List<ColumnMetadata> cassandraTableMetaData = this.session.getCluster().getMetadata().getKeyspace(this.keyspace)
 		                                                          .getTable(tableName).getColumns();
@@ -186,8 +218,12 @@ public class CassandraDataHandler implements ODataDataHandler {
 				bindParams(column, entity.getValue(column), values, cassandraTableMetaData);
 			}
 		}
-		Statement statement = new SimpleStatement(query, values.toArray());
-		ResultSet result = this.session.execute(statement);
+		PreparedStatement statement = this.preparedStatementMap.get(query);
+		if (statement == null) {
+			statement = this.session.prepare(query);
+			this.preparedStatementMap.put(query, statement);
+		}
+		ResultSet result = this.session.execute(statement.bind(values));
 		return result.wasApplied();
 	}
 
@@ -208,8 +244,12 @@ public class CassandraDataHandler implements ODataDataHandler {
 				bindParams(column, newProperties.getValue(column), values, cassandraTableMetaData);
 			}
 		}
-		Statement statement = new SimpleStatement(query, values.toArray());
-		ResultSet result = this.session.execute(statement);
+		PreparedStatement statement = this.preparedStatementMap.get(query);
+		if (statement == null) {
+			statement = this.session.prepare(query);
+			this.preparedStatementMap.put(query, statement);
+		}
+		ResultSet result = this.session.execute(statement.bind(values));
 		return result.wasApplied();
 	}
 
@@ -235,29 +275,18 @@ public class CassandraDataHandler implements ODataDataHandler {
 				bindParams(column, oldProperties.getValue(column), values, cassandraTableMetaData);
 			}
 		}
-		Statement statement = new SimpleStatement(query, values.toArray());
-		ResultSet result = this.session.execute(statement);
+		PreparedStatement statement = this.preparedStatementMap.get(query);
+		if (statement == null) {
+			statement = this.session.prepare(query);
+			this.preparedStatementMap.put(query, statement);
+		}
+		ResultSet result = this.session.execute(statement.bind(values));
 		return result.wasApplied();
 	}
-
 
 	@Override
 	public Map<String, Map<String, DataColumn>> getTableMetadata() {
 		return this.tableMetaData;
-	}
-
-	@Override
-	public void updatePropertyInTable(String tableName, ODataEntry property)
-			throws ODataServiceFault {
-		List<ColumnMetadata> cassandraTableMetaData = this.session.getCluster().getMetadata().getKeyspace(this.keyspace)
-		                                                          .getTable(tableName).getColumns();
-		for (String column : property.getNames()) {
-			String sql = "UPDATE " + tableName + " SET " + column + "=" + "?";
-			List<Object> values = new ArrayList<>(1);
-			bindParams(column, property.getValue(column), values, cassandraTableMetaData);
-			Statement statement = new SimpleStatement(sql, values.toArray());
-			this.session.execute(statement);
-		}
 	}
 
 	@Override
@@ -277,21 +306,32 @@ public class CassandraDataHandler implements ODataDataHandler {
 
 	@Override
 	public void openTransaction() throws ODataServiceFault {
-		this.transactionAvailable = true;
+		this.transactionAvailable.set(true);
 		// doesn't support
 	}
 
 	@Override
 	public void commitTransaction() {
-		this.transactionAvailable = false;
-
+		this.transactionAvailable.set(false);
 		//doesn't support
 	}
 
 	@Override
 	public void rollbackTransaction() throws ODataServiceFault {
-		this.transactionAvailable = false;
+		this.transactionAvailable.set(false);
 		//doesn't support
+	}
+
+	@Override
+	public void updateReference(String rootTableName, ODataEntry rootTableKeys, String navigationTable,
+	                            ODataEntry navigationTableKeys) throws ODataServiceFault {
+		throw new ODataServiceFault("Cassandra datasources doesn't support references.");
+	}
+
+	@Override
+	public void deleteReference(String rootTableName, ODataEntry rootTableKeys, String navigationTable,
+	                            ODataEntry navigationTableKeys) throws ODataServiceFault {
+		throw new ODataServiceFault("Cassandra datasources doesn't support references.");
 	}
 
 	/**
@@ -386,8 +426,8 @@ public class CassandraDataHandler implements ODataDataHandler {
 				}
 				entry.addValue(columnName, paramValue);
 			}
-		} catch (DataServiceFault dataServiceFault) {
-			throw new ODataServiceFault(dataServiceFault, "Error occurred when creating OData entry.");
+		} catch (DataServiceFault e) {
+			throw new ODataServiceFault(e, "Error occurred when creating OData entry. :" + e.getMessage());
 		}
 		//Set E-Tag to the entity
 		entry.addValue("ETag", ODataUtils.generateETag(this.configID, tableName, entry));
@@ -424,13 +464,11 @@ public class CassandraDataHandler implements ODataDataHandler {
 			                                                 .getTable(tableName).getColumns()) {
 				DataColumn dataColumn;
 				if (this.primaryKeys.get(tableName).contains(columnMetadata.getName())) {
-					dataColumn =
-							new DataColumn(columnMetadata.getName(), getDataType(columnMetadata.getType().getName()),
-							               false);
+					dataColumn = new DataColumn(columnMetadata.getName(),
+					                            getDataType(columnMetadata.getType().getName()), false);
 				} else {
-					dataColumn =
-							new DataColumn(columnMetadata.getName(), getDataType(columnMetadata.getType().getName()),
-							               true);
+					dataColumn = new DataColumn(columnMetadata.getName(),
+					                            getDataType(columnMetadata.getType().getName()), true);
 				}
 				dataColumnMap.put(dataColumn.getColumnName(), dataColumn);
 			}
@@ -497,8 +535,8 @@ public class CassandraDataHandler implements ODataDataHandler {
 					values.add(value);
 					break;
 			}
-		} catch (DataServiceFault dataServiceFault) {
-			throw new ODataServiceFault(dataServiceFault, "Error occurred when binding data.");
+		} catch (DataServiceFault e) {
+			throw new ODataServiceFault(e, "Error occurred when binding data. :" + e.getMessage());
 		}
 	}
 

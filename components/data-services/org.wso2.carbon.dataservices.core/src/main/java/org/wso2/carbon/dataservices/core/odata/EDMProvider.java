@@ -16,7 +16,7 @@
 
 package org.wso2.carbon.dataservices.core.odata;
 
-import org.apache.olingo.commons.api.ODataException;
+import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
 import org.apache.olingo.commons.api.edm.FullQualifiedName;
 import org.apache.olingo.commons.api.edm.provider.CsdlAbstractEdmProvider;
 import org.apache.olingo.commons.api.edm.provider.CsdlEntityContainer;
@@ -107,7 +107,7 @@ public class EDMProvider extends CsdlAbstractEdmProvider {
 	 * @param properties Properties
 	 * @param entityList EntityList
 	 * @param pKeyList   Primary keys list
-	 * @return List of Csdl entity types
+	 * @return List of Csdl entity types (Common Schema Definition Language Entity Type)
 	 * @see CsdlEntityType
 	 */
 	private Map<String, CsdlEntityType> generateEntityTypes(Map<String, List<CsdlProperty>> properties,
@@ -117,6 +117,13 @@ public class EDMProvider extends CsdlAbstractEdmProvider {
 		for (String entityTypeName : entityList) {
 			CsdlEntityType entity = new CsdlEntityType();
 			entity.setName(entityTypeName);
+			for (CsdlProperty property : properties.get(entityTypeName)) {
+				if (EdmPrimitiveTypeKind.Stream.getFullQualifiedName().getFullQualifiedNameAsString()
+				                               .equals(property.getType())) {
+					entity.setHasStream(true);
+					break;
+				}
+			}
 			List<CsdlPropertyRef> keys = pKeyList.get(entityTypeName);
 			//Adding Keys
 			if (keys.size() != 0) {
@@ -245,14 +252,13 @@ public class EDMProvider extends CsdlAbstractEdmProvider {
 	}
 
 	@Override
-	public CsdlEntityType getEntityType(final FullQualifiedName entityTypeName) throws ODataException {
+	public CsdlEntityType getEntityType(final FullQualifiedName entityTypeName) {
 		return csdlEntityTypesMap.get(entityTypeName.getName());
 
 	}
 
 	@Override
-	public CsdlEntitySet getEntitySet(final FullQualifiedName entityContainer, final String entitySetName)
-			throws ODataException {
+	public CsdlEntitySet getEntitySet(final FullQualifiedName entityContainer, final String entitySetName) {
 		if (containerFullQName.equals(entityContainer)) {
 			return csdlEntitySetMap.get(entitySetName);
 		}
@@ -260,18 +266,17 @@ public class EDMProvider extends CsdlAbstractEdmProvider {
 	}
 
 	@Override
-	public List<CsdlSchema> getSchemas() throws ODataException {
+	public List<CsdlSchema> getSchemas() {
 		return csdlSchemaList;
 	}
 
 	@Override
-	public CsdlEntityContainer getEntityContainer() throws ODataException {
+	public CsdlEntityContainer getEntityContainer() {
 		return csdlEntityContainer;
 	}
 
 	@Override
-	public CsdlEntityContainerInfo getEntityContainerInfo(final FullQualifiedName entityContainerName)
-			throws ODataException {
+	public CsdlEntityContainerInfo getEntityContainerInfo(final FullQualifiedName entityContainerName) {
 		if (entityContainerName == null || containerFullQName.equals(entityContainerName)) {
 			return csdlEntityContainerInfo;
 		}

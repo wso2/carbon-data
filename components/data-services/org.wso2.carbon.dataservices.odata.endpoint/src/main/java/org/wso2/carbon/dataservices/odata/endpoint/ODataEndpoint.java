@@ -42,34 +42,28 @@ public class ODataEndpoint {
 		try {
 			String[] serviceParams = getServiceDetails(req.getRequestURI(), tenantDomain);
 			String serviceRootPath;
-			if (serviceParams != null) {
-				if (tenantDomain == null) {
-					tenantDomain = MultitenantConstants.SUPER_TENANT_DOMAIN_NAME;
-					serviceRootPath = "/" + serviceParams[0] + "/" + serviceParams[1];
-				} else {
-					serviceRootPath = "/t/" + tenantDomain + "/" + serviceParams[0] + "/" + serviceParams[1];
+			if (tenantDomain == null) {
+				tenantDomain = MultitenantConstants.SUPER_TENANT_DOMAIN_NAME;
+				serviceRootPath = "/" + serviceParams[0] + "/" + serviceParams[1];
+			} else {
+				serviceRootPath = "/t/" + tenantDomain + "/" + serviceParams[0] + "/" + serviceParams[1];
+			}
+			String serviceKey = serviceParams[0] + serviceParams[1];
+			ODataServiceRegistry registry = ODataServiceRegistry.getInstance();
+			ODataServiceHandler handler = registry.getServiceHandler(serviceKey, tenantDomain);
+			if (handler != null) {
+				if (log.isDebugEnabled()) {
+					log.debug(serviceRootPath + " Service invoked.");
 				}
-				String serviceKey = serviceParams[0] + serviceParams[1];
-				ODataServiceRegistry registry = ODataServiceRegistry.getInstance();
-				ODataServiceHandler handler = registry.getServiceHandler(serviceKey, tenantDomain);
-				if (handler != null) {
-					if (log.isDebugEnabled()) {
-						log.debug(serviceRootPath + " Service invoked.");
-					}
-					handler.process(req, resp, serviceRootPath);
-				} else {
-					if (log.isDebugEnabled()) {
-						log.debug("Couldn't find the ODataService Handler for " + serviceRootPath + " Service.");
-					}
-					resp.setStatus(501);
-				}
+				handler.process(req, resp, serviceRootPath);
 			} else {
 				if (log.isDebugEnabled()) {
-					log.debug("Couldn't find the Service.");
+					log.debug("Couldn't find the ODataService Handler for " + serviceRootPath + " Service.");
 				}
-				resp.setStatus(400);
+				resp.setStatus(501);
 			}
 		} catch (ODataServiceFault oDataServiceFault) {
+			resp.setStatus(400);
 			log.error(oDataServiceFault);
 		}
 	}

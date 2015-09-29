@@ -383,8 +383,7 @@ public class QueryFactory {
         return getSQLQueryForConnectionURL(queryEl, connectionURL);
 	}
 
-	private static SQLQuery createSQLQuery(DataService dataService,	OMElement queryEl) 
-			throws DataServiceFault {
+	private static SQLQuery createSQLQuery(DataService dataService, OMElement queryEl) throws DataServiceFault {
 		String queryId, configId, sql, inputNamespace;
 		boolean returnGeneratedKeys = false;
 		boolean isReturnUpdatedRowCount = false;
@@ -392,30 +391,30 @@ public class QueryFactory {
 		String[] keyColumns;
 		Result result;
 		try {
-		    queryId = getQueryId(queryEl);
-		    configId = getConfigId(queryEl);
-		    sql = getSQLQueryForDatasource(queryEl, dataService, configId);
-		    eventTriggers = getEventTriggers(dataService, queryEl);
-		    String returnRowIdStr = queryEl.getAttributeValue(
-		    		new QName(DBConstants.DBSFields.RETURN_GENERATED_KEYS));
-		    if (returnRowIdStr != null) {
-		    	returnGeneratedKeys = Boolean.parseBoolean(returnRowIdStr);
-		    }
+			queryId = getQueryId(queryEl);
+			configId = getConfigId(queryEl);
+			sql = getSQLQueryForDatasource(queryEl, dataService, configId);
+			eventTriggers = getEventTriggers(dataService, queryEl);
+			String returnRowIdStr = queryEl.getAttributeValue(new QName(DBConstants.DBSFields.RETURN_GENERATED_KEYS));
+			if (returnRowIdStr != null) {
+				returnGeneratedKeys = Boolean.parseBoolean(returnRowIdStr);
+			}
 			String returnUpdatedRowCountStr = queryEl.getAttributeValue(new QName(DBSFields.RETURN_UPDATED_ROWCOUNT));
 			if (null != returnUpdatedRowCountStr) {
 				isReturnUpdatedRowCount = Boolean.parseBoolean(returnUpdatedRowCountStr);
 			}
 			keyColumns = extractKeyColumns(queryEl);
-		    result = getResultFromQueryElement(dataService, queryEl);
-		    inputNamespace = extractQueryInputNamespace(dataService, result, queryEl);
+			result = getResultFromQueryElement(dataService, queryEl);
+			inputNamespace = extractQueryInputNamespace(dataService, result, queryEl);
 		} catch (XMLStreamException e) {
 			throw new DataServiceFault(e, "Error in parsing SQL query element");
 		} catch (SQLException e) {
 			throw new DataServiceFault(e, DBConstants.FaultCodes.CONNECTION_UNAVAILABLE_ERROR, e.getMessage());
 		}
-		SQLQuery query = new SQLQuery(dataService, queryId, configId, returnGeneratedKeys, isReturnUpdatedRowCount, keyColumns,
-				             sql, getQueryParamsFromQueryElement(queryEl), result, eventTriggers[0], eventTriggers[1],
-				             extractAdvancedProps(queryEl), inputNamespace);
+		SQLQuery query = new SQLQuery(dataService, queryId, configId, returnGeneratedKeys, isReturnUpdatedRowCount,
+		                              keyColumns, sql, getQueryParamsFromQueryElement(queryEl), result,
+		                              eventTriggers[0], eventTriggers[1], extractAdvancedProps(queryEl),
+		                              inputNamespace);
 
 		return query;
 	}

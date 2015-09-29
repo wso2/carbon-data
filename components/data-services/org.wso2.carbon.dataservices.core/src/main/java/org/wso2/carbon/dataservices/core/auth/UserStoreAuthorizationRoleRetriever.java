@@ -35,7 +35,8 @@ public class UserStoreAuthorizationRoleRetriever implements AuthorizationRoleRet
     }
 
     @Override
-    public String[] getAllRoles(int tenantId) throws DataServiceFault {
+    public String[] getAllRoles() throws DataServiceFault {
+        int tenantId = DBUtils.getCurrentUserTenantId();
         return DBUtils.getAllRoles(tenantId);
     }
 

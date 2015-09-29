@@ -42,11 +42,10 @@ public interface AuthorizationRoleRetriever {
     /**
      * Method used to get all the user roles in order to display in data service design phase.
      *
-     * @param tenantId to be used when retrieving all roles.
      * @return String array of all user roles.
      * @throws DataServiceFault
      */
-    public String[] getAllRoles(int tenantId) throws DataServiceFault;
+    public String[] getAllRoles() throws DataServiceFault;
 
     /**
      * To set the properties specific to role retriever, if no properties specified, empty map will be passed

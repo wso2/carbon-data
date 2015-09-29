@@ -532,8 +532,7 @@ public class DataServiceAdmin extends AbstractAdmin {
      */
     public String[] getAllRoles() throws AxisFault {
         try {
-            int tenantId = DBUtils.getCurrentUserTenantId();
-            return DataServicesDSComponent.getRoleRetriever().getAllRoles(tenantId);
+            return DataServicesDSComponent.getRoleRetriever().getAllRoles();
         } catch (DataServiceFault e) {
             throw new AxisFault("Error in retrieving role list: " + e.getMessage(), e);
         }

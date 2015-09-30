@@ -18,6 +18,8 @@ package org.wso2.carbon.dataservices.core.odata;
 
 import org.apache.axis2.databinding.utils.ConverterUtil;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.dataservices.common.DBConstants;
 import org.wso2.carbon.dataservices.core.DBUtils;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
@@ -55,7 +57,7 @@ import java.util.Map;
  * @see ODataDataHandler
  */
 public class RDBMSDataHandler implements ODataDataHandler {
-
+    private static final Log log = LogFactory.getLog(RDBMSDataHandler.class);
 	/**
 	 * Table metadata.
 	 */
@@ -261,6 +263,8 @@ public class RDBMSDataHandler implements ODataDataHandler {
 			statement.execute();
 			commitExecution(connection);
 		} catch (SQLException | ParseException e) {
+            log.warn("modify value count - " + modifyValues.getNames().size() + ", primary keys size - "
+                     + primaryKeys.getNames().size() + ", Error - " + e.getMessage(), e); //todo remove this later
 			throw new ODataServiceFault(e, "Error occurred while updating foreign key values. :" + e.getMessage());
 		} finally {
 			releaseResources(null, statement);

@@ -510,14 +510,14 @@
                 <!--<version>${carbon.platform.version}</version>-->
             <!--</dependency>-->
             <dependency>
-                <groupId>org.wso2.carbon.identity</groupId>
+                <groupId>org.wso2.carbon.commons</groupId> <!-- todo change later to identity user.mgt -->
                 <artifactId>org.wso2.carbon.user.mgt.ui</artifactId>
-		        <version>${carbon-identity.version}</version>
+		        <version>${carbon-commons.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon.identity</groupId>
+                <groupId>org.wso2.carbon.commons</groupId>
                 <artifactId>org.wso2.carbon.user.mgt.common</artifactId>
-		        <version>${carbon-identity.version}</version>
+		        <version>${carbon-commons.version}</version>
             </dependency>
             <!--<dependency>-->
                 <!--<groupId>org.wso2.carbon</groupId>-->
@@ -1174,6 +1174,7 @@
 
         <carbon-commons.version>4.4.3</carbon-commons.version>
         <carbon-commons.imp.pkg.version>[4.4,4.5)</carbon-commons.imp.pkg.version>
+        <carbon-commons.user.mgt.imp.pkg.version>0.0.0</carbon-commons.user.mgt.imp.pkg.version> <!-- todo remove this and use identity.imp.pkg.version - rajith -->
 
         <carbon-identity.version>4.5.6</carbon-identity.version>
         <carbon-identity.imp.pkg.version>[4.5,4.6)</carbon-identity.imp.pkg.version>
@@ -1182,7 +1183,7 @@
 
 
 
-        <carbon-deployment.version>4.5.3</carbon-deployment.version>
+        <carbon-deployment.version>4.5.1</carbon-deployment.version>
         <carbon-deployment.feature.imp.version>4.5.0</carbon-deployment.feature.imp.version>
 
         <osgi.imp.pkg.version>[1.7.0,1.8.0)</osgi.imp.pkg.version> <!-- todo change this version to proper version range after osgi bundles are corrected (because export versions are different from bundle version) -rajith -->

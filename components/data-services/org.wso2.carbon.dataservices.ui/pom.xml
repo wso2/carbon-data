@@ -37,11 +37,11 @@
             <artifactId>org.wso2.carbon.ui</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon.identity</groupId>
+            <groupId>org.wso2.carbon.commons</groupId>
             <artifactId>org.wso2.carbon.user.mgt.ui</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon.identity</groupId>
+            <groupId>org.wso2.carbon.commons</groupId>
             <artifactId>org.wso2.carbon.user.mgt.common</artifactId>
         </dependency>
         <dependency>
@@ -109,8 +109,8 @@
                             org.apache.commons.logging;version="${carbon.commons.logging.imp.pkg.version}",
                             org.wso2.carbon.dataservices.ui.stub;version="${dataservices.imp.pkg.version}",
                             org.wso2.carbon.dataservices.ui.stub.admin.core.xsd;version="${dataservices.imp.pkg.version}",
-                            org.wso2.carbon.user.mgt.ui;version="${carbon-identity.imp.pkg.version}",
-                            org.wso2.carbon.user.mgt.stub.types.carbon;version="${carbon-identity.imp.pkg.version}",
+                            org.wso2.carbon.user.mgt.ui;version="${carbon-commons.user.mgt.imp.pkg.version}",
+                            org.wso2.carbon.user.mgt.stub.types.carbon;version="${carbon-commons.user.mgt.imp.pkg.version}",
                             org.apache.commons.io;version="${commons-io.orbit.imp.pkg.version}",
                             org.apache.commons.fileupload;version="${commons-fileupload.orbit.imp.pkg.version}"
                         </Import-Package>

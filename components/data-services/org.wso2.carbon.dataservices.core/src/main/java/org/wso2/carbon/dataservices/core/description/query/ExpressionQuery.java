@@ -46,6 +46,8 @@ public abstract class ExpressionQuery extends Query {
 
 	private int paramCount;
 
+	private static final String QUESTION_MARK = "?";
+
 	public ExpressionQuery(DataService dataService, String queryId, List<QueryParam> queryParams, String query,
 	                       Result result, String configId, EventTrigger inputEventTrigger,
 	                       EventTrigger outputEventTrigger, Map<String, String> advancedProperties,
@@ -88,8 +90,9 @@ public abstract class ExpressionQuery extends Query {
 		Set<String> checkedQueryParams = new HashSet<String>();
 		Set<Integer> processedOrdinalsForNamedParams = new HashSet<Integer>();
 		for (int i = 0; i < paramNames.size(); i++) {
-			if (!paramNames.get(i).equals("?")) {
-				tmpParamName = paramNames.get(i);
+			String tmp = paramNames.get(i);
+			if (!tmp.equals(QUESTION_MARK)) {
+				tmpParamName = tmp;
 				tmpParam = paramMap.get(tmpParamName);
 				if (tmpParam != null) {
 					if (!checkedQueryParams.contains(tmpParamName)) {
@@ -150,7 +153,7 @@ public abstract class ExpressionQuery extends Query {
 		Collections.reverse(values);
 		for (String val : values) {
 			/* replace named params with ?'s */
-			query = query.replaceAll(":" + val, "?");
+			query = query.replaceAll(":" + val, QUESTION_MARK);
 		}
 		return query;
 	}
@@ -166,7 +169,7 @@ public abstract class ExpressionQuery extends Query {
 			} else if (query.charAt(i) == '\"') {
 				doubleQuoteExists = !doubleQuoteExists;
 			} else if (query.charAt(i) == '?' && !(doubleQuoteExists || singleQuoteExists)) {
-				paramNames.add("?");
+				paramNames.add(QUESTION_MARK);
 			} else if (query.charAt(i) == ':' && !(doubleQuoteExists || singleQuoteExists)) {
 				/* check if the string is at the end */
 				if (i + 1 < query.length()) {
@@ -288,7 +291,7 @@ public abstract class ExpressionQuery extends Query {
 	private String generateQuestionMarks(int n) {
 		StringBuilder builder = new StringBuilder();
 		for (int i = 0; i < n; i++) {
-			builder.append("?");
+			builder.append(QUESTION_MARK);
 			if (i + 1 < n) {
 				builder.append(",");
 			}

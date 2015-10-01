@@ -959,7 +959,6 @@ public class ODataAdapter implements ServiceHandler {
 				propertyMap.put(keys.getForeignKey(), (EdmProperty) type.getProperty(property.getName()));
 				property.setName(keys.getForeignKey());
 				properties.add(property);
-
 			}
 		}
 		results = createEntityCollectionFromDataEntryList(linkName, dataHandler
@@ -1455,7 +1454,6 @@ public class ODataAdapter implements ServiceHandler {
 		return new EDMProvider(this.dataHandler.getTableList(), configID, this.namespace, getPropertiesMap(),
 		                       getKeysCsdlMap(), this.dataHandler.getTableList(),
 		                       this.dataHandler.getNavigationProperties());
-
 	}
 
 	private void initializeConnection() throws ODataServiceFault {

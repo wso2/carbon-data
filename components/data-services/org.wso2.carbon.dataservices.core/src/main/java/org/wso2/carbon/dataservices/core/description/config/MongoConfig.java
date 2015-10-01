@@ -90,10 +90,10 @@ public class MongoConfig extends Config {
 
     public MongoClient createNewMongo(Map<String, String> properties) throws DataServiceFault {
         try {
-            if (createCredential(properties) != null) {
+            MongoCredential credential = createCredential(properties);
+            if (credential != null) {
                 return new MongoClient(this.createServerAddresses(this.getServers()),
-                                       Collections.singletonList(createCredential(properties)),
-                                       getMongoClientOptions());
+                                       Collections.singletonList(credential), getMongoClientOptions());
             } else {
                 return new MongoClient(this.createServerAddresses(this.getServers()), getMongoClientOptions());
             }
@@ -105,8 +105,8 @@ public class MongoConfig extends Config {
     @Override
     public boolean isActive() {
         try {
-            Mongo mon = this.createNewMongo(getProperties());
-            return mon != null;
+            Mongo mongo = this.createNewMongo(getProperties());
+            return mongo != null;
         } catch (Exception e) {
             log.error("Error in checking Mongo config availability", e);
             return false;

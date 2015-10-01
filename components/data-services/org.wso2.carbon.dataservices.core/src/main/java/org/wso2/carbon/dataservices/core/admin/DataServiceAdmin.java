@@ -231,7 +231,7 @@ public class DataServiceAdmin extends AbstractAdmin {
 				return message;
 			}
 
-			if (null != passwordAlias && !("").equals(passwordAlias)) {
+			if (null != passwordAlias && !passwordAlias.isEmpty()) {
 				resolvePwd = DBUtils.loadFromSecureVault(passwordAlias);
 			} else {
 				resolvePwd = password;
@@ -239,7 +239,7 @@ public class DataServiceAdmin extends AbstractAdmin {
 
 			Class.forName(driverClass.trim());
 			String message;
-			if (null != username && !("").equals(username)) {
+			if (null != username && !username.isEmpty()) {
 				connection = DriverManager.getConnection(jdbcURL, username, resolvePwd);
 				message = "Database connection is successful with driver class " + driverClass + " , jdbc url " +
 				          jdbcURL + " and user name " + username;
@@ -254,7 +254,7 @@ public class DataServiceAdmin extends AbstractAdmin {
 			return message;
 		} catch (SQLException e) {
 			String message;
-			if (null != username && !("").equals(username)) {
+			if (null != username && !username.isEmpty()) {
 				message = "Could not connect to database " + jdbcURL + " with username " + username;
 			} else {
 				message = "Could not connect to database " + jdbcURL;

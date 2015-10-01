@@ -844,7 +844,7 @@ public final class DBConstants {
         public static final String RDF_RESOURCE = "resource";
         public static final String ROW_ID = "ROW_ID";
         public static final String RETURN_GENERATED_KEYS = "returnGeneratedKeys";
-        public static final String RETURN_UPDATED_ROWCOUNT = "returnUpdatedRowCount";
+        public static final String RETURN_UPDATED_ROW_COUNT = "returnUpdatedRowCount";
         public static final String KEY_COLUMNS = "keyColumns";
         public static final String EXPORT = "export";
         public static final String OPTIONAL = "optional";

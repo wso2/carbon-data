@@ -399,7 +399,7 @@ public class QueryFactory {
 			if (returnRowIdStr != null) {
 				returnGeneratedKeys = Boolean.parseBoolean(returnRowIdStr);
 			}
-			String returnUpdatedRowCountStr = queryEl.getAttributeValue(new QName(DBSFields.RETURN_UPDATED_ROWCOUNT));
+			String returnUpdatedRowCountStr = queryEl.getAttributeValue(new QName(DBSFields.RETURN_UPDATED_ROW_COUNT));
 			if (null != returnUpdatedRowCountStr) {
 				isReturnUpdatedRowCount = Boolean.parseBoolean(returnUpdatedRowCountStr);
 			}

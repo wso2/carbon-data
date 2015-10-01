@@ -524,41 +524,41 @@
         if (setReturnGeneratedKeys.equals("true")) {
            if(dataService.getQuery(queryId) != null) {
               Query returnRowQuery = dataService.getQuery(queryId);
-              Result res = returnRowQuery.getResult();
+              Result resultId = returnRowQuery.getResult();
               if (returnGeneratedKeys.equals("true") && (!hasReturnRowProperty)) {
                   returnRowQuery.setReturnGeneratedKeys(true);
-                  if (res == null || res.getElements().size() == 0) {
-                      res = new Result();
-                      res.setResultWrapper("GeneratedKeys");
-                      res.setRowName("Entry");
-                      res.setUseColumnNumbers("true");
-                      res.setEscapeNonPrintableChar(escapeNonPrintableChar);
-                      returnRowQuery.setResult(res);
+                  if (resultId == null || resultId.getElements().size() == 0) {
+                      resultId = new Result();
+                      resultId.setResultWrapper("GeneratedKeys");
+                      resultId.setRowName("Entry");
+                      resultId.setUseColumnNumbers("true");
+                      resultId.setEscapeNonPrintableChar(escapeNonPrintableChar);
+                      returnRowQuery.setResult(resultId);
                   }
                   Element newElement = new Element();
                   newElement.setDataSourceType("column");
                   newElement.setName("ID");
                   newElement.setDataSourceValue("1");
                   newElement.setxsdType("integer");
-                  res.addElement(newElement);
+                  resultId.addElement(newElement);
               }
            }   
     	} else if (setReturnGeneratedKeys.equals("false")) {
             if (dataService.getQuery(queryId) != null) {
                 Query returnRowQuery = dataService.getQuery(queryId);
-                Result res = returnRowQuery.getResult();
+                Result resultId = returnRowQuery.getResult();
                 if (returnGeneratedKeys.equals("false")) {
                     returnRowQuery.setReturnGeneratedKeys(false);
-                    if (res != null) {
-                        res.removeElement("ID");
+                    if (resultId != null) {
+                        resultId.removeElement("ID");
                         //remove result wrapper only if there are no other result elements exist other than generated key
-                        if (res.getElements() != null && res.getElements().size() == 0) {
-                            res.setResultWrapper("");
-                            res.setRowName("");
-                            res.setUseColumnNumbers("false");
-                            res.setEscapeNonPrintableChar(escapeNonPrintableChar);
+                        if (resultId.getElements() != null && resultId.getElements().size() == 0) {
+                            resultId.setResultWrapper("");
+                            resultId.setRowName("");
+                            resultId.setUseColumnNumbers("false");
+                            resultId.setEscapeNonPrintableChar(escapeNonPrintableChar);
                         }
-                        returnRowQuery.setResult(res);
+                        returnRowQuery.setResult(resultId);
                     }
                 }
             }
@@ -572,40 +572,40 @@
         if (("true").equals(setReturnUpdatedRowCount)) {
            if(null != dataService.getQuery(queryId)) {
               Query returnRowQuery = dataService.getQuery(queryId);
-              Result res = returnRowQuery.getResult();
+              Result resultRowCount = returnRowQuery.getResult();
               if (("true").equals(returnUpdatedRowCount) && (!hasReturnRowProperty)) {
                   returnRowQuery.setReturnUpdatedRowCount(true);
-                  if (null == res || res.getElements().size() == 0) {
-                      res = new Result();
-                      res.setResultWrapper("UpdatedRowCount");
-                      res.setUseColumnNumbers("true");
-                      res.setEscapeNonPrintableChar(escapeNonPrintableChar);
-                      returnRowQuery.setResult(res);
+                  if (null == resultRowCount || resultRowCount.getElements().size() == 0) {
+                      resultRowCount = new Result();
+                      resultRowCount.setResultWrapper("UpdatedRowCount");
+                      resultRowCount.setUseColumnNumbers("true");
+                      resultRowCount.setEscapeNonPrintableChar(escapeNonPrintableChar);
+                      returnRowQuery.setResult(resultRowCount);
                   }
                   Element newElement = new Element();
                   newElement.setDataSourceType("column");
                   newElement.setName("Value");
                   newElement.setDataSourceValue("1");
                   newElement.setxsdType("integer");
-                  res.addElement(newElement);
+                  resultRowCount.addElement(newElement);
               }
            }
         } else if (("false").equals(setReturnUpdatedRowCount)) {
             if (null != dataService.getQuery(queryId)) {
                 Query returnRowQuery = dataService.getQuery(queryId);
-                Result res = returnRowQuery.getResult();
+                Result resultRowCount = returnRowQuery.getResult();
                 if (("false").equals(returnUpdatedRowCount)) {
                     returnRowQuery.setReturnUpdatedRowCount(false);
-                    if (null != res) {
-                        res.removeElement("Value");
+                    if (null != resultRowCount) {
+                        resultRowCount.removeElement("Value");
                         // Remove result wrapper only if there are no other result elements exist other than generated key
-                        if (null != res.getElements() && 0 == res.getElements().size()) {
-                            res.setResultWrapper("");
-                            res.setRowName("");
-                            res.setUseColumnNumbers("false");
-                            res.setEscapeNonPrintableChar(escapeNonPrintableChar);
+                        if (null != resultRowCount.getElements() && 0 == resultRowCount.getElements().size()) {
+                            resultRowCount.setResultWrapper("");
+                            resultRowCount.setRowName("");
+                            resultRowCount.setUseColumnNumbers("false");
+                            resultRowCount.setEscapeNonPrintableChar(escapeNonPrintableChar);
                         }
-                        returnRowQuery.setResult(res);
+                        returnRowQuery.setResult(resultRowCount);
                     }
                 }
             }
@@ -631,36 +631,36 @@
                         CarbonUIMessage.sendCarbonUIMessage(message, CarbonUIMessage.ERROR, request);
                     } else {
                         Query autoResponseQuery = dataService.getQuery(queryId);
-                        Result res = autoResponseQuery.getResult();
-                        if (null == res) {
-                            res = new Result();
-                            res.setResultWrapper("Entries");
-                            res.setRowName("Entry");
-                            autoResponseQuery.setResult(res);
+                        Result resultResponse = autoResponseQuery.getResult();
+                        if (null == resultResponse) {
+                            resultResponse = new Result();
+                            resultResponse.setResultWrapper("Entries");
+                            resultResponse.setRowName("Entry");
+                            autoResponseQuery.setResult(resultResponse);
                         }
                         Query q = dataService.getQuery(queryId);
                         List<String> outputMappingList = Arrays.asList(columnNames);
-                        List<Element> currentOutputMappingList = res.getElements();
+                        List<Element> currentOutputMappingList = resultResponse.getElements();
                         List<String> currentOutputMappingNameList = new ArrayList<String>();
                         if (null != currentOutputMappingList) {
-                            for (Element ele : currentOutputMappingList) {
-                                currentOutputMappingNameList.add(ele.getName());
+                            for (Element newElement : currentOutputMappingList) {
+                                currentOutputMappingNameList.add(newElement.getName());
                             }
                         }
                         for (String name : columnNames) {
                             if (!currentOutputMappingNameList.contains(name)) {
-                                Element el = new Element();
-                                el.setDataSourceType("column");
-                                el.setDataSourceValue(name.trim());
-                                el.setName(name.trim());
-                                el.setxsdType("string");
-                                res.addElement(el);
+                                Element newElement = new Element();
+                                newElement.setDataSourceType("column");
+                                newElement.setDataSourceValue(name.trim());
+                                newElement.setName(name.trim());
+                                newElement.setxsdType("string");
+                                resultResponse.addElement(newElement);
                             }
                         }
                         if (null != outputMappingList && outputMappingList.size() > 0) {
                             for (String name : currentOutputMappingNameList) {
                                 if (!outputMappingList.contains(name)) {
-                                    res.removeElement(name);
+                                    resultResponse.removeElement(name);
                                 }
                             }
                         }

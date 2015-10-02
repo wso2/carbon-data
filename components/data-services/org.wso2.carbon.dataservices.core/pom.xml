@@ -212,6 +212,10 @@
             <groupId>org.wso2.orbit.com.google.api-client</groupId>
             <artifactId>google-api-client</artifactId>
         </dependency>
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

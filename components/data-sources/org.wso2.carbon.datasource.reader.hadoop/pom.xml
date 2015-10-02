@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <parent>
         <groupId>org.wso2.carbon.data</groupId>
@@ -48,7 +49,34 @@
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
-                        <Export-Package>org.wso2.carbon.datasource.reader.hadoop;version="${project.version}"</Export-Package>
+                        <Export-Package>org.wso2.carbon.datasource.reader.hadoop;version="${project.version}"
+                        </Export-Package>
+                        <Import-Package>
+                            !org.wso2.carbon.datasource.reader.hadoop,
+                            org.apache.hadoop.security;version ="${hadoop-client.orbit.imp.pkg.version.}",
+                            org.apache.hadoop.security.authentication.util;version
+                            ="${hadoop-client.orbit.imp.pkg.version.}",
+                            org.apache.hadoop.security.token;version ="${hadoop-client.orbit.imp.pkg.version.}",
+                            org.apache.hadoop.net;version ="${hadoop-client.orbit.imp.pkg.version.}",
+                            org.apache.hadoop.mapreduce;version ="${hadoop-client.orbit.imp.pkg.version.}",
+                            org.apache.hadoop.io.compress.zlib;version ="${hadoop-client.orbit.imp.pkg.version.}",
+                            org.apache.hadoop.io;version ="${hadoop-client.orbit.imp.pkg.version.}",
+                            org.apache.hadoop.conf;version ="${hadoop-client.orbit.imp.pkg.version.}",
+                            org.apache.hadoop.fs;version ="${hadoop-client.orbit.imp.pkg.version.}",
+                            org.apache.hadoop.ipc;version ="${hadoop-client.orbit.imp.pkg.version.}",
+                            org.apache.hadoop.mapred;version ="${hadoop-client.orbit.imp.pkg.version.}",
+                            org.apache.hadoop.util;version ="${hadoop-client.orbit.imp.pkg.version.}",
+                            org.apache.commons.codec.binary;version ="${commons.codec.import.version}",
+                            org.apache.zookeeper.*;version="${zookeeper.import.version}",
+                            com.google.common.*;version ="${guava.import.version}",
+                            com.google.protobuf;version ="${protobuf.import.version}",
+                            org.htrace.*;version="${org.htrace.import.version}",
+                            org.apache.htrace.*;version="${htrace.import.version}",
+                            org.apache.hadoop.hbase;version="${hbase-client.orbit.imp.pkg.version}",
+                            org.wso2.carbon.ndatasource.common;version="${carbon.kernel.imp.pkg.version}",
+                            org.wso2.carbon.ndatasource.common.spi;version="${carbon.kernel.imp.pkg.version}",
+                            org.wso2.carbon.utils;version="${carbon.kernel.imp.pkg.version}"
+                        </Import-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>
                     </instructions>
                 </configuration>

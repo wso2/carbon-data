@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <parent>
         <artifactId>data-sources-features</artifactId>
@@ -13,7 +14,8 @@
     <packaging>pom</packaging>
     <name>WSO2 Carbon - Hadoop Data Source Reader Server Feature</name>
     <url>http://wso2.org</url>
-    <description>This feature contains the bundles required for the Hadoop Data Source Reader Implementation</description>
+    <description>This feature contains the bundles required for the Hadoop Data Source Reader Implementation
+    </description>
 
     <dependencies>
         <dependency>
@@ -27,6 +29,38 @@
         <dependency>
             <groupId>org.wso2.orbit.org.apache.hbase</groupId>
             <artifactId>hbase-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.org.apache.htrace</groupId>
+            <artifactId>htrace-core-apache</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.org.htrace</groupId>
+            <artifactId>htrace-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.com.google.protobuf.fragment</groupId>
+            <artifactId>protobuf-java-fragment</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.zookeeper.wso2</groupId>
+            <artifactId>apache-zookeeper</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-codec.wso2</groupId>
+            <artifactId>commons-codec</artifactId>
         </dependency>
     </dependencies>
 
@@ -56,9 +90,18 @@
                                 <bundleDef>org.wso2.carbon.data:org.wso2.carbon.datasource.reader.hadoop</bundleDef>
                                 <bundleDef>org.wso2.orbit.org.apache.hadoop:hadoop-client</bundleDef>
                                 <bundleDef>org.wso2.orbit.org.apache.hbase:hbase-client</bundleDef>
+                                <bundleDef>com.google.protobuf:protobuf-java</bundleDef>
+                                <bundleDef>org.wso2.orbit.com.google.protobuf.fragment:protobuf-java-fragment
+                                </bundleDef>
+                                <bundleDef>org.wso2.orbit.org.apache.htrace:htrace-core-apache</bundleDef>
+                                <bundleDef>org.wso2.orbit.org.htrace:htrace-core</bundleDef>
+                                <bundleDef>commons-codec.wso2:commons-codec</bundleDef>
+                                <bundleDef>com.google.guava:guava</bundleDef>
+                                <bundleDef>org.apache.zookeeper.wso2:apache-zookeeper</bundleDef>
                             </bundles>
                             <importFeatures>
-                                <importFeatureDef>org.wso2.carbon.core.server:${carbon.kernel.version}</importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.core.server:${carbon.kernel.version}
+                                </importFeatureDef>
                             </importFeatures>
                         </configuration>
                     </execution>

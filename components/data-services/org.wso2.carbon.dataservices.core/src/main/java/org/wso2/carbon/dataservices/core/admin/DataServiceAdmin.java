@@ -18,6 +18,10 @@
  */
 package org.wso2.carbon.dataservices.core.admin;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
 import com.google.gdata.data.spreadsheet.CellFeed;
 import com.google.gdata.util.AuthenticationException;
@@ -279,89 +283,109 @@ public class DataServiceAdmin extends AbstractAdmin {
 		}
 	}
 
+    /**
+     * This will test the connection(retrieve CallFeed) of a Google spreadsheet
+     * document. If connection can be made this method will return the status as
+     * String, if not, failure String will be return.
+     *
+     * @param user
+     *            - user name
+     * @param password
+     *            - password
+     * @param visibility
+     *            - Whether its private or public
+     * @param documentURL
+     *            - Google spreadsheet URL
+     * @return string State
+     */
 
-	/**
-	 * This will test the connection(retrieve CallFeed) of a Google spreadsheet
-	 * document. If connection can be made this method will return the status as
-	 * String, if not, failure String will be return.
-	 *
-	 * @param user
-	 *            - user name
-	 * @param password
-	 *            - password
-	 * @param visibility
-	 *            - Whether its private or public
-	 * @param documentURL
-	 *            - Google spreadsheet URL
-	 * @return string State
-	 */
-	public String testGSpreadConnection(String user, String password, String visibility,
-			String documentURL, String passwordAlias) {
-		String resolvePwd;
-		if (DBUtils.isEmptyString(documentURL)) {
-			String message = "Document URL is empty";
-			log.debug(message);
-			return message;
-		}
-		String key;
-		SpreadsheetService service = new SpreadsheetService("GSpread Connection Service");
-		try {
-			key = GSpreadConfig.extractKey(documentURL);
-		} catch (DataServiceFault e) {
-			String message = "Invalid documentURL:" + documentURL;
-			log.error(message, e);
-			return message;
-		}
-		
-		if (passwordAlias != null && !passwordAlias.equals("")) {
-			resolvePwd = DBUtils.loadFromSecureVault(passwordAlias);
-		} else {
-			resolvePwd = password;
-		}
-		if (!visibility.equals("public")) {
-			if (DBUtils.isEmptyString(user)) {
-				String message = "User name field is empty";
-				log.error(message);
-				return message;
-			}
-			if (DBUtils.isEmptyString(resolvePwd)) {
-				String message = "Password field is empty";
-				log.error(message);
-				return message;
-			}
-			try {
-				service.setUserCredentials(user, resolvePwd);
-			} catch (AuthenticationException e) {
-				String message = "Invalid User Credentials";
-				log.error(message,e);
-				return message;
-			}
-		}
-		String worksheetFeedURL = GSpreadConfig.BASE_WORKSHEET_URL + key + "/" + visibility
-				+ "/basic";
-	    try {
-			URL url = new URL(worksheetFeedURL);
-			try {
-				service.getFeed(url,  CellFeed.class);
-				String message = "Google spreadsheet connection is successfull ";
-				log.debug(message);
-				return message;
-			} catch (IOException e) {
-				String message = "URL Not found:" + documentURL;
-				log.error(message,e);
-				return message;
-			} catch (ServiceException e) {
-				String message = "URL Not found:" + documentURL;
-				log.error(message,e);
-				return message;
-			}
-		} catch (MalformedURLException e) {
-			String message = "Invalid documentURL:" + documentURL;
-			log.error(message,e);
-			return message;
-		}
+    /**
+     * This will test the connection(retrieve CallFeed) of a Google spreadsheet
+     * document. If connection can be made this method will return the status as
+     * String, if not, failure String will be return.
+     *
+     * @param clientId from developer console
+     * @param clientSecret from developer console
+     * @param refreshToken generated refresh token
+     * @param visibility Whether its private or public
+     * @param documentURL Google spreadsheet URL
+     * @return string State
+     */
+    public String testGSpreadConnection(String clientId, String clientSecret, String refreshToken, String visibility,
+                                        String documentURL) {
+        if (DBUtils.isEmptyString(documentURL)) {
+            String message = "Document URL is empty";
+            log.debug(message);
+            return message;
+        }
+        String key;
+        SpreadsheetService service = new SpreadsheetService("GSpread Connection Service");
+        try {
+            key = GSpreadConfig.extractKey(documentURL);
+        } catch (DataServiceFault e) {
+            String message = "Invalid documentURL:" + documentURL;
+            log.error(message, e);
+            return message;
+        }
 
-	}
+        if (!visibility.equals("public")) {
+            if (DBUtils.isEmptyString(clientId)) {
+                String message = "clientId field is empty";
+                log.error(message);
+                return message;
+            }
+            if (DBUtils.isEmptyString(clientSecret)) {
+                String message = "clientSecret field is empty";
+                log.error(message);
+                return message;
+            }
+            if (DBUtils.isEmptyString(refreshToken)) {
+                String message = "refreshToken field is empty";
+                log.error(message);
+                return message;
+            }
+        }
+
+        HttpTransport httpTransport = new NetHttpTransport();
+        JacksonFactory jsonFactory = new JacksonFactory();
+        GoogleCredential credential = new GoogleCredential.Builder()
+                .setClientSecrets(clientId, clientSecret)
+                .setTransport(httpTransport)
+                .setJsonFactory(jsonFactory)
+                .build();
+        credential.setRefreshToken(refreshToken);
+
+        String worksheetFeedURL = GSpreadConfig.BASE_WORKSHEET_URL + key + "/" + visibility
+                                  + "/basic";
+        try {
+            URL url = new URL(worksheetFeedURL);
+            try {
+                credential.refreshToken();
+                service.setOAuth2Credentials(credential);
+                service.getFeed(url,  CellFeed.class);
+                String message = "Google spreadsheet connection is successfull ";
+                log.debug(message);
+                return message;
+            } catch (AuthenticationException e) {
+                String message = "Invalid Credentials";
+                log.error(message,e);
+                return message;
+            } catch (IOException e) {
+                String message = "URL Not found:" + documentURL;
+                log.error(message,e);
+                return message;
+            } catch (ServiceException e) {
+                String message = "URL Not found:" + documentURL;
+                log.error(message,e);
+                return message;
+            }
+        } catch (MalformedURLException e) {
+            String message = "Invalid documentURL:" + documentURL;
+            log.error(message,e);
+            return message;
+        }
+
+    }
 
 	/**
 	 * Return data services

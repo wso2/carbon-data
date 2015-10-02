@@ -19,59 +19,46 @@
     <wsdl:types>
         <xs:schema xmlns:ax291="http://script.core.dataservices.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://admin.core.dataservices.carbon.wso2.org">
             <xs:import namespace="http://script.core.dataservices.carbon.wso2.org/xsd"/>
-            <xs:element name="getDataServiceContentAsString">
+            <xs:element name="DataServiceAdminException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="serviceId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="DataServiceAdminException" nillable="true" type="ns:Exception"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getDataServiceContentAsStringResponse">
+            <xs:complexType name="Exception">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="Message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="getDSService">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="saveDataService">
-                <xs:complexType>
-                    <xs:sequence>
+                        <xs:element minOccurs="0" name="dataSourceId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="dbName" nillable="true" type="xs:string"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="schemas" nillable="true" type="xs:string"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="tableNames" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="singleService" type="xs:boolean"/>
                         <xs:element minOccurs="0" name="serviceName" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="serviceHierarchy" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="serviceContents" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="serviceNamespace" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="testJDBCConnection">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="driverClass" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="jdbcURL" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="username" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="password" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="passwordAlias" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="testJDBCConnectionResponse">
+            <xs:element name="getDSServiceResponse">
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="testGSpreadConnection">
+            <xs:element name="validateJSONMapping">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="user" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="password" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="visibility" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="documentURL" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="passwordAlias" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="jsonMapping" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="testGSpreadConnectionResponse">
+            <xs:element name="validateJSONMappingResponse">
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
@@ -132,18 +119,6 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="DataServiceAdminException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="DataServiceAdminException" nillable="true" type="ns:Exception"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:complexType name="Exception">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="Message" nillable="true" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
             <xs:element name="getOutputColumnNames">
                 <xs:complexType>
                     <xs:sequence>
@@ -253,34 +228,59 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getDSService">
+            <xs:element name="getDataServiceContentAsString">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="dataSourceId" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="dbName" nillable="true" type="xs:string"/>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="schemas" nillable="true" type="xs:string"/>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="tableNames" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="singleService" type="xs:boolean"/>
-                        <xs:element minOccurs="0" name="serviceName" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="serviceNamespace" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="serviceId" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getDSServiceResponse">
+            <xs:element name="getDataServiceContentAsStringResponse">
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="validateJSONMapping">
+            <xs:element name="saveDataService">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="jsonMapping" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="serviceName" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="serviceHierarchy" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="serviceContents" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="validateJSONMappingResponse">
+            <xs:element name="testJDBCConnection">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="driverClass" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="jdbcURL" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="username" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="password" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="passwordAlias" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="testJDBCConnectionResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="testGSpreadConnection">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="clientId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="clientSecret" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="refreshToken" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="visibility" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="documentURL" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="testGSpreadConnectionResponse">
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>

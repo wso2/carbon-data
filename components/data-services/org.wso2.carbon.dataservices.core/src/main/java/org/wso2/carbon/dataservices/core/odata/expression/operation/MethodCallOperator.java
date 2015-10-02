@@ -101,16 +101,13 @@ public class MethodCallOperator {
 	public VisitorOperand substring() throws ODataApplicationException {
 		final TypedOperand valueOperand = parameters.get(0).asTypedOperand();
 		final TypedOperand startOperand = parameters.get(1).asTypedOperand();
-
 		if (valueOperand.isNull() || startOperand.isNull()) {
 			return new TypedOperand(null, ODataConstants.primitiveString);
 		} else if (valueOperand.is(ODataConstants.primitiveString) && startOperand.isIntegerType()) {
 			final String value = valueOperand.getTypedValue(String.class);
 			int start = Math.min(startOperand.getTypedValue(BigInteger.class).intValue(), value.length());
 			start = start < 0 ? 0 : start;
-
 			int end = value.length();
-
 			if (parameters.size() == 3) {
 				final TypedOperand lengthOperand = parameters.get(2).asTypedOperand();
 				if (lengthOperand.isNull()) {
@@ -318,7 +315,6 @@ public class MethodCallOperator {
 
 	private List<String> getParametersAsString() throws ODataApplicationException {
 		List<String> result = new ArrayList<>();
-
 		for (VisitorOperand param : parameters) {
 			TypedOperand operand = param.asTypedOperand();
 			if (operand.isNull()) {

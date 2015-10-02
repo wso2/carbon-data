@@ -58,7 +58,6 @@ public class TypedOperand extends VisitorOperand {
 		} else if (isNull()) {
 			return new TypedOperand(null, asTypes[0]);
 		}
-
 		Object newValue = null;
 		for (EdmPrimitiveType asType : asTypes) {
 			// Use BigDecimal for unlimited precision
@@ -78,19 +77,16 @@ public class TypedOperand extends VisitorOperand {
 					// Nothing to do
 				}
 			}
-
 			if (newValue != null) {
 				return new TypedOperand(newValue, asType);
 			}
 		}
-
 		throw new ODataApplicationException("Cast failed", HttpStatusCode.BAD_REQUEST.getStatusCode(), Locale.ROOT);
 	}
 
 	public TypedOperand castToCommonType(final VisitorOperand otherOperand) throws ODataApplicationException {
 		final TypedOperand other = otherOperand.asTypedOperand();
 		final EdmType oType = other.getType();
-
 		// In case of numeric values make sure that the EDM type is equals, check also the java type.
 		// So it is possible, that there is an conversation even if the same
 		// EdmType is provided.
@@ -103,7 +99,6 @@ public class TypedOperand extends VisitorOperand {
 		} else if (is(ODataConstants.primitiveNull) || other.is(ODataConstants.primitiveNull)) {
 			return this;
 		}
-
 		if (type.equals(ODataConstants.primitiveDouble) || oType.equals(ODataConstants.primitiveDouble)) {
 			return asTypedOperand(ODataConstants.primitiveDouble);
 		} else if (type.equals(ODataConstants.primitiveSingle) || oType.equals(ODataConstants.primitiveSingle)) {
@@ -160,7 +155,6 @@ public class TypedOperand extends VisitorOperand {
 	private String getLiteral(final Object value) throws EdmPrimitiveTypeException {
 		final EdmProperty edmProperty = getEdmProperty();
 		String uriLiteral;
-
 		if (edmProperty != null) {
 			uriLiteral = ((EdmPrimitiveType) type)
 					.valueToString(value, edmProperty.isNullable(), edmProperty.getMaxLength(),
@@ -168,7 +162,6 @@ public class TypedOperand extends VisitorOperand {
 		} else {
 			uriLiteral = ((EdmPrimitiveType) type).valueToString(value, null, null, null, null, null);
 		}
-
 		return ((EdmPrimitiveType) type).toUriLiteral(uriLiteral);
 	}
 }

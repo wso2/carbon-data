@@ -32,6 +32,7 @@
 <jsp:useBean id="dataService" class="org.wso2.carbon.dataservices.ui.beans.Data" scope="session"/>
 <jsp:useBean id="validators" class="java.util.ArrayList" scope="session" />
 <%
+    final String ALL = "ALL";
     //retrieve form values set in addQuery.jsp page
     String serviceName = request.getParameter("serviceName");
     String queryId = request.getParameter("queryId");
@@ -626,7 +627,7 @@
                     columnNames = client.getOutputColumnNames(sql);
                 }
                 if ((null != columnNames) && (columnNames.length > 0)) {
-                    if ("ALL".equals(columnNames[0])) {
+                    if (ALL.equals(columnNames[0])) {
                         String message = "Please Enter column names to generate the response";
                         CarbonUIMessage.sendCarbonUIMessage(message, CarbonUIMessage.ERROR, request);
                     } else {

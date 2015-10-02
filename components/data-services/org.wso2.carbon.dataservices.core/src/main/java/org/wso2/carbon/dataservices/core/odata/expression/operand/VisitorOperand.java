@@ -37,7 +37,6 @@ public abstract class VisitorOperand {
 		defaultTypeMapping.put(ODataConstants.primitiveInt16, BigInteger.class);
 		defaultTypeMapping.put(ODataConstants.primitiveInt32, BigInteger.class);
 		defaultTypeMapping.put(ODataConstants.primitiveInt64, BigInteger.class);
-
 		defaultTypeMapping.put(ODataConstants.primitiveSingle, BigDecimal.class);
 		defaultTypeMapping.put(ODataConstants.primitiveDouble, BigDecimal.class);
 		defaultTypeMapping.put(ODataConstants.primitiveDecimal, BigDecimal.class);
@@ -55,7 +54,6 @@ public abstract class VisitorOperand {
 
 	protected Object castTo(final String value, final EdmPrimitiveType type) throws EdmPrimitiveTypeException {
 		final EdmProperty edmProperty = getEdmProperty();
-
 		if (edmProperty != null) {
 			return type.valueOfString(value, edmProperty.isNullable(), edmProperty.getMaxLength(),
 			                          edmProperty.getPrecision(), edmProperty.getScale(), edmProperty.isUnicode(),

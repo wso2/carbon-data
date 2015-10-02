@@ -39,7 +39,6 @@ public class BinaryOperator {
 			throws ODataApplicationException {
 		left = leftOperand.asTypedOperand();
 		right = rightOperand.asTypedOperand();
-
 		left = left.castToCommonType(right);
 		right = right.castToCommonType(left);
 	}
@@ -52,7 +51,6 @@ public class BinaryOperator {
 			} else if (Boolean.FALSE.equals(left.getValue()) || Boolean.FALSE.equals(right.getValue())) {
 				result = false;
 			}
-
 			return new TypedOperand(result, ODataConstants.primitiveBoolean);
 		} else {
 			throw new ODataApplicationException("Add operator needs two binary operands",
@@ -68,7 +66,6 @@ public class BinaryOperator {
 			} else if (Boolean.FALSE.equals(left.getValue()) && Boolean.FALSE.equals(right.getValue())) {
 				result = false;
 			}
-
 			return new TypedOperand(result, ODataConstants.primitiveBoolean);
 		} else {
 			throw new ODataApplicationException("Or operator needs two binary operands",
@@ -116,7 +113,6 @@ public class BinaryOperator {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private boolean binaryComparison(final int... expect) {
 		int result;
-
 		if (left.isNull() && right.isNull()) {
 			result = 0; // null is equals to null
 		} else {
@@ -132,13 +128,11 @@ public class BinaryOperator {
 				result = left.getValue().equals(right.getValue()) ? 0 : 1;
 			}
 		}
-
 		for (int expectedValue : expect) {
 			if (expectedValue == result) {
 				return true;
 			}
 		}
-
 		return false;
 	}
 
@@ -202,57 +196,47 @@ public class BinaryOperator {
 
 	private VisitorOperand dateArithmeticOperation(final BinaryOperatorKind operator) throws ODataApplicationException {
 		VisitorOperand result = null;
-
 		if (left.is(ODataConstants.primitiveDate)) {
 			if (right.is(ODataConstants.primitiveDate) && operator == BinaryOperatorKind.SUB) {
 				long millis = left.getTypedValue(Calendar.class).getTimeInMillis() -
 				              left.getTypedValue(Calendar.class).getTimeInMillis();
-
 				result = new TypedOperand(new BigDecimal(millis).divide(ODataConstants.FACTOR_SECOND),
 				                          ODataConstants.primitiveDuration);
 			} else if (right.is(ODataConstants.primitiveDuration) && operator == BinaryOperatorKind.ADD) {
 				long millis = left.getTypedValue(Calendar.class).getTimeInMillis() +
 				              (right.getTypedValue(BigDecimal.class).longValue() * ODataConstants.FACTOR_SECOND_INT);
-
 				result = new TypedOperand(new Timestamp(millis), ODataConstants.primitiveDateTimeOffset);
 			} else if (right.is(ODataConstants.primitiveDuration) && operator == BinaryOperatorKind.SUB) {
 				long millis = left.getTypedValue(Calendar.class).getTimeInMillis() -
 				              (right.getTypedValue(BigDecimal.class).longValue() * ODataConstants.FACTOR_SECOND_INT);
-
 				result = new TypedOperand(new Timestamp(millis), ODataConstants.primitiveDateTimeOffset);
 			}
 		} else if (left.is(ODataConstants.primitiveDuration)) {
 			if (right.is(ODataConstants.primitiveDuration) && operator == BinaryOperatorKind.ADD) {
 				long seconds = left.getTypedValue(BigDecimal.class).longValue() +
 				               right.getTypedValue(BigDecimal.class).longValue();
-
 				result = new TypedOperand(new BigDecimal(seconds), ODataConstants.primitiveDuration);
 			} else if (right.is(ODataConstants.primitiveDuration) && operator == BinaryOperatorKind.SUB) {
 				long seconds = left.getTypedValue(BigDecimal.class).longValue() -
 				               right.getTypedValue(BigDecimal.class).longValue();
-
 				result = new TypedOperand(new BigDecimal(seconds), ODataConstants.primitiveDuration);
 			}
 		} else if (left.is(ODataConstants.primitiveDateTimeOffset)) {
 			if (right.is(ODataConstants.primitiveDuration) && operator == BinaryOperatorKind.ADD) {
 				long millis = left.getTypedValue(Timestamp.class).getTime() +
 				              (right.getTypedValue(BigDecimal.class).longValue() * ODataConstants.FACTOR_SECOND_INT);
-
 				result = new TypedOperand(new Timestamp(millis), ODataConstants.primitiveDateTimeOffset);
 			} else if (right.is(ODataConstants.primitiveDuration) && operator == BinaryOperatorKind.SUB) {
 				long millis = left.getTypedValue(Timestamp.class).getTime() -
 				              (right.getTypedValue(BigDecimal.class).longValue() * ODataConstants.FACTOR_SECOND_INT);
-
 				result = new TypedOperand(new Timestamp(millis), ODataConstants.primitiveDateTimeOffset);
 			} else if (right.is(ODataConstants.primitiveDateTimeOffset) && operator == BinaryOperatorKind.SUB) {
 				long millis =
 						left.getTypedValue(Timestamp.class).getTime() - right.getTypedValue(Timestamp.class).getTime();
-
 				result = new TypedOperand(new BigDecimal(millis).divide(ODataConstants.FACTOR_SECOND),
 				                          ODataConstants.primitiveDuration);
 			}
 		}
-
 		if (result == null) {
 			throw new ODataApplicationException("Invalid operation / operand",
 			                                    HttpStatusCode.BAD_REQUEST.getStatusCode(), Locale.ROOT);
@@ -264,7 +248,6 @@ public class BinaryOperator {
 	private BigDecimal decimalArithmeticOperation(final BinaryOperatorKind operator) throws ODataApplicationException {
 		final BigDecimal left = this.left.getTypedValue(BigDecimal.class);
 		final BigDecimal right = this.right.getTypedValue(BigDecimal.class);
-
 		switch (operator) {
 			case ADD:
 				return left.add(right);
@@ -283,7 +266,6 @@ public class BinaryOperator {
 	private BigInteger integerArithmeticOperation(final BinaryOperatorKind operator) throws ODataApplicationException {
 		final BigInteger left = this.left.getTypedValue(BigInteger.class);
 		final BigInteger right = this.right.getTypedValue(BigInteger.class);
-
 		switch (operator) {
 			case ADD:
 				return left.add(right);

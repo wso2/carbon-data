@@ -22,9 +22,16 @@ import org.apache.olingo.commons.api.edm.constants.EdmTypeKind;
 
 public final class EdmNull implements EdmPrimitiveType {
 
-  private static final EdmNull instance = new EdmNull();
+  private static EdmNull instance;
 
   public static EdmNull getInstance() {
+    if (instance == null) {
+      synchronized (EdmNull.class) {
+        if (instance == null) {
+          instance = new EdmNull();
+        }
+      }
+    }
     return instance;
   }
 

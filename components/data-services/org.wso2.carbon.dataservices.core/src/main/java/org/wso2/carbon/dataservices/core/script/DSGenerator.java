@@ -108,31 +108,32 @@ public class DSGenerator {
 	 * 
 	 * 
 	 */
-	public DSGenerator(String dataSourceId, String dbName, String[] schemas,
-			String[] tableNames, boolean singleService,String nameSpace,String serviceName) throws Exception {
+	public DSGenerator(String dataSourceId, String dbName, String[] schemas, String[] tableNames, boolean singleService,
+	                   String nameSpace, String serviceName) throws Exception {
 		this.DSErrorList = new ArrayList<String>();
+		Connection connection = null;
 		try {
-			Connection connection;
 			String[] tableNameList = tableNames;
 			if (dataSourceId != null) {
 				connection = createConnection(dataSourceId);
 				DatabaseMetaData metaObject = connection.getMetaData();
 				if (tableNameList.length == 0) {
-					tableNameList = DSGenerator.getTableList(connection,
-							dbName, schemas);
+					tableNameList = DSGenerator.getTableList(connection, dbName, schemas);
 				}
 				if (singleService) {
-					this.generatedService = generateService(dataSourceId,
-							dbName, schemas, tableNameList, metaObject,nameSpace,serviceName);
+					this.generatedService = generateService(dataSourceId, dbName, schemas, tableNameList, metaObject,
+					                                        nameSpace, serviceName);
 				} else {
-					this.generatedServiceList = generateServices(dataSourceId,
-							dbName, schemas, tableNameList, metaObject,nameSpace);
+					this.generatedServiceList = generateServices(dataSourceId, dbName, schemas, tableNameList,
+					                                             metaObject, nameSpace);
 				}
-				connection.close();
 			}
 		} catch (Exception e) {
-			log.error("Meta Object initialization failed due to ", e);
-                        throw new Exception("Meta Object initialization failed due to : " + e.getMessage());
+			throw new Exception("Meta Object initialization failed due to : " + e.getMessage());
+		} finally {
+			if (connection != null) {
+				connection.close();
+			}
 		}
 	}
 
@@ -189,13 +190,11 @@ public class DSGenerator {
 		List<DataService> serviceList = new ArrayList<DataService>();
 		if (schemas.length != 0) {
 			for (String schema : schemas) {
-				makeServices(dbName, tableNames, metaData, serviceList, schema, datasourceId,
-				             serviceNamespace);
+				makeServices(dbName, tableNames, metaData, serviceList, schema, datasourceId, serviceNamespace);
 			}
 		} else {
 			String schema = null;
-			makeServices(dbName, tableNames, metaData, serviceList, schema, datasourceId,
-			             serviceNamespace);
+			makeServices(dbName, tableNames, metaData, serviceList, schema, datasourceId, serviceNamespace);
 		}
 		return serviceList;
 	}
@@ -301,33 +300,56 @@ public class DSGenerator {
 		}
 	}
 
-	public static String[] getTableList(String datasourceId, String dbName,
-			String[] schemas) throws SQLException, DataServiceFault {
-		if (datasourceId != null) {
-			Connection connection = createConnection(datasourceId);
-			String tableList[] =DSGenerator.getTableList(connection, dbName, schemas);
-			connection.close();
-			return tableList;
-		} else {
-			return null;
+	public static String[] getTableList(String datasourceId, String dbName, String[] schemas) throws DataServiceFault {
+		Connection connection = null;
+		try {
+			if (datasourceId != null) {
+				connection = createConnection(datasourceId);
+				return DSGenerator.getTableList(connection, dbName, schemas);
+			} else {
+				return null;
+			}
+		} catch (SQLException e) {
+			throw new DataServiceFault("Error in retrieving table list : " + e.getMessage());
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					//ignore
+				}
+			}
 		}
 	}
 
-	public static String[] getTableList(String url, String driver,
-			String userName, String password, String dbName, String[] schemas)
-			throws ClassNotFoundException, SQLException {
-		if ((url != null) && (driver != null) && (userName != null)
-				&& (password != null)) {
-			Class.forName(driver);
-			Connection connection;
-			if (!userName.isEmpty()) {
-				connection = DriverManager.getConnection(url, userName, password);
+	public static String[] getTableList(String url, String driver, String userName, String password, String dbName,
+	                                    String[] schemas) throws DataServiceFault {
+		Connection connection = null;
+		try {
+			if ((url != null) && (driver != null) && (userName != null) && (password != null)) {
+				Class.forName(driver);
+				if (!userName.isEmpty()) {
+					connection = DriverManager.getConnection(url, userName, password);
+				} else {
+					connection = DriverManager.getConnection(url);
+				}
+				return DSGenerator.getTableList(connection, dbName, schemas);
 			} else {
-				connection = DriverManager.getConnection(url);
+				return null;
 			}
-			return DSGenerator.getTableList(connection, dbName, schemas);
-		} else {
-			return null;
+		} catch (ClassNotFoundException e) {
+			throw new DataServiceFault(
+					"Error in retrieving table list, Error loading Driver class : " + e.getMessage());
+		} catch (SQLException e) {
+			throw new DataServiceFault("Error in retrieving table list : " + e.getMessage());
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					//
+				}
+			}
 		}
 	}
 
@@ -345,9 +367,7 @@ public class DSGenerator {
 			} else {
                tableList = getTableNamesList(mObject, dbName, null);
 			}
-			String str[] = tableList.toArray(new String[tableList.size()]);
-			connection.close();
-			return str;
+			return tableList.toArray(new String[tableList.size()]);
 		} else {
 			return null;
 		}
@@ -365,13 +385,20 @@ public class DSGenerator {
     }
 
 	public static String[] getSchemas(String datasourceId) throws Exception {
-		if (datasourceId != null) {
-			Connection connection = createConnection(datasourceId);
-			String schemas[] =  DSGenerator.getSchemas(connection);
-			connection.close();
-			return schemas;
-		} else {
-			return null;
+		Connection connection = null;
+		try {
+			if (datasourceId != null) {
+				connection = createConnection(datasourceId);
+				return DSGenerator.getSchemas(connection);
+			} else {
+				return null;
+			}
+		} catch (SQLException e) {
+			throw new DataServiceFault("Error in retrieving schema list : " + e.getMessage());
+		} finally {
+			if (connection != null) {
+				connection.close();
+			}
 		}
 	}
 
@@ -384,7 +411,6 @@ public class DSGenerator {
 				schemaList.add(schemas.getString(DBConstants.DataServiceGenerator.TABLE_SCHEM));
 			}
 			String str[] = schemaList.toArray(new String[schemaList.size()]);
-			connection.close();
 			return str;
 		} else {
 			return null;

@@ -109,8 +109,8 @@
                             org.apache.commons.logging;version="${carbon.commons.logging.imp.pkg.version}",
                             org.wso2.carbon.dataservices.ui.stub;version="${dataservices.imp.pkg.version}",
                             org.wso2.carbon.dataservices.ui.stub.admin.core.xsd;version="${dataservices.imp.pkg.version}",
-                            org.wso2.carbon.user.mgt.ui;version="${carbon-commons.imp.pkg.version}",
-                            org.wso2.carbon.user.mgt.stub.types.carbon;version="${carbon-commons.imp.pkg.version}",
+                            org.wso2.carbon.user.mgt.ui;version="${carbon-commons.user.mgt.imp.pkg.version}",
+                            org.wso2.carbon.user.mgt.stub.types.carbon;version="${carbon-commons.user.mgt.imp.pkg.version}",
                             org.apache.commons.io;version="${commons-io.orbit.imp.pkg.version}",
                             org.apache.commons.fileupload;version="${commons-fileupload.orbit.imp.pkg.version}"
                         </Import-Package>

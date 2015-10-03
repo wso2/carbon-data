@@ -98,7 +98,7 @@
                                 <importBundleDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.common</importBundleDef>
                             </importBundles>
                             <importFeatures>
-                                <importFeatureDef>org.wso2.carbon.service.mgt.ui:${carbon-deployment.version}</importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.service.mgt.ui:${carbon-deployment.feature.imp.version}</importFeatureDef>
                                 <importFeatureDef>org.wso2.carbon.ndatasource.ui:${carbon-commons.version}</importFeatureDef>
                             </importFeatures>
                         </configuration>

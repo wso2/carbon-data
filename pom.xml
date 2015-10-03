@@ -32,6 +32,7 @@
         <module>features/dbconsole</module>
         <!--<module>features/ndata-services</module>-->
         <module>features/data-sources</module>
+        <module>features/categories</module>
     </modules>
 
     <dependencyManagement>
@@ -180,7 +181,7 @@
                         <artifactId>org.wso2.carbon.event.stub</artifactId>
                     </exclusion>
                     <exclusion>
-                        <groupId>org.wso2.carbon.commons</groupId>
+                        <groupId>org.wso2.carbon.commons</groupId> <!-- todo need to check this as well - rajith -->
                         <artifactId>org.wso2.carbon.user.mgt.ui</artifactId>
                     </exclusion>
                     <exclusion>
@@ -509,7 +510,7 @@
                 <!--<version>${carbon.platform.version}</version>-->
             <!--</dependency>-->
             <dependency>
-                <groupId>org.wso2.carbon.commons</groupId>
+                <groupId>org.wso2.carbon.commons</groupId> <!-- todo change later to identity user.mgt -->
                 <artifactId>org.wso2.carbon.user.mgt.ui</artifactId>
 		        <version>${carbon-commons.version}</version>
             </dependency>
@@ -709,6 +710,7 @@
                 <artifactId>javax.servlet</artifactId>
                 <version>${javax.servlet.version}</version>
             </dependency>
+            <!-- Hadoop datasource reader dependencies -->
             <dependency>
                 <groupId>org.wso2.orbit.org.apache.hadoop</groupId>
                 <artifactId>hadoop-client</artifactId>
@@ -720,10 +722,41 @@
                 <version>${hbase-client.orbit.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.zookeeper.wso2</groupId>
+                <artifactId>apache-zookeeper</artifactId>
+                <version>${zookeeper.orbit.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.org.apache.htrace</groupId>
+                <artifactId>htrace-core-apache</artifactId>
+                <version>${apache.htrace.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.org.htrace</groupId>
+                <artifactId>htrace-core</artifactId>
+                <version>${htrace.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java</artifactId>
+                <version>${google.protobuf.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.com.google.protobuf.fragment</groupId>
+                <artifactId>protobuf-java-fragment</artifactId>
+                <version>${protobuf.fragment.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>xerces</groupId>
+                <artifactId>xercesImpl</artifactId>
+                <version>${xerces.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.wso2.carbon.data</groupId>
                 <artifactId>org.wso2.carbon.datasource.reader.hadoop</artifactId>
                 <version>${dataservices.version}</version>
             </dependency>
+            <!-- END Hadoop datasource reader dependencies -->
             <dependency>
                 <groupId>org.wso2.carbon.data</groupId>
                 <artifactId>org.wso2.carbon.datasource.reader.cassandra</artifactId>
@@ -1114,7 +1147,7 @@
         <gdata-spreadsheet.orbit.version>3.0.0.wso2v1</gdata-spreadsheet.orbit.version>
         <gdata-spreadsheet.orbit.imp.pkg.version>[3.0.0, 3.2.0)</gdata-spreadsheet.orbit.imp.pkg.version>
 
-        <google.guava.version>13.0.1</google.guava.version>
+        <google.guava.version>15.0</google.guava.version>
 
         <poi.orbit.version>3.9.0.wso2v1</poi.orbit.version>
         <poi.orbit.imp.pkg.version>0.0.0</poi.orbit.imp.pkg.version> <!--todo change this to appropriate version range ([3.9.0,4.0.0)) after osgi bundle is corrected - rajith-->
@@ -1163,22 +1196,39 @@
         <axiom.orbit.version>1.2.11.wso2v6</axiom.orbit.version>
         <axiom.orbit.imp.pkg.version>0.0.0</axiom.orbit.imp.pkg.version> <!--todo change this to appropriate version range ([1.2.11,1.3.0)) after osgi bundle is corrected - rajith-->
 
-        <hadoop-client.orbit.version.>2.6.0.wso2v1</hadoop-client.orbit.version.>
+        <hadoop-client.orbit.version.>2.6.0.wso2v2</hadoop-client.orbit.version.>
         <hadoop-client.orbit.imp.pkg.version.>[2.6.0.wso2v1,2.7.0)</hadoop-client.orbit.imp.pkg.version.>
+        <zookeeper.orbit.version>3.4.5.wso2v1</zookeeper.orbit.version>
+        <htrace.version>3.0.4.wso2v1</htrace.version>
+        <apache.htrace.version>3.1.0-incubating.wso2v1</apache.htrace.version>
+        <google.protobuf.version>2.5.0</google.protobuf.version>
+        <protobuf.fragment.version>2.5.0.wso2v1</protobuf.fragment.version>
+        <xerces.version>2.11.0</xerces.version>
+        <commons.codec.import.version>[1.4, 1.5)</commons.codec.import.version>
+        <org.htrace.import.version>[3.0.4, 3.1.0)</org.htrace.import.version>
+        <htrace.import.version>[3.1.0-incubating, 3.2.0)</htrace.import.version>
+        <protobuf.import.version>[2.5.0, 2.6.0)</protobuf.import.version>
+        <guava.import.version>[14.0.1, 16.0.1)</guava.import.version>
+        <zookeeper.import.version>[3.4.5, 3.5.0)</zookeeper.import.version>
 
-        <hbase-client.orbit.version>1.0.0.wso2v1</hbase-client.orbit.version>
-        <hbase-client.orbit.imp.pkg.version>[1.0.0.wso2v1,1.1.0)</hbase-client.orbit.imp.pkg.version>
+        <hbase-client.orbit.version>1.1.2.wso2v1</hbase-client.orbit.version>
+        <hbase-client.orbit.imp.pkg.version>[1.0.0.wso2v1,1.2.0)</hbase-client.orbit.imp.pkg.version>
 
         <carbon.p2.plugin.version>1.5.5</carbon.p2.plugin.version>
 
         <carbon-commons.version>4.4.3</carbon-commons.version>
         <carbon-commons.imp.pkg.version>[4.4,4.5)</carbon-commons.imp.pkg.version>
+        <carbon-commons.user.mgt.imp.pkg.version>0.0.0</carbon-commons.user.mgt.imp.pkg.version> <!-- todo remove this and use identity.imp.pkg.version - rajith -->
+
+        <carbon-identity.version>4.5.6</carbon-identity.version>
+        <carbon-identity.imp.pkg.version>[4.5,4.6)</carbon-identity.imp.pkg.version>
 
         <carbon-commons.trnsaction.mgt.imp.pkg.version>0.0.0</carbon-commons.trnsaction.mgt.imp.pkg.version> <!-- todo remove this and use {carbon-commons.imp.pkg.version} after org.wso2.carbon.transaction.manager (bundle - org.wso2.carbon.transaction.manager) is corrected to export correct versions-->
 
 
 
         <carbon-deployment.version>4.4.1</carbon-deployment.version>
+        <carbon-deployment.feature.imp.version>4.4.0</carbon-deployment.feature.imp.version>
 
         <osgi.imp.pkg.version>[1.7.0,1.8.0)</osgi.imp.pkg.version> <!-- todo change this version to proper version range after osgi bundles are corrected (because export versions are different from bundle version) -rajith -->
         <osgi.service.imp.pkg.version>[1.2.0,1.3.0)</osgi.service.imp.pkg.version> <!-- todo change this version to proper version range after osgi bundles are corrected -rajith -->
@@ -1215,7 +1265,8 @@
 
         <commons-fileupload.orbit.imp.pkg.version>[1.2,1.3)</commons-fileupload.orbit.imp.pkg.version>
 
-        <hazelcast.orbit.imp.pkg.version>[3.2,3.3)</hazelcast.orbit.imp.pkg.version>
+        <hazelcast.orbit.imp.pkg.version>0.0.0</hazelcast.orbit.imp.pkg.version> <!-- todo change this once moved to kernel 442 -->
+        <!--<hazelcast.orbit.imp.pkg.version>[3.2,3.3)</hazelcast.orbit.imp.pkg.version>-->
     </properties>
 
 </project>

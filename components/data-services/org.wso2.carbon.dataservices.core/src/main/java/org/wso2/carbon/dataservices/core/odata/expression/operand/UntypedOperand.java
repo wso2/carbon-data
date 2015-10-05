@@ -49,7 +49,6 @@ public class UntypedOperand extends VisitorOperand {
 				return new TypedOperand(newValue, type);
 			}
 		}
-
 		throw new ODataApplicationException("Cast failed", HttpStatusCode.INTERNAL_SERVER_ERROR.getStatusCode(),
 		                                    Locale.ROOT);
 	}
@@ -57,74 +56,58 @@ public class UntypedOperand extends VisitorOperand {
 	public TypedOperand determineType() throws ODataApplicationException {
 		final String literal = (String) value;
 		Object newValue;
-
 		// Null literal
 		if (ODataConstants.primitiveNull.validate(literal, null, null, null, null, null)) {
 			return new TypedOperand(null, ODataConstants.primitiveNull);
 		}
-
 		// String
 		if ((newValue = tryCast(literal, ODataConstants.primitiveString)) != null) {
 			return new TypedOperand(newValue, ODataConstants.primitiveString);
 		}
-
 		// Boolean
 		if ((newValue = tryCast(literal, ODataConstants.primitiveBoolean)) != null) {
 			return new TypedOperand(newValue, ODataConstants.primitiveBoolean);
 		}
-
 		// Date
 		if ((newValue = tryCast(literal, ODataConstants.primitiveDateTimeOffset)) != null) {
 			return new TypedOperand(newValue, ODataConstants.primitiveDateTimeOffset);
 		}
-
 		if ((newValue = tryCast(literal, ODataConstants.primitiveDate)) != null) {
 			return new TypedOperand(newValue, ODataConstants.primitiveDate);
 		}
-
 		if ((newValue = tryCast(literal, ODataConstants.primitiveTimeOfDay)) != null) {
 			return new TypedOperand(newValue, ODataConstants.primitiveTimeOfDay);
 		}
-
 		if ((newValue = tryCast(literal, ODataConstants.primitiveDuration)) != null) {
 			return new TypedOperand(newValue, ODataConstants.primitiveDuration);
 		}
-
 		// Integer
 		if ((newValue = tryCast(literal, ODataConstants.primitiveSByte)) != null) {
 			return new TypedOperand(newValue, ODataConstants.primitiveSByte);
 		}
-
 		if ((newValue = tryCast(literal, ODataConstants.primitiveByte)) != null) {
 			return new TypedOperand(newValue, ODataConstants.primitiveByte);
 		}
-
 		if ((newValue = tryCast(literal, ODataConstants.primitiveInt16)) != null) {
 			return new TypedOperand(newValue, ODataConstants.primitiveInt16);
 		}
-
 		if ((newValue = tryCast(literal, ODataConstants.primitiveInt32)) != null) {
 			return new TypedOperand(newValue, ODataConstants.primitiveInt32);
 		}
-
 		if ((newValue = tryCast(literal, ODataConstants.primitiveInt64)) != null) {
 			return new TypedOperand(newValue, ODataConstants.primitiveInt64);
 		}
-
 		// Decimal
 		if ((newValue = tryCast(literal, ODataConstants.primitiveDecimal)) != null) {
 			return new TypedOperand(newValue, ODataConstants.primitiveDecimal);
 		}
-
 		// Float
 		if ((newValue = tryCast(literal, ODataConstants.primitiveSingle)) != null) {
 			return new TypedOperand(newValue, ODataConstants.primitiveSingle);
 		}
-
 		if ((newValue = tryCast(literal, ODataConstants.primitiveDouble)) != null) {
 			return new TypedOperand(newValue, ODataConstants.primitiveDouble);
 		}
-
 		throw new ODataApplicationException("Could not determine type for literal " + literal,
 		                                    HttpStatusCode.INTERNAL_SERVER_ERROR.getStatusCode(), Locale.ROOT);
 	}

@@ -92,8 +92,13 @@ public class EDMProvider extends CsdlAbstractEdmProvider {
 	                   List<String> entitySet, Map<String, NavigationTable> navigationProperties) {
 		this.containerFullQName = new FullQualifiedName(containerName, namespace);
 		this.namespace = namespace;
-		this.manyToOneRelationList = generateManyToOneRelationships(navigationProperties);
-		this.oneToManyRelationList = generateOneToManyRelationships(navigationProperties);
+		if (navigationProperties != null) {
+			this.manyToOneRelationList = generateManyToOneRelationships(navigationProperties);
+			this.oneToManyRelationList = generateOneToManyRelationships(navigationProperties);
+		} else {
+			this.manyToOneRelationList = null;
+			this.oneToManyRelationList = null;
+		}
 		this.csdlEntityTypesMap = generateEntityTypes(propertiesMap, tableList, pkeys);
 		this.csdlEntitySetMap = generateEntitySets(entitySet);
 		this.csdlEntityContainer = generateCsdlEntityContainer();
@@ -293,15 +298,11 @@ public class EDMProvider extends CsdlAbstractEdmProvider {
 	 */
 	private Map<String, HashSet<String>> generateOneToManyRelationships(
 			Map<String, NavigationTable> navigationProperties) {
-		if (navigationProperties != null) {
-			Map<String, HashSet<String>> relationship = new HashMap<>();
-			for (String tableName : navigationProperties.keySet()) {
-				relationship.put(tableName, new HashSet<>(navigationProperties.get(tableName).getTables()));
-			}
-			return relationship;
-		} else {
-			return null;
+		Map<String, HashSet<String>> relationship = new HashMap<>();
+		for (String tableName : navigationProperties.keySet()) {
+			relationship.put(tableName, new HashSet<>(navigationProperties.get(tableName).getTables()));
 		}
+		return relationship;
 	}
 
 	/**
@@ -314,21 +315,17 @@ public class EDMProvider extends CsdlAbstractEdmProvider {
 	 */
 	private Map<String, HashSet<String>> generateManyToOneRelationships(
 			Map<String, NavigationTable> navigationProperties) {
-		if (navigationProperties != null) {
-			Map<String, HashSet<String>> relationship = new HashMap<>();
-			for (String exportedTableName : navigationProperties.keySet()) {
-				for (String importedTableName : navigationProperties.get(exportedTableName).getTables()) {
-					HashSet<String> tableList = relationship.get(importedTableName);
-					if (tableList == null) {
-						tableList = new HashSet<>();
-						relationship.put(importedTableName, tableList);
-					}
-					tableList.add(exportedTableName);
+		Map<String, HashSet<String>> relationship = new HashMap<>();
+		for (String exportedTableName : navigationProperties.keySet()) {
+			for (String importedTableName : navigationProperties.get(exportedTableName).getTables()) {
+				HashSet<String> tableList = relationship.get(importedTableName);
+				if (tableList == null) {
+					tableList = new HashSet<>();
+					relationship.put(importedTableName, tableList);
 				}
+				tableList.add(exportedTableName);
 			}
-			return relationship;
-		} else {
-			return null;
 		}
+		return relationship;
 	}
 }

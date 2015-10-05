@@ -57,9 +57,7 @@ public class ExpressionVisitorImpl implements ExpressionVisitor<VisitorOperand> 
 	public VisitorOperand visitBinaryOperator(final BinaryOperatorKind operator, final VisitorOperand left,
 	                                          final VisitorOperand right)
 			throws ExpressionVisitException, ODataApplicationException {
-
 		final BinaryOperator binaryOperator = new BinaryOperator(left, right);
-
 		switch (operator) {
 			case AND:
 				return binaryOperator.andOperator();
@@ -78,9 +76,13 @@ public class ExpressionVisitorImpl implements ExpressionVisitor<VisitorOperand> 
 			case LT:
 				return binaryOperator.lessThanOperator();
 			case ADD:
+				/* fall through */
 			case SUB:
+				/* fall through */
 			case MUL:
+				/* fall through */
 			case DIV:
+				/* fall through */
 			case MOD:
 				return binaryOperator.arithmeticOperator(operator);
 			default:
@@ -91,9 +93,7 @@ public class ExpressionVisitorImpl implements ExpressionVisitor<VisitorOperand> 
 	@Override
 	public VisitorOperand visitUnaryOperator(final UnaryOperatorKind operator, final VisitorOperand operand)
 			throws ExpressionVisitException, ODataApplicationException {
-
 		final UnaryOperator unaryOperator = new UnaryOperator(operand);
-
 		switch (operator) {
 			case MINUS:
 				return unaryOperator.minusOperation();
@@ -108,7 +108,6 @@ public class ExpressionVisitorImpl implements ExpressionVisitor<VisitorOperand> 
 	@Override
 	public VisitorOperand visitMethodCall(final MethodKind methodCall, final List<VisitorOperand> parameters)
 			throws ExpressionVisitException, ODataApplicationException {
-
 		final MethodCallOperator methodCallOperation = new MethodCallOperator(parameters);
 
 		switch (methodCall) {
@@ -152,7 +151,6 @@ public class ExpressionVisitorImpl implements ExpressionVisitor<VisitorOperand> 
 				return methodCallOperation.floor();
 			case CEILING:
 				return methodCallOperation.ceiling();
-
 			default:
 				return throwNotImplemented();
 		}
@@ -173,10 +171,8 @@ public class ExpressionVisitorImpl implements ExpressionVisitor<VisitorOperand> 
 	@Override
 	public VisitorOperand visitMember(final UriInfoResource member)
 			throws ExpressionVisitException, ODataApplicationException {
-
 		final List<UriResource> uriResourceParts = member.getUriResourceParts();
 		int size = uriResourceParts.size();
-
 		if (uriResourceParts.get(0) instanceof UriResourceProperty) {
 			EdmProperty currentEdmProperty = ((UriResourceProperty) uriResourceParts.get(0)).getProperty();
 			Property currentProperty = entity.getProperty(currentEdmProperty.getName());
@@ -188,7 +184,6 @@ public class ExpressionVisitorImpl implements ExpressionVisitor<VisitorOperand> 
 		} else {
 			return throwNotImplemented();
 		}
-
 	}
 
 	@Override

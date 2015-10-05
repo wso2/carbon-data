@@ -20,10 +20,7 @@ import org.apache.olingo.commons.api.data.Entity;
 import org.apache.olingo.commons.api.data.EntityCollection;
 import org.apache.olingo.commons.api.edm.EdmBindingTarget;
 import org.apache.olingo.commons.api.edm.EdmEntitySet;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveType;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
 import org.apache.olingo.commons.api.http.HttpStatusCode;
-import org.apache.olingo.server.api.OData;
 import org.apache.olingo.server.api.ODataApplicationException;
 import org.apache.olingo.server.api.uri.queryoption.CountOption;
 import org.apache.olingo.server.api.uri.queryoption.FilterOption;
@@ -35,6 +32,7 @@ import org.apache.olingo.server.api.uri.queryoption.SystemQueryOptionKind;
 import org.apache.olingo.server.api.uri.queryoption.TopOption;
 import org.apache.olingo.server.api.uri.queryoption.expression.ExpressionVisitException;
 import org.wso2.carbon.dataservices.core.odata.expression.ExpressionVisitorImpl;
+import org.wso2.carbon.dataservices.core.odata.expression.ODataConstants;
 import org.wso2.carbon.dataservices.core.odata.expression.operand.TypedOperand;
 import org.wso2.carbon.dataservices.core.odata.expression.operand.VisitorOperand;
 
@@ -46,23 +44,30 @@ import java.util.Iterator;
 import java.util.Locale;
 
 public class QueryHandler {
-	protected static final OData oData;
-	protected static final EdmPrimitiveType primBoolean;
-
-	static {
-		oData = OData.newInstance();
-		primBoolean = oData.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.Boolean);
-	}
 
 	private static final int MAX_PAGE_SIZE = 10;
 	private static final String ES_SERVER_SIDE_PAGING = "ESServerSidePaging";
 
+	/**
+	 * This method applies count query option to the given entity collection.
+	 *
+	 * @param countOption Count option
+	 * @param entitySet Entity collection
+	 */
 	public static void applyCountSystemQueryOption(final CountOption countOption, final EntityCollection entitySet) {
 		if (countOption.getValue()) {
 			entitySet.setCount(entitySet.getEntities().size());
 		}
 	}
 
+	/**
+	 * This method applies filter query option to the given entity collection.
+	 *
+	 * @param filterOption Filter option
+	 * @param entitySet    Entity collection
+	 * @param edmEntitySet Entity set
+	 * @throws ODataApplicationException
+	 */
 	public static void applyFilterSystemQuery(final FilterOption filterOption, final EntityCollection entitySet,
 	                                          final EdmBindingTarget edmEntitySet) throws ODataApplicationException {
 		try {
@@ -74,7 +79,7 @@ public class QueryHandler {
 				                                                                             edmEntitySet));
 				final TypedOperand typedOperand = operand.asTypedOperand();
 
-				if (typedOperand.is(primBoolean)) {
+				if (typedOperand.is(ODataConstants.primitiveBoolean)) {
 					if (Boolean.FALSE.equals(typedOperand.getTypedValue(Boolean.class))) {
 						iter.remove();
 					}
@@ -91,6 +96,13 @@ public class QueryHandler {
 		}
 	}
 
+	/**
+	 * This method applies top query option to the given entity collection.
+	 *
+	 * @param topOption Top option
+	 * @param entitySet Entity Collection
+	 * @throws ODataApplicationException
+	 */
 	public static void applyTopSystemQueryOption(final TopOption topOption, final EntityCollection entitySet)
 			throws ODataApplicationException {
 		if (topOption.getValue() >= 0) {
@@ -101,12 +113,25 @@ public class QueryHandler {
 		}
 	}
 
-	private static void reduceToSize(final EntityCollection entitySet, final int n) {
-		while (entitySet.getEntities().size() > n) {
+	/**
+	 * This method reduce entities from the collection for the given limit size.
+	 *
+	 * @param entitySet Entity collection
+	 * @param limit     Limit size
+	 */
+	private static void reduceToSize(final EntityCollection entitySet, final int limit) {
+		while (entitySet.getEntities().size() > limit) {
 			entitySet.getEntities().remove(entitySet.getEntities().size() - 1);
 		}
 	}
 
+	/**
+	 * This method applies skip query option to the given entity collection.
+	 *
+	 * @param skipOption Skip option
+	 * @param entitySet  Entity collection
+	 * @throws ODataApplicationException
+	 */
 	public static void applySkipSystemQueryHandler(final SkipOption skipOption, final EntityCollection entitySet)
 			throws ODataApplicationException {
 		if (skipOption.getValue() >= 0) {
@@ -128,35 +153,28 @@ public class QueryHandler {
 	}
 
 	/**
-	 * <p>Applies server-side paging to the given entity collection.</p>
-	 * <p>The next link is constructed and set in the data. It must support client-specified
-	 * page sizes. Therefore, the format <code>page*pageSize</code> (with a literal asterisk)
-	 * has been chosen for the skiptoken.</p>
+	 * This method applies server-side paging to the given entity collection.
 	 *
-	 * @param skipTokenOption   the current skiptoken option (from a previous response's next link)
-	 * @param entityCollection  the data
-	 * @param edmEntitySet      the EDM entity set to decide whether paging must be done
-	 * @param rawRequestUri     the request URI (used to construct the next link)
-	 * @param preferredPageSize the client's preference for page size
-	 * @return the chosen page size (or <code>null</code> if no paging has been done);
-	 * could be used in the Preference-Applied HTTP header
+	 * @param skipTokenOption   Current skip token option (from a previous response's next link)
+	 * @param entityCollection  Entity collection
+	 * @param edmEntitySet      EDM entity set to decide whether paging must be done
+	 * @param rawRequestUri     Request URI (used to construct the next link)
+	 * @param preferredPageSize Preference for page size
+	 * @return Chosen page size
 	 * @throws ODataApplicationException
 	 */
 	public static Integer applyServerSidePaging(final SkipTokenOption skipTokenOption,
 	                                            EntityCollection entityCollection, final EdmEntitySet edmEntitySet,
 	                                            final String rawRequestUri, final Integer preferredPageSize)
 			throws ODataApplicationException {
-
-		if (edmEntitySet != null && shouldApplyServerSidePaging(edmEntitySet)) {
+		if (edmEntitySet != null && ES_SERVER_SIDE_PAGING.equals(edmEntitySet.getName())) {
 			final int pageSize = getPageSize(getPageSize(skipTokenOption), preferredPageSize);
 			final int page = getPage(skipTokenOption);
 			final int itemsToSkip = pageSize * page;
-
 			if (itemsToSkip <= entityCollection.getEntities().size()) {
 				popAtMost(entityCollection, itemsToSkip);
 				final int remainingItems = entityCollection.getEntities().size();
 				reduceToSize(entityCollection, pageSize);
-
 				// Determine if a new next Link has to be provided.
 				if (remainingItems > pageSize) {
 					entityCollection.setNext(createNextLink(rawRequestUri, page + 1, pageSize));
@@ -170,6 +188,15 @@ public class QueryHandler {
 		return null;
 	}
 
+	/**
+	 * This method creates next url link.
+	 *
+	 * @param rawRequestUri Request uri
+	 * @param page          Page num
+	 * @param pageSize      Page size
+	 * @return uri
+	 * @throws ODataApplicationException
+	 */
 	private static URI createNextLink(final String rawRequestUri, final int page, final int pageSize)
 			throws ODataApplicationException {
 		// Remove a maybe existing skiptoken, making sure that the query part is not empty.
@@ -181,7 +208,6 @@ public class QueryHandler {
 		// Append the new skiptoken.
 		nextlink += SystemQueryOptionKind.SKIPTOKEN.toString().replace("$", "%24") + '=' + page + "%2A" +
 		            pageSize;  // "%2A" is a percent-encoded asterisk
-
 		try {
 			return new URI(nextlink);
 		} catch (final URISyntaxException e) {
@@ -190,15 +216,25 @@ public class QueryHandler {
 		}
 	}
 
-	private static boolean shouldApplyServerSidePaging(final EdmEntitySet edmEntitySet) {
-		return ES_SERVER_SIDE_PAGING.equals(edmEntitySet.getName());
-	}
-
+	/**
+	 * This method returns the page size.
+	 *
+	 * @param skipTokenPageSize Skip token page size
+	 * @param preferredPageSize Preferred page size
+	 * @return page size
+	 */
 	private static int getPageSize(final int skipTokenPageSize, final Integer preferredPageSize) {
 		return skipTokenPageSize > 0 ? skipTokenPageSize :
 		       preferredPageSize == null || preferredPageSize >= MAX_PAGE_SIZE ? MAX_PAGE_SIZE : preferredPageSize;
 	}
 
+	/**
+	 * This method returns page size from the skip token option.
+	 *
+	 * @param skipTokenOption Skip token option
+	 * @return Page size
+	 * @throws ODataApplicationException
+	 */
 	private static int getPageSize(final SkipTokenOption skipTokenOption) throws ODataApplicationException {
 		if (skipTokenOption != null && skipTokenOption.getValue().length() >= 3 &&
 		    skipTokenOption.getValue().contains("*")) {
@@ -214,6 +250,13 @@ public class QueryHandler {
 		}
 	}
 
+	/**
+	 * This method returns the page number.
+	 *
+	 * @param skipTokenOption Skip token option
+	 * @return page
+	 * @throws ODataApplicationException
+	 */
 	private static int getPage(final SkipTokenOption skipTokenOption) throws ODataApplicationException {
 		if (skipTokenOption != null && skipTokenOption.getValue().length() >= 3 &&
 		    skipTokenOption.getValue().contains("*")) {
@@ -229,6 +272,13 @@ public class QueryHandler {
 		}
 	}
 
+	/**
+	 * This method applies order by option query to the given entity collection.
+	 *
+	 * @param orderByOption    Order by option
+	 * @param entitySet        Entity Set
+	 * @param edmBindingTarget Binding Target
+	 */
 	public static void applyOrderByOption(final OrderByOption orderByOption, final EntityCollection entitySet,
 	                                       final EdmBindingTarget edmBindingTarget) {
 		Collections.sort(entitySet.getEntities(), new Comparator<Entity>() {
@@ -239,7 +289,6 @@ public class QueryHandler {
 				// If and only if the result of the previous order option is equals to 0
 				// evaluate the next order option until all options are evaluated or they are not equals
 				int result = 0;
-
 				for (int i = 0; i < orderByOption.getOrders().size() && result == 0; i++) {
 					try {
 						final OrderByItem item = orderByOption.getOrders().get(i);
@@ -249,7 +298,6 @@ public class QueryHandler {
 						final TypedOperand op2 =
 								item.getExpression().accept(new ExpressionVisitorImpl(e2, edmBindingTarget))
 								    .asTypedOperand();
-
 						if (op1.isNull() || op2.isNull()) {
 							if (op1.isNull() && op2.isNull()) {
 								result = 0; // null is equals to null

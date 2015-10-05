@@ -29,18 +29,20 @@ import javax.servlet.http.HttpServletResponse;
 
 public class ODataEndpoint {
 	private static final Log log = LogFactory.getLog(ODataEndpoint.class);
+	private static final int NOT_IMPLEMENTED = 501;
+	private static final int BAD_REQUEST = 400;
 
 	/**
 	 * This method will find the particular OdataHandler from the ODataServiceRegistry and process the request.
 	 *
-	 * @param req  HTTPServlet Request
-	 * @param resp HTTPServlet Response
+	 * @param request  HTTPServlet Request
+	 * @param response HTTPServlet Response
 	 * @see ODataServiceRegistry
 	 */
-	public static void process(HttpServletRequest req, HttpServletResponse resp) {
-		String tenantDomain = TenantAxisUtils.getTenantDomain(req.getRequestURI());
+	public static void process(HttpServletRequest request, HttpServletResponse response) {
+		String tenantDomain = TenantAxisUtils.getTenantDomain(request.getRequestURI());
 		try {
-			String[] serviceParams = getServiceDetails(req.getRequestURI(), tenantDomain);
+			String[] serviceParams = getServiceDetails(request.getRequestURI(), tenantDomain);
 			String serviceRootPath;
 			if (tenantDomain == null) {
 				tenantDomain = MultitenantConstants.SUPER_TENANT_DOMAIN_NAME;
@@ -55,16 +57,18 @@ public class ODataEndpoint {
 				if (log.isDebugEnabled()) {
 					log.debug(serviceRootPath + " Service invoked.");
 				}
-				handler.process(req, resp, serviceRootPath);
+				handler.process(request, response, serviceRootPath);
 			} else {
 				if (log.isDebugEnabled()) {
 					log.debug("Couldn't find the ODataService Handler for " + serviceRootPath + " Service.");
 				}
-				resp.setStatus(501);
+				response.setStatus(NOT_IMPLEMENTED);
 			}
-		} catch (ODataServiceFault oDataServiceFault) {
-			resp.setStatus(400);
-			log.error(oDataServiceFault);
+		} catch (ODataServiceFault e) {
+			response.setStatus(BAD_REQUEST);
+			if (log.isDebugEnabled()) {
+				log.debug("Bad Request invoked. :" + e.getMessage());
+			}
 		}
 	}
 
@@ -98,6 +102,6 @@ public class ODataEndpoint {
 				}
 			}
 		}
-		throw new ODataServiceFault("Bad odata request");
+		throw new ODataServiceFault("Bad OData request.");
 	}
 }

@@ -159,9 +159,9 @@ public class CassandraDataHandler implements ODataDataHandler {
 		String query = createInsertCQL(tableName, entity);
 		List<Object> values = new ArrayList<>();
 		for (DataColumn column : this.tableMetaData.get(tableName).values()) {
-			if (entity.getNames().contains(column.getColumnName()) && entity.getValue(column.getColumnName()) != null) {
-				bindParams(column.getColumnName(), entity.getValue(column.getColumnName()), values,
-				           cassandraTableMetaData);
+			String columnName = column.getColumnName();
+			if (entity.getNames().contains(columnName) && entity.getValue(columnName) != null) {
+				bindParams(columnName, entity.getValue(columnName), values, cassandraTableMetaData);
 			}
 		}
 		PreparedStatement statement = this.preparedStatementMap.get(query);

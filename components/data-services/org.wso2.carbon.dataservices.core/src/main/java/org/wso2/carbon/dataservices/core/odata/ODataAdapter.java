@@ -251,7 +251,8 @@ public class ODataAdapter implements ServiceHandler {
 			return details;
 		} catch (ODataServiceFault dataServiceFault) {
 			log.error("Error in processing the read request. : " + dataServiceFault.getMessage(), dataServiceFault);
-			throw new ODataApplicationException(dataServiceFault.getMessage(), 500, Locale.ENGLISH);
+			throw new ODataApplicationException(dataServiceFault.getMessage(),
+			                                    HttpStatusCode.INTERNAL_SERVER_ERROR.getStatusCode(), Locale.ENGLISH);
 		}
 	}
 
@@ -915,7 +916,7 @@ public class ODataAdapter implements ServiceHandler {
 
 	@Override
 	public void crossJoin(DataRequest dataRequest, List<String> entitySetNames, ODataResponse response) {
-		response.setStatusCode(501);
+		response.setStatusCode(HttpStatusCode.NOT_IMPLEMENTED.getStatusCode());
 	}
 
 	/**

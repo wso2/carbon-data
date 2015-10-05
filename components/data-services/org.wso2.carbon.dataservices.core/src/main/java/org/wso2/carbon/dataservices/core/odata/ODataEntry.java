@@ -24,26 +24,26 @@ import java.util.Set;
  */
 public class ODataEntry {
 
-	private Map<String, String> values;
+    private Map<String, String> values;
 
-	public ODataEntry() {
-		this.values = new HashMap<>();
-	}
+    public ODataEntry() {
+        this.values = new HashMap<>();
+    }
 
-	public Map<String, String> getData() {
-		return values;
-	}
+    public Map<String, String> getData() {
+        return values;
+    }
 
-	public void addValue(String name, String value) {
-		this.getData().put(name, value);
-	}
+    public void addValue(String name, String value) {
+        this.getData().put(name, value);
+    }
 
-	public String getValue(String name) {
-		return this.getData().get(name);
-	}
+    public String getValue(String name) {
+        return this.getData().get(name);
+    }
 
-	public Set<String> getNames() {
-		return this.getData().keySet();
-	}
+    public Set<String> getNames() {
+        return this.getData().keySet();
+    }
 
 }

@@ -57,39 +57,33 @@ public class MongoQuery extends Query {
 
     private String expression;
 
-    public MongoQuery(DataService dataService, String queryId,
-                      String configId, String expression, List<QueryParam> queryParams,
-                      Result result, EventTrigger inputEventTrigger,
-                      EventTrigger outputEventTrigger,
-                      Map<String, String> advancedProperties,
-                      String inputNamespace)
+    public MongoQuery(DataService dataService, String queryId, String configId, String expression,
+                      List<QueryParam> queryParams, Result result, EventTrigger inputEventTrigger,
+                      EventTrigger outputEventTrigger, Map<String, String> advancedProperties, String inputNamespace)
             throws DataServiceFault {
-        super(dataService, queryId, queryParams, result, configId,
-                inputEventTrigger, outputEventTrigger, advancedProperties, inputNamespace);
+        super(dataService, queryId, queryParams, result, configId, inputEventTrigger, outputEventTrigger,
+              advancedProperties, inputNamespace);
         try {
             this.expression = expression;
             this.config = (MongoConfig) this.getDataService().getConfig(this.getConfigId());
         } catch (ClassCastException e) {
-            throw new DataServiceFault(e, "Configuration is not a Mongo config:" +
-                    this.getConfigId());
-        }
-    }
-    
-    @Override
-    public Object runPreQuery(InternalParamCollection params, int queryLevel) throws DataServiceFault {
-        try {
-             return new MongoQueryResult(this.getExpression(),
-                        new ArrayList<InternalParam>(params.getParams()));
-        } catch (Exception e) {
-            throw new DataServiceFault(e,
-                    "Error in MongoQuery.runQuery: " + e.getMessage());
+            throw new DataServiceFault(e, "Configuration is not a Mongo config:" + this.getConfigId());
         }
     }
 
     @Override
-    public void runPostQuery(Object result, XMLStreamWriter xmlWriter,
-                             InternalParamCollection params, int queryLevel) throws DataServiceFault {
-        QueryResult queryResult = (QueryResult)result;
+    public Object runPreQuery(InternalParamCollection params, int queryLevel) throws DataServiceFault {
+        try {
+            return new MongoQueryResult(this.getExpression(), new ArrayList<InternalParam>(params.getParams()));
+        } catch (Exception e) {
+            throw new DataServiceFault(e, "Error in MongoQuery.runQuery: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void runPostQuery(Object result, XMLStreamWriter xmlWriter, InternalParamCollection params, int queryLevel)
+            throws DataServiceFault {
+        QueryResult queryResult = (QueryResult) result;
         DataEntry dataEntry;
         DataRow currentRow;
         List<DataColumn> columns = queryResult != null ? queryResult.getDataColumns() : null;
@@ -130,20 +124,17 @@ public class MongoQuery extends Query {
     private Object[] decodeQuery(String query) throws DataServiceFault {
         int i1 = query.indexOf('.');
         if (i1 == -1) {
-            throw new DataServiceFault("The MongoDB Collection not specified in the query '" +
-                    query + "'");
+            throw new DataServiceFault("The MongoDB Collection not specified in the query '" + query + "'");
         }
         String collection = query.substring(0, i1).trim();
         int i2 = query.indexOf('(', i1);
         if (i2 == -1 || i2 - i1 <= 1) {
-            throw new DataServiceFault("Invalid MongoDB operation in the query '" +
-                    query + "'");
+            throw new DataServiceFault("Invalid MongoDB operation in the query '" + query + "'");
         }
         String operation = query.substring(i1 + 1, i2).trim();
         int i3 = query.lastIndexOf(')');
         if (i3 == -1) {
-            throw new DataServiceFault("Invalid MongoDB operation in the query '" +
-                    query + "'");
+            throw new DataServiceFault("Invalid MongoDB operation in the query '" + query + "'");
         }
         String opQuery = null;
         if (i3 - i2 > 1) {
@@ -271,8 +262,7 @@ public class MongoQuery extends Query {
                     break;
                 case UPDATE:
                     if (request.length < 4) {
-                        throw new DataServiceFault(
-                                "An MongoDB update statement must contain a modifier");
+                        throw new DataServiceFault("An MongoDB update statement must contain a modifier");
                     }
                     String modifier = (String) request[3];
                     boolean upsert = false;
@@ -288,8 +278,7 @@ public class MongoQuery extends Query {
             }
         }
 
-        private Iterator<Long> doCount(MongoCollection collection,
-                                       String opQuery, Object[] parameters) {
+        private Iterator<Long> doCount(MongoCollection collection, String opQuery, Object[] parameters) {
             long count;
             if (opQuery != null) {
                 if (parameters.length > 0) {
@@ -305,28 +294,23 @@ public class MongoQuery extends Query {
             return countResult.iterator();
         }
 
-        private Iterator<String> doFind(MongoCollection collection,
-                                        String opQuery, Object[] parameters) {
+        private Iterator<String> doFind(MongoCollection collection, String opQuery, Object[] parameters) {
             if (opQuery != null) {
                 if (parameters.length > 0) {
-                    return collection.find(opQuery, parameters).map(
-                            MongoResultMapper.getInstance()).iterator();
+                    return collection.find(opQuery, parameters).map(MongoResultMapper.getInstance()).iterator();
                 } else {
-                    return collection.find(opQuery).map(
-                            MongoResultMapper.getInstance()).iterator();
+                    return collection.find(opQuery).map(MongoResultMapper.getInstance()).iterator();
                 }
             } else {
                 return collection.find().map(MongoResultMapper.getInstance()).iterator();
             }
         }
 
-        private Iterator<String> doFindOne(MongoCollection collection,
-                                           String opQuery, Object[] parameters) {
+        private Iterator<String> doFindOne(MongoCollection collection, String opQuery, Object[] parameters) {
             String value;
             if (opQuery != null) {
                 if (parameters.length > 0) {
-                    value = collection.findOne(opQuery, parameters).map(
-                            MongoResultMapper.getInstance());
+                    value = collection.findOne(opQuery, parameters).map(MongoResultMapper.getInstance());
                 } else {
                     value = collection.findOne(opQuery).map(MongoResultMapper.getInstance());
                 }
@@ -422,5 +406,5 @@ public class MongoQuery extends Query {
         }
 
     }
-    
+
 }

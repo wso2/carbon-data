@@ -47,171 +47,171 @@ import java.util.Locale;
 
 public class ExpressionVisitorImpl implements ExpressionVisitor<VisitorOperand> {
 
-	final private Entity entity;
+    final private Entity entity;
 
-	public ExpressionVisitorImpl(final Entity entity, final EdmBindingTarget bindingTarget) {
-		this.entity = entity;
-	}
+    public ExpressionVisitorImpl(final Entity entity, final EdmBindingTarget bindingTarget) {
+        this.entity = entity;
+    }
 
-	@Override
-	public VisitorOperand visitBinaryOperator(final BinaryOperatorKind operator, final VisitorOperand left,
-	                                          final VisitorOperand right)
-			throws ExpressionVisitException, ODataApplicationException {
-		final BinaryOperator binaryOperator = new BinaryOperator(left, right);
-		switch (operator) {
-			case AND:
-				return binaryOperator.andOperator();
-			case OR:
-				return binaryOperator.orOperator();
-			case EQ:
-				return binaryOperator.equalsOperator();
-			case NE:
-				return binaryOperator.notEqualsOperator();
-			case GE:
-				return binaryOperator.greaterEqualsOperator();
-			case GT:
-				return binaryOperator.greaterThanOperator();
-			case LE:
-				return binaryOperator.lessEqualsOperator();
-			case LT:
-				return binaryOperator.lessThanOperator();
-			case ADD:
+    @Override
+    public VisitorOperand visitBinaryOperator(final BinaryOperatorKind operator, final VisitorOperand left,
+                                              final VisitorOperand right)
+            throws ExpressionVisitException, ODataApplicationException {
+        final BinaryOperator binaryOperator = new BinaryOperator(left, right);
+        switch (operator) {
+            case AND:
+                return binaryOperator.andOperator();
+            case OR:
+                return binaryOperator.orOperator();
+            case EQ:
+                return binaryOperator.equalsOperator();
+            case NE:
+                return binaryOperator.notEqualsOperator();
+            case GE:
+                return binaryOperator.greaterEqualsOperator();
+            case GT:
+                return binaryOperator.greaterThanOperator();
+            case LE:
+                return binaryOperator.lessEqualsOperator();
+            case LT:
+                return binaryOperator.lessThanOperator();
+            case ADD:
+                /* fall through */
+            case SUB:
 				/* fall through */
-			case SUB:
+            case MUL:
 				/* fall through */
-			case MUL:
+            case DIV:
 				/* fall through */
-			case DIV:
-				/* fall through */
-			case MOD:
-				return binaryOperator.arithmeticOperator(operator);
-			default:
-				return throwNotImplemented();
-		}
-	}
+            case MOD:
+                return binaryOperator.arithmeticOperator(operator);
+            default:
+                return throwNotImplemented();
+        }
+    }
 
-	@Override
-	public VisitorOperand visitUnaryOperator(final UnaryOperatorKind operator, final VisitorOperand operand)
-			throws ExpressionVisitException, ODataApplicationException {
-		final UnaryOperator unaryOperator = new UnaryOperator(operand);
-		switch (operator) {
-			case MINUS:
-				return unaryOperator.minusOperation();
-			case NOT:
-				return unaryOperator.notOperation();
-			default:
-				// Can't happen.
-				return throwNotImplemented();
-		}
-	}
+    @Override
+    public VisitorOperand visitUnaryOperator(final UnaryOperatorKind operator, final VisitorOperand operand)
+            throws ExpressionVisitException, ODataApplicationException {
+        final UnaryOperator unaryOperator = new UnaryOperator(operand);
+        switch (operator) {
+            case MINUS:
+                return unaryOperator.minusOperation();
+            case NOT:
+                return unaryOperator.notOperation();
+            default:
+                // Can't happen.
+                return throwNotImplemented();
+        }
+    }
 
-	@Override
-	public VisitorOperand visitMethodCall(final MethodKind methodCall, final List<VisitorOperand> parameters)
-			throws ExpressionVisitException, ODataApplicationException {
-		final MethodCallOperator methodCallOperation = new MethodCallOperator(parameters);
+    @Override
+    public VisitorOperand visitMethodCall(final MethodKind methodCall, final List<VisitorOperand> parameters)
+            throws ExpressionVisitException, ODataApplicationException {
+        final MethodCallOperator methodCallOperation = new MethodCallOperator(parameters);
 
-		switch (methodCall) {
-			case ENDSWITH:
-				return methodCallOperation.endsWith();
-			case INDEXOF:
-				return methodCallOperation.indexOf();
-			case STARTSWITH:
-				return methodCallOperation.startsWith();
-			case TOLOWER:
-				return methodCallOperation.toLower();
-			case TOUPPER:
-				return methodCallOperation.toUpper();
-			case TRIM:
-				return methodCallOperation.trim();
-			case SUBSTRING:
-				return methodCallOperation.substring();
-			case CONTAINS:
-				return methodCallOperation.contains();
-			case CONCAT:
-				return methodCallOperation.concat();
-			case LENGTH:
-				return methodCallOperation.length();
-			case YEAR:
-				return methodCallOperation.year();
-			case MONTH:
-				return methodCallOperation.month();
-			case DAY:
-				return methodCallOperation.day();
-			case HOUR:
-				return methodCallOperation.hour();
-			case MINUTE:
-				return methodCallOperation.minute();
-			case SECOND:
-				return methodCallOperation.second();
-			case FRACTIONALSECONDS:
-				return methodCallOperation.fractionalSeconds();
-			case ROUND:
-				return methodCallOperation.round();
-			case FLOOR:
-				return methodCallOperation.floor();
-			case CEILING:
-				return methodCallOperation.ceiling();
-			default:
-				return throwNotImplemented();
-		}
-	}
+        switch (methodCall) {
+            case ENDSWITH:
+                return methodCallOperation.endsWith();
+            case INDEXOF:
+                return methodCallOperation.indexOf();
+            case STARTSWITH:
+                return methodCallOperation.startsWith();
+            case TOLOWER:
+                return methodCallOperation.toLower();
+            case TOUPPER:
+                return methodCallOperation.toUpper();
+            case TRIM:
+                return methodCallOperation.trim();
+            case SUBSTRING:
+                return methodCallOperation.substring();
+            case CONTAINS:
+                return methodCallOperation.contains();
+            case CONCAT:
+                return methodCallOperation.concat();
+            case LENGTH:
+                return methodCallOperation.length();
+            case YEAR:
+                return methodCallOperation.year();
+            case MONTH:
+                return methodCallOperation.month();
+            case DAY:
+                return methodCallOperation.day();
+            case HOUR:
+                return methodCallOperation.hour();
+            case MINUTE:
+                return methodCallOperation.minute();
+            case SECOND:
+                return methodCallOperation.second();
+            case FRACTIONALSECONDS:
+                return methodCallOperation.fractionalSeconds();
+            case ROUND:
+                return methodCallOperation.round();
+            case FLOOR:
+                return methodCallOperation.floor();
+            case CEILING:
+                return methodCallOperation.ceiling();
+            default:
+                return throwNotImplemented();
+        }
+    }
 
-	@Override
-	public VisitorOperand visitLambdaExpression(final String lambdaFunction, final String lambdaVariable,
-	                                            final Expression expression)
-			throws ExpressionVisitException, ODataApplicationException {
-		return throwNotImplemented();
-	}
+    @Override
+    public VisitorOperand visitLambdaExpression(final String lambdaFunction, final String lambdaVariable,
+                                                final Expression expression)
+            throws ExpressionVisitException, ODataApplicationException {
+        return throwNotImplemented();
+    }
 
-	@Override
-	public VisitorOperand visitLiteral(Literal literal) throws ExpressionVisitException, ODataApplicationException {
-		return new UntypedOperand(literal.getText());
-	}
+    @Override
+    public VisitorOperand visitLiteral(Literal literal) throws ExpressionVisitException, ODataApplicationException {
+        return new UntypedOperand(literal.getText());
+    }
 
-	@Override
-	public VisitorOperand visitMember(final UriInfoResource member)
-			throws ExpressionVisitException, ODataApplicationException {
-		final List<UriResource> uriResourceParts = member.getUriResourceParts();
-		int size = uriResourceParts.size();
-		if (uriResourceParts.get(0) instanceof UriResourceProperty) {
-			EdmProperty currentEdmProperty = ((UriResourceProperty) uriResourceParts.get(0)).getProperty();
-			Property currentProperty = entity.getProperty(currentEdmProperty.getName());
-			return new TypedOperand(currentProperty.getValue(), currentEdmProperty.getType(), currentEdmProperty);
-		} else if (uriResourceParts.get(size-1) instanceof UriResourceLambdaAll) {
-			return throwNotImplemented();
-		} else if (uriResourceParts.get(size-1) instanceof UriResourceLambdaAny) {
-			return throwNotImplemented();
-		} else {
-			return throwNotImplemented();
-		}
-	}
+    @Override
+    public VisitorOperand visitMember(final UriInfoResource member)
+            throws ExpressionVisitException, ODataApplicationException {
+        final List<UriResource> uriResourceParts = member.getUriResourceParts();
+        int size = uriResourceParts.size();
+        if (uriResourceParts.get(0) instanceof UriResourceProperty) {
+            EdmProperty currentEdmProperty = ((UriResourceProperty) uriResourceParts.get(0)).getProperty();
+            Property currentProperty = entity.getProperty(currentEdmProperty.getName());
+            return new TypedOperand(currentProperty.getValue(), currentEdmProperty.getType(), currentEdmProperty);
+        } else if (uriResourceParts.get(size - 1) instanceof UriResourceLambdaAll) {
+            return throwNotImplemented();
+        } else if (uriResourceParts.get(size - 1) instanceof UriResourceLambdaAny) {
+            return throwNotImplemented();
+        } else {
+            return throwNotImplemented();
+        }
+    }
 
-	@Override
-	public VisitorOperand visitAlias(final String aliasName)
-			throws ExpressionVisitException, ODataApplicationException {
-		return throwNotImplemented();
-	}
+    @Override
+    public VisitorOperand visitAlias(final String aliasName)
+            throws ExpressionVisitException, ODataApplicationException {
+        return throwNotImplemented();
+    }
 
-	@Override
-	public VisitorOperand visitTypeLiteral(final EdmType type)
-			throws ExpressionVisitException, ODataApplicationException {
-		return throwNotImplemented();
-	}
+    @Override
+    public VisitorOperand visitTypeLiteral(final EdmType type)
+            throws ExpressionVisitException, ODataApplicationException {
+        return throwNotImplemented();
+    }
 
-	@Override
-	public VisitorOperand visitLambdaReference(final String variableName)
-			throws ExpressionVisitException, ODataApplicationException {
-		return throwNotImplemented();
-	}
+    @Override
+    public VisitorOperand visitLambdaReference(final String variableName)
+            throws ExpressionVisitException, ODataApplicationException {
+        return throwNotImplemented();
+    }
 
-	@Override
-	public VisitorOperand visitEnum(final EdmEnumType type, final List<String> enumValues)
-			throws ExpressionVisitException, ODataApplicationException {
-		return throwNotImplemented();
-	}
+    @Override
+    public VisitorOperand visitEnum(final EdmEnumType type, final List<String> enumValues)
+            throws ExpressionVisitException, ODataApplicationException {
+        return throwNotImplemented();
+    }
 
-	private VisitorOperand throwNotImplemented() throws ODataApplicationException {
-		throw new ODataApplicationException("Not implemented", HttpStatusCode.NOT_IMPLEMENTED.getStatusCode(),
-		                                    Locale.ROOT);
-	}
+    private VisitorOperand throwNotImplemented() throws ODataApplicationException {
+        throw new ODataApplicationException("Not implemented", HttpStatusCode.NOT_IMPLEMENTED.getStatusCode(),
+                                            Locale.ROOT);
+    }
 }

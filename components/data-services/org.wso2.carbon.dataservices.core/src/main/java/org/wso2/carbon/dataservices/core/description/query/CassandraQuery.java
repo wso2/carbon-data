@@ -62,9 +62,9 @@ import java.util.UUID;
  * This class represents Cassandra-CQL data services query implementation.
  */
 public class CassandraQuery extends ExpressionQuery {
-    
+
     private CassandraConfig config;
-    
+
     private PreparedStatement statement;
 
     /**
@@ -75,30 +75,29 @@ public class CassandraQuery extends ExpressionQuery {
             return null;
         }
     };
-    
-    public CassandraQuery(DataService dataService, String queryId, String query,
-            List<QueryParam> queryParams, Result result, String configId, 
-            EventTrigger inputEventTrigger, EventTrigger outputEventTrigger,
-            Map<String, String> advancedProperties, String inputNamespace) throws DataServiceFault {
-        super(dataService, queryId, queryParams, query, result, configId, inputEventTrigger,
-              outputEventTrigger, advancedProperties, inputNamespace);
+
+    public CassandraQuery(DataService dataService, String queryId, String query, List<QueryParam> queryParams,
+                          Result result, String configId, EventTrigger inputEventTrigger,
+                          EventTrigger outputEventTrigger, Map<String, String> advancedProperties,
+                          String inputNamespace) throws DataServiceFault {
+        super(dataService, queryId, queryParams, query, result, configId, inputEventTrigger, outputEventTrigger,
+              advancedProperties, inputNamespace);
         this.init(query);
         try {
             this.config = (CassandraConfig) this.getDataService().getConfig(this.getConfigId());
         } catch (ClassCastException e) {
-            throw new DataServiceFault(e, "Configuration is not a Cassandra config:" + 
-                    this.getConfigId());
+            throw new DataServiceFault(e, "Configuration is not a Cassandra config:" + this.getConfigId());
         }
     }
 
     public PreparedStatement getStatement() {
         return statement;
     }
-    
+
     public Session getSession() {
         return this.config.getSession();
     }
-    
+
     public boolean isNativeBatchRequestsSupported() {
         return this.config.isNativeBatchRequestsSupported();
     }
@@ -145,8 +144,8 @@ public class CassandraQuery extends ExpressionQuery {
                     values.add(param.getValue() == null ? null : new BigDecimal(param.getValue().getValueAsString()));
                     break;
                 case DataTypes.DOUBLE:
-                    values.add(param.getValue() == null ? null :
-                               Double.parseDouble(param.getValue().getValueAsString()));
+                    values.add(
+                            param.getValue() == null ? null : Double.parseDouble(param.getValue().getValueAsString()));
                     break;
                 case DataTypes.FLOAT:
                     values.add(param.getValue() == null ? null : Float.parseFloat(param.getValue().getValueAsString()));
@@ -215,7 +214,7 @@ public class CassandraQuery extends ExpressionQuery {
         }
         return this.getStatement().bind(values.toArray());
     }
-    
+
     private void checkAndCreateStatement() throws DataServiceFault {
         if (this.statement == null) {
             synchronized (this) {
@@ -223,13 +222,12 @@ public class CassandraQuery extends ExpressionQuery {
                     Session session = this.getSession();
                     this.statement = session.prepare(this.getQuery());
                 }
-            }            
+            }
         }
     }
-    
+
     @Override
-    public Object runPreQuery(InternalParamCollection params, int queryLevel)
-            throws DataServiceFault {
+    public Object runPreQuery(InternalParamCollection params, int queryLevel) throws DataServiceFault {
         ResultSet rs = null;
          /*
             There is no point of creating prepared statements for dynamic queries
@@ -271,8 +269,8 @@ public class CassandraQuery extends ExpressionQuery {
     }
 
     @Override
-    public void runPostQuery(Object result, XMLStreamWriter xmlWriter,
-                             InternalParamCollection params, int queryLevel) throws DataServiceFault {
+    public void runPostQuery(Object result, XMLStreamWriter xmlWriter, InternalParamCollection params, int queryLevel)
+            throws DataServiceFault {
         ResultSet rs = (ResultSet) result;
         if (this.hasResult()) {
             Iterator<Row> itr = rs.iterator();
@@ -335,12 +333,11 @@ public class CassandraQuery extends ExpressionQuery {
             } else if (columnType.getName().equals(DataType.Name.VARINT)) {
                 paramValue = new ParamValue(row.getVarint(i).toString());
             }
-            entry.addValue(useColumnNumbers ? Integer.toString(i) : defs.getName(i),
-                    paramValue);
+            entry.addValue(useColumnNumbers ? Integer.toString(i) : defs.getName(i), paramValue);
         }
         return entry;
     }
-    
+
     private String base64EncodeByteBuffer(ByteBuffer byteBuffer) throws DataServiceFault {
         byte[] data = byteBuffer.array();
         byte[] base64Data = Base64.encodeBase64(data);
@@ -350,7 +347,7 @@ public class CassandraQuery extends ExpressionQuery {
             throw new DataServiceFault(e, "Error in encoding result binary data: " + e.getMessage());
         }
     }
-    
+
     private ByteBuffer base64DecodeByteBuffer(String data) throws DataServiceFault {
         try {
             byte[] buff = Base64.decodeBase64(data.getBytes(DBConstants.DEFAULT_CHAR_SET_TYPE));

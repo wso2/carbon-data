@@ -31,62 +31,62 @@ import java.util.concurrent.ConcurrentHashMap;
  * This class stores the OData Service handlers for services.
  */
 public class ODataServiceRegistry {
-	private static Log log = LogFactory.getLog(ODataServiceRegistry.class);
+    private static Log log = LogFactory.getLog(ODataServiceRegistry.class);
 
-	private static ODataServiceRegistry instance;
+    private static ODataServiceRegistry instance;
 
-	private Map<String, ConcurrentHashMap<String, ODataServiceHandler>> registry = new ConcurrentHashMap<>();
+    private Map<String, ConcurrentHashMap<String, ODataServiceHandler>> registry = new ConcurrentHashMap<>();
 
-	public ODataServiceRegistry() {
-		// ignore
-	}
+    public ODataServiceRegistry() {
+        // ignore
+    }
 
-	public static ODataServiceRegistry getInstance() {
-		if (instance == null) {
-			synchronized (ODataServiceRegistry.class) {
-				if (instance == null) {
-					instance = new ODataServiceRegistry();
-				}
-			}
-		}
-		return instance;
-	}
+    public static ODataServiceRegistry getInstance() {
+        if (instance == null) {
+            synchronized (ODataServiceRegistry.class) {
+                if (instance == null) {
+                    instance = new ODataServiceRegistry();
+                }
+            }
+        }
+        return instance;
+    }
 
-	public void registerODataService(String dataServiceName, ODataServiceHandler handler, String tenantDomain) {
-		ConcurrentHashMap<String, ODataServiceHandler> oDataServiceHandlerMap = this.registry.get(tenantDomain);
-		if (oDataServiceHandlerMap == null) {
-			oDataServiceHandlerMap = new ConcurrentHashMap<>();
-			this.registry.put(tenantDomain, oDataServiceHandlerMap);
-		}
-		oDataServiceHandlerMap.putIfAbsent(dataServiceName, handler);
-	}
+    public void registerODataService(String dataServiceName, ODataServiceHandler handler, String tenantDomain) {
+        ConcurrentHashMap<String, ODataServiceHandler> oDataServiceHandlerMap = this.registry.get(tenantDomain);
+        if (oDataServiceHandlerMap == null) {
+            oDataServiceHandlerMap = new ConcurrentHashMap<>();
+            this.registry.put(tenantDomain, oDataServiceHandlerMap);
+        }
+        oDataServiceHandlerMap.putIfAbsent(dataServiceName, handler);
+    }
 
-	public ODataServiceHandler getServiceHandler(String serviceKey, String tenantDomain) {
-		// Load tenant configs
-		if (null == this.registry.get(tenantDomain) &&
-		    !MultitenantConstants.SUPER_TENANT_DOMAIN_NAME.equals(tenantDomain)) {
-			try {
-				ConfigurationContextService contextService = DataServicesDSComponent.getContextService();
-				ConfigurationContext configContext;
-				if (null != contextService) {
-					// Getting server's configContext instance
-					configContext = contextService.getServerConfigContext();
-					TenantAxisUtils.getTenantConfigurationContext(tenantDomain, configContext);
-				} else {
-					throw new ODataServiceFault("ConfigurationContext is not found.");
-				}
-			} catch (Exception e) {
-				log.error("ConfigurationContext is not found.", e);
-			}
-		}
-		if (this.registry.get(tenantDomain) != null) {
-			return this.registry.get(tenantDomain).get(serviceKey);
-		} else {
-			return null;
-		}
-	}
+    public ODataServiceHandler getServiceHandler(String serviceKey, String tenantDomain) {
+        // Load tenant configs
+        if (null == this.registry.get(tenantDomain) &&
+            !MultitenantConstants.SUPER_TENANT_DOMAIN_NAME.equals(tenantDomain)) {
+            try {
+                ConfigurationContextService contextService = DataServicesDSComponent.getContextService();
+                ConfigurationContext configContext;
+                if (null != contextService) {
+                    // Getting server's configContext instance
+                    configContext = contextService.getServerConfigContext();
+                    TenantAxisUtils.getTenantConfigurationContext(tenantDomain, configContext);
+                } else {
+                    throw new ODataServiceFault("ConfigurationContext is not found.");
+                }
+            } catch (Exception e) {
+                log.error("ConfigurationContext is not found.", e);
+            }
+        }
+        if (this.registry.get(tenantDomain) != null) {
+            return this.registry.get(tenantDomain).get(serviceKey);
+        } else {
+            return null;
+        }
+    }
 
-	public void removeODataService(String tenantDomain, String serviceName) {
-		this.registry.get(tenantDomain).remove(serviceName);
-	}
+    public void removeODataService(String tenantDomain, String serviceName) {
+        this.registry.get(tenantDomain).remove(serviceName);
+    }
 }

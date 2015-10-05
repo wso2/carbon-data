@@ -21,20 +21,20 @@ package org.wso2.carbon.dataservices.core.odata;
  */
 public class NavigationKeys {
 
-	private String primaryKey;
+    private String primaryKey;
 
-	private String foreignKey;
+    private String foreignKey;
 
-	public NavigationKeys(String primaryKey, String foreignKey) {
-		this.primaryKey = primaryKey;
-		this.foreignKey = foreignKey;
-	}
+    public NavigationKeys(String primaryKey, String foreignKey) {
+        this.primaryKey = primaryKey;
+        this.foreignKey = foreignKey;
+    }
 
-	public String getPrimaryKey() {
-		return primaryKey;
-	}
+    public String getPrimaryKey() {
+        return primaryKey;
+    }
 
-	public String getForeignKey() {
-		return foreignKey;
-	}
+    public String getForeignKey() {
+        return foreignKey;
+    }
 }

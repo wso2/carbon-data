@@ -567,11 +567,11 @@
     }
 
     /* check return row id change - ReturnUpdatedRowCount */
-    if (null != setReturnUpdatedRowCount) {
+    if (setReturnUpdatedRowCount != null) {
         boolean hasReturnRowProperty = false;
         String eleName = "";
         if (("true").equals(setReturnUpdatedRowCount)) {
-           if(null != dataService.getQuery(queryId)) {
+           if(dataService.getQuery(queryId) != null) {
               Query returnRowQuery = dataService.getQuery(queryId);
               Result resultRowCount = returnRowQuery.getResult();
               if (("true").equals(returnUpdatedRowCount) && (!hasReturnRowProperty)) {
@@ -592,15 +592,15 @@
               }
            }
         } else if (("false").equals(setReturnUpdatedRowCount)) {
-            if (null != dataService.getQuery(queryId)) {
+            if (dataService.getQuery(queryId) != null) {
                 Query returnRowQuery = dataService.getQuery(queryId);
                 Result resultRowCount = returnRowQuery.getResult();
                 if (("false").equals(returnUpdatedRowCount)) {
                     returnRowQuery.setReturnUpdatedRowCount(false);
-                    if (null != resultRowCount) {
+                    if (resultRowCount != null) {
                         resultRowCount.removeElement("Value");
                         // Remove result wrapper only if there are no other result elements exist other than generated key
-                        if (null != resultRowCount.getElements() && 0 == resultRowCount.getElements().size()) {
+                        if (resultRowCount.getElements() != null && 0 == resultRowCount.getElements().size()) {
                             resultRowCount.setResultWrapper("");
                             resultRowCount.setRowName("");
                             resultRowCount.setUseColumnNumbers("false");
@@ -613,20 +613,20 @@
         }
     }
     /* add auto response */
-    if (null != autoResponse) {
+    if (autoResponse != null) {
         String columnNames[];
         try {
             boolean isColumnAvailable = false;
             Config con = dataService.getConfig(datasource);
 
-            if ((null != sql && sql.trim().length() > 0) ||
-                (null != cassandraExpression && cassandraExpression.trim().length() > 0)) {
+            if ((sql != null && sql.trim().length() > 0) ||
+                (cassandraExpression != null && cassandraExpression.trim().length() > 0)) {
                 if ("Cassandra".equals(con.getDataSourceType())) {
                     columnNames = client.getOutputColumnNames(cassandraExpression);
                 } else {
                     columnNames = client.getOutputColumnNames(sql);
                 }
-                if ((null != columnNames) && (columnNames.length > 0)) {
+                if ((columnNames != null) && (columnNames.length > 0)) {
                     if (ALL.equals(columnNames[0])) {
                         String message = "Please Enter column names to generate the response";
                         CarbonUIMessage.sendCarbonUIMessage(message, CarbonUIMessage.ERROR, request);
@@ -643,7 +643,7 @@
                         List<String> outputMappingList = Arrays.asList(columnNames);
                         List<Element> currentOutputMappingList = resultResponse.getElements();
                         List<String> currentOutputMappingNameList = new ArrayList<String>();
-                        if (null != currentOutputMappingList) {
+                        if (currentOutputMappingList != null) {
                             for (Element newElement : currentOutputMappingList) {
                                 currentOutputMappingNameList.add(newElement.getName());
                             }
@@ -658,7 +658,7 @@
                                 resultResponse.addElement(newElement);
                             }
                         }
-                        if (null != outputMappingList && outputMappingList.size() > 0) {
+                        if (outputMappingList != null && outputMappingList.size() > 0) {
                             for (String name : currentOutputMappingNameList) {
                                 if (!outputMappingList.contains(name)) {
                                     resultResponse.removeElement(name);
@@ -681,10 +681,10 @@
         }
     }
     /* auto generate input mappings */
-    if (null != autoInputMappings) {
+    if (autoInputMappings != null) {
         String[] inputMappingNames = new String[0];
-        if ((null != sql && sql.trim().length() > 0) ||
-            (null != cassandraExpression && cassandraExpression.trim().length() > 0)) {
+        if ((sql != null && sql.trim().length() > 0) ||
+            (cassandraExpression != null && cassandraExpression.trim().length() > 0)) {
             try {
                 Config con = dataService.getConfig(datasource);
                 if ("Cassandra".equals(con.getDataSourceType())) {
@@ -697,12 +697,12 @@
                 carbonError.addError("Error occurred while retrieving input mapping names");
                 request.setAttribute(CarbonError.ID, carbonError);
             }
-            if ((null != inputMappingNames) && (inputMappingNames.length > 0)) {
+            if ((inputMappingNames != null) && (inputMappingNames.length > 0)) {
                 Query q = dataService.getQuery(queryId);
                 List<String> inputMappingList = Arrays.asList(inputMappingNames);
                 List<String> currentInputMappingList = new ArrayList<String>();
                 Param[] currentInputMappings = q.getParams();
-                if (null != currentInputMappings && currentInputMappings.length > 0) {
+                if (currentInputMappings != null && currentInputMappings.length > 0) {
                     for (Param param : currentInputMappings) {
                         currentInputMappingList.add(param.getName());
                     }
@@ -719,7 +719,7 @@
                         q.addParam(param);
                     }
                 }
-                if (null != inputMappingList && inputMappingList.size() > 0) {
+                if (inputMappingList != null && inputMappingList.size() > 0) {
                     for (String name : currentInputMappingList) {
                         if (!inputMappingList.contains(name)) {
                             q.removeParam(name);

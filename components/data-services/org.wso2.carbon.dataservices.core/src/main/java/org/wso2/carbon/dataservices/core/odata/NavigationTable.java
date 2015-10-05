@@ -16,7 +16,6 @@
 
 package org.wso2.carbon.dataservices.core.odata;
 
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,25 +23,26 @@ import java.util.Set;
 
 /**
  * This class stores the all the paths(relations) in a table and related keys.
+ *
  * @see NavigationKeys
  */
 public class NavigationTable {
 
-	private Map<String, List<NavigationKeys>> columns;
+    private Map<String, List<NavigationKeys>> columns;
 
-	public NavigationTable() {
-		this.columns = new HashMap<>();
-	}
+    public NavigationTable() {
+        this.columns = new HashMap<>();
+    }
 
-	public Set<String> getTables() {
-		return this.columns.keySet();
-	}
+    public Set<String> getTables() {
+        return this.columns.keySet();
+    }
 
-	public List<NavigationKeys> getNavigationKeys(String table) {
-		return this.columns.get(table);
-	}
+    public List<NavigationKeys> getNavigationKeys(String table) {
+        return this.columns.get(table);
+    }
 
-	public void addNavigationKeys(String table, List<NavigationKeys> keys) {
-		this.columns.put(table, keys);
-	}
+    public void addNavigationKeys(String table, List<NavigationKeys> keys) {
+        this.columns.put(table, keys);
+    }
 }

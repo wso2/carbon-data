@@ -19,12 +19,12 @@ package org.wso2.carbon.dataservices.core.odata;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
 
 public class ODataServiceFault extends DataServiceFault {
-	public ODataServiceFault(Exception nestedException, String dsFaultMessage) {
-		super(nestedException, "OData Service Fault : " + dsFaultMessage);
-	}
+    public ODataServiceFault(Exception nestedException, String dsFaultMessage) {
+        super(nestedException, "OData Service Fault : " + dsFaultMessage);
+    }
 
-	public ODataServiceFault(String dsFaultMessage) {
-		super("OData Service Fault : " + dsFaultMessage);
-	}
+    public ODataServiceFault(String dsFaultMessage) {
+        super("OData Service Fault : " + dsFaultMessage);
+    }
 
 }

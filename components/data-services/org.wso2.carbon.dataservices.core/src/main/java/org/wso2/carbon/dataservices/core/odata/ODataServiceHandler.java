@@ -50,370 +50,370 @@ import java.util.Map;
  * This class pass the OData requests into Olingo ODataHTTPHandler to process.
  */
 public class ODataServiceHandler {
-	/**
-	 * Olingo ODataHTTPHandler
-	 */
-	private ODataHttpHandler handler;
-
-	public ODataServiceHandler(ODataDataHandler dataHandler, String namespace, String configID)
-			throws ODataServiceFault {
-		ODataAdapter processor = new ODataAdapter(dataHandler, namespace, configID);
-		OData odata = OData4Impl.newInstance();
-		ServiceMetadata edm = odata.createServiceMetadata(processor.getEdmProvider(), new ArrayList<EdmxReference>());
-		this.handler = odata.createHandler(edm);
-		this.handler.register(processor);
-	}
-
-	/**
-	 * This method process the http servlet request and send the response.
-	 *
-	 * @param req             HTTPServletRequest
-	 * @param resp            HTTPServletResponse
-	 * @param serviceRootPath Service root Path
-	 */
-	public void process(HttpServletRequest req, HttpServletResponse resp, String serviceRootPath) {
-		handler.process(modifyServletPath(req, serviceRootPath), resp);
-	}
-
-	/**
-	 * This method creates a new HTTPServletRequest to modify the ServletPath in the request.
-	 *
-	 * @param req             HTTPServletRequest
-	 * @param serviceRootPath Service Root path
-	 * @return HTTPServletRequest
-	 */
-	private HttpServletRequest modifyServletPath(final HttpServletRequest req, final String serviceRootPath) {
-
-		return new HttpServletRequest() {
-			@Override
-			public String getAuthType() {
-				return req.getAuthType();
-			}
-
-			@Override
-			public Cookie[] getCookies() {
-				return req.getCookies();
-			}
-
-			@Override
-			public long getDateHeader(String s) {
-				return req.getDateHeader(s);
-			}
-
-			@Override
-			public String getHeader(String s) {
-				return req.getHeader(s);
-			}
-
-			@Override
-			public Enumeration<String> getHeaders(String s) {
-				return req.getHeaders(s);
-			}
-
-			@Override
-			public Enumeration<String> getHeaderNames() {
-				return req.getHeaderNames();
-			}
-
-			@Override
-			public int getIntHeader(String s) {
-				return req.getIntHeader(s);
-			}
-
-			@Override
-			public String getMethod() {
-				return req.getMethod();
-			}
-
-			@Override
-			public String getPathInfo() {
-				return req.getPathInfo();
-			}
-
-			@Override
-			public String getPathTranslated() {
-				return req.getPathTranslated();
-			}
-
-			@Override
-			public String getContextPath() {
-				return req.getContextPath();
-			}
-
-			@Override
-			public String getQueryString() {
-				return req.getQueryString();
-			}
-
-			@Override
-			public String getRemoteUser() {
-				return req.getRemoteUser();
-			}
-
-			@Override
-			public boolean isUserInRole(String s) {
-				return req.isUserInRole(s);
-			}
-
-			@Override
-			public Principal getUserPrincipal() {
-				return req.getUserPrincipal();
-			}
-
-			@Override
-			public String getRequestedSessionId() {
-				return req.getRequestedSessionId();
-			}
-
-			@Override
-			public String getRequestURI() {
-				return req.getRequestURI();
-			}
-
-			@Override
-			public StringBuffer getRequestURL() {
-				return req.getRequestURL();
-			}
-
-			@Override
-			public String getServletPath() {
-				return req.getServletPath() + serviceRootPath;
-			}
-
-			@Override
-			public HttpSession getSession(boolean b) {
-				return req.getSession(b);
-			}
-
-			@Override
-			public HttpSession getSession() {
-				return req.getSession();
-			}
-
-			@Override
-			public boolean isRequestedSessionIdValid() {
-				return req.isRequestedSessionIdValid();
-			}
-
-			@Override
-			public boolean isRequestedSessionIdFromCookie() {
-				return req.isRequestedSessionIdFromCookie();
-			}
-
-			@Override
-			public boolean isRequestedSessionIdFromURL() {
-				return req.isRequestedSessionIdFromURL();
-			}
-
-			@Override
-			public boolean isRequestedSessionIdFromUrl() {
-				return req.isRequestedSessionIdFromUrl();
-			}
-
-			@Override
-			public boolean authenticate(HttpServletResponse httpServletResponse) throws IOException, ServletException {
-				return req.authenticate(httpServletResponse);
-			}
-
-			@Override
-			public void login(String s, String s1) throws ServletException {
-				req.login(s, s1);
-			}
-
-			@Override
-			public void logout() throws ServletException {
-				req.logout();
-			}
-
-			@Override
-			public Collection<Part> getParts() throws IOException, IllegalStateException, ServletException {
-				return req.getParts();
-			}
-
-			@Override
-			public Part getPart(String s) throws IOException, IllegalStateException, ServletException {
-				return req.getPart(s);
-			}
-
-			@Override
-			public Object getAttribute(String s) {
-				return req.getAttribute(s);
-			}
-
-			@Override
-			public Enumeration<String> getAttributeNames() {
-				return req.getAttributeNames();
-			}
-
-			@Override
-			public String getCharacterEncoding() {
-				return req.getCharacterEncoding();
-			}
-
-			@Override
-			public void setCharacterEncoding(String s) throws UnsupportedEncodingException {
-				req.setCharacterEncoding(s);
-			}
-
-			@Override
-			public int getContentLength() {
-				return req.getContentLength();
-			}
-
-			@Override
-			public String getContentType() {
-				return req.getContentType();
-			}
-
-			@Override
-			public ServletInputStream getInputStream() throws IOException {
-				return req.getInputStream();
-			}
-
-			@Override
-			public String getParameter(String s) {
-				return req.getParameter(s);
-			}
-
-			@Override
-			public Enumeration<String> getParameterNames() {
-				return req.getParameterNames();
-			}
-
-			@Override
-			public String[] getParameterValues(String s) {
-				return req.getParameterValues(s);
-			}
-
-			@Override
-			public Map<String, String[]> getParameterMap() {
-				return req.getParameterMap();
-			}
-
-			@Override
-			public String getProtocol() {
-				return req.getProtocol();
-			}
-
-			@Override
-			public String getScheme() {
-				return req.getScheme();
-			}
-
-			@Override
-			public String getServerName() {
-				return req.getServerName();
-			}
-
-			@Override
-			public int getServerPort() {
-				return req.getServerPort();
-			}
-
-			@Override
-			public BufferedReader getReader() throws IOException {
-				return req.getReader();
-			}
-
-			@Override
-			public String getRemoteAddr() {
-				return req.getRemoteAddr();
-			}
-
-			@Override
-			public String getRemoteHost() {
-				return req.getRemoteHost();
-			}
-
-			@Override
-			public void setAttribute(String s, Object o) {
-				req.setAttribute(s, o);
-			}
-
-			@Override
-			public void removeAttribute(String s) {
-				req.removeAttribute(s);
-			}
-
-			@Override
-			public Locale getLocale() {
-				return req.getLocale();
-			}
-
-			@Override
-			public Enumeration<Locale> getLocales() {
-				return req.getLocales();
-			}
-
-			@Override
-			public boolean isSecure() {
-				return req.isSecure();
-			}
-
-			@Override
-			public RequestDispatcher getRequestDispatcher(String s) {
-				return req.getRequestDispatcher(s);
-			}
-
-			@Override
-			public String getRealPath(String s) {
-				return req.getRealPath(s);
-			}
-
-			@Override
-			public int getRemotePort() {
-				return req.getRemotePort();
-			}
-
-			@Override
-			public String getLocalName() {
-				return req.getLocalName();
-			}
-
-			@Override
-			public String getLocalAddr() {
-				return req.getLocalAddr();
-			}
-
-			@Override
-			public int getLocalPort() {
-				return req.getLocalPort();
-			}
-
-			@Override
-			public ServletContext getServletContext() {
-				return req.getServletContext();
-			}
-
-			@Override
-			public AsyncContext startAsync() {
-				return req.startAsync();
-			}
-
-			@Override
-			public AsyncContext startAsync(ServletRequest servletRequest, ServletResponse servletResponse) {
-				return req.startAsync(servletRequest, servletResponse);
-			}
-
-			@Override
-			public boolean isAsyncStarted() {
-				return req.isAsyncStarted();
-			}
-
-			@Override
-			public boolean isAsyncSupported() {
-				return req.isAsyncSupported();
-			}
-
-			@Override
-			public AsyncContext getAsyncContext() {
-				return req.getAsyncContext();
-			}
-
-			@Override
-			public DispatcherType getDispatcherType() {
-				return req.getDispatcherType();
-			}
-		};
-	}
+    /**
+     * Olingo ODataHTTPHandler
+     */
+    private ODataHttpHandler handler;
+
+    public ODataServiceHandler(ODataDataHandler dataHandler, String namespace, String configID)
+            throws ODataServiceFault {
+        ODataAdapter processor = new ODataAdapter(dataHandler, namespace, configID);
+        OData odata = OData4Impl.newInstance();
+        ServiceMetadata edm = odata.createServiceMetadata(processor.getEdmProvider(), new ArrayList<EdmxReference>());
+        this.handler = odata.createHandler(edm);
+        this.handler.register(processor);
+    }
+
+    /**
+     * This method process the http servlet request and send the response.
+     *
+     * @param req             HTTPServletRequest
+     * @param resp            HTTPServletResponse
+     * @param serviceRootPath Service root Path
+     */
+    public void process(HttpServletRequest req, HttpServletResponse resp, String serviceRootPath) {
+        handler.process(modifyServletPath(req, serviceRootPath), resp);
+    }
+
+    /**
+     * This method creates a new HTTPServletRequest to modify the ServletPath in the request.
+     *
+     * @param req             HTTPServletRequest
+     * @param serviceRootPath Service Root path
+     * @return HTTPServletRequest
+     */
+    private HttpServletRequest modifyServletPath(final HttpServletRequest req, final String serviceRootPath) {
+
+        return new HttpServletRequest() {
+            @Override
+            public String getAuthType() {
+                return req.getAuthType();
+            }
+
+            @Override
+            public Cookie[] getCookies() {
+                return req.getCookies();
+            }
+
+            @Override
+            public long getDateHeader(String s) {
+                return req.getDateHeader(s);
+            }
+
+            @Override
+            public String getHeader(String s) {
+                return req.getHeader(s);
+            }
+
+            @Override
+            public Enumeration<String> getHeaders(String s) {
+                return req.getHeaders(s);
+            }
+
+            @Override
+            public Enumeration<String> getHeaderNames() {
+                return req.getHeaderNames();
+            }
+
+            @Override
+            public int getIntHeader(String s) {
+                return req.getIntHeader(s);
+            }
+
+            @Override
+            public String getMethod() {
+                return req.getMethod();
+            }
+
+            @Override
+            public String getPathInfo() {
+                return req.getPathInfo();
+            }
+
+            @Override
+            public String getPathTranslated() {
+                return req.getPathTranslated();
+            }
+
+            @Override
+            public String getContextPath() {
+                return req.getContextPath();
+            }
+
+            @Override
+            public String getQueryString() {
+                return req.getQueryString();
+            }
+
+            @Override
+            public String getRemoteUser() {
+                return req.getRemoteUser();
+            }
+
+            @Override
+            public boolean isUserInRole(String s) {
+                return req.isUserInRole(s);
+            }
+
+            @Override
+            public Principal getUserPrincipal() {
+                return req.getUserPrincipal();
+            }
+
+            @Override
+            public String getRequestedSessionId() {
+                return req.getRequestedSessionId();
+            }
+
+            @Override
+            public String getRequestURI() {
+                return req.getRequestURI();
+            }
+
+            @Override
+            public StringBuffer getRequestURL() {
+                return req.getRequestURL();
+            }
+
+            @Override
+            public String getServletPath() {
+                return req.getServletPath() + serviceRootPath;
+            }
+
+            @Override
+            public HttpSession getSession(boolean b) {
+                return req.getSession(b);
+            }
+
+            @Override
+            public HttpSession getSession() {
+                return req.getSession();
+            }
+
+            @Override
+            public boolean isRequestedSessionIdValid() {
+                return req.isRequestedSessionIdValid();
+            }
+
+            @Override
+            public boolean isRequestedSessionIdFromCookie() {
+                return req.isRequestedSessionIdFromCookie();
+            }
+
+            @Override
+            public boolean isRequestedSessionIdFromURL() {
+                return req.isRequestedSessionIdFromURL();
+            }
+
+            @Override
+            public boolean isRequestedSessionIdFromUrl() {
+                return req.isRequestedSessionIdFromUrl();
+            }
+
+            @Override
+            public boolean authenticate(HttpServletResponse httpServletResponse) throws IOException, ServletException {
+                return req.authenticate(httpServletResponse);
+            }
+
+            @Override
+            public void login(String s, String s1) throws ServletException {
+                req.login(s, s1);
+            }
+
+            @Override
+            public void logout() throws ServletException {
+                req.logout();
+            }
+
+            @Override
+            public Collection<Part> getParts() throws IOException, IllegalStateException, ServletException {
+                return req.getParts();
+            }
+
+            @Override
+            public Part getPart(String s) throws IOException, IllegalStateException, ServletException {
+                return req.getPart(s);
+            }
+
+            @Override
+            public Object getAttribute(String s) {
+                return req.getAttribute(s);
+            }
+
+            @Override
+            public Enumeration<String> getAttributeNames() {
+                return req.getAttributeNames();
+            }
+
+            @Override
+            public String getCharacterEncoding() {
+                return req.getCharacterEncoding();
+            }
+
+            @Override
+            public void setCharacterEncoding(String s) throws UnsupportedEncodingException {
+                req.setCharacterEncoding(s);
+            }
+
+            @Override
+            public int getContentLength() {
+                return req.getContentLength();
+            }
+
+            @Override
+            public String getContentType() {
+                return req.getContentType();
+            }
+
+            @Override
+            public ServletInputStream getInputStream() throws IOException {
+                return req.getInputStream();
+            }
+
+            @Override
+            public String getParameter(String s) {
+                return req.getParameter(s);
+            }
+
+            @Override
+            public Enumeration<String> getParameterNames() {
+                return req.getParameterNames();
+            }
+
+            @Override
+            public String[] getParameterValues(String s) {
+                return req.getParameterValues(s);
+            }
+
+            @Override
+            public Map<String, String[]> getParameterMap() {
+                return req.getParameterMap();
+            }
+
+            @Override
+            public String getProtocol() {
+                return req.getProtocol();
+            }
+
+            @Override
+            public String getScheme() {
+                return req.getScheme();
+            }
+
+            @Override
+            public String getServerName() {
+                return req.getServerName();
+            }
+
+            @Override
+            public int getServerPort() {
+                return req.getServerPort();
+            }
+
+            @Override
+            public BufferedReader getReader() throws IOException {
+                return req.getReader();
+            }
+
+            @Override
+            public String getRemoteAddr() {
+                return req.getRemoteAddr();
+            }
+
+            @Override
+            public String getRemoteHost() {
+                return req.getRemoteHost();
+            }
+
+            @Override
+            public void setAttribute(String s, Object o) {
+                req.setAttribute(s, o);
+            }
+
+            @Override
+            public void removeAttribute(String s) {
+                req.removeAttribute(s);
+            }
+
+            @Override
+            public Locale getLocale() {
+                return req.getLocale();
+            }
+
+            @Override
+            public Enumeration<Locale> getLocales() {
+                return req.getLocales();
+            }
+
+            @Override
+            public boolean isSecure() {
+                return req.isSecure();
+            }
+
+            @Override
+            public RequestDispatcher getRequestDispatcher(String s) {
+                return req.getRequestDispatcher(s);
+            }
+
+            @Override
+            public String getRealPath(String s) {
+                return req.getRealPath(s);
+            }
+
+            @Override
+            public int getRemotePort() {
+                return req.getRemotePort();
+            }
+
+            @Override
+            public String getLocalName() {
+                return req.getLocalName();
+            }
+
+            @Override
+            public String getLocalAddr() {
+                return req.getLocalAddr();
+            }
+
+            @Override
+            public int getLocalPort() {
+                return req.getLocalPort();
+            }
+
+            @Override
+            public ServletContext getServletContext() {
+                return req.getServletContext();
+            }
+
+            @Override
+            public AsyncContext startAsync() {
+                return req.startAsync();
+            }
+
+            @Override
+            public AsyncContext startAsync(ServletRequest servletRequest, ServletResponse servletResponse) {
+                return req.startAsync(servletRequest, servletResponse);
+            }
+
+            @Override
+            public boolean isAsyncStarted() {
+                return req.isAsyncStarted();
+            }
+
+            @Override
+            public boolean isAsyncSupported() {
+                return req.isAsyncSupported();
+            }
+
+            @Override
+            public AsyncContext getAsyncContext() {
+                return req.getAsyncContext();
+            }
+
+            @Override
+            public DispatcherType getDispatcherType() {
+                return req.getDispatcherType();
+            }
+        };
+    }
 }

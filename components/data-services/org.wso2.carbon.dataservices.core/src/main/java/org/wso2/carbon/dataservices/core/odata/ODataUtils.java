@@ -28,20 +28,20 @@ import java.util.UUID;
  */
 public class ODataUtils {
 
-	/**
-	 * This method generates an unique ETag for each data row entry.
-	 *
-	 * @param tableName Name of the table
-	 * @param entry     Data row entry
-	 * @return E Tag
-	 */
-	public static String generateETag(String configID, String tableName, ODataEntry entry) {
-		StringBuilder uniqueString = new StringBuilder();
-		uniqueString.append(configID).append(tableName);
-		for (String columnName : entry.getNames()) {
-			uniqueString.append(columnName).append(entry.getValue(columnName));
-		}
-		return UUID.nameUUIDFromBytes((uniqueString.toString()).getBytes()).toString();
-	}
+    /**
+     * This method generates an unique ETag for each data row entry.
+     *
+     * @param tableName Name of the table
+     * @param entry     Data row entry
+     * @return E Tag
+     */
+    public static String generateETag(String configID, String tableName, ODataEntry entry) {
+        StringBuilder uniqueString = new StringBuilder();
+        uniqueString.append(configID).append(tableName);
+        for (String columnName : entry.getNames()) {
+            uniqueString.append(columnName).append(entry.getValue(columnName));
+        }
+        return UUID.nameUUIDFromBytes((uniqueString.toString()).getBytes()).toString();
+    }
 
 }

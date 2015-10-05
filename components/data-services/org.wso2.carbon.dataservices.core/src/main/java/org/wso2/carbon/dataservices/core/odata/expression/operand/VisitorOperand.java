@@ -27,52 +27,52 @@ import java.math.BigInteger;
 import java.util.HashMap;
 
 public abstract class VisitorOperand {
-	final static private HashMap<EdmType, Class<?>> defaultTypeMapping = new HashMap<>();
-	protected Object value;
+    final static private HashMap<EdmType, Class<?>> defaultTypeMapping = new HashMap<>();
+    protected Object value;
 
-	public VisitorOperand(final Object value) {
-		this.value = value;
-		defaultTypeMapping.put(ODataConstants.primitiveByte, BigInteger.class);
-		defaultTypeMapping.put(ODataConstants.primitiveSByte, BigInteger.class);
-		defaultTypeMapping.put(ODataConstants.primitiveInt16, BigInteger.class);
-		defaultTypeMapping.put(ODataConstants.primitiveInt32, BigInteger.class);
-		defaultTypeMapping.put(ODataConstants.primitiveInt64, BigInteger.class);
-		defaultTypeMapping.put(ODataConstants.primitiveSingle, BigDecimal.class);
-		defaultTypeMapping.put(ODataConstants.primitiveDouble, BigDecimal.class);
-		defaultTypeMapping.put(ODataConstants.primitiveDecimal, BigDecimal.class);
-	}
+    public VisitorOperand(final Object value) {
+        this.value = value;
+        defaultTypeMapping.put(ODataConstants.primitiveByte, BigInteger.class);
+        defaultTypeMapping.put(ODataConstants.primitiveSByte, BigInteger.class);
+        defaultTypeMapping.put(ODataConstants.primitiveInt16, BigInteger.class);
+        defaultTypeMapping.put(ODataConstants.primitiveInt32, BigInteger.class);
+        defaultTypeMapping.put(ODataConstants.primitiveInt64, BigInteger.class);
+        defaultTypeMapping.put(ODataConstants.primitiveSingle, BigDecimal.class);
+        defaultTypeMapping.put(ODataConstants.primitiveDouble, BigDecimal.class);
+        defaultTypeMapping.put(ODataConstants.primitiveDecimal, BigDecimal.class);
+    }
 
-	public abstract TypedOperand asTypedOperand() throws ODataApplicationException;
+    public abstract TypedOperand asTypedOperand() throws ODataApplicationException;
 
-	public abstract TypedOperand asTypedOperand(EdmPrimitiveType[] types) throws ODataApplicationException;
+    public abstract TypedOperand asTypedOperand(EdmPrimitiveType[] types) throws ODataApplicationException;
 
-	public abstract EdmProperty getEdmProperty();
+    public abstract EdmProperty getEdmProperty();
 
-	public Object getValue() {
-		return value;
-	}
+    public Object getValue() {
+        return value;
+    }
 
-	protected Object castTo(final String value, final EdmPrimitiveType type) throws EdmPrimitiveTypeException {
-		final EdmProperty edmProperty = getEdmProperty();
-		if (edmProperty != null) {
-			return type.valueOfString(value, edmProperty.isNullable(), edmProperty.getMaxLength(),
-			                          edmProperty.getPrecision(), edmProperty.getScale(), edmProperty.isUnicode(),
-			                          getDefaultType(type));
-		} else {
-			return type.valueOfString(value, null, null, null, null, null, getDefaultType(type));
-		}
-	}
+    protected Object castTo(final String value, final EdmPrimitiveType type) throws EdmPrimitiveTypeException {
+        final EdmProperty edmProperty = getEdmProperty();
+        if (edmProperty != null) {
+            return type.valueOfString(value, edmProperty.isNullable(), edmProperty.getMaxLength(),
+                                      edmProperty.getPrecision(), edmProperty.getScale(), edmProperty.isUnicode(),
+                                      getDefaultType(type));
+        } else {
+            return type.valueOfString(value, null, null, null, null, null, getDefaultType(type));
+        }
+    }
 
-	protected Class<?> getDefaultType(final EdmPrimitiveType type) {
-		return defaultTypeMapping.get(type) != null ? defaultTypeMapping.get(type) : type.getDefaultType();
-	}
+    protected Class<?> getDefaultType(final EdmPrimitiveType type) {
+        return defaultTypeMapping.get(type) != null ? defaultTypeMapping.get(type) : type.getDefaultType();
+    }
 
-	protected Object tryCast(final String literal, final EdmPrimitiveType type) {
-		try {
-			return castTo(type.fromUriLiteral(literal), type);
-		} catch (EdmPrimitiveTypeException e) {
-			return null;
-		}
-	}
+    protected Object tryCast(final String literal, final EdmPrimitiveType type) {
+        try {
+            return castTo(type.fromUriLiteral(literal), type);
+        } catch (EdmPrimitiveTypeException e) {
+            return null;
+        }
+    }
 
 }

@@ -27,33 +27,33 @@ import java.util.Locale;
 
 public class UnaryOperator {
 
-	final private TypedOperand operand;
+    final private TypedOperand operand;
 
-	public UnaryOperator(final VisitorOperand operand) throws ODataApplicationException {
-		this.operand = operand.asTypedOperand();
-	}
+    public UnaryOperator(final VisitorOperand operand) throws ODataApplicationException {
+        this.operand = operand.asTypedOperand();
+    }
 
-	public VisitorOperand minusOperation() throws ODataApplicationException {
-		if (operand.isNull()) {
-			return operand;
-		} else if (operand.isIntegerType()) {
-			return new TypedOperand(operand.getTypedValue(BigInteger.class).negate(), operand.getType());
-		} else if (operand.isDecimalType() || operand.is(ODataConstants.primitiveDuration)) {
-			return new TypedOperand(operand.getTypedValue(BigDecimal.class).negate(), operand.getType());
-		} else {
-			throw new ODataApplicationException("Unsupported type", HttpStatusCode.BAD_REQUEST.getStatusCode(),
-			                                    Locale.ROOT);
-		}
-	}
+    public VisitorOperand minusOperation() throws ODataApplicationException {
+        if (operand.isNull()) {
+            return operand;
+        } else if (operand.isIntegerType()) {
+            return new TypedOperand(operand.getTypedValue(BigInteger.class).negate(), operand.getType());
+        } else if (operand.isDecimalType() || operand.is(ODataConstants.primitiveDuration)) {
+            return new TypedOperand(operand.getTypedValue(BigDecimal.class).negate(), operand.getType());
+        } else {
+            throw new ODataApplicationException("Unsupported type", HttpStatusCode.BAD_REQUEST.getStatusCode(),
+                                                Locale.ROOT);
+        }
+    }
 
-	public VisitorOperand notOperation() throws ODataApplicationException {
-		if (operand.isNull()) {
-			return operand;
-		} else if (operand.is(ODataConstants.primitiveBoolean)) {
-			return new TypedOperand(!operand.getTypedValue(Boolean.class), operand.getType());
-		} else {
-			throw new ODataApplicationException("Unsupported type", HttpStatusCode.BAD_REQUEST.getStatusCode(),
-			                                    Locale.ROOT);
-		}
-	}
+    public VisitorOperand notOperation() throws ODataApplicationException {
+        if (operand.isNull()) {
+            return operand;
+        } else if (operand.is(ODataConstants.primitiveBoolean)) {
+            return new TypedOperand(!operand.getTypedValue(Boolean.class), operand.getType());
+        } else {
+            throw new ODataApplicationException("Unsupported type", HttpStatusCode.BAD_REQUEST.getStatusCode(),
+                                                Locale.ROOT);
+        }
+    }
 }

@@ -21,138 +21,138 @@ package org.wso2.carbon.dataservices.core.odata;
  */
 public class DataColumn {
 
-	/**
-	 * Name of the table column.
-	 */
-	private String columnName;
+    /**
+     * Name of the table column.
+     */
+    private String columnName;
 
-	/**
-	 * Data type of the table column.
-	 */
-	private ODataDataType columnType;
+    /**
+     * Data type of the table column.
+     */
+    private ODataDataType columnType;
 
-	/**
-	 * Ordinal position of the table column.
-	 */
-	private int ordinalPosition;
+    /**
+     * Ordinal position of the table column.
+     */
+    private int ordinalPosition;
 
-	/**
-	 * Is the table column support nullable.
-	 */
-	private boolean nullable;
+    /**
+     * Is the table column support nullable.
+     */
+    private boolean nullable;
 
-	/**
-	 * Precision of the table column.
-	 */
-	private int precision;
+    /**
+     * Precision of the table column.
+     */
+    private int precision;
 
-	/**
-	 * Scale of the table column.
-	 */
-	private int scale;
+    /**
+     * Scale of the table column.
+     */
+    private int scale;
 
-	/**
-	 * Default value of the table column.
-	 */
-	private String defaultValue;
+    /**
+     * Default value of the table column.
+     */
+    private String defaultValue;
 
-	/**
-	 * Maximum length of the table column.
-	 */
-	private int maxLength;
+    /**
+     * Maximum length of the table column.
+     */
+    private int maxLength;
 
-	public DataColumn(String columnName, ODataDataType columnType, int order, boolean isNullable, int length) {
-		this.columnName = columnName;
-		this.columnType = columnType;
-		this.ordinalPosition = order;
-		this.nullable = isNullable;
-		this.maxLength = length;
-	}
+    public DataColumn(String columnName, ODataDataType columnType, int order, boolean isNullable, int length) {
+        this.columnName = columnName;
+        this.columnType = columnType;
+        this.ordinalPosition = order;
+        this.nullable = isNullable;
+        this.maxLength = length;
+    }
 
-	public DataColumn(String columnName, ODataDataType columnType, boolean isNullable) {
-		this.columnName = columnName;
-		this.columnType = columnType;
-		this.nullable = isNullable;
-		this.maxLength = Integer.MAX_VALUE;
-	}
+    public DataColumn(String columnName, ODataDataType columnType, boolean isNullable) {
+        this.columnName = columnName;
+        this.columnType = columnType;
+        this.nullable = isNullable;
+        this.maxLength = Integer.MAX_VALUE;
+    }
 
-	public enum ODataDataType {
-		BINARY,
-		BOOLEAN,
-		BYTE,
-		SBYTE,
-		DATE,
-		DATE_TIMEOFFSET,
-		TIMEOFDAY,
-		DURATION,
-		DECIMAL,
-		SINGLE,
-		DOUBLE,
-		GUID,
-		INT16,
-		INT32,
-		INT64,
-		STRING,
-		STREAM,
-		GEOGRAPHY,
-		GEOGRAPHY_POINT,
-		GEOGRAPHY_LINE_STRING,
-		GEOGRAPHY_POLYGON,
-		GEOGRAPHY_MULTIPOINT,
-		GEOGRAPHY_MULTILINE_STRING,
-		GEOGRAPHY_MULTIPOLYGON,
-		GEOGRAPHY_COLLECTION,
-		GEOMETRY,
-		GEOMETRY_POINT,
-		GEOMETRY_LINE_STRING,
-		GEOMETRY_POLYGON,
-		GEOMETRY_MULTIPOINT,
-		GEOMETRY_MULTILINE_STRING,
-		GEOMETRY_MULTIPOLYGON,
-		GEOMETRY_COLLECTION
-	}
+    public enum ODataDataType {
+        BINARY,
+        BOOLEAN,
+        BYTE,
+        SBYTE,
+        DATE,
+        DATE_TIMEOFFSET,
+        TIMEOFDAY,
+        DURATION,
+        DECIMAL,
+        SINGLE,
+        DOUBLE,
+        GUID,
+        INT16,
+        INT32,
+        INT64,
+        STRING,
+        STREAM,
+        GEOGRAPHY,
+        GEOGRAPHY_POINT,
+        GEOGRAPHY_LINE_STRING,
+        GEOGRAPHY_POLYGON,
+        GEOGRAPHY_MULTIPOINT,
+        GEOGRAPHY_MULTILINE_STRING,
+        GEOGRAPHY_MULTIPOLYGON,
+        GEOGRAPHY_COLLECTION,
+        GEOMETRY,
+        GEOMETRY_POINT,
+        GEOMETRY_LINE_STRING,
+        GEOMETRY_POLYGON,
+        GEOMETRY_MULTIPOINT,
+        GEOMETRY_MULTILINE_STRING,
+        GEOMETRY_MULTIPOLYGON,
+        GEOMETRY_COLLECTION
+    }
 
-	public String getColumnName() {
-		return columnName;
-	}
+    public String getColumnName() {
+        return columnName;
+    }
 
-	public ODataDataType getColumnType() {
-		return columnType;
-	}
+    public ODataDataType getColumnType() {
+        return columnType;
+    }
 
-	public int getMaxLength() {
-		return maxLength;
-	}
+    public int getMaxLength() {
+        return maxLength;
+    }
 
-	public void setPrecision(int precision) {
-		this.precision = precision;
-	}
+    public void setPrecision(int precision) {
+        this.precision = precision;
+    }
 
-	public void setScale(int scale) {
-		this.scale = scale;
-	}
+    public void setScale(int scale) {
+        this.scale = scale;
+    }
 
-	public int getOrdinalPosition() {
-		return ordinalPosition;
-	}
+    public int getOrdinalPosition() {
+        return ordinalPosition;
+    }
 
-	public boolean isNullable() {
-		return nullable;
-	}
+    public boolean isNullable() {
+        return nullable;
+    }
 
-	public int getPrecision() {
-		return precision;
-	}
+    public int getPrecision() {
+        return precision;
+    }
 
-	public int getScale() {
-		return scale;
-	}
+    public int getScale() {
+        return scale;
+    }
 
-	public String getDefaultValue() {
-		return defaultValue;
-	}
+    public String getDefaultValue() {
+        return defaultValue;
+    }
 
-	public void setDefaultValue(String defaultValue) {
-		this.defaultValue = defaultValue;
-	}
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
+    }
 }

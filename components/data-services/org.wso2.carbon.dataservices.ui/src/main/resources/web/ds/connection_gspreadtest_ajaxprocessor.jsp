@@ -24,12 +24,13 @@
 <%@ page import="org.wso2.carbon.CarbonError" %>
 <%@ page import="java.io.PrintWriter" %>
 <%
-	String userName = request.getParameter("userName");
-	String password = request.getParameter("password");
+	String clientId = request.getParameter("clientId");
+	String clientSecret = request.getParameter("clientSecret");
+	String refreshToken = request.getParameter("refreshToken");
 	String documentURL = request.getParameter("documentURL");
    	String visibility = request.getParameter("visibility");
-    String passwordAlias = request.getParameter("passwordAlias");
-    
+//    String passwordAlias = request.getParameter("passwordAlias");
+
 	String backendServerURL = CarbonUIUtil
 			.getServerURL(config.getServletContext(), session);
 	ConfigurationContext configContext = (ConfigurationContext) config.getServletContext()
@@ -39,7 +40,7 @@
 			configContext);
 	String message = "";
 	try {
-		message = client.testGSpreadConnection(userName,password,visibility,documentURL, passwordAlias) ;
+		message = client.testGSpreadConnection(clientId,clientSecret,refreshToken,visibility,documentURL) ;
 		response.setContentType("text/xml; charset=UTF-8");
 		// Set standard HTTP/1.1 no-cache headers.
 		response.setHeader("Cache-Control",

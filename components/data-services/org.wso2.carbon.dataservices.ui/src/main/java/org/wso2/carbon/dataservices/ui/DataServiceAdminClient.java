@@ -115,14 +115,14 @@ public class DataServiceAdminClient {
 		return response;
     }
  
-	public String testGSpreadConnection(String userName,
-            String password,
+	public String testGSpreadConnection(String clientId,
+            String clientSecret,
+            String refreshToken,
             String visibility,
-            String documentURL,String passwordAlias)throws AxisFault {
+            String documentURL)throws AxisFault {
     	String response = "";
     	try {
-			response = stub.testGSpreadConnection(userName, password, visibility, documentURL,
-					passwordAlias);
+			response = stub.testGSpreadConnection(clientId, clientSecret, refreshToken, visibility, documentURL);
 		} catch (RemoteException e) {
 			throw new AxisFault("Error connecting to " + documentURL +
                     ". Message from the service is : ", e);

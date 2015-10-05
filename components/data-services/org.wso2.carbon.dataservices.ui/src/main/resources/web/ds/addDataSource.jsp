@@ -2770,18 +2770,19 @@ private String getRefreshToken(String gSpreadJDBCUrl) {
             function testSpreadsheetConnection() {
                 var documentURL = document.getElementById('gspread_datasource').value;
                 var visibility =  document.getElementById("gspread_visibility").options[document.getElementById("gspread_visibility").selectedIndex].value;
-                var userName = leftTrim(rightTrim(document.getElementById('gspread_username').value));
-                var password = document.getElementById('gspread_password').value;
-                var useAlias = document.getElementById('useSecretAliasValue').value;
-                                
-                if (useAlias == 'true') {
-               	if (document.getElementById('pwdalias') != null) {
-                		var pwdalias = document.getElementById('pwdalias').value;
-                	}
-                	var url = 'connection_gspreadtest_ajaxprocessor.jsp?userName=' + encodeURIComponent(userName) + '&password=' + encodeURIComponent(password) + '&visibility=' + encodeURIComponent(visibility) + '&documentURL=' + encodeURIComponent(documentURL)+ '&passwordAlias=' + passwordAlias;
-                } else {
-                	var url = 'connection_gspreadtest_ajaxprocessor.jsp?userName=' + encodeURIComponent(userName) + '&password=' + encodeURIComponent(password) + '&visibility=' + encodeURIComponent(visibility) + '&documentURL=' + encodeURIComponent(documentURL);
-                }
+                var clientId = leftTrim(rightTrim(document.getElementById('gspread_client_id').value));
+                var clientSecret = leftTrim(rightTrim(document.getElementById('gspread_client_secret').value));
+                var refreshToken = leftTrim(rightTrim(document.getElementById('gspread_refresh_token').value));
+//                var useAlias = document.getElementById('useSecretAliasValue').value;
+
+//                if (useAlias == 'true') {
+//               	if (document.getElementById('pwdalias') != null) {
+//                		var pwdalias = document.getElementById('pwdalias').value;
+//                	}
+//                	var url = 'connection_gspreadtest_ajaxprocessor.jsp?clientId=' + encodeURIComponent(clientId) + '&clientSecret=' + encodeURIComponent(clientSecret) + '&refreshToken=' + encodeURIComponent(refreshToken) + '&visibility=' + encodeURIComponent(visibility) + '&documentURL=' + encodeURIComponent(documentURL)+ '&passwordAlias=' + passwordAlias;
+//                } else {
+                	var url = 'connection_gspreadtest_ajaxprocessor.jsp?clientId=' + encodeURIComponent(clientId) + '&clientSecret=' + encodeURIComponent(clientSecret) + '&refreshToken=' + encodeURIComponent(refreshToken) + '&visibility=' + encodeURIComponent(visibility) + '&documentURL=' + encodeURIComponent(documentURL);
+//                }
                 jQuery('#spreadsheetConnectionTestMsgDiv').load(url, displayMsg4GoogleSpreadsheet);
                 return false;
             }

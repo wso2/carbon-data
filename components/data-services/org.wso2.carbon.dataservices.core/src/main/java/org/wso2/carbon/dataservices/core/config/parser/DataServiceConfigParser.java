@@ -67,8 +67,8 @@ public class DataServiceConfigParser {
         try {
             buildConfiguration();
         } catch (Exception e) {
-            log.error("Error while loading Identity Configurations", e);
-            throw new ServerConfigurationException("Error while loading Identity Configurations", e);
+            log.error("Error while loading dataService Configurations", e);
+            throw new ServerConfigurationException("Error while loading dataService Configurations", e);
         }
     }
 
@@ -123,15 +123,15 @@ public class DataServiceConfigParser {
 
         try {
             if (configFilePath != null) {
-                File identityConfigXml = new File(configFilePath);
-                if (identityConfigXml.exists()) {
-                    inStream = new FileInputStream(identityConfigXml);
+                File dataServiceConfigXml = new File(configFilePath);
+                if (dataServiceConfigXml.exists()) {
+                    inStream = new FileInputStream(dataServiceConfigXml);
                 }
             } else {
 
-                File identityConfigXml = new File(CarbonUtils.getCarbonConfigDirPath(), DSS_CONFIG);
-                if (identityConfigXml.exists()) {
-                    inStream = new FileInputStream(identityConfigXml);
+                File dataServiceConfigXml = new File(CarbonUtils.getCarbonConfigDirPath(), DSS_CONFIG);
+                if (dataServiceConfigXml.exists()) {
+                    inStream = new FileInputStream(dataServiceConfigXml);
                 }
             }
 

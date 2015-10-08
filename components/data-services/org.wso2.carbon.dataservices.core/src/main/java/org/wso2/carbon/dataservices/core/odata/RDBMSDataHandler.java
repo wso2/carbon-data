@@ -980,7 +980,12 @@ public class RDBMSDataHandler implements ODataDataHandler {
                 }
                 if (Types.DOUBLE == columnType || Types.FLOAT == columnType || Types.DECIMAL == columnType) {
                     column.setPrecision(precision);
-                    column.setScale(scale);
+                    if (scale == 0) {
+                        //setting default scale as 5
+                        column.setScale(precision);
+                    } else {
+                        column.setScale(scale);
+                    }
                 }
                 columnMap.put(columnName, column);
                 addDataType(tableName, columnName, columnType);

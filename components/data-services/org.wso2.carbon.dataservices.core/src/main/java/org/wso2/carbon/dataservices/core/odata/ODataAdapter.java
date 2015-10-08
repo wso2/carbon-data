@@ -96,7 +96,10 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Types;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -256,7 +259,7 @@ public class ODataAdapter implements ServiceHandler {
         }
     }
 
-    protected EdmEntitySet getEdmEntitySet(final UriInfoResource uriInfo) throws ODataApplicationException {
+    private EdmEntitySet getEdmEntitySet(final UriInfoResource uriInfo) throws ODataApplicationException {
         EdmEntitySet entitySet;
         final List<UriResource> resourcePaths = uriInfo.getUriResourceParts();
         // First must be an entity, an entity collection, a function import, or an action import.
@@ -953,6 +956,9 @@ public class ODataAdapter implements ServiceHandler {
             return entitySet;
         } catch (URISyntaxException e) {
             throw new ODataServiceFault(e, "Error occurred when creating id for the entity. :" + e.getMessage());
+        } catch (ParseException e) {
+            throw new ODataServiceFault(e, "Error occurred when creating a property for the entity. :" +
+                                           e.getMessage());
         }
     }
 
@@ -1641,7 +1647,7 @@ public class ODataAdapter implements ServiceHandler {
      * @see Property
      */
     private Property createPrimitive(final DataColumn.ODataDataType columnType, final String name,
-                                     final String paramValue) throws ODataServiceFault {
+                                     final String paramValue) throws ODataServiceFault, ParseException {
         String propertyType;
         Object value;
         switch (columnType) {
@@ -1667,7 +1673,7 @@ public class ODataAdapter implements ServiceHandler {
                 break;
             case BINARY:
                 propertyType = EdmPrimitiveTypeKind.Binary.getFullQualifiedName().getFullQualifiedNameAsString();
-                value = getBytesFromBase64String(paramValue);
+                value = paramValue == null ? null : getBytesFromBase64String(paramValue);
                 break;
             case BYTE:
                 propertyType = EdmPrimitiveTypeKind.Byte.getFullQualifiedName().getFullQualifiedNameAsString();
@@ -1695,7 +1701,13 @@ public class ODataAdapter implements ServiceHandler {
                 break;
             case TIMEOFDAY:
                 propertyType = EdmPrimitiveTypeKind.TimeOfDay.getFullQualifiedName().getFullQualifiedNameAsString();
-                value = ConverterUtil.convertToDateTime(paramValue);
+                if (paramValue != null) {
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
+                    Date parsedDate = dateFormat.parse("0000-00-00 " + paramValue);
+                    value = new java.sql.Timestamp(parsedDate.getTime());
+                } else {
+                    value = null;
+                }
                 break;
             case INT64:
                 propertyType = EdmPrimitiveTypeKind.Int64.getFullQualifiedName().getFullQualifiedNameAsString();
@@ -1704,7 +1716,7 @@ public class ODataAdapter implements ServiceHandler {
             case DATE_TIMEOFFSET:
                 propertyType = EdmPrimitiveTypeKind.DateTimeOffset.getFullQualifiedName()
                                                                   .getFullQualifiedNameAsString();
-                value = ConverterUtil.convertToTime(paramValue);
+                value = ConverterUtil.convertToDateTime(paramValue);
                 break;
             case GUID:
                 propertyType = EdmPrimitiveTypeKind.Guid.getFullQualifiedName().getFullQualifiedNameAsString();

@@ -1479,6 +1479,9 @@ public class ODataAdapter implements ServiceHandler {
                     property.setMaxLength(column.getMaxLength());
                     break;
                 case DURATION:
+                    property.setType(EdmPrimitiveTypeKind.Duration.getFullQualifiedName());
+                    property.setNullable(column.isNullable());
+                    property.setMaxLength(column.getMaxLength());
                     break;
                 case DECIMAL:
                     property.setType(EdmPrimitiveTypeKind.Decimal.getFullQualifiedName());

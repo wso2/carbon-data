@@ -74,7 +74,7 @@ public class UtilServer {
             TestUtils.shutdownFailsafe(TESTING_PORT);
             ConfigurationContext er = getNewConfigurationContext(repository);
 
-            receiver = new SimpleHTTPServer(er, TESTING_PORT);
+            receiver = new SimpleHttpServerExtension(er, TESTING_PORT);
 
             try {
                 receiver.start();
@@ -109,7 +109,7 @@ public class UtilServer {
             TestUtils.shutdownFailsafe(TESTING_PORT);
             ConfigurationContext er = getNewConfigurationContext(repository, axis2xml);
 
-            receiver = new SimpleHTTPServer(er, TESTING_PORT);
+            receiver = new SimpleHttpServerExtension(er, TESTING_PORT);
 
             try {
                 receiver.start();

@@ -421,6 +421,7 @@
                                 <mkdir dir="${basedir}/target/carbonHome/repository" />
                                 <mkdir dir="${basedir}/target/carbonHome/repository/conf" />
                                 <copy file="${basedir}/src/test/resources/carbon.xml" tofile="${basedir}/target/carbonHome/repository/conf/carbon.xml" />
+                                <copy file="${basedir}/src/test/resources/dataServices.xml" tofile="${basedir}/target/carbonHome/repository/conf/dataServices.xml" />
                             </tasks>
                         </configuration>
                         <goals>

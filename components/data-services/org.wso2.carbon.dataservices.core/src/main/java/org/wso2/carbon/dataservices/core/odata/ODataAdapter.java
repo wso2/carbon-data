@@ -1,18 +1,21 @@
 /*
  * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
  * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
+
 package org.wso2.carbon.dataservices.core.odata;
 
 import org.apache.axis2.databinding.utils.ConverterUtil;
@@ -96,6 +99,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Types;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -256,7 +260,7 @@ public class ODataAdapter implements ServiceHandler {
         }
     }
 
-    protected EdmEntitySet getEdmEntitySet(final UriInfoResource uriInfo) throws ODataApplicationException {
+    private EdmEntitySet getEdmEntitySet(final UriInfoResource uriInfo) throws ODataApplicationException {
         EdmEntitySet entitySet;
         final List<UriResource> resourcePaths = uriInfo.getUriResourceParts();
         // First must be an entity, an entity collection, a function import, or an action import.
@@ -953,6 +957,9 @@ public class ODataAdapter implements ServiceHandler {
             return entitySet;
         } catch (URISyntaxException e) {
             throw new ODataServiceFault(e, "Error occurred when creating id for the entity. :" + e.getMessage());
+        } catch (ParseException e) {
+            throw new ODataServiceFault(e, "Error occurred when creating a property for the entity. :" +
+                                           e.getMessage());
         }
     }
 
@@ -1641,7 +1648,7 @@ public class ODataAdapter implements ServiceHandler {
      * @see Property
      */
     private Property createPrimitive(final DataColumn.ODataDataType columnType, final String name,
-                                     final String paramValue) throws ODataServiceFault {
+                                     final String paramValue) throws ODataServiceFault, ParseException {
         String propertyType;
         Object value;
         switch (columnType) {
@@ -1667,7 +1674,7 @@ public class ODataAdapter implements ServiceHandler {
                 break;
             case BINARY:
                 propertyType = EdmPrimitiveTypeKind.Binary.getFullQualifiedName().getFullQualifiedNameAsString();
-                value = getBytesFromBase64String(paramValue);
+                value = paramValue == null ? null : getBytesFromBase64String(paramValue);
                 break;
             case BYTE:
                 propertyType = EdmPrimitiveTypeKind.Byte.getFullQualifiedName().getFullQualifiedNameAsString();
@@ -1695,7 +1702,7 @@ public class ODataAdapter implements ServiceHandler {
                 break;
             case TIMEOFDAY:
                 propertyType = EdmPrimitiveTypeKind.TimeOfDay.getFullQualifiedName().getFullQualifiedNameAsString();
-                value = ConverterUtil.convertToDateTime(paramValue);
+                value = paramValue == null ? null : ConverterUtil.convertToTime(paramValue).getAsCalendar();
                 break;
             case INT64:
                 propertyType = EdmPrimitiveTypeKind.Int64.getFullQualifiedName().getFullQualifiedNameAsString();
@@ -1704,7 +1711,7 @@ public class ODataAdapter implements ServiceHandler {
             case DATE_TIMEOFFSET:
                 propertyType = EdmPrimitiveTypeKind.DateTimeOffset.getFullQualifiedName()
                                                                   .getFullQualifiedNameAsString();
-                value = ConverterUtil.convertToTime(paramValue);
+                value = ConverterUtil.convertToDateTime(paramValue);
                 break;
             case GUID:
                 propertyType = EdmPrimitiveTypeKind.Guid.getFullQualifiedName().getFullQualifiedNameAsString();

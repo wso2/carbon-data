@@ -218,7 +218,10 @@ public class DBUtils {
     }
 
     public static String getUsername(MessageContext msgContext) {
-        return DataServicesDSComponent.getRoleRetriever().getUsernameFromMessageContext(msgContext);
+        String userName = (String) msgContext.getProperty(
+                DBConstants.MSG_CONTEXT_USERNAME_PROPERTY);
+        return userName;
+//        return DataServicesDSComponent.getRoleRetriever().getUsernameFromMessageContext(msgContext);
     }
 
     /**

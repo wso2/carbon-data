@@ -28,10 +28,10 @@ import java.util.Map;
 /**
  * Implementation class for role retrieval for role based content filtering.
  */
-public class UserStoreAuthorizationRoleRetriever implements AuthorizationRoleRetriever {
+public class UserStoreAuthorizationRoleRetriever extends AuthorizationRoleRetriever {
     @Override
     public String[] getRolesForUser(MessageContext msgContext) throws DataServiceFault {
-        return DBUtils.getUserRoles(DBUtils.getUsername(msgContext));
+        return DBUtils.getUserRoles(getUsernameFromMessageContext(msgContext));
     }
 
     @Override

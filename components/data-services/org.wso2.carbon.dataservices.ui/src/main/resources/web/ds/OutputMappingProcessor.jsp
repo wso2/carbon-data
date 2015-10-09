@@ -25,6 +25,7 @@
 <%@ page import="org.wso2.carbon.utils.ServerConstants" %>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.List" %>
+<%@ page import="org.wso2.carbon.dataservices.ui.DataServiceAdminClient" %>
 <jsp:useBean id="dataService" class="org.wso2.carbon.dataservices.ui.beans.Data" scope="session"/>
 <%!
 
@@ -244,23 +245,22 @@
             : dataServiceResourceName;
     parameterType = (parameterType == null) ? "" : parameterType;
     arrayName = (arrayName == null) ? "" : arrayName;
-    FlaggedName[] userRoles;
+    String[] userRoles;
     String backendServerURL = CarbonUIUtil
             .getServerURL(config.getServletContext(), session);
     String cookie = (String) session.getAttribute(ServerConstants.ADMIN_SERVICE_COOKIE);
     ConfigurationContext configContext = (ConfigurationContext) config.getServletContext()
             .getAttribute(CarbonConstants.CONFIGURATION_CONTEXT);
-    UserAdminClient client = new UserAdminClient(cookie, backendServerURL, configContext);
-    userRoles = client.getAllRolesNames("*", -1);
+    DataServiceAdminClient client = new DataServiceAdminClient(cookie, backendServerURL, configContext);
+    userRoles = client.getAllRoles();
 
 
 
     //for(String name : userRoles){
-    for (FlaggedName roles : userRoles) {
-        String name = roles.getItemName();
-        allowedRoles = request.getParameter(name);
+    for (String roleName : userRoles) {
+        allowedRoles = request.getParameter(roleName);
         if (allowedRoles != null) {
-            requiredRoles += name;
+            requiredRoles += roleName;
             if (userRoles.length != 0) {
                 requiredRoles += ",";
             }

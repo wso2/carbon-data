@@ -18,6 +18,7 @@
  */
 package org.wso2.carbon.dataservices.core.auth;
 
+import org.wso2.carbon.dataservices.common.DBConstants;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
 
 import org.apache.axis2.context.MessageContext;
@@ -25,10 +26,11 @@ import org.apache.axis2.context.MessageContext;
 import java.util.Map;
 
 /**
- * This is the interface which we can use to connect to third party authorisation provider in order to do role based
- * filtering in DSS.
+ * This is the abstract interface which we can use to connect to third party authorisation provider in order to do role based
+ * filtering in DSS. This will have default getUserName method implemented which gets username from messageContext,
+ * if needs that can be overridden too
  */
-public interface AuthorizationRoleRetriever {
+public abstract class AuthorizationRoleRetriever {
 
     /**
      * Method used to get the roles of the user.
@@ -37,7 +39,7 @@ public interface AuthorizationRoleRetriever {
      * @return String array of user roles assigned to that particular user.
      * @throws DataServiceFault
      */
-    public String[] getRolesForUser(MessageContext msgContext) throws DataServiceFault;
+    public abstract String[] getRolesForUser(MessageContext msgContext) throws DataServiceFault;
 
     /**
      * Method used to get all the user roles in order to display in data service design phase.
@@ -45,7 +47,19 @@ public interface AuthorizationRoleRetriever {
      * @return String array of all user roles.
      * @throws DataServiceFault
      */
-    public String[] getAllRoles() throws DataServiceFault;
+    public abstract String[] getAllRoles() throws DataServiceFault;
+
+    /**
+     * Default getUsername method which will get username from the messageContext.
+     *
+     * @param msgContext
+     * @return username.
+     */
+    public String getUsernameFromMessageContext(MessageContext msgContext) {
+        String userName = (String) msgContext.getProperty(
+                DBConstants.MSG_CONTEXT_USERNAME_PROPERTY);
+        return userName;
+    }
 
     /**
      * To set the properties specific to role retriever, if no properties specified, empty map will be passed
@@ -53,7 +67,7 @@ public interface AuthorizationRoleRetriever {
      *
      * @param authenticatorProperties
      */
-    public void setProperties(Map<String, String> authenticatorProperties);
+    public abstract void setProperties(Map<String, String> authenticatorProperties);
 
     /**
      * This method will be invoked after instantiating the class, So operation which needs to be carried out with
@@ -61,5 +75,5 @@ public interface AuthorizationRoleRetriever {
      *
      * @throws DataServiceFault
      */
-    public void init() throws DataServiceFault;
+    public abstract void init() throws DataServiceFault;
 }

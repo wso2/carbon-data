@@ -747,8 +747,9 @@ public class RDBMSDataHandler implements ODataDataHandler {
                 }
             }
             statement.execute();
+            int rowCount = statement.getUpdateCount();
             commitExecution(connection);
-            return true;
+            return rowCount > 0;
         } catch (SQLException | ParseException e) {
             throw new ODataServiceFault(e, "Error occurred while deleting the entity from " + tableName + " table. :" +
                                            e.getMessage());

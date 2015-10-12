@@ -526,7 +526,11 @@ public class ODataAdapter implements ServiceHandler {
             if (result) {
                 response.writeDeletedEntityOrReference();
             } else {
-                response.writeNotModified();
+                if (!EMPTY_E_TAG.equals(eTag)) {
+                    response.writeNotModified();
+                } else {
+                    response.writeNotFound(true);
+                }
             }
         } catch (DataServiceFault e) {
             response.writeNotModified();

@@ -142,7 +142,7 @@ public class CassandraDataHandler implements ODataDataHandler {
             statement = this.session.prepare(query);
             this.preparedStatementMap.put(query, statement);
         }
-        ResultSet resultSet = this.session.execute(statement.bind(values));
+        ResultSet resultSet = this.session.execute(statement.bind(values.toArray()));
         List<ODataEntry> entryList = new ArrayList<>();
         Iterator<Row> iterator = resultSet.iterator();
         ColumnDefinitions definitions = resultSet.getColumnDefinitions();
@@ -170,7 +170,7 @@ public class CassandraDataHandler implements ODataDataHandler {
             statement = this.session.prepare(query);
             this.preparedStatementMap.put(query, statement);
         }
-        this.session.execute(statement.bind(values));
+        this.session.execute(statement.bind(values.toArray()));
         return ODataUtils.generateETag(this.configID, tableName, entity);
     }
 
@@ -199,7 +199,7 @@ public class CassandraDataHandler implements ODataDataHandler {
             statement = this.session.prepare(query);
             this.preparedStatementMap.put(query, statement);
         }
-        ResultSet result = this.session.execute(statement.bind(values));
+        ResultSet result = this.session.execute(statement.bind(values.toArray()));
         return result.wasApplied();
     }
 
@@ -224,7 +224,7 @@ public class CassandraDataHandler implements ODataDataHandler {
             statement = this.session.prepare(query);
             this.preparedStatementMap.put(query, statement);
         }
-        ResultSet result = this.session.execute(statement.bind(values));
+        ResultSet result = this.session.execute(statement.bind(values.toArray()));
         return result.wasApplied();
     }
 
@@ -250,7 +250,7 @@ public class CassandraDataHandler implements ODataDataHandler {
             statement = this.session.prepare(query);
             this.preparedStatementMap.put(query, statement);
         }
-        ResultSet result = this.session.execute(statement.bind(values));
+        ResultSet result = this.session.execute(statement.bind(values.toArray()));
         return result.wasApplied();
     }
 
@@ -281,7 +281,7 @@ public class CassandraDataHandler implements ODataDataHandler {
             statement = this.session.prepare(query);
             this.preparedStatementMap.put(query, statement);
         }
-        ResultSet result = this.session.execute(statement.bind(values));
+        ResultSet result = this.session.execute(statement.bind(values.toArray()));
         return result.wasApplied();
     }
 

@@ -254,7 +254,7 @@ public class BinaryOperator {
             case ADD:
                 return left.add(right);
             case DIV:
-                return left.divide(left);
+                return left.divide(right);
             case MUL:
                 return left.multiply(right);
             case SUB:

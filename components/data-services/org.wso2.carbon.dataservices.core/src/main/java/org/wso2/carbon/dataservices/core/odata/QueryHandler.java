@@ -48,7 +48,6 @@ import java.util.Locale;
 public class QueryHandler {
 
     private static final int MAX_PAGE_SIZE = 10;
-    private static final String ES_SERVER_SIDE_PAGING = "ESServerSidePaging";
 
     /**
      * This method applies count query option to the given entity collection.
@@ -167,8 +166,8 @@ public class QueryHandler {
                                                 EntityCollection entityCollection, final EdmEntitySet edmEntitySet,
                                                 final String rawRequestUri, final Integer preferredPageSize)
             throws ODataApplicationException {
-        if (edmEntitySet != null && ES_SERVER_SIDE_PAGING.equals(edmEntitySet.getName())) {
-            final int pageSize = getPageSize(getPageSize(skipTokenOption), preferredPageSize);
+        if (edmEntitySet != null) {
+            final int pageSize = getPageSize(preferredPageSize);
             final int page = getPage(skipTokenOption);
             final int itemsToSkip = pageSize * page;
             if (itemsToSkip <= entityCollection.getEntities().size()) {
@@ -177,7 +176,7 @@ public class QueryHandler {
                 reduceToSize(entityCollection, pageSize);
                 // Determine if a new next Link has to be provided.
                 if (remainingItems > pageSize) {
-                    entityCollection.setNext(createNextLink(rawRequestUri, page + 1, pageSize));
+                    entityCollection.setNext(createNextLink(rawRequestUri, edmEntitySet, page + 1));
                 }
             } else {
                 throw new ODataApplicationException("Nothing found.", HttpStatusCode.NOT_FOUND.getStatusCode(),
@@ -192,22 +191,14 @@ public class QueryHandler {
      * This method creates next url link.
      *
      * @param rawRequestUri Request uri
+     * @param entitySet     EntitySet
      * @param page          Page num
-     * @param pageSize      Page size
      * @return uri
      * @throws ODataApplicationException
      */
-    private static URI createNextLink(final String rawRequestUri, final int page, final int pageSize)
+    private static URI createNextLink(final String rawRequestUri, final EdmEntitySet entitySet, final int page)
             throws ODataApplicationException {
-        // Remove a maybe existing skiptoken, making sure that the query part is not empty.
-        String nextLink = rawRequestUri.contains("?") ?
-                          rawRequestUri.replaceAll("(\\$|%24)skiptoken=.+&?", "").replaceAll("(\\?|&)$", "") :
-                          rawRequestUri;
-        // Add a question mark or an ampersand, depending on the current query part.
-        nextLink += nextLink.contains("?") ? '&' : '?';
-        // Append the new skiptoken.
-        nextLink += SystemQueryOptionKind.SKIPTOKEN.toString().replace("$", "%24") + '=' + page + "%2A" +
-                    pageSize;  // "%2A" is a percent-encoded asterisk
+        String nextLink = rawRequestUri + "/" + entitySet.getName() + "?$skiptoken=" + page;
         try {
             return new URI(nextLink);
         } catch (final URISyntaxException e) {
@@ -219,35 +210,11 @@ public class QueryHandler {
     /**
      * This method returns the page size.
      *
-     * @param skipTokenPageSize Skip token page size
      * @param preferredPageSize Preferred page size
      * @return page size
      */
-    private static int getPageSize(final int skipTokenPageSize, final Integer preferredPageSize) {
-        return skipTokenPageSize > 0 ? skipTokenPageSize :
-               preferredPageSize == null || preferredPageSize >= MAX_PAGE_SIZE ? MAX_PAGE_SIZE : preferredPageSize;
-    }
-
-    /**
-     * This method returns page size from the skip token option.
-     *
-     * @param skipTokenOption Skip token option
-     * @return Page size
-     * @throws ODataApplicationException
-     */
-    private static int getPageSize(final SkipTokenOption skipTokenOption) throws ODataApplicationException {
-        if (skipTokenOption != null && skipTokenOption.getValue().length() >= 3 &&
-            skipTokenOption.getValue().contains("*")) {
-            final String value = skipTokenOption.getValue();
-            try {
-                return Integer.parseInt(value.substring(value.indexOf('*') + 1));
-            } catch (final NumberFormatException e) {
-                throw new ODataApplicationException("Invalid skip token", HttpStatusCode.BAD_REQUEST.getStatusCode(),
-                                                    Locale.ROOT, e);
-            }
-        } else {
-            return 0;
-        }
+    private static int getPageSize(final Integer preferredPageSize) {
+        return preferredPageSize == null ? MAX_PAGE_SIZE : preferredPageSize;
     }
 
     /**
@@ -258,17 +225,12 @@ public class QueryHandler {
      * @throws ODataApplicationException
      */
     private static int getPage(final SkipTokenOption skipTokenOption) throws ODataApplicationException {
-        if (skipTokenOption != null && skipTokenOption.getValue().length() >= 3 &&
-            skipTokenOption.getValue().contains("*")) {
-            final String value = skipTokenOption.getValue();
-            try {
-                return Integer.parseInt(value.substring(0, value.indexOf('*')));
-            } catch (final NumberFormatException e) {
-                throw new ODataApplicationException("Invalid skip token", HttpStatusCode.BAD_REQUEST.getStatusCode(),
-                                                    Locale.ROOT, e);
-            }
-        } else {
-            return 0;
+        final String value = skipTokenOption.getValue();
+        try {
+            return Integer.parseInt(value);
+        } catch (final NumberFormatException e) {
+            throw new ODataApplicationException("Invalid skip token", HttpStatusCode.BAD_REQUEST.getStatusCode(),
+                                                Locale.ROOT, e);
         }
     }
 

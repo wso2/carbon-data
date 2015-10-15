@@ -200,11 +200,18 @@ public class DBDeployer extends AbstractDeployer {
             ArrayList<AxisService> services = new ArrayList<AxisService>();
             services.add(service);
 
+            boolean secEnabled = this.handleSecurityProxy(deploymentFileData, service);
+
             DeploymentEngine.addServiceGroup(serviceGroup, services,
                     deploymentFileData.getFile().toURI().toURL(), deploymentFileData,
                     this.axisConfig);
 
-            service = this.handleSecurityProxy(deploymentFileData, service);
+            //Engage rampart module if security is enabled
+            if (secEnabled) {
+                service.engageModule(this.configCtx.getAxisConfiguration().getModule(
+                        DBConstants.SECURITY_MODULE_NAME), this.configCtx.getAxisConfiguration());
+            }
+
 			/* restore original service active value */
 			service.setActive(serviceActive);
 
@@ -1137,14 +1144,22 @@ public class DBDeployer extends AbstractDeployer {
 		return axisService;
 	}
 
-    private AxisService handleSecurityProxy(DeploymentFileData file, AxisService axisService) throws DataServiceFault{
+    /**
+     * Helper method to handle security policies.
+     *
+     * @param file deployment data file.
+     * @param axisService to be modified.
+     * @return true if security is enabled, false otherwise.
+     * @throws DataServiceFault
+     */
+    private boolean handleSecurityProxy(DeploymentFileData file, AxisService axisService) throws DataServiceFault{
         try {
+            boolean secEnabled = false;
             StAXOMBuilder builder = new StAXOMBuilder(new FileInputStream(file.getFile().getAbsoluteFile()));
             OMElement documentElement =  builder.getDocumentElement();
             OMElement enableSecElement= documentElement.getFirstChildWithName(new QName(DBSFields.ENABLESEC));
             if (enableSecElement != null) {
-                axisService.engageModule(this.configCtx.getAxisConfiguration().getModule(
-                        DBConstants.SECURITY_MODULE_NAME), this.configCtx.getAxisConfiguration());
+                secEnabled = true;
             }
             OMElement policyElement= documentElement.getFirstChildWithName(new QName(DBSFields.POLICY));
             if (policyElement != null) {
@@ -1152,10 +1167,10 @@ public class DBDeployer extends AbstractDeployer {
                 Policy policy = PolicyEngine.getPolicy(DBUtils.getInputStreamFromPath(policyKey));
                 axisService.getPolicySubject().attachPolicy(policy);
             }
+            return secEnabled;
         }catch (Exception e) {
             throw new DataServiceFault(e, "Error in processing security policy");
         }
-        return axisService;
     }
 
     @SuppressWarnings("unchecked")

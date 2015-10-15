@@ -1099,6 +1099,22 @@
         </profile>
     </profiles>
 
+    <repositories>
+        <!-- WSO2 released artifact repository -->
+        <repository>
+            <id>wso2.kernel.staging</id>
+            <name>WSO2 Releases Repository</name>
+            <url>http://maven.wso2.org/nexus/content/repositories/orgwso2carbon-019/</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+                <checksumPolicy>ignore</checksumPolicy>
+            </releases>
+        </repository>
+
+
+    </repositories>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -1106,7 +1122,7 @@
         <dataservices.imp.pkg.version>[4.3,4.4)</dataservices.imp.pkg.version>
         <dataservices.package.export.version>4.3.1</dataservices.package.export.version>
 
-        <carbon.kernel.version>4.4.2-SNAPSHOT</carbon.kernel.version>
+        <carbon.kernel.version>4.4.2</carbon.kernel.version>
         <carbon.kernel.imp.pkg.version>[4.4,4.5)</carbon.kernel.imp.pkg.version>
 
         <carbon.registry.imp.pkg.version>0.0.0</carbon.registry.imp.pkg.version> <!-- todo remove this and use {carbon.kernel.imp.pkg.version} after registry bundles are corrected to export correct versions-->

@@ -1164,6 +1164,9 @@ public class DBDeployer extends AbstractDeployer {
             OMElement policyElement= documentElement.getFirstChildWithName(new QName(DBSFields.POLICY));
             if (policyElement != null) {
                 String policyKey = policyElement.getAttributeValue(new QName(DBSFields.POLICY_KEY));
+                if (null == policyKey) {
+                    throw new DataServiceFault("Policy key element should contain a policy key in " + file.getFile().getName());
+                }
                 Policy policy = PolicyEngine.getPolicy(DBUtils.getInputStreamFromPath(policyKey));
                 axisService.getPolicySubject().attachPolicy(policy);
             }

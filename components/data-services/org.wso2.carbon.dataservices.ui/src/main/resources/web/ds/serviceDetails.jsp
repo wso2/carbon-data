@@ -28,6 +28,8 @@
 <%@page import="org.wso2.carbon.dataservices.ui.DataServiceAdminClient" %>
 <%@page import="java.io.ByteArrayInputStream" %>
 <%@ page import="org.wso2.carbon.CarbonError" %>
+<%@ page import="org.wso2.carbon.dataservices.ui.beans.AuthProvider" %>
+<%@ page import="org.wso2.carbon.dataservices.ui.beans.Property" %>
 <script type="text/javascript" src="js/ui-validations.js"></script>
 <jsp:useBean id="dataService" class="org.wso2.carbon.dataservices.ui.beans.Data"
              scope="session"></jsp:useBean>
@@ -62,6 +64,7 @@
     String protectedTokens = "";
     String passwordProvider = "";
     String serviceNamespace = "";
+    AuthProvider authProvider = null;
 
     String detailedServiceName = null;
 
@@ -130,6 +133,7 @@
                 enableLocal = data.isEnableLocal();
                 enableJMS = data.isEnableJMS();
                 request.getSession().setAttribute("dataService", data);
+                authProvider = data.getAuthProvider();
             }
 
             description = (description == null) ? "" : description;
@@ -173,6 +177,7 @@
             enableHTTPS = dataService.isEnableHTTPS();
             enableLocal = dataService.isEnableLocal();
             enableJMS = dataService.isEnableJMS();
+            authProvider = dataService.getAuthProvider();
         } else {
             serviceName = "";
             request.getSession().setAttribute("dataService", null);
@@ -358,6 +363,75 @@
                                 </td>
                             </tr>
 
+                        </table>
+                    </td>
+                </tr>
+
+                <tr id="authProv">
+                    <td>
+                        <table id="authorizationProviderConfigTable" class="styledLeft noBorders" cellspacing="0" width="100%">
+                            <tr>
+                                <td colspan="2" class="middle-header">
+                                    <a onclick="showDynamicAuthorizationProviderConfigurations()" class="icon-link" style="background-image:url(images/plus.gif);"
+                                       href="#symbolMax" id="symbolMax"></a>
+                                    <fmt:message key="authorization.provider.config.root"/>
+                                </td>
+                            </tr>
+                            <tr id="authorizationProviderConfigFields" style="display:none">
+                                <td>
+                                    <table id="authorizationProviderConfigFieldsTable" cellspacing="0" width="100%">
+
+                                        <table id="authorizationProviderClassMappingTable"  >
+                                            <tr>
+                                                <td><label><fmt:message key="authorization.provider.config.className"/></label></td>
+                                                <td><input type="text" name="authorizationProviderClass" id="authorizationProviderClass" size="50" value="<%=authProvider != null ? authProvider.getClassName() : ""%>"/></td>
+                                            </tr>
+                                        </table>
+
+                                        <table id="authorizationProviderParametersTable" border="0" style="border-width: 1px; border-color:#000000; border-style: solid;">
+                                            <tr>
+                                                <td colspan="2"><a class="icon-link"
+                                                                   style="background-image:url(../admin/images/add.gif);"
+                                                                   onclick=" addAuthorizationProviderParameter(document,document.getElementById('authorizationProviderParamCount').value);">
+                                                    <fmt:message key="authorization.provider.config.new.parameter"/></a></td>
+                                            </tr>
+                                            <%
+                                                if (authProvider != null) {
+                                                    int i = 0;
+                                                    for (Property property : authProvider.getProperties()) {
+                                            %>
+
+                                            <tr id="authProviderParameterRow<%=i%>">
+                                                <td><label><fmt:message key="authorization.provider.config.parameter.name"/></label></td>
+                                                <td><input type="text" name="authProviderParameterName<%=i%>"
+                                                           id="authProviderParameterName<%=i%>" size="15"
+                                                           value="<%=property.getName()%>"/></td>
+
+                                                <td><label><fmt:message key="authorization.provider.config.parameter.value"/></label></td>
+                                                <td><input type="text" name="authProviderParameterValue<%=i%>"
+                                                           id="authProviderParameterValue<%=i%>" size="15" value="<%=property.getValue()%>"/>
+                                                </td>
+
+                                                </td>
+                                                <td><a class="icon-link"
+                                                       style="background-image:url(../admin/images/delete.gif);"
+                                                       href="javascript:deleteAuthParamField('<%=i%>')"> <fmt:message
+                                                        key="delete"/></a></td>
+                                            </tr>
+
+                                            <%
+                                                        i++;
+                                                    }
+                                                }
+                                            %>
+
+                                        </table>
+                                    </table>
+                                </td>
+                            </tr>
+                            <label type="hidden" id="paramNameLabel" name="paramNameLabel"><fmt:message key="authorization.provider.config.parameter.name"/></label>
+                            <label type="hidden" id="paramValueLabel" name="paramValueLabel"><fmt:message key="authorization.provider.config.parameter.value"/></label>
+                            <input type="hidden" id="authorizationProviderParamCount" name="authorizationProviderParamCount" value="<%= authProvider != null ? authProvider.getProperties().size() : "0"%>"/>
                         </table>
                     </td>
                 </tr>

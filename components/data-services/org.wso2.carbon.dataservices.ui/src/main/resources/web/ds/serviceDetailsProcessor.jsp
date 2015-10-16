@@ -1,3 +1,5 @@
+<%@ page import="org.wso2.carbon.dataservices.ui.beans.AuthProvider" %>
+<%@ page import="org.wso2.carbon.dataservices.ui.beans.Property" %>
 <!--
  ~ Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  ~
@@ -46,6 +48,11 @@
     String enableHTTPS = request.getParameter("enableHTTPS");
     String enableLocal = request.getParameter("enableLocal");
     String enableJMS = request.getParameter("enableJMS");
+    String authorizationProviderClass = request.getParameter("authorizationProviderClass");
+    int authProviderParamCount = 0;
+    if (request.getParameter("authorizationProviderParamCount") != null && !request.getParameter("authorizationProviderParamCount").equals("")) {
+        authProviderParamCount = Integer.parseInt(request.getParameter("authorizationProviderParamCount"));
+    }
     boolean finishEnable = false;
     String forwardTo;
     try {
@@ -114,6 +121,26 @@
         } else {
             dataService.setEnableJMS(false);
         }
+
+        if (authorizationProviderClass != null && !authorizationProviderClass.isEmpty()) {
+            AuthProvider authProvider = new AuthProvider();
+            authProvider.setClassName(authorizationProviderClass);
+
+            for (int j = 0; j < authProviderParamCount; j++) {
+                Property newProperty = new Property();
+
+                String propertyName = request.getParameter("authProviderParameterName" + j);
+                String propertValue = request.getParameter("authProviderParameterValue" + j);
+
+                if (propertyName != null) {
+                    newProperty.setName(propertyName);
+                    newProperty.setValue(propertValue);
+                    authProvider.addProperty(newProperty);
+                }
+            }
+            dataService.setAuthProvider(authProvider);
+        }
+
         description = (description == null) ? "" : description;
         txManagerCleanupMethod = (txManagerCleanupMethod == null) ? "" : txManagerCleanupMethod;
         serviceNamespace = (serviceNamespace == null) ? "" : serviceNamespace;

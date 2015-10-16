@@ -1804,6 +1804,78 @@ function deleteUserField(i) {
     }
 }
 
+function addAuthorizationProviderParameter(obj,paramCount) {
+    var propVal = parseInt(paramCount);
+    document.getElementById('authorizationProviderParamCount').value=  propVal+1;
+    var table = document.getElementById('authorizationProviderParametersTable');
+
+    var strngNameLabel = document.getElementById("paramNameLabel").textContent;
+    var strngValueLabel = document.getElementById("paramValueLabel").textContent;
+
+    var parameterRow = document.createElement("tr");
+    parameterRow.setAttribute("id", "authProviderParameterRow" + paramCount);
+
+    var td1 = document.createElement("TD");
+    var label = document.createElement('label');
+    var labelText = document.createTextNode(strngNameLabel);
+    label.appendChild(labelText);
+
+
+    var td2 = document.createElement("TD");
+    var el2 = document.createElement('input');
+    el2.type = 'text';
+    el2.name = 'authProviderParameterName'+paramCount;
+    el2.id = 'authProviderParameterName'+paramCount;
+    el2.size = 15;
+
+    td1.appendChild(label);
+    td2.appendChild(el2);
+
+    parameterRow.appendChild(td1);
+    parameterRow.appendChild(td2);
+
+    var td3 = document.createElement("TD");
+    var label3 = document.createElement('label');
+    var labelText3 = document.createTextNode(strngValueLabel);
+    label3.appendChild(labelText3);
+
+
+    var td4 = document.createElement("TD");
+    var el4 = document.createElement('input');
+    el4.type = 'text';
+    el4.name = 'authProviderParameterValue'+paramCount;
+    el4.id = 'authProviderParameterValue'+paramCount;
+    el4.size = 15;
+
+    td3.appendChild(label3);
+    td4.appendChild(el4);
+
+    parameterRow.appendChild(td3);
+    parameterRow.appendChild(td4);
+
+    var deleteTD = document.createElement("td");
+    deleteTD.innerHTML = "<a href='#' class='delete-icon-link' onclick='deleteAuthParamField(" +
+                         paramCount + ");return false;'>Delete</a>";
+
+    parameterRow.appendChild(deleteTD);
+
+    document.getElementById("authorizationProviderParametersTable").getElementsByTagName('tbody')[0].appendChild(parameterRow);
+    return true;
+}
+
+function deleteAuthParamField(i) {
+    var stngVal = document.getElementById('authorizationProviderParamCount').value;
+    var propVal = parseInt(stngVal);
+    var deleteParamField = document.getElementById("authProviderParameterRow" + i);
+    if (deleteParamField != undefined && deleteParamField != null) {
+        var parentTBody = deleteParamField.parentNode;
+        if (parentTBody != undefined && parentTBody != null) {
+            parentTBody.removeChild(deleteParamField);
+            document.getElementById('authorizationProviderParamCount').value=  propVal-1;
+        }
+    }
+}
+
 function showDynamicUserAuthenticationConfigurations() {
   var symbolMax =  document.getElementById('symbolMax');
   var dynamicUserAuthenticationFields = document.getElementById('dynamicUserAuthenticationFields');
@@ -1814,6 +1886,18 @@ function showDynamicUserAuthenticationConfigurations() {
       symbolMax.setAttribute('style','background-image:url(images/plus.gif);');
       dynamicUserAuthenticationFields.style.display = 'none';
   }
+}
+
+function showDynamicAuthorizationProviderConfigurations() {
+    var symbolMax =  document.getElementById('symbolMax');
+    var authorizationProviderConfigFields = document.getElementById('authorizationProviderConfigFields');
+    if(authorizationProviderConfigFields.style.display == 'none') {
+        symbolMax.setAttribute('style','background-image:url(images/minus.gif);');
+        authorizationProviderConfigFields.style.display = '';
+    } else {
+        symbolMax.setAttribute('style','background-image:url(images/plus.gif);');
+        authorizationProviderConfigFields.style.display = 'none';
+    }
 }
 
 function showAdvancedRDBMSConfigurations() {

@@ -24,6 +24,8 @@ import org.wso2.carbon.dataservices.common.DBConstants;
 import org.wso2.carbon.dataservices.common.DBConstants.ResultTypes;
 import org.wso2.carbon.dataservices.core.DBUtils;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
+import org.wso2.carbon.dataservices.core.auth.AuthorizationProvider;
+import org.wso2.carbon.dataservices.core.auth.UserStoreAuthorizationProvider;
 import org.wso2.carbon.dataservices.core.description.config.Config;
 import org.wso2.carbon.dataservices.core.description.config.SQLCarbonDataSourceConfig;
 import org.wso2.carbon.dataservices.core.description.operation.Operation;
@@ -167,6 +169,8 @@ public class DSGenerator {
 		DataService dataService = new DataService(serviceName,
 				DBConstants.DataServiceGenerator.SINGLE_SERVICE_DESCRIPTION,null, null,
                 DBConstants.DataServiceGenerator.ACTIVE, false, false, null);
+        /* setting default authorization provider */
+        dataService.setAuthorizationProvider(new UserStoreAuthorizationProvider());
 		this.setConfig(dataService, datasourceId);
 		if (DBUtils.isEmptyString(serviceNamespace)) {
 			dataService.setServiceNamespace(DBConstants.WSO2_DS_NAMESPACE);
@@ -225,6 +229,8 @@ public class DSGenerator {
 			DataService dataService = new DataService(serviceName,
 					DBConstants.DataServiceGenerator.MUTLIPLE_SERVICE_DESCRIPTION, null, null,
                     DBConstants.DataServiceGenerator.ACTIVE, false, false, null);
+            /* setting default authorization provider */
+            dataService.setAuthorizationProvider(new UserStoreAuthorizationProvider());
 			if (DBUtils.isEmptyString(serviceNamespace)) {
 				dataService.setServiceNamespace(DBConstants.WSO2_DS_NAMESPACE);
 			} else {

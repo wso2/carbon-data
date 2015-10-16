@@ -103,7 +103,7 @@ public class CallQuery extends OutputElement {
 		} else if ("USER_ROLES".equals(propName)) {
 			MessageContext context = MessageContext.getCurrentMessageContext();
 			if (context != null) {
-				return DBUtils.getUserRoles(context);
+				return this.getDataService().getAuthorizationProvider().getUserRoles(context);
 			}
 		} else if ("NULL".equals(propName)) {
 			/* represent the special null value (not empty string) */

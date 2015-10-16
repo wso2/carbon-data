@@ -21,6 +21,7 @@ import org.apache.axis2.client.ServiceClient;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.dataservices.ui.beans.AuthProvider;
 import org.wso2.carbon.dataservices.ui.stub.DataServiceAdminStub;
 import org.wso2.carbon.dataservices.ui.stub.admin.core.xsd.PaginatedTableInfo;
 
@@ -188,10 +189,13 @@ public class DataServiceAdminClient {
      * @return String array of user roles
      * @throws Exception
      */
-    public String[] getAllRoles() throws Exception {
+    public String[] getAllRoles(AuthProvider authProvider) throws Exception {
         try {
-            String[] roles =  stub.getAllRoles();
-            int p = 0;
+            String authProviderConfig = null;
+            if (authProvider != null) {
+                authProviderConfig = authProvider.buildXML().toString();
+            }
+            String[] roles =  stub.getAllRoles(authProviderConfig);
             return roles;
         } catch (Exception e) {
             throw new Exception(e.getMessage());

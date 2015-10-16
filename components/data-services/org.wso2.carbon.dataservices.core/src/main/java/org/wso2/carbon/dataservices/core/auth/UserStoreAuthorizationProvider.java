@@ -18,20 +18,20 @@
  */
 package org.wso2.carbon.dataservices.core.auth;
 
+import org.apache.axis2.context.MessageContext;
 import org.wso2.carbon.dataservices.core.DBUtils;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
-
-import org.apache.axis2.context.MessageContext;
 
 import java.util.Map;
 
 /**
- * Implementation class for role retrieval for role based content filtering.
+ * Implementation class for role retrieval from server's user store, for role based content filtering.
  */
-public class UserStoreAuthorizationRoleRetriever extends AuthorizationRoleRetriever {
+public class UserStoreAuthorizationProvider extends AbstractAuthorizationProvider {
+
     @Override
-    public String[] getRolesForUser(MessageContext msgContext) throws DataServiceFault {
-        return DBUtils.getUserRoles(getUsernameFromMessageContext(msgContext));
+    public String[] getUserRoles(MessageContext msgContext) throws DataServiceFault {
+        return DBUtils.getUserRoles(getUsername(msgContext));
     }
 
     @Override
@@ -41,12 +41,8 @@ public class UserStoreAuthorizationRoleRetriever extends AuthorizationRoleRetrie
     }
 
     @Override
-    public void setProperties(Map<String, String> authenticatorProperties) {
+    public void init(Map<String, String> authorizationProps) throws DataServiceFault {
         //nothing to do
     }
 
-    @Override
-    public void init() throws DataServiceFault {
-        //nothing to do
-    }
 }

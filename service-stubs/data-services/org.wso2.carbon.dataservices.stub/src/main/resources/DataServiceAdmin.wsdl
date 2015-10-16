@@ -19,6 +19,51 @@
     <wsdl:types>
         <xs:schema xmlns:ax291="http://script.core.dataservices.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://admin.core.dataservices.carbon.wso2.org">
             <xs:import namespace="http://script.core.dataservices.carbon.wso2.org/xsd"/>
+            <xs:element name="saveDataService">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="serviceName" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="serviceHierarchy" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="serviceContents" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="testJDBCConnection">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="driverClass" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="jdbcURL" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="username" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="password" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="passwordAlias" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="testJDBCConnectionResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="testGSpreadConnection">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="clientId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="clientSecret" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="refreshToken" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="visibility" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="documentURL" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="testGSpreadConnectionResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
             <xs:element name="DataServiceAdminException">
                 <xs:complexType>
                     <xs:sequence>
@@ -59,6 +104,20 @@
                 </xs:complexType>
             </xs:element>
             <xs:element name="validateJSONMappingResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getDataServiceContentAsString">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="serviceId" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getDataServiceContentAsStringResponse">
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
@@ -228,68 +287,11 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getDataServiceContentAsString">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="serviceId" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getDataServiceContentAsStringResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="saveDataService">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="serviceName" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="serviceHierarchy" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="serviceContents" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="testJDBCConnection">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="driverClass" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="jdbcURL" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="username" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="password" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="passwordAlias" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="testJDBCConnectionResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="testGSpreadConnection">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="clientId" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="clientSecret" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="refreshToken" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="visibility" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="documentURL" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="testGSpreadConnectionResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
             <xs:element name="getAllRoles">
                 <xs:complexType>
-                    <xs:sequence/>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="authProviderConfig" nillable="true" type="xs:string"/>
+                    </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="getAllRolesResponse">
@@ -399,17 +401,17 @@
     <wsdl:message name="getInputMappingNamesResponse">
         <wsdl:part name="parameters" element="ns:getInputMappingNamesResponse"/>
     </wsdl:message>
-    <wsdl:message name="testJDBCConnectionRequest">
-        <wsdl:part name="parameters" element="ns:testJDBCConnection"/>
-    </wsdl:message>
-    <wsdl:message name="testJDBCConnectionResponse">
-        <wsdl:part name="parameters" element="ns:testJDBCConnectionResponse"/>
-    </wsdl:message>
     <wsdl:message name="getDataServiceContentAsStringRequest">
         <wsdl:part name="parameters" element="ns:getDataServiceContentAsString"/>
     </wsdl:message>
     <wsdl:message name="getDataServiceContentAsStringResponse">
         <wsdl:part name="parameters" element="ns:getDataServiceContentAsStringResponse"/>
+    </wsdl:message>
+    <wsdl:message name="testJDBCConnectionRequest">
+        <wsdl:part name="parameters" element="ns:testJDBCConnection"/>
+    </wsdl:message>
+    <wsdl:message name="testJDBCConnectionResponse">
+        <wsdl:part name="parameters" element="ns:testJDBCConnectionResponse"/>
     </wsdl:message>
     <wsdl:message name="getCarbonDataSourceNamesForTypesRequest">
         <wsdl:part name="parameters" element="ns:getCarbonDataSourceNamesForTypes"/>
@@ -492,13 +494,13 @@
             <wsdl:output message="ns:getInputMappingNamesResponse" wsaw:Action="urn:getInputMappingNamesResponse"/>
             <wsdl:fault message="ns:DataServiceAdminException" name="DataServiceAdminException" wsaw:Action="urn:getInputMappingNamesDataServiceAdminException"/>
         </wsdl:operation>
-        <wsdl:operation name="testJDBCConnection">
-            <wsdl:input message="ns:testJDBCConnectionRequest" wsaw:Action="urn:testJDBCConnection"/>
-            <wsdl:output message="ns:testJDBCConnectionResponse" wsaw:Action="urn:testJDBCConnectionResponse"/>
-        </wsdl:operation>
         <wsdl:operation name="getDataServiceContentAsString">
             <wsdl:input message="ns:getDataServiceContentAsStringRequest" wsaw:Action="urn:getDataServiceContentAsString"/>
             <wsdl:output message="ns:getDataServiceContentAsStringResponse" wsaw:Action="urn:getDataServiceContentAsStringResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="testJDBCConnection">
+            <wsdl:input message="ns:testJDBCConnectionRequest" wsaw:Action="urn:testJDBCConnection"/>
+            <wsdl:output message="ns:testJDBCConnectionResponse" wsaw:Action="urn:testJDBCConnectionResponse"/>
         </wsdl:operation>
         <wsdl:operation name="getCarbonDataSourceNamesForTypes">
             <wsdl:input message="ns:getCarbonDataSourceNamesForTypesRequest" wsaw:Action="urn:getCarbonDataSourceNamesForTypes"/>
@@ -650,8 +652,8 @@
                 <soap:fault use="literal" name="DataServiceAdminException"/>
             </wsdl:fault>
         </wsdl:operation>
-        <wsdl:operation name="getDataServiceContentAsString">
-            <soap:operation soapAction="urn:getDataServiceContentAsString" style="document"/>
+        <wsdl:operation name="testJDBCConnection">
+            <soap:operation soapAction="urn:testJDBCConnection" style="document"/>
             <wsdl:input>
                 <soap:body use="literal"/>
             </wsdl:input>
@@ -659,8 +661,8 @@
                 <soap:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
-        <wsdl:operation name="testJDBCConnection">
-            <soap:operation soapAction="urn:testJDBCConnection" style="document"/>
+        <wsdl:operation name="getDataServiceContentAsString">
+            <soap:operation soapAction="urn:getDataServiceContentAsString" style="document"/>
             <wsdl:input>
                 <soap:body use="literal"/>
             </wsdl:input>
@@ -842,8 +844,8 @@
                 <soap12:fault use="literal" name="DataServiceAdminException"/>
             </wsdl:fault>
         </wsdl:operation>
-        <wsdl:operation name="getDataServiceContentAsString">
-            <soap12:operation soapAction="urn:getDataServiceContentAsString" style="document"/>
+        <wsdl:operation name="testJDBCConnection">
+            <soap12:operation soapAction="urn:testJDBCConnection" style="document"/>
             <wsdl:input>
                 <soap12:body use="literal"/>
             </wsdl:input>
@@ -851,8 +853,8 @@
                 <soap12:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
-        <wsdl:operation name="testJDBCConnection">
-            <soap12:operation soapAction="urn:testJDBCConnection" style="document"/>
+        <wsdl:operation name="getDataServiceContentAsString">
+            <soap12:operation soapAction="urn:getDataServiceContentAsString" style="document"/>
             <wsdl:input>
                 <soap12:body use="literal"/>
             </wsdl:input>
@@ -1019,8 +1021,8 @@
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
-        <wsdl:operation name="getDataServiceContentAsString">
-            <http:operation location="getDataServiceContentAsString"/>
+        <wsdl:operation name="testJDBCConnection">
+            <http:operation location="testJDBCConnection"/>
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
@@ -1028,8 +1030,8 @@
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
-        <wsdl:operation name="testJDBCConnection">
-            <http:operation location="testJDBCConnection"/>
+        <wsdl:operation name="getDataServiceContentAsString">
+            <http:operation location="getDataServiceContentAsString"/>
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>

@@ -596,7 +596,7 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
 
     public String[] lookupConnectionCredentials() throws DataServiceFault {
         if (this.getConfig().getPrimaryDynAuth() != null) {
-            String user = DBUtils.getCurrentContextUsername();
+            String user = DBUtils.getCurrentContextUsername(this.getDataService());
             String[] creds = this.getConfig().getPrimaryDynAuth().lookupCredentials(user);
             if (this.isValidCreds(creds)) {
                 return creds;

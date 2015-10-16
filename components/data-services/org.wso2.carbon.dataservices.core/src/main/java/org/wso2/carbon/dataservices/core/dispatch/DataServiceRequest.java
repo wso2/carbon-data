@@ -106,7 +106,7 @@ public abstract class DataServiceRequest {
 		}
 		
 		/* set user information */
-		populateUserInfo(dsRequest, msgContext);
+		populateUserInfo(dataService, dsRequest, msgContext);
 		
 		/* checks if this is a boxcarring session */
 		if (isBoxcarringRequest(requestName)) {
@@ -131,20 +131,21 @@ public abstract class DataServiceRequest {
 
 	/**
 	 * Set the current session user's name, user roles etc..
+	 * @param dataService data service
 	 * @param dsRequest Current data service request
 	 * @param msgContext Incoming message's message context
 	 * @throws DataServiceFault
 	 */
-	private static void populateUserInfo(DataServiceRequest dsRequest,
+	private static void populateUserInfo(DataService dataService, DataServiceRequest dsRequest,
 			MessageContext msgContext) throws DataServiceFault {
 		/* set request username */
-		String username = DBUtils.getUsername(msgContext);
+		String username = dataService.getAuthorizationProvider().getUsername(msgContext);
 		dsRequest.setUser(username);
 		/* if only there's a user .. */
 		if (username != null) {
 			/* set user roles */
 			try {
-				dsRequest.setUserRoles(DBUtils.getUserRoles(msgContext));
+				dsRequest.setUserRoles(dataService.getAuthorizationProvider().getUserRoles(msgContext));
 			} catch (Exception e) {
 				throw new DataServiceFault(e, "Error setting user roles");
 			}

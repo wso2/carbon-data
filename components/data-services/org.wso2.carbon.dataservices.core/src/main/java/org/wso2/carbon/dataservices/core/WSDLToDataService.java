@@ -34,6 +34,8 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.wso2.carbon.dataservices.common.DBConstants;
+import org.wso2.carbon.dataservices.core.auth.AuthorizationProvider;
+import org.wso2.carbon.dataservices.core.auth.UserStoreAuthorizationProvider;
 import org.wso2.carbon.dataservices.core.description.config.Config;
 import org.wso2.carbon.dataservices.core.description.config.RDBMSConfig;
 import org.wso2.carbon.dataservices.core.description.operation.Operation;
@@ -195,6 +197,8 @@ public class WSDLToDataService {
 				extractServiceNameFromHeirachicalName(axisService.getName()), 
 				null, null, null, DBConstants.ServiceStatusValues.INACTIVE, 
 				false, false, null);
+        /* setting default authorization provider */
+        dataService.setAuthorizationProvider(new UserStoreAuthorizationProvider());
 		
 		/* add dummy config */
 		String dummyConfigId = DBConstants.DEFAULT_CONFIG_ID;

@@ -252,7 +252,7 @@
     ConfigurationContext configContext = (ConfigurationContext) config.getServletContext()
             .getAttribute(CarbonConstants.CONFIGURATION_CONTEXT);
     DataServiceAdminClient client = new DataServiceAdminClient(cookie, backendServerURL, configContext);
-    userRoles = client.getAllRoles();
+    userRoles = client.getAllRoles(dataService.getAuthProvider());
 
 
 

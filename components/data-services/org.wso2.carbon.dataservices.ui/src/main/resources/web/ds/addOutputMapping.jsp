@@ -131,7 +131,7 @@
 
     try {
         client = new DataServiceAdminClient(cookie, backendServerURL, configContext);
-        String[] userRoleData = client.getAllRoles();
+        String[] userRoleData = client.getAllRoles(dataService.getAuthProvider());
         ArrayList<String> userRoleDataList = new ArrayList<String>(Arrays.asList(userRoleData));
         userRoles = new String[userRoleDataList.size()];
         userRoles = userRoleDataList.toArray(userRoles);

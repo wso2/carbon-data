@@ -93,6 +93,8 @@ public class Data extends DataServiceConfigurationElement{
     
     private String secureVaultNamespace;
 
+    private AuthProvider authProvider;
+
     public Data() {
         this.configs = new ArrayList<Config>();
         this.queries = new ArrayList<Query>();
@@ -356,7 +358,15 @@ public class Data extends DataServiceConfigurationElement{
 		this.secureVaultNamespace = secureVaultNamespace;
 	}
 
-	/**
+    public AuthProvider getAuthProvider() {
+        return authProvider;
+    }
+
+    public void setAuthProvider(AuthProvider authProvider) {
+        this.authProvider = authProvider;
+    }
+
+    /**
 	 * Schema validation for DS configuration file
 	 */
 	public void validate() {
@@ -962,6 +972,34 @@ public class Data extends DataServiceConfigurationElement{
     	resource.setCallQueryGroup(callQueryGroup);
     	return resource;
 	}
+
+    /**
+     * Method to generate authorization provider for client side use (for editing purposes in UI)
+     * @param authProviderEl
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    private AuthProvider getAuthorizationProvider(OMElement authProviderEl) {
+        AuthProvider authProvider = null;
+        OMAttribute authProviderClassAtt = authProviderEl.getAttribute(new QName(DBConstants.AuthorizationProviderConfig.ATTRIBUTE_NAME_CLASS));
+        if (authProviderClassAtt != null) {
+            authProvider = new AuthProvider();
+            authProvider.setClassName(authProviderClassAtt.getAttributeValue());
+
+            Iterator<OMElement> properties = authProviderEl.getChildrenWithName(new QName(DBSFields.PROPERTY));
+            while (properties.hasNext()) {
+                OMElement propertyEle = properties.next();
+                Property property = new Property();
+                OMAttribute name = propertyEle.getAttribute(new QName(DBSFields.NAME));
+                if (name != null) {
+                    property.setName(name.getAttributeValue());
+                    property.setValue(propertyEle.getText());
+                }
+                authProvider.addProperty(property);
+            }
+        }
+        return authProvider;
+    }
     
 	/**
 	 * populate Object model using OM representation of 
@@ -1064,6 +1102,12 @@ public class Data extends DataServiceConfigurationElement{
 			OMElement passwordProviderEle =pwdManagerElement.getFirstChildWithName(new QName("passwordProvider"));
 			setPasswordProvider(passwordProviderEle.getText());
 		}
+
+        /* authorization provider config */
+        OMElement authorizationProviderConfigEl = dsXml.getFirstChildWithName(new QName(DBConstants.AuthorizationProviderConfig.ELEMENT_NAME_AUTHORIZATION_PROVIDER));
+        if (authorizationProviderConfigEl != null) {
+            this.setAuthProvider(this.getAuthorizationProvider(authorizationProviderConfigEl));
+        }
 		
 		/* populate config objects */
 		Iterator<OMElement> configElements = dsXml.getChildrenWithName(new QName("config"));
@@ -1447,6 +1491,10 @@ public class Data extends DataServiceConfigurationElement{
 				dataEl.addChild(resource.buildXML());
 			}
 		}
+        /* add authprovider to config */
+        if (this.getAuthProvider() != null) {
+            dataEl.addChild(this.getAuthProvider().buildXML());
+        }
 		return dataEl;
 	}
 

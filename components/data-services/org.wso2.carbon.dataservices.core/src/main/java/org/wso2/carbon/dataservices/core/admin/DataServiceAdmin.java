@@ -551,12 +551,13 @@ public class DataServiceAdmin extends AbstractAdmin {
     /**
      * Service method  to get all the user roles for use in role based filtering when creating data services.
      *
+     * @param authProviderConfig xml config of the authentication provider
      * @return String array of roles
      * @throws AxisFault
      */
-    public String[] getAllRoles() throws AxisFault {
+    public String[] getAllRoles(String authProviderConfig) throws AxisFault {
         try {
-            return DataServicesDSComponent.getRoleRetriever().getAllRoles();
+            return DBUtils.getAllRolesUsingAuthorizationProvider(authProviderConfig);
         } catch (DataServiceFault e) {
             throw new AxisFault("Error in retrieving role list: " + e.getMessage(), e);
         }

@@ -21,6 +21,9 @@ import org.apache.axiom.om.OMElement;
 import org.wso2.carbon.dataservices.common.DBConstants;
 import org.wso2.carbon.dataservices.common.DBConstants.BoxcarringOps;
 import org.wso2.carbon.dataservices.common.DBConstants.DBSFields;
+import org.wso2.carbon.dataservices.common.DBConstants.AuthorizationProviderConfig;
+import org.wso2.carbon.dataservices.core.auth.AuthorizationProvider;
+import org.wso2.carbon.dataservices.core.auth.UserStoreAuthorizationProvider;
 import org.wso2.carbon.dataservices.core.description.config.ConfigFactory;
 import org.wso2.carbon.dataservices.core.description.event.EventTriggerFactory;
 import org.wso2.carbon.dataservices.core.description.operation.Operation;
@@ -115,6 +118,17 @@ public class DataServiceFactory {
                     defaultNamespace, dsLocation, serviceStatus,
                     batchRequestsEnabled, boxcarringEnabled,
                     userTxJNDIName);
+            /* setting authorization provider */
+            OMElement authorizationProviderElement = dbsElement.getFirstChildWithName(
+                    new QName(AuthorizationProviderConfig.ELEMENT_NAME_AUTHORIZATION_PROVIDER));
+            AuthorizationProvider authorizationProvider;
+            if (authorizationProviderElement != null) {
+                authorizationProvider = DBUtils.generateAuthProviderFromXMLOMElement(authorizationProviderElement);
+            } else {
+                authorizationProvider = new UserStoreAuthorizationProvider();
+            }
+
+            dataService.setAuthorizationProvider(authorizationProvider);
             
             /* set service namespace */
             dataService.setServiceNamespace(serviceNamespace);

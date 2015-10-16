@@ -43,6 +43,8 @@ import org.wso2.carbon.dataservices.common.DBConstants;
 import org.wso2.carbon.dataservices.common.DBConstants.DBSFields;
 import org.wso2.carbon.dataservices.common.DBConstants.RDBMSEngines;
 import org.wso2.carbon.dataservices.common.RDBMSUtils;
+import org.wso2.carbon.dataservices.core.auth.AuthorizationProvider;
+import org.wso2.carbon.dataservices.core.auth.UserStoreAuthorizationProvider;
 import org.wso2.carbon.dataservices.core.description.config.Config;
 import org.wso2.carbon.dataservices.core.engine.DataService;
 import org.wso2.carbon.dataservices.core.engine.ExternalParam;
@@ -73,6 +75,7 @@ import javax.xml.stream.XMLStreamException;
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.sql.Date;
 import java.text.ParseException;
@@ -208,30 +211,19 @@ public class DBUtils {
         return sqlType;
     }
 
-    public static String getCurrentContextUsername() {
+    public static String getCurrentContextUsername(DataService dataService) {
         MessageContext ctx = MessageContext.getCurrentMessageContext();
         if (ctx != null) {
-            return getUsername(ctx);
+            try {
+                return dataService.getAuthorizationProvider().getUsername(ctx);
+            } catch (DataServiceFault dataServiceFault) {
+                return null;
+            }
         } else {
             return null;
         }
     }
 
-    public static String getUsername(MessageContext msgContext) {
-        return DataServicesDSComponent.getRoleRetriever().getUsernameFromMessageContext(msgContext);
-    }
-
-    /**
-     * Retrieves the current user's roles given the message context.
-     * @param msgContext The message context to be used to retrieve the username
-     * @return The user roles
-     * @throws DataServiceFault
-     */
-    public static String[] getUserRoles(MessageContext msgContext)
-            throws DataServiceFault {
-        return DataServicesDSComponent.getRoleRetriever().getRolesForUser(msgContext);
-    }
-    
     /**
      * Retrieves the current user's roles given the username.
      *
@@ -1108,6 +1100,75 @@ public class DBUtils {
 		} catch (UserStoreException e) {
 			throw new RuntimeException(e);
 		}
+    }
+
+    /**
+     * Get roles using the AuthorizationProvider using the config given.
+     *
+     * @param authProviderConfig xml config.
+     * @return role array
+     * @throws DataServiceFault
+     */
+    public static String[] getAllRolesUsingAuthorizationProvider(String authProviderConfig)
+            throws DataServiceFault {
+        try {
+            AuthorizationProvider authorizationProvider;
+            if (authProviderConfig != null && !authProviderConfig.isEmpty()) {
+                StAXOMBuilder builder = new StAXOMBuilder(new ByteArrayInputStream(authProviderConfig.getBytes(StandardCharsets.UTF_8)));
+                OMElement documentElement =  builder.getDocumentElement();
+                authorizationProvider = generateAuthProviderFromXMLOMElement(documentElement);
+            } else {
+                authorizationProvider = new UserStoreAuthorizationProvider();
+            }
+            return authorizationProvider.getAllRoles();
+        } catch (XMLStreamException e) {
+            throw new DataServiceFault(e, "Error reading XML file data - " + authProviderConfig + " Error - " + e.getMessage());
+        }
+    }
+
+    /**
+     * Helper method to generate Authorization provider using config element
+     *
+     * @param authorizationProviderElement config element
+     * @return authorizationProvider
+     * @throws DataServiceFault
+     */
+    public static AuthorizationProvider generateAuthProviderFromXMLOMElement(OMElement authorizationProviderElement)
+            throws DataServiceFault{
+        Class roleRetrieverClass = null;
+        try {
+            AuthorizationProvider authorizationProvider;
+            String roleRetrieverClassName = authorizationProviderElement.getAttributeValue(new QName(
+                    DBConstants.AuthorizationProviderConfig.ATTRIBUTE_NAME_CLASS));
+            //initialize the roleRetrieverElement
+            roleRetrieverClass = Class.forName(roleRetrieverClassName);
+            authorizationProvider = (AuthorizationProvider) roleRetrieverClass.newInstance();
+
+            //read the properties in the authenticator element and set them in the authenticator.
+            Iterator<OMElement> propertyElements = authorizationProviderElement.getChildrenWithName(new QName(
+                    DBSFields.PROPERTY));
+            Map<String, String> properties = new HashMap<String, String>();
+            if (propertyElements != null) {
+                while (propertyElements.hasNext()) {
+                    OMElement propertyElement = propertyElements.next();
+                    String attributeName = propertyElement.getAttributeValue(new QName(
+                            DBSFields.NAME));
+                    String attributeValue = propertyElement.getText();
+                    properties.put(attributeName, attributeValue);
+                }
+            }
+            authorizationProvider.init(properties);
+            return authorizationProvider;
+        } catch (ClassNotFoundException e) {
+            throw new DataServiceFault(e, "Specified class - " + roleRetrieverClass + " cannot be found Error - " +
+                                          e.getMessage());
+        } catch (InstantiationException e) {
+            throw new DataServiceFault(e, "Initialisation Error for class - " + roleRetrieverClass + " Error - " +
+                                          e.getMessage());
+        } catch (IllegalAccessException e) {
+            throw new DataServiceFault(e, "Illegal access attempt for class - " + roleRetrieverClass + " Error - " +
+                                          e.getMessage());
+        }
     }
 
 }

@@ -20,6 +20,7 @@ package org.wso2.carbon.dataservices.core.engine;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.dataservices.core.auth.AuthorizationProvider;
 import org.wso2.carbon.dataservices.core.description.resource.ResourceFactory;
 import org.wso2.securevault.SecretResolver;
 import org.wso2.carbon.dataservices.common.DBConstants;
@@ -169,6 +170,12 @@ public class DataService {
      * The tenant to which this service belongs to.
      */
     private int tenantId;
+
+    /**
+     * Authorization Provider which is used to retrieve user name and roles in configuration time and runtime(to be
+     * used in role based filtering)
+     */
+    private AuthorizationProvider authorizationProvider;
 
 	public DataService(String name, String description,
                        String defaultNamespace, String dsLocation, String serviceStatus,
@@ -540,6 +547,24 @@ public class DataService {
             String[] dsPathContents = location.trim().split("dataservices");
             this.dsRelativeLocation = dsPathContents[dsPathContents.length-1];
         }
+    }
+
+    /**
+     * Getter method for Authorization Provider.
+     *
+     * @return authorizationProvider instance.
+     */
+    public AuthorizationProvider getAuthorizationProvider() {
+        return authorizationProvider;
+    }
+
+    /**
+     * Setter method for Authorization Provider.
+     *
+     * @param authorizationProvider instance.
+     */
+    public void setAuthorizationProvider(AuthorizationProvider authorizationProvider) {
+        this.authorizationProvider = authorizationProvider;
     }
 
     /**

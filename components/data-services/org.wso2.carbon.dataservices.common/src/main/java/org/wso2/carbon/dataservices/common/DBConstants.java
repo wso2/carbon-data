@@ -1058,19 +1058,15 @@ public final class DBConstants {
     }
 
     /**
-     * Parameters in the RoleRetrieverConfig instance initiation
+     * Parameters required for the AuthorizationProvider instance initiation
      */
-    public static final class RoleRetrieverConfig {
-
-        private RoleRetrieverConfig() {
+    public static final class AuthorizationProviderConfig {
+        private AuthorizationProviderConfig() {
             throw new AssertionError();
         }
-
-        public static final String ELEMENT_NAME_AUTHORIZATION_ROLE_RETRIEVER= "AuthorizationRoleRetriever";
-        public static final String ELEMENT_NAME_PROPERTY = "Property";
-
-        public static final String ATTRIBUTE_NAME_NAME = "name";
+        public static final String ELEMENT_NAME_AUTHORIZATION_PROVIDER= "authorization_provider";
         public static final String ATTRIBUTE_NAME_CLASS = "class";
+        public static final String AUTHORIZATION_PROVIDER_SERVICE_PARAMETER = "AuthorizationProviderServiceParam";
     }
     
 }

@@ -197,8 +197,7 @@ public class MongoConfig extends Config {
             }
             return credential;
         } else {
-            throw new DataServiceFault("The data source param '" + DBConstants.MongoDB.AUTHENTICATION_TYPE +
-                                       "' is required");
+            return null;
         }
     }
 

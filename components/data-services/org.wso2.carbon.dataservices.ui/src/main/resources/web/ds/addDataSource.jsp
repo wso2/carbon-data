@@ -171,8 +171,6 @@ private boolean isFieldMandatory(String propertName) {
       	return true;
     } else if (propertName.equals(DBConstants.MongoDB.DATABASE)) {
       	return true;
-    } else if (propertName.equals(DBConstants.MongoDB.AUTHENTICATION_TYPE)) {
-        return true;
     } else if (propertName.equals(DBConstants.WebDatasource.WEB_CONFIG)) {
 		return true;
 	}  else if (propertName.equals(DBConstants.WebDatasource.QUERY_VARIABLE)) {
@@ -1849,9 +1847,9 @@ private String getRefreshToken(String gSpreadJDBCUrl) {
 		<%  } else if (propertyName.equals(DBConstants.MongoDB.AUTHENTICATION_TYPE)) { %>
 			<select id="<%=propertyName%>" name="<%=propertyName%>" onChange="setHiddenInputs();">
 				<% if (propertyValue.equals("") || propertyValue.equals("NONE")) { %>
-				<option value="NONE" selected="selected">NONE</option>
+				<option value="" selected="selected">NONE</option>
 				<% } else { %>
-				<option value="NONE">NONE</option>
+				<option value="">NONE</option>
 				<% } %>
 				<% if (propertyValue.equals("SCRAM-SHA-1")) { %>
 				<option value="SCRAM-SHA-1" selected="selected">SCRAM-SHA-1</option>

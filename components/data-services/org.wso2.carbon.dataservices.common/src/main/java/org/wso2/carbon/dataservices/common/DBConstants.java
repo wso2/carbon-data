@@ -672,7 +672,6 @@ public final class DBConstants {
         }
 
         public static class MongoAuthenticationTypes {
-
             public static final String PLAIN = "PLAIN";
             public static final String SCRAM_SHA_1 = "SCRAM-SHA-1";
             public static final String MONGODB_CR = "MONGODB-CR";

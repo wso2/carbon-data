@@ -28,7 +28,7 @@
 <%@ page import="org.wso2.carbon.utils.ServerConstants" %>
 <%@ page import="org.wso2.carbon.dataservices.ui.DataServiceAdminClient" %>
 <fmt:bundle basename="org.wso2.carbon.dataservices.ui.i18n.Resources">
-<%--script type="text/javascript" src="../ajax/js/prototype.js"></script--%>
+<script type="text/javascript" src="../ajax/js/prototype.js"></script>
 <script type="text/javascript" src="../resources/js/resource_util.js"></script>
 <jsp:include page="../resources/resources-i18n-ajaxprocessor.jsp"/>
 <jsp:include page="../dialog/display_messages.jsp"/>

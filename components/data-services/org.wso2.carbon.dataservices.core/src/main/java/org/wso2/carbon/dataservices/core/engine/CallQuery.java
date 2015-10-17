@@ -92,11 +92,8 @@ public class CallQuery extends OutputElement {
 		/* so far we only evaluate the "USERNAME" value */
 		if ("USERNAME".equals(propName)) {
 			MessageContext context = MessageContext.getCurrentMessageContext();
-			if (context != null) {
-				Object val = context.getProperty("username");
-				if (val != null) {
-					return val.toString();
-				}
+			if (context != null) { //todo change this to use role retriever
+                return this.getDataService().getAuthorizationProvider().getUsername(context);
 			}
 		} else if ("TENANT_ID".equals(propName)) {
 			return String.valueOf(PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());

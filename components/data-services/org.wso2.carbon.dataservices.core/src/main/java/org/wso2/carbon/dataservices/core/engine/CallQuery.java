@@ -31,6 +31,7 @@ import org.wso2.carbon.dataservices.core.description.query.Query;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -131,8 +132,9 @@ public class CallQuery extends OutputElement {
 		ParamValue result;
 		if (DBConstants.QueryParamTypes.ARRAY.equals(paramType)) {
 			result = new ParamValue(ParamValue.PARAM_VALUE_ARRAY);
-			if (evaluatedValue instanceof ParamValue[]) {
-				result.setArrayValue(Arrays.asList((ParamValue[]) evaluatedValue));
+            //evaluated value only can be either String[] or scalar value
+			if (evaluatedValue instanceof String[]) {
+				result.setArrayValue(getParamValueListFromStringArray((String[])evaluatedValue));
 			} else {
 				result.addArrayValue(
                         evaluatedValue == null ? null : new ParamValue(evaluatedValue.toString()));
@@ -154,6 +156,20 @@ public class CallQuery extends OutputElement {
 		}
 		return result;
 	}
+
+    /**
+     * Helper method to convert String[] to a List<ParamValue>.
+     *
+     * @param inputArray input String[]
+     * @return paramList converted List
+     */
+    private List<ParamValue> getParamValueListFromStringArray(String[] inputArray) {
+        List<ParamValue> paramList = new ArrayList<ParamValue>(2);
+        for (String value : inputArray) {
+            paramList.add(new ParamValue(value));
+        }
+        return paramList;
+    }
 
     private void processDefaultValues(ExternalParamCollection params) throws DataServiceFault {
         List<QueryParam> queryParams = this.getQuery().getQueryParams();

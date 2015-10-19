@@ -31,12 +31,12 @@
 	        <skip-authentication>false</skip-authentication>
         </menu>
     </menus>
-    <!--framework-configuration>
+    <framework-configuration>
         <bypass>
             <authentication>
                 <link>../dbconsole/login.jsp</link>
             </authentication>
         </bypass>
-    </framework-configuration-->
+    </framework-configuration>
 
 </component>

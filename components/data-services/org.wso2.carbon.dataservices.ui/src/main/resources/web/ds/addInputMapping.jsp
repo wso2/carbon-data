@@ -143,7 +143,7 @@
 <tr>
     <td class="leftCol-small"><fmt:message key="dataservices.param.type"/></td>
     <td><select id="paramTypeId" name="paramType"
-                onchange="defaultValueVisibilityOnChange(this,document)">
+                >
         <% if (paramType.equals("") || paramType.equals("SCALAR")) { %>
         <option value="SCALAR" selected="selected">SCALAR</option>
         <% } else { %>

@@ -38,6 +38,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A call-query is an expression which leads to the execution of a query.
@@ -132,12 +134,14 @@ public class CallQuery extends OutputElement {
 		ParamValue result;
 		if (DBConstants.QueryParamTypes.ARRAY.equals(paramType)) {
 			result = new ParamValue(ParamValue.PARAM_VALUE_ARRAY);
-            //evaluated value only can be either String[] or scalar value
+            //evaluated value only can be either String[] or scalar or comma separated String
 			if (evaluatedValue instanceof String[]) {
 				result.setArrayValue(getParamValueListFromStringArray((String[])evaluatedValue));
-			} else {
-				result.addArrayValue(
-                        evaluatedValue == null ? null : new ParamValue(evaluatedValue.toString()));
+			} else if (evaluatedValue == null) {
+                result.addArrayValue(null);
+            } else {
+                //both comma separate string or simple string will be processed here.
+                result.setArrayValue(getParamValueListFromString(evaluatedValue.toString()));
 			}
 		} else {
 			result = new ParamValue(ParamValue.PARAM_VALUE_SCALAR);
@@ -156,6 +160,87 @@ public class CallQuery extends OutputElement {
 		}
 		return result;
 	}
+
+    /**
+     * Helper method which will split comma separated default values and create ParamValue List.
+     * if comma needs to be added as a string, then escape "," using "\"
+     * sample is "abc,mm\,mkk,test (for special characters, scape character is "\")
+     *
+     * @param stringVal needs to be evaluated.
+     * @return paramList converted list.
+     */
+    private List<ParamValue> getParamValueListFromString(String stringVal) {
+        List<ParamValue> paramList = new ArrayList<ParamValue>(2);
+
+        int startValue = 0;
+        boolean quotesPresent = false;
+        boolean escapeChar = false;
+        char quoteChar = '\0';
+        final StringBuilder builder = new StringBuilder();
+
+        for (int i = 0; i < stringVal.length(); i++) {
+            final char charAt = stringVal.charAt(i);
+            if (i == startValue && !quotesPresent) {
+                if (charAt == '\'' || charAt == '"') {
+                    quoteChar = charAt;
+                    quotesPresent = true;
+                    startValue++;
+                    continue;
+                }
+            }
+            if (!escapeChar) {
+                if (charAt == '\\') {
+                    escapeChar = true;
+                } else if (quotesPresent && charAt == quoteChar) {
+                    if (i + 1 == stringVal.length()) {
+                        quotesPresent = false;
+                        break;
+                    } else if (stringVal.charAt(i + 1) == ',') {
+                        i++;
+                        paramList.add(new ParamValue(builder.toString()));
+                        builder.setLength(0);
+                        startValue = i + 1;
+                        quotesPresent = false;
+                    } else {
+                        throw new IllegalStateException(String.format("Value started as quoted value with (') but " +
+                                                                      "terminated prematurely at " + i
+                                                                      + " maybe escape (\\) is missing before ' " +
+                                                                      "or a , Processed Value up to error point: "
+                                                                      + stringVal.substring(startValue, i + 1)));
+                    }
+                } else if (!quotesPresent && charAt == ',') {
+                    paramList.add(new ParamValue(builder.toString()));
+                    builder.setLength(0);
+                    startValue = i + 1;
+                } else {
+                    // a boring character
+                    builder.append(charAt);
+                }
+            } else {
+                escapeChar = false;
+                switch (charAt) {
+                    case 'n':
+                        builder.append('\n');
+                        break;
+                    case 'r':
+                        builder.append('\r');
+                        break;
+                    case 't':
+                        builder.append('\t');
+                        break;
+                    default:
+                        builder.append(charAt);
+                }
+            }
+        }
+        if (escapeChar) {
+            throw new IllegalStateException("Input ended abruptly with \\");
+        } else if (quotesPresent) {
+            throw new IllegalStateException("At the end there was a quote present without ending quote.");
+        }
+        paramList.add(new ParamValue(builder.toString()));
+        return paramList;
+    }
 
     /**
      * Helper method to convert String[] to a List<ParamValue>.

@@ -1406,7 +1406,8 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
                  */
                 if (value != null && value.getValueType() == ParamValue.PARAM_VALUE_ARRAY) {
                     for (ParamValue arrayElement : value.getArrayValue()) {
-                        this.setParamInPreparedStatement(stmt, param, arrayElement.toString(),
+                        this.setParamInPreparedStatement(
+                                stmt, param, arrayElement == null ? null : arrayElement.toString(),
                                 queryType, currentOrdinal);
                         currentOrdinal++;
                     }

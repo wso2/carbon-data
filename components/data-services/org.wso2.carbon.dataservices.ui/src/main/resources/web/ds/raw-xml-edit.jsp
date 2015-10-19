@@ -29,6 +29,7 @@
 <script src="../yui/build/yahoo-dom-event/yahoo-dom-event.js" type="text/javascript"></script>
 
 <!--EditArea javascript syntax hylighter -->
+<script type="text/javascript" src="js/ui-validations.js"></script>
 <script language="javascript" type="text/javascript" src="../editarea/edit_area_full.js"></script>
 <script type="text/javascript" src="js/jquery.flot.js"></script>
 
@@ -55,45 +56,6 @@ try{
    }
 %>
 <script type="text/javascript">
-
-    function isValidXml() {
-        var source = editAreaLoader.getValue("dsConfig");
-        if (window.ActiveXObject) {
-            try {
-                var doc = new ActiveXObject("Microsoft.XMLDOM");
-                doc.async = "false";
-                var hasParse = doc.loadXML(source);
-                if (!hasParse) {
-                    CARBON.showErrorDialog('Invalid Configuration');
-                    return false;
-                }
-            } catch (e) {
-                CARBON.showErrorDialog('Invalid Configuration');
-                return false;
-            }
-        } else {
-            var parser = new DOMParser();
-            var doc = parser.parseFromString(source, "text/xml");
-            var message = "";
-            for (i = 0; i < doc.documentElement.childElementCount; i++) {
-                if (doc.documentElement.childNodes[i].nodeName == "parsererror") {
-                    message = message + "\n" + doc.documentElement.childNodes[i].childNodes[1].innerHTML;
-                } else {
-                    for (j = 0; j < doc.documentElement.childNodes[i].childElementCount; j++) {
-                        if (doc.documentElement.childNodes[i].childNodes[j].nodeName == "parsererror") {
-                            message = message + "\n" + doc.documentElement.childNodes[i].childNodes[j].childNodes[1].innerHTML;
-                        }
-                    }
-                }
-            }
-            if (message != "") {
-                CARBON.showErrorDialog('Invalid Configuration :' + message);
-                return false;
-            }
-        }
-        return true;
-    }
-
 
     function cancelSaveHandler() {
         document.location.href = "handler.jsp?region=region3&item=registry_handler_menu";

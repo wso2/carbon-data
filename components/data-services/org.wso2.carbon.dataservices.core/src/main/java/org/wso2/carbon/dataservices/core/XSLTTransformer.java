@@ -23,8 +23,14 @@ import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.axiom.om.impl.jaxp.OMSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.dataservices.common.DBConstants;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
@@ -54,6 +60,15 @@ public class XSLTTransformer {
             DataServiceFault, IOException {
         this.xsltPath = xsltPath;
         TransformerFactory tFactory = TransformerFactory.newInstance();
+        try {
+            getSecuredDocumentBuilder(false).parse(DBUtils.getInputStreamFromPath(this.getXsltPath()));
+        } catch (SAXException e) {
+            throw new DataServiceFault(e, "Error in parsing XSLT file " + xsltPath
+                                                        + " Possible XML External entity attack, Error - "
+                                                        + e.getMessage());
+        } catch (ParserConfigurationException e) {
+            throw new DataServiceFault(e, "Error initializing secure document builder, Error - " + e.getMessage());
+        }
         this.transformer = tFactory.newTransformer(new StreamSource(
         			DBUtils.getInputStreamFromPath(this.getXsltPath())));
         this.xmlInputFactory = DBUtils.getXMLInputFactory();
@@ -93,6 +108,30 @@ public class XSLTTransformer {
             log.error(msg, e);
             throw new DataServiceFault(e, msg);
         }
+    }
+
+    /**
+     * This method provides a secured document builder which will secure XXE attacks.
+     *
+     * @param setIgnoreComments whether to set setIgnoringComments in DocumentBuilderFactory.
+     * @return DocumentBuilder
+     * @throws javax.xml.parsers.ParserConfigurationException
+     */
+    private static DocumentBuilder getSecuredDocumentBuilder(boolean setIgnoreComments) throws
+                                                                                        ParserConfigurationException {
+        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+        documentBuilderFactory.setIgnoringComments(setIgnoreComments);
+        documentBuilderFactory.setNamespaceAware(true);
+        documentBuilderFactory.setExpandEntityReferences(false);
+        documentBuilderFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+        documentBuilder.setEntityResolver(new EntityResolver() {
+            @Override
+            public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
+                throw new SAXException("Possible XML External Entity (XXE) attack. Skip resolving entity");
+            }
+        });
+        return documentBuilder;
     }
 
 }

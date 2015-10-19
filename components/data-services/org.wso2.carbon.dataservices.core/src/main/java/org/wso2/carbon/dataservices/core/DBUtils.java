@@ -1161,7 +1161,7 @@ public class DBUtils {
             authorizationProvider.init(properties);
             return authorizationProvider;
         } catch (ClassNotFoundException e) {
-            throw new DataServiceFault(e, "Specified class - " + roleRetrieverClassName + " cannot be found Error - " +
+            throw new DataServiceFault(e, "Specified class - " + roleRetrieverClassName + " class cannot be found, Error - " +
                                           e.getMessage());
         } catch (InstantiationException e) {
             throw new DataServiceFault(e, "Initialisation Error for class - " + roleRetrieverClass + " Error - " +

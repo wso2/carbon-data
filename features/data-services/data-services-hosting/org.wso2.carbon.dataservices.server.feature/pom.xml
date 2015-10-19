@@ -305,8 +305,8 @@
                             </bundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.service.mgt.server:${carbon-deployment.feature.imp.version}</importFeatureDef>
-                                <importFeatureDef>org.wso2.carbon.event.server:${carbon-commons.version}</importFeatureDef>
-                                <importFeatureDef>org.wso2.carbon.transaction.manager:${carbon-commons.version}</importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.event.server:${carbon-commons.feature.imp.version}</importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.transaction.manager:${carbon-commons.feature.imp.version}</importFeatureDef>
                             </importFeatures>
                         </configuration>
                     </execution>

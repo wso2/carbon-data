@@ -1136,9 +1136,10 @@ public class DBUtils {
     public static AuthorizationProvider generateAuthProviderFromXMLOMElement(OMElement authorizationProviderElement)
             throws DataServiceFault{
         Class roleRetrieverClass = null;
+        String roleRetrieverClassName = null;
         try {
             AuthorizationProvider authorizationProvider;
-            String roleRetrieverClassName = authorizationProviderElement.getAttributeValue(new QName(
+            roleRetrieverClassName = authorizationProviderElement.getAttributeValue(new QName(
                     DBConstants.AuthorizationProviderConfig.ATTRIBUTE_NAME_CLASS));
             //initialize the roleRetrieverElement
             roleRetrieverClass = Class.forName(roleRetrieverClassName);
@@ -1160,7 +1161,7 @@ public class DBUtils {
             authorizationProvider.init(properties);
             return authorizationProvider;
         } catch (ClassNotFoundException e) {
-            throw new DataServiceFault(e, "Specified class - " + roleRetrieverClass + " cannot be found Error - " +
+            throw new DataServiceFault(e, "Specified class - " + roleRetrieverClassName + " cannot be found Error - " +
                                           e.getMessage());
         } catch (InstantiationException e) {
             throw new DataServiceFault(e, "Initialisation Error for class - " + roleRetrieverClass + " Error - " +

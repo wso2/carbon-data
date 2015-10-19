@@ -99,7 +99,7 @@
                             </importBundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.service.mgt.ui:${carbon-deployment.feature.imp.version}</importFeatureDef>
-                                <importFeatureDef>org.wso2.carbon.ndatasource.ui:${carbon-commons.version}</importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.ndatasource.ui:${carbon-commons.feature.imp.version}</importFeatureDef>
                             </importFeatures>
                         </configuration>
                     </execution>

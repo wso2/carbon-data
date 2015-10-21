@@ -221,6 +221,12 @@ public class Result extends DataServiceConfigurationElement {
 		return element;
 	}
 
+	public void removeXMLOutMappings() {
+		elements.clear();
+		attributes.clear();
+		complexElements.clear();
+	}
+
 	public ComplexElement removeComplexElement(String elementName) {
 		ComplexElement element = new ComplexElement();
 		for (int a = 0; a < complexElements.size(); a++) {

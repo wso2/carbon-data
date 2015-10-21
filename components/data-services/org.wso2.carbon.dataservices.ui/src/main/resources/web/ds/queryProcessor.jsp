@@ -290,31 +290,39 @@
                 result = query.getResult();
                 if (query.getResult() != null) {
                 	if(outputType.equals("xml")) {
-                		 result.setNamespace(nameSpace);
+                        result.setNamespace(nameSpace);
+                        result.setResultWrapper(element);
+                        result.setRowName(rowName);
+                        result.setOutputType(outputType);
+                        result.setUseColumnNumbers(useColumnNumbers);
+                        result.setEscapeNonPrintableChar(escapeNonPrintableChar);
                 		 if (xsltPath != null && xsltPath.trim().length() > 0) {
                              result.setXsltPath(xsltPath);
                          } else {
                         	 result.setXsltPath(null);
                          }
-                	}
-                	
-                	if(outputType.equals("rdf")) {
+                	} else if(outputType.equals("rdf")) {
                		 result.setNamespace(rdfNameSpace);
+                      result.setOutputType(outputType);
+                      result.setUseColumnNumbers(useColumnNumbers);
+                      result.setEscapeNonPrintableChar(escapeNonPrintableChar);
+                      result.setRdfBaseURI(rdfBaseURI);
                		 if (rdfXsltPath != null && rdfXsltPath.trim().length() > 0) {
                             result.setXsltPath(rdfXsltPath);
                         } else {
                             result.setXsltPath(null);
                         }
-               	}
-                   
-                    result.setResultWrapper(element);
-                    result.setRowName(rowName);
-                    result.setOutputType(outputType);
-                    result.setUseColumnNumbers(useColumnNumbers);
-                    result.setEscapeNonPrintableChar(escapeNonPrintableChar);
-                    result.setRdfBaseURI(rdfBaseURI);
-                    result.setTextMapping(textMapping);
-                    
+               	} else if (outputType.equals("json")) {
+                        result.removeXMLOutMappings();
+                        result.setNamespace(nameSpace);
+                        result.setOutputType(outputType);
+                        result.setUseColumnNumbers(useColumnNumbers);
+                        result.setEscapeNonPrintableChar(escapeNonPrintableChar);
+                        if (xsltPath != null && xsltPath.trim().length() > 0) {
+                            result.setXsltPath(xsltPath);
+                        }
+                        result.setTextMapping(textMapping);
+                    }
                 } else {
                     if ((outputType.equals("xml")) && (!nameSpace.equals("") || !element.equals("") || !rowName.equals(""))) {
                         result = new Result();

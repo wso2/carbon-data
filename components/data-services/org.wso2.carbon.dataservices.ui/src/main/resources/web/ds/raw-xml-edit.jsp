@@ -29,6 +29,7 @@
 <script src="../yui/build/yahoo-dom-event/yahoo-dom-event.js" type="text/javascript"></script>
 
 <!--EditArea javascript syntax hylighter -->
+<script type="text/javascript" src="js/ui-validations.js"></script>
 <script language="javascript" type="text/javascript" src="../editarea/edit_area_full.js"></script>
 <script type="text/javascript" src="js/jquery.flot.js"></script>
 
@@ -82,7 +83,7 @@ try{
     <h2><fmt:message key="dataservice.xml.editor"/>(<%=serviceName%>)</h2>
     
 <div id="workArea">
-	<form method="post"
+	<form method="post" onsubmit="return isValidXml();"
 		<%--action="<%= "./rawXMLProcessor.jsp?saveConfig=true&caller=../ds/raw-xml-edit.jsp&serviceName="+serviceName%>">--%>
             action="<%= "./rawXMLProcessor.jsp?saveConfig=true&caller=../service-mgt/index.jsp&serviceName="+serviceName%>">
 <table class="styledLeft">

@@ -24,6 +24,9 @@ import org.jongo.Jongo;
 import org.jongo.MongoCollection;
 import org.jongo.ResultHandler;
 import org.jongo.Update;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.wso2.carbon.dataservices.common.DBConstants;
 import org.wso2.carbon.dataservices.core.DBUtils;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
@@ -37,6 +40,7 @@ import org.wso2.carbon.dataservices.core.engine.DataEntry;
 import org.wso2.carbon.dataservices.core.engine.DataService;
 import org.wso2.carbon.dataservices.core.engine.InternalParam;
 import org.wso2.carbon.dataservices.core.engine.InternalParamCollection;
+import org.wso2.carbon.dataservices.core.engine.OutputElement;
 import org.wso2.carbon.dataservices.core.engine.ParamValue;
 import org.wso2.carbon.dataservices.core.engine.QueryParam;
 import org.wso2.carbon.dataservices.core.engine.Result;
@@ -74,7 +78,7 @@ public class MongoQuery extends Query {
     @Override
     public Object runPreQuery(InternalParamCollection params, int queryLevel) throws DataServiceFault {
         try {
-            return new MongoQueryResult(this.getExpression(), new ArrayList<InternalParam>(params.getParams()));
+            return new MongoQueryResult(this.getExpression(), new ArrayList<>(params.getParams()));
         } catch (Exception e) {
             throw new DataServiceFault(e, "Error in MongoQuery.runQuery: " + e.getMessage());
         }
@@ -86,31 +90,86 @@ public class MongoQuery extends Query {
         QueryResult queryResult = (QueryResult) result;
         DataEntry dataEntry;
         DataRow currentRow;
-        List<DataColumn> columns = queryResult != null ? queryResult.getDataColumns() : null;
-        String[] columnMappings = this.createColumnsMappings(columns);
-        int count = columns != null ? columns.size() : 0;
-        boolean useColumnNumbers = this.isUsingColumnNumbers();
-        String columnName;
         String tmpVal;
         while (queryResult != null && queryResult.hasNext()) {
-            dataEntry = new DataEntry();
             currentRow = queryResult.next();
-            for (int i = 0; i < count; i++) {
-                columnName = useColumnNumbers ? Integer.toString(i + 1) : columnMappings[i];
-                tmpVal = currentRow.getValueAt(columnName);
-                dataEntry.addValue(columnName, new ParamValue(tmpVal));
-            }
+            tmpVal = currentRow.getValueAt(DBConstants.MongoDB.RESULT_COLUMN_NAME);
+            // if tmpVal is not a json then the query is a count query therefore we add count as the column name.
+            dataEntry = wrapMongoRow(tmpVal, this.getResult().getDefaultElementGroup().getAllElements());
             this.writeResultEntry(xmlWriter, dataEntry, params, queryLevel);
         }
     }
 
-    private String[] createColumnsMappings(List<DataColumn> columns) {
-        String[] result = new String[columns.size()];
-        int count = columns.size();
-        for (int i = 0; i < count; i++) {
-            result[i] = columns.get(i).getName();
+    /**
+     * This method convert Mongo json output to DataEntry object to support out mappings.
+     *
+     * @param jsonString Json String
+     * @return DataEntry
+     * @throws DataServiceFault
+     */
+    public DataEntry wrapMongoRow(String jsonString, List<OutputElement> elementList) throws DataServiceFault {
+        DataEntry dataEntry = new DataEntry();
+        try {
+            JSONObject jsonObject = new JSONObject(jsonString);
+            for (OutputElement element : elementList) {
+                String key = element.getParam();
+                dataEntry.addValue(key, new ParamValue(getElementValueFromJson(jsonString, jsonObject, key)));
+            }
+        } catch (JSONException e) {
+            // Normally there can't be any JSON Exception because Mongo send a proper json text for find queries.
+            // but it send String for count queries.
+            try {
+                if (Integer.parseInt(jsonString) >= 0) {
+                    dataEntry.addValue(DBConstants.MongoDB.RESULT_COLUMN_NAME.toLowerCase(), new ParamValue(jsonString));
+                }
+            } catch (NumberFormatException e1) {
+                throw new DataServiceFault("Error occurred when retrieving data. :" + e.getMessage());
+            }
         }
-        return result;
+        return dataEntry;
+    }
+
+    private String getElementValueFromJson(String jsonString, JSONObject object, String jsonPath) throws JSONException {
+        String value = null;
+        JSONObject tempObject = object;
+        JSONArray tempArray;
+        String[] tokens = jsonPath.split("\\.");
+        if (tokens[0].equals(DBConstants.MongoDB.RESULT_COLUMN_NAME.toLowerCase())) {
+            if (tokens.length == 1) {
+                value = jsonString;
+            } else {
+                for (int i = 1; i < tokens.length; i++) {
+                    if (i == tokens.length - 1) {
+                        if (tokens[i].contains("[")) {
+                            Object[] arrayObjects = getArrayElementKeys(tokens[i]);
+                            tempArray = tempObject.getJSONArray(arrayObjects[0].toString());
+                            value = tempArray.getString((Integer) arrayObjects[1]);
+                        } else {
+                            value = tempObject.getString(tokens[i]);
+                        }
+                    } else {
+                        if (tokens[i].contains("[")) {
+                            Object[] arrayObjects = getArrayElementKeys(tokens[i]);
+                            tempArray = tempObject.getJSONArray(arrayObjects[0].toString());
+                            tempObject = tempArray.getJSONObject((Integer) arrayObjects[1]);
+                        } else {
+                            tempObject = tempObject.getJSONObject(tokens[i]);
+                        }
+                    }
+                }
+            }
+            return value;
+        } else {
+            return null;
+        }
+    }
+
+    private Object[] getArrayElementKeys(String element) {
+        int keyIndex;
+        String arrayName;
+        arrayName = element.substring(0, element.indexOf('['));
+        keyIndex = Integer.parseInt(element.substring(element.indexOf('[') + 1, element.indexOf(']')));
+        return new Object[] { arrayName, keyIndex };
     }
 
     public MongoConfig getConfig() {
@@ -142,7 +201,7 @@ public class MongoQuery extends Query {
         }
         DBConstants.MongoDB.MongoOperation mongoOp = this.convertToMongoOp(operation);
         if (mongoOp == DBConstants.MongoDB.MongoOperation.UPDATE) {
-            List<Object> result = new ArrayList<Object>();
+            List<Object> result = new ArrayList<>();
             result.add(collection);
             result.add(mongoOp);
             result.addAll(parseInsertQuery(opQuery));
@@ -167,7 +226,7 @@ public class MongoQuery extends Query {
     }
 
     private List<Object> parseInsertQuery(String opQuery) throws DataServiceFault {
-        List<Object> tokens = new ArrayList<Object>();
+        List<Object> tokens = new ArrayList<>();
         int bracketCount = 0;
         StringBuilder buff = new StringBuilder(100);
         for (char ch : opQuery.toCharArray()) {
@@ -289,7 +348,7 @@ public class MongoQuery extends Query {
             } else {
                 count = collection.count();
             }
-            List<Long> countResult = new ArrayList<Long>();
+            List<Long> countResult = new ArrayList<>();
             countResult.add(count);
             return countResult.iterator();
         }
@@ -317,7 +376,7 @@ public class MongoQuery extends Query {
             } else {
                 value = collection.findOne().map(MongoResultMapper.getInstance());
             }
-            List<String> result = new ArrayList<String>();
+            List<String> result = new ArrayList<>();
             result.add(value);
             return result.iterator();
         }
@@ -383,7 +442,7 @@ public class MongoQuery extends Query {
 
         @Override
         public List<DataColumn> getDataColumns() throws DataServiceFault {
-            List<DataColumn> result = new ArrayList<DataColumn>();
+            List<DataColumn> result = new ArrayList<>();
             result.add(new DataColumn(DBConstants.MongoDB.RESULT_COLUMN_NAME));
             return result;
         }
@@ -399,12 +458,11 @@ public class MongoQuery extends Query {
                 throw new DataServiceFault("No Mongo data result available");
             } else {
                 Object data = this.dataIterator.next();
-                Map<String, String> values = new HashMap<String, String>();
+                Map<String, String> values = new HashMap<>();
                 values.put(DBConstants.MongoDB.RESULT_COLUMN_NAME, data.toString());
                 return new FixedDataRow(values);
             }
         }
-
     }
 
 }

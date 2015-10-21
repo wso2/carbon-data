@@ -93,7 +93,7 @@
                         <Export-Package>
                             org.wso2.carbon.dbconsole.ui.i18n;version="${project.version}"
                         </Export-Package>
-                        <!--<DynamicImport-Package>*</DynamicImport-Package>-->
+                        <DynamicImport-Package>*</DynamicImport-Package>
                         <Import-Package>
                             !org.wso2.carbon.dbconsole.ui.internal.*,
                             <!--org.h2.server.web;version="${h2.engine.orbit.imp.pkg.version}",--> <!-- todo this is the correct one, but since existing h2 bundle doesn't export versions, keep without versions for time being, once h2 bundle is corrected, use with versions -->

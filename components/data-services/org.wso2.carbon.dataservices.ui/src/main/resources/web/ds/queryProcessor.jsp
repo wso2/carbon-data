@@ -167,152 +167,151 @@
                 Config con = dataService.getConfig(datasource);
                 String customDSType = "";
                 if (con.getPropertyValue(DBConstants.CustomDataSource.DATA_SOURCE_QUERY_CLASS) instanceof String) {
-            		customDSType = DBConstants.DataSourceTypes.CUSTOM_QUERY;
-            	} else if (con.getPropertyValue(DBConstants.CustomDataSource.DATA_SOURCE_TABULAR_CLASS) instanceof String) {
-            		customDSType = DBConstants.DataSourceTypes.CUSTOM_TABULAR;
-            	}
+                    customDSType = DBConstants.DataSourceTypes.CUSTOM_QUERY;
+                } else if (con.getPropertyValue(DBConstants.CustomDataSource.DATA_SOURCE_TABULAR_CLASS) instanceof String) {
+                    customDSType = DBConstants.DataSourceTypes.CUSTOM_TABULAR;
+                }
                 if (con.getPropertyValue(DBConstants.CarbonDatasource.NAME) != null &&
-                		((String)con.getPropertyValue(DBConstants.CarbonDatasource.NAME)).trim().length() != 0) {
-            		String type = client.getCarbonDataSourceType((String)con.getPropertyValue(DBConstants.CarbonDatasource.NAME));
+                    ((String) con.getPropertyValue(DBConstants.CarbonDatasource.NAME)).trim().length() != 0) {
+                    String type = client.getCarbonDataSourceType((String) con.getPropertyValue(DBConstants.CarbonDatasource.NAME));
                     if (type != null && !type.equals(DBConstants.DataSourceTypes.RDBMS)) {
-                    	if (type.equals("DS_CUSTOM_QUERY")) {
-                    		customDSType = DBConstants.DataSourceTypes.CUSTOM_QUERY;
-                    	} else if (type.equals("DS_CUSTOM_TABULAR")) {
-                    		customDSType = DBConstants.DataSourceTypes.CUSTOM_TABULAR;
-                    	}
+                        if (type.equals("DS_CUSTOM_QUERY")) {
+                            customDSType = DBConstants.DataSourceTypes.CUSTOM_QUERY;
+                        } else if (type.equals("DS_CUSTOM_TABULAR")) {
+                            customDSType = DBConstants.DataSourceTypes.CUSTOM_TABULAR;
+                        }
                     }
-            	}
-                if(con != null) {
+                }
+                if (con != null) {
                     if (con.getDataSourceType().equals("RDBMS")) {
-                    	if (con.getPropertyValue(DBConstants.Excel.DATASOURCE) instanceof String &&
-                    			((String)con.getPropertyValue(DBConstants.Excel.DATASOURCE)).trim().length() != 0) {
-                    		ExcelQuery excel = new ExcelQuery();
-	                        excel.setWorkBookName(workBookName);
-	                        excel.setHasHeaders(headerColumns);
-	                        excel.setMaxRowCount(maxRowCount);
-	                        excel.setStartingRow(startingRow);
-	                        excel.setHeaderRow(headerRow);
-	                        query.setExcel(excel);
-                    	} else if (con.getPropertyValue(DBConstants.GSpread.DATASOURCE) instanceof String &&
-                    			((String)con.getPropertyValue(DBConstants.GSpread.DATASOURCE)).trim().length() != 0) {
-                    		GSpreadQuery gspread = new GSpreadQuery();
+                        if (con.getPropertyValue(DBConstants.Excel.DATASOURCE) instanceof String &&
+                            ((String) con.getPropertyValue(DBConstants.Excel.DATASOURCE)).trim().length() != 0) {
+                            ExcelQuery excel = new ExcelQuery();
+                            excel.setWorkBookName(workBookName);
+                            excel.setHasHeaders(headerColumns);
+                            excel.setMaxRowCount(maxRowCount);
+                            excel.setStartingRow(startingRow);
+                            excel.setHeaderRow(headerRow);
+                            query.setExcel(excel);
+                        } else if (con.getPropertyValue(DBConstants.GSpread.DATASOURCE) instanceof String &&
+                            ((String) con.getPropertyValue(DBConstants.GSpread.DATASOURCE)).trim().length() != 0) {
+                            GSpreadQuery gspread = new GSpreadQuery();
                             gspread.setWorkSheetNumber(Integer.parseInt(gSpreadWorkSheetNumber));
                             gspread.setMaxRowCount(Integer.parseInt(gSpreadMaxRowCount));
                             gspread.setStartingRow(Integer.parseInt(gSpreadStartingRow));
                             gspread.setHasHeaders(gHasHeaders);
                             gspread.setHeaderRow(Integer.parseInt(gSpreadHeaderRow));
                             query.setGSpread(gspread);
-                    	} else {
-	                        if (query.getProperties().size() > 0) {
-	                            query.updateProperty(DBConstants.RDBMS.QUERY_TIMEOUT, timeout);
-	                            query.updateProperty(DBConstants.RDBMS.FETCH_DIRECTION, fetchDirection);
-	                            query.updateProperty(DBConstants.RDBMS.FORCE_STORED_PROC, forceStoredProc);
-	                            query.updateProperty(DBConstants.RDBMS.FORCE_JDBC_BATCH_REQUESTS, forceJDBCBatchRequests);
-	                            query.updateProperty(DBConstants.RDBMS.FETCH_SIZE, fetchSize);
-	                            query.updateProperty(DBConstants.RDBMS.MAX_FIELD_SIZE, maxFieldSize);
-	                            query.updateProperty(DBConstants.RDBMS.MAX_ROWS, maxRows);
-	                        } else {
-	                            query.addProperty(DBConstants.RDBMS.FETCH_DIRECTION, fetchDirection);
-	                            query.addProperty(DBConstants.RDBMS.FORCE_STORED_PROC, forceStoredProc);
-	                            query.addProperty(DBConstants.RDBMS.FORCE_JDBC_BATCH_REQUESTS, forceJDBCBatchRequests);
-	                            query.addProperty(DBConstants.RDBMS.FETCH_SIZE, fetchSize);
-	                            query.addProperty(DBConstants.RDBMS.MAX_FIELD_SIZE, maxFieldSize);
-	                            query.addProperty(DBConstants.RDBMS.MAX_ROWS, maxRows);
-	                        }
-	                        query.setSql(sql);
-                    	}
-                    } else if (con.getDataSourceType().equals("EXCEL")) {
-                    	if (con.getPropertyValue(DBConstants.RDBMS.URL) instanceof String &&
-                    			((String)con.getPropertyValue(DBConstants.RDBMS.URL)).trim().length() != 0) {
-                    		query.setSql(sql);  
                         } else {
-	                        ExcelQuery excel = new ExcelQuery();
-	                        excel.setWorkBookName(workBookName);
-	                        excel.setHasHeaders(headerColumns);
-	                        excel.setMaxRowCount(maxRowCount);
-	                        excel.setStartingRow(startingRow);
-	                        excel.setHeaderRow(headerRow);
-	                        query.setExcel(excel);
+                            if (query.getProperties().size() > 0) {
+                                query.updateProperty(DBConstants.RDBMS.QUERY_TIMEOUT, timeout);
+                                query.updateProperty(DBConstants.RDBMS.FETCH_DIRECTION, fetchDirection);
+                                query.updateProperty(DBConstants.RDBMS.FORCE_STORED_PROC, forceStoredProc);
+                                query.updateProperty(DBConstants.RDBMS.FORCE_JDBC_BATCH_REQUESTS, forceJDBCBatchRequests);
+                                query.updateProperty(DBConstants.RDBMS.FETCH_SIZE, fetchSize);
+                                query.updateProperty(DBConstants.RDBMS.MAX_FIELD_SIZE, maxFieldSize);
+                                query.updateProperty(DBConstants.RDBMS.MAX_ROWS, maxRows);
+                            } else {
+                                query.addProperty(DBConstants.RDBMS.FETCH_DIRECTION, fetchDirection);
+                                query.addProperty(DBConstants.RDBMS.FORCE_STORED_PROC, forceStoredProc);
+                                query.addProperty(DBConstants.RDBMS.FORCE_JDBC_BATCH_REQUESTS, forceJDBCBatchRequests);
+                                query.addProperty(DBConstants.RDBMS.FETCH_SIZE, fetchSize);
+                                query.addProperty(DBConstants.RDBMS.MAX_FIELD_SIZE, maxFieldSize);
+                                query.addProperty(DBConstants.RDBMS.MAX_ROWS, maxRows);
+                            }
+                            query.setSql(sql);
+                        }
+                    } else if (con.getDataSourceType().equals("EXCEL")) {
+                        if (con.getPropertyValue(DBConstants.RDBMS.URL) instanceof String &&
+                            ((String) con.getPropertyValue(DBConstants.RDBMS.URL)).trim().length() != 0) {
+                            query.setSql(sql);
+                        } else {
+                            ExcelQuery excel = new ExcelQuery();
+                            excel.setWorkBookName(workBookName);
+                            excel.setHasHeaders(headerColumns);
+                            excel.setMaxRowCount(maxRowCount);
+                            excel.setStartingRow(startingRow);
+                            excel.setHeaderRow(headerRow);
+                            query.setExcel(excel);
                         }
                     } else if (con.getDataSourceType().equals("GDATA_SPREADSHEET")) {
-                    	if (con.getPropertyValue(DBConstants.RDBMS.URL) instanceof String &&
-                    			((String)con.getPropertyValue(DBConstants.RDBMS.URL)).trim().length() != 0) {
-                    		query.setSql(sql);  
-                        } else { 
-	                        GSpreadQuery gspread = new GSpreadQuery();
-	                        gspread.setWorkSheetNumber(Integer.parseInt(gSpreadWorkSheetNumber));
-	                        gspread.setMaxRowCount(Integer.parseInt(gSpreadMaxRowCount));
-	                        gspread.setStartingRow(Integer.parseInt(gSpreadStartingRow));
-	                        gspread.setHasHeaders(gHasHeaders);
-	                        gspread.setHeaderRow(Integer.parseInt(gSpreadHeaderRow));
-	                        query.setGSpread(gspread);
+                        if (con.getPropertyValue(DBConstants.RDBMS.URL) instanceof String &&
+                            ((String) con.getPropertyValue(DBConstants.RDBMS.URL)).trim().length() != 0) {
+                            query.setSql(sql);
+                        } else {
+                            GSpreadQuery gspread = new GSpreadQuery();
+                            gspread.setWorkSheetNumber(Integer.parseInt(gSpreadWorkSheetNumber));
+                            gspread.setMaxRowCount(Integer.parseInt(gSpreadMaxRowCount));
+                            gspread.setStartingRow(Integer.parseInt(gSpreadStartingRow));
+                            gspread.setHasHeaders(gHasHeaders);
+                            gspread.setHeaderRow(Integer.parseInt(gSpreadHeaderRow));
+                            query.setGSpread(gspread);
                         }
                     } else if (con.getDataSourceType().equals("MongoDB")) {
-                         query.setExpression(mongoExpression);
+                        query.setExpression(mongoExpression);
                     } else if (con.getDataSourceType().equals("CARBON_DATASOURCE") || con.getDataSourceType().equals("JNDI")) {
-                    	if (customDSType.equals(DBConstants.DataSourceTypes.CUSTOM_QUERY)) {
-                    		query.setExpression(expression);
-                    	} else {
-	                        if (query.getProperties().size() > 0) {
-	                            query.updateProperty(DBConstants.RDBMS.QUERY_TIMEOUT, timeout);
-	                            query.updateProperty(DBConstants.RDBMS.FETCH_DIRECTION, fetchDirection);
-	                            query.updateProperty(DBConstants.RDBMS.FORCE_STORED_PROC, forceStoredProc);
-	                            query.updateProperty(DBConstants.RDBMS.FORCE_JDBC_BATCH_REQUESTS, forceJDBCBatchRequests);
-	                            query.updateProperty(DBConstants.RDBMS.FETCH_SIZE, fetchSize);
-	                            query.updateProperty(DBConstants.RDBMS.MAX_FIELD_SIZE, maxFieldSize);
-	                            query.updateProperty(DBConstants.RDBMS.MAX_ROWS, maxRows);
-	                        } else {
-	                            query.addProperty(DBConstants.RDBMS.QUERY_TIMEOUT, timeout);
-	                            query.addProperty(DBConstants.RDBMS.FETCH_DIRECTION, fetchDirection);
-	                            query.addProperty(DBConstants.RDBMS.FORCE_STORED_PROC, forceStoredProc);
-	                            query.addProperty(DBConstants.RDBMS.FORCE_JDBC_BATCH_REQUESTS, forceJDBCBatchRequests);
-	                            query.addProperty(DBConstants.RDBMS.FETCH_SIZE, fetchSize);
-	                            query.addProperty(DBConstants.RDBMS.MAX_FIELD_SIZE, maxFieldSize);
-	                            query.addProperty(DBConstants.RDBMS.MAX_ROWS, maxRows);
-	                        }
-	                        query.setSql(sql);
-                    	}
-                    } else if (con.getDataSourceType().equals("RDF")
-                            || con.getDataSourceType().equals("SPARQL")) {
+                        if (customDSType.equals(DBConstants.DataSourceTypes.CUSTOM_QUERY)) {
+                            query.setExpression(expression);
+                        } else {
+                            if (query.getProperties().size() > 0) {
+                                query.updateProperty(DBConstants.RDBMS.QUERY_TIMEOUT, timeout);
+                                query.updateProperty(DBConstants.RDBMS.FETCH_DIRECTION, fetchDirection);
+                                query.updateProperty(DBConstants.RDBMS.FORCE_STORED_PROC, forceStoredProc);
+                                query.updateProperty(DBConstants.RDBMS.FORCE_JDBC_BATCH_REQUESTS, forceJDBCBatchRequests);
+                                query.updateProperty(DBConstants.RDBMS.FETCH_SIZE, fetchSize);
+                                query.updateProperty(DBConstants.RDBMS.MAX_FIELD_SIZE, maxFieldSize);
+                                query.updateProperty(DBConstants.RDBMS.MAX_ROWS, maxRows);
+                            } else {
+                                query.addProperty(DBConstants.RDBMS.QUERY_TIMEOUT, timeout);
+                                query.addProperty(DBConstants.RDBMS.FETCH_DIRECTION, fetchDirection);
+                                query.addProperty(DBConstants.RDBMS.FORCE_STORED_PROC, forceStoredProc);
+                                query.addProperty(DBConstants.RDBMS.FORCE_JDBC_BATCH_REQUESTS, forceJDBCBatchRequests);
+                                query.addProperty(DBConstants.RDBMS.FETCH_SIZE, fetchSize);
+                                query.addProperty(DBConstants.RDBMS.MAX_FIELD_SIZE, maxFieldSize);
+                                query.addProperty(DBConstants.RDBMS.MAX_ROWS, maxRows);
+                            }
+                            query.setSql(sql);
+                        }
+                    } else if (con.getDataSourceType().equals("RDF") || con.getDataSourceType().equals("SPARQL")) {
                         query.setSparql(sparql);
                     } else if (con.getDataSourceType().equals("WEB_CONFIG")) {
                         query.setScraperVariable(scraperVariable);
                     } else if (con.getDataSourceType().equals("Cassandra")) {
                         query.setExpression(cassandraExpression);
                     } else if (con.getDataSourceType().equals("CUSTOM")) {
-                    	if (customDSType.equals(DBConstants.DataSourceTypes.CUSTOM_QUERY)) {
-                    		query.setExpression(expression);
-                    	} else {
-                    		query.setSql(sql);
-                    	}
+                        if (customDSType.equals(DBConstants.DataSourceTypes.CUSTOM_QUERY)) {
+                            query.setExpression(expression);
+                        } else {
+                            query.setSql(sql);
+                        }
                     }
                 }
                 result = query.getResult();
                 if (query.getResult() != null) {
-                	if(outputType.equals("xml")) {
+                    if (outputType.equals("xml")) {
                         result.setNamespace(nameSpace);
                         result.setResultWrapper(element);
                         result.setRowName(rowName);
                         result.setOutputType(outputType);
                         result.setUseColumnNumbers(useColumnNumbers);
                         result.setEscapeNonPrintableChar(escapeNonPrintableChar);
-                		 if (xsltPath != null && xsltPath.trim().length() > 0) {
-                             result.setXsltPath(xsltPath);
-                         } else {
-                        	 result.setXsltPath(null);
-                         }
-                	} else if(outputType.equals("rdf")) {
-               		 result.setNamespace(rdfNameSpace);
-                      result.setOutputType(outputType);
-                      result.setUseColumnNumbers(useColumnNumbers);
-                      result.setEscapeNonPrintableChar(escapeNonPrintableChar);
-                      result.setRdfBaseURI(rdfBaseURI);
-               		 if (rdfXsltPath != null && rdfXsltPath.trim().length() > 0) {
+                        if (xsltPath != null && xsltPath.trim().length() > 0) {
+                            result.setXsltPath(xsltPath);
+                        } else {
+                            result.setXsltPath(null);
+                        }
+                    } else if (outputType.equals("rdf")) {
+                        result.setNamespace(rdfNameSpace);
+                        result.setOutputType(outputType);
+                        result.setUseColumnNumbers(useColumnNumbers);
+                        result.setEscapeNonPrintableChar(escapeNonPrintableChar);
+                        result.setRdfBaseURI(rdfBaseURI);
+                        if (rdfXsltPath != null && rdfXsltPath.trim().length() > 0) {
                             result.setXsltPath(rdfXsltPath);
                         } else {
                             result.setXsltPath(null);
                         }
-               	} else if (outputType.equals("json")) {
+                    } else if (outputType.equals("json")) {
                         result.removeXMLOutMappings();
                         result.setNamespace(nameSpace);
                         result.setOutputType(outputType);
@@ -336,17 +335,17 @@
                             result.setXsltPath(xsltPath);
                         }
                         query.setResult(result);
-                    } else if ((outputType.equals("rdf")) && (!rdfNameSpace.equals("") || !rdfBaseURI.equals("") )) {
-                    	 result = new Result();
-                    	 result.setNamespace(rdfNameSpace);
-                         result.setOutputType(outputType);
-                         result.setUseColumnNumbers(useColumnNumbers);
-                         result.setEscapeNonPrintableChar(escapeNonPrintableChar);
-                         result.setRdfBaseURI(rdfBaseURI);
-                         if (rdfXsltPath != null && rdfXsltPath.trim().length() > 0) {
-                             result.setXsltPath(rdfXsltPath);
-                         }
-                         query.setResult(result);
+                    } else if ((outputType.equals("rdf")) && (!rdfNameSpace.equals("") || !rdfBaseURI.equals(""))) {
+                        result = new Result();
+                        result.setNamespace(rdfNameSpace);
+                        result.setOutputType(outputType);
+                        result.setUseColumnNumbers(useColumnNumbers);
+                        result.setEscapeNonPrintableChar(escapeNonPrintableChar);
+                        result.setRdfBaseURI(rdfBaseURI);
+                        if (rdfXsltPath != null && rdfXsltPath.trim().length() > 0) {
+                            result.setXsltPath(rdfXsltPath);
+                        }
+                        query.setResult(result);
                     } else if (outputType.equals("json")) {
                         result = new Result();
                         result.setNamespace(nameSpace);
@@ -361,7 +360,7 @@
                     }
                 }
                 if (flag.equals("save")) {
-                	query.setStatus("add");
+                    query.setStatus("add");
                 }
             }
         } else {
@@ -381,108 +380,107 @@
             Config con = dataService.getConfig(datasource);
             String customDSType = "";
             if (con.getPropertyValue(DBConstants.CustomDataSource.DATA_SOURCE_QUERY_CLASS) instanceof String) {
-        		customDSType = DBConstants.DataSourceTypes.CUSTOM_QUERY;
-        	} else if (con.getPropertyValue(DBConstants.CustomDataSource.DATA_SOURCE_TABULAR_CLASS) instanceof String) {
-        		customDSType = DBConstants.DataSourceTypes.CUSTOM_TABULAR;
-        	}
+                customDSType = DBConstants.DataSourceTypes.CUSTOM_QUERY;
+            } else if (con.getPropertyValue(DBConstants.CustomDataSource.DATA_SOURCE_TABULAR_CLASS) instanceof String) {
+                customDSType = DBConstants.DataSourceTypes.CUSTOM_TABULAR;
+            }
             if (con.getPropertyValue(DBConstants.CarbonDatasource.NAME) != null &&
-            		((String)con.getPropertyValue(DBConstants.CarbonDatasource.NAME)).trim().length() != 0) {
-        		String type = client.getCarbonDataSourceType((String)con.getPropertyValue(DBConstants.CarbonDatasource.NAME));
+                ((String) con.getPropertyValue(DBConstants.CarbonDatasource.NAME)).trim().length() != 0) {
+                String type = client.getCarbonDataSourceType((String) con.getPropertyValue(DBConstants.CarbonDatasource.NAME));
                 if (type != null && !type.equals(DBConstants.DataSourceTypes.RDBMS)) {
-                	if (type.equals("DS_CUSTOM_QUERY")) {
-                		customDSType = DBConstants.DataSourceTypes.CUSTOM_QUERY;
-                	} else if (type.equals("DS_CUSTOM_TABULAR")) {
-                		customDSType = DBConstants.DataSourceTypes.CUSTOM_TABULAR;
-                	}
+                    if (type.equals("DS_CUSTOM_QUERY")) {
+                        customDSType = DBConstants.DataSourceTypes.CUSTOM_QUERY;
+                    } else if (type.equals("DS_CUSTOM_TABULAR")) {
+                        customDSType = DBConstants.DataSourceTypes.CUSTOM_TABULAR;
+                    }
                 }
-        	}
+            }
             //query.setConfigToUse(con.getDataSourceType());
             query.setConfigToUse(datasource);
             if (con != null) {
                 if (con.getDataSourceType().equals("RDBMS")) {
-                	if (con.getPropertyValue(DBConstants.Excel.DATASOURCE) instanceof String &&
-                			((String)con.getPropertyValue(DBConstants.Excel.DATASOURCE)).trim().length() != 0) {
-                		ExcelQuery excel = new ExcelQuery();
+                    if (con.getPropertyValue(DBConstants.Excel.DATASOURCE) instanceof String &&
+                        ((String) con.getPropertyValue(DBConstants.Excel.DATASOURCE)).trim().length() != 0) {
+                        ExcelQuery excel = new ExcelQuery();
                         excel.setWorkBookName(workBookName);
                         excel.setHasHeaders(headerColumns);
                         excel.setMaxRowCount(maxRowCount);
                         excel.setStartingRow(startingRow);
                         excel.setHeaderRow(headerRow);
                         query.setExcel(excel);
-                	} else if (con.getPropertyValue(DBConstants.GSpread.DATASOURCE) instanceof String &&
-                			((String)con.getPropertyValue(DBConstants.GSpread.DATASOURCE)).trim().length() != 0) {
-                		GSpreadQuery gspread = new GSpreadQuery();
+                    } else if (con.getPropertyValue(DBConstants.GSpread.DATASOURCE) instanceof String &&
+                        ((String) con.getPropertyValue(DBConstants.GSpread.DATASOURCE)).trim().length() != 0) {
+                        GSpreadQuery gspread = new GSpreadQuery();
                         gspread.setWorkSheetNumber(Integer.parseInt(gSpreadWorkSheetNumber));
                         gspread.setMaxRowCount(Integer.parseInt(gSpreadMaxRowCount));
                         gspread.setStartingRow(Integer.parseInt(gSpreadStartingRow));
                         gspread.setHasHeaders(gHasHeaders);
                         gspread.setHeaderRow(Integer.parseInt(gSpreadHeaderRow));
                         query.setGSpread(gspread);
-                	} else {
-	                    query.addProperty(DBConstants.RDBMS.QUERY_TIMEOUT, timeout);
-	                    query.addProperty(DBConstants.RDBMS.FETCH_DIRECTION, fetchDirection);
-	                    query.addProperty(DBConstants.RDBMS.FORCE_STORED_PROC, forceStoredProc);
-	                    query.addProperty(DBConstants.RDBMS.FORCE_JDBC_BATCH_REQUESTS, forceJDBCBatchRequests);
-	                    query.addProperty(DBConstants.RDBMS.FETCH_SIZE, fetchSize);
-	                    query.addProperty(DBConstants.RDBMS.MAX_FIELD_SIZE, maxFieldSize);
-	                    query.addProperty(DBConstants.RDBMS.MAX_ROWS, maxRows);
-	                    query.setSql(sql);
-                	}
-                } else if (con.getDataSourceType().equals("EXCEL")) {
-                	if (con.getPropertyValue(DBConstants.RDBMS.URL) instanceof String && 
-                			((String)con.getPropertyValue(DBConstants.RDBMS.URL)).trim().length() != 0) {
-                		query.setSql(sql);  
-                	} else {
-	                    ExcelQuery excel = new ExcelQuery();
-	                    excel.setWorkBookName(workBookName);
-	                    excel.setHasHeaders(headerColumns);
-	                    excel.setMaxRowCount(maxRowCount);
-	                    excel.setStartingRow(startingRow);
-	                    excel.setHeaderRow(headerRow);
-	                    query.setExcel(excel);
-	                    excel.buildXML();
-                	}
-                } else if (con.getDataSourceType().equals("GDATA_SPREADSHEET")) {
-                	if (con.getPropertyValue(DBConstants.RDBMS.URL) instanceof String &&
-                			((String)con.getPropertyValue(DBConstants.RDBMS.URL)).trim().length() != 0) {
-                		query.setSql(sql);  
-                    } else { 
-	                    GSpreadQuery gspread = new GSpreadQuery();
-	                    gspread.setWorkSheetNumber(Integer.parseInt(gSpreadWorkSheetNumber));
-	                    gspread.setMaxRowCount(Integer.parseInt(gSpreadMaxRowCount));
-	                    gspread.setStartingRow(Integer.parseInt(gSpreadStartingRow));
-	                    gspread.setHasHeaders(gHasHeaders);
-	                    gspread.setHeaderRow(Integer.parseInt(gSpreadHeaderRow));
-	                    query.setGSpread(gspread);
+                    } else {
+                        query.addProperty(DBConstants.RDBMS.QUERY_TIMEOUT, timeout);
+                        query.addProperty(DBConstants.RDBMS.FETCH_DIRECTION, fetchDirection);
+                        query.addProperty(DBConstants.RDBMS.FORCE_STORED_PROC, forceStoredProc);
+                        query.addProperty(DBConstants.RDBMS.FORCE_JDBC_BATCH_REQUESTS, forceJDBCBatchRequests);
+                        query.addProperty(DBConstants.RDBMS.FETCH_SIZE, fetchSize);
+                        query.addProperty(DBConstants.RDBMS.MAX_FIELD_SIZE, maxFieldSize);
+                        query.addProperty(DBConstants.RDBMS.MAX_ROWS, maxRows);
+                        query.setSql(sql);
                     }
-                }else if (con.getDataSourceType().equals("MongoDB")) {
+                } else if (con.getDataSourceType().equals("EXCEL")) {
+                    if (con.getPropertyValue(DBConstants.RDBMS.URL) instanceof String &&
+                        ((String) con.getPropertyValue(DBConstants.RDBMS.URL)).trim().length() != 0) {
+                        query.setSql(sql);
+                    } else {
+                        ExcelQuery excel = new ExcelQuery();
+                        excel.setWorkBookName(workBookName);
+                        excel.setHasHeaders(headerColumns);
+                        excel.setMaxRowCount(maxRowCount);
+                        excel.setStartingRow(startingRow);
+                        excel.setHeaderRow(headerRow);
+                        query.setExcel(excel);
+                        excel.buildXML();
+                    }
+                } else if (con.getDataSourceType().equals("GDATA_SPREADSHEET")) {
+                    if (con.getPropertyValue(DBConstants.RDBMS.URL) instanceof String &&
+                        ((String) con.getPropertyValue(DBConstants.RDBMS.URL)).trim().length() != 0) {
+                        query.setSql(sql);
+                    } else {
+                        GSpreadQuery gspread = new GSpreadQuery();
+                        gspread.setWorkSheetNumber(Integer.parseInt(gSpreadWorkSheetNumber));
+                        gspread.setMaxRowCount(Integer.parseInt(gSpreadMaxRowCount));
+                        gspread.setStartingRow(Integer.parseInt(gSpreadStartingRow));
+                        gspread.setHasHeaders(gHasHeaders);
+                        gspread.setHeaderRow(Integer.parseInt(gSpreadHeaderRow));
+                        query.setGSpread(gspread);
+                    }
+                } else if (con.getDataSourceType().equals("MongoDB")) {
                     query.setExpression(mongoExpression);
                 } else if (con.getDataSourceType().equals("CARBON_DATASOURCE") || con.getDataSourceType().equals("JNDI")) {
-                	if (customDSType.equals(DBConstants.DataSourceTypes.CUSTOM_QUERY)) {
-                		query.setExpression(expression);
-                	} else {
-	                    query.addProperty(DBConstants.RDBMS.QUERY_TIMEOUT, timeout);
-	                    query.addProperty(DBConstants.RDBMS.FETCH_DIRECTION, fetchDirection);
-	                    query.addProperty(DBConstants.RDBMS.FORCE_STORED_PROC, forceStoredProc);
-	                    query.addProperty(DBConstants.RDBMS.FORCE_JDBC_BATCH_REQUESTS, forceJDBCBatchRequests);
-	                    query.addProperty(DBConstants.RDBMS.FETCH_SIZE, fetchSize);
-	                    query.addProperty(DBConstants.RDBMS.MAX_FIELD_SIZE, maxFieldSize);
-	                    query.addProperty(DBConstants.RDBMS.MAX_ROWS, maxRows);
-	                    query.setSql(sql);
-                	}
-                } else if (con.getDataSourceType().equals("RDF")
-                        || con.getDataSourceType().equals("SPARQL")) {
+                    if (customDSType.equals(DBConstants.DataSourceTypes.CUSTOM_QUERY)) {
+                        query.setExpression(expression);
+                    } else {
+                        query.addProperty(DBConstants.RDBMS.QUERY_TIMEOUT, timeout);
+                        query.addProperty(DBConstants.RDBMS.FETCH_DIRECTION, fetchDirection);
+                        query.addProperty(DBConstants.RDBMS.FORCE_STORED_PROC, forceStoredProc);
+                        query.addProperty(DBConstants.RDBMS.FORCE_JDBC_BATCH_REQUESTS, forceJDBCBatchRequests);
+                        query.addProperty(DBConstants.RDBMS.FETCH_SIZE, fetchSize);
+                        query.addProperty(DBConstants.RDBMS.MAX_FIELD_SIZE, maxFieldSize);
+                        query.addProperty(DBConstants.RDBMS.MAX_ROWS, maxRows);
+                        query.setSql(sql);
+                    }
+                } else if (con.getDataSourceType().equals("RDF") || con.getDataSourceType().equals("SPARQL")) {
                     query.setSparql(sparql);
                 } else if (con.getDataSourceType().equals("WEB_CONFIG")) {
                     query.setScraperVariable(scraperVariable);
                 } else if (con.getDataSourceType().equals("Cassandra")) {
                     query.setExpression(cassandraExpression);
                 } else if (con.getDataSourceType().equals("CUSTOM")) {
-                	if (customDSType.equals(DBConstants.DataSourceTypes.CUSTOM_QUERY)) {
-                		query.setExpression(expression);
-                	} else {
-                		query.setSql(sql);
-                	}
+                    if (customDSType.equals(DBConstants.DataSourceTypes.CUSTOM_QUERY)) {
+                        query.setExpression(expression);
+                    } else {
+                        query.setSql(sql);
+                    }
                 }
             }
             if ((outputType.equals("xml")) && (!nameSpace.equals("") || !element.equals("") || !rowName.equals(""))) {
@@ -497,17 +495,17 @@
                     result.setXsltPath(xsltPath);
                 }
                 query.setResult(result);
-            } else if ((outputType.equals("rdf")) && (!rdfNameSpace.equals("") || !rdfBaseURI.equals("") )) {
-            	 result = new Result();
-            	 result.setNamespace(rdfNameSpace);
-                 result.setOutputType(outputType);
-                 result.setUseColumnNumbers(useColumnNumbers);
-                 result.setEscapeNonPrintableChar(escapeNonPrintableChar);
-                 result.setRdfBaseURI(rdfBaseURI);
-                 if (rdfXsltPath != null && rdfXsltPath.trim().length() > 0) {
-                     result.setXsltPath(rdfXsltPath);
-                 }
-                 query.setResult(result);
+            } else if ((outputType.equals("rdf")) && (!rdfNameSpace.equals("") || !rdfBaseURI.equals(""))) {
+                result = new Result();
+                result.setNamespace(rdfNameSpace);
+                result.setOutputType(outputType);
+                result.setUseColumnNumbers(useColumnNumbers);
+                result.setEscapeNonPrintableChar(escapeNonPrintableChar);
+                result.setRdfBaseURI(rdfBaseURI);
+                if (rdfXsltPath != null && rdfXsltPath.trim().length() > 0) {
+                    result.setXsltPath(rdfXsltPath);
+                }
+                query.setResult(result);
             } else if (outputType.equals("json")) {
                 result = new Result();
                 result.setNamespace(nameSpace);
@@ -522,37 +520,37 @@
             }
             dataService.addQuery(query);
             if (flag.equals("save")) {
-            	query.setStatus("add");
+                query.setStatus("add");
             }
         }
-    } 
+    }
     /* check return row id change - GeneratedKeys */
     if (setReturnGeneratedKeys != null) {
-    	boolean hasReturnRowProperty = false;
-    	String eleName ="";
+        boolean hasReturnRowProperty = false;
+        String eleName = "";
         if (setReturnGeneratedKeys.equals("true")) {
-           if(dataService.getQuery(queryId) != null) {
-              Query returnRowQuery = dataService.getQuery(queryId);
-              Result resultId = returnRowQuery.getResult();
-              if (returnGeneratedKeys.equals("true") && (!hasReturnRowProperty)) {
-                  returnRowQuery.setReturnGeneratedKeys(true);
-                  if (resultId == null || resultId.getElements().size() == 0) {
-                      resultId = new Result();
-                      resultId.setResultWrapper("GeneratedKeys");
-                      resultId.setRowName("Entry");
-                      resultId.setUseColumnNumbers("true");
-                      resultId.setEscapeNonPrintableChar(escapeNonPrintableChar);
-                      returnRowQuery.setResult(resultId);
-                  }
-                  Element newElement = new Element();
-                  newElement.setDataSourceType("column");
-                  newElement.setName("ID");
-                  newElement.setDataSourceValue("1");
-                  newElement.setxsdType("integer");
-                  resultId.addElement(newElement);
-              }
-           }   
-    	} else if (setReturnGeneratedKeys.equals("false")) {
+            if (dataService.getQuery(queryId) != null) {
+                Query returnRowQuery = dataService.getQuery(queryId);
+                Result resultId = returnRowQuery.getResult();
+                if (returnGeneratedKeys.equals("true") && (!hasReturnRowProperty)) {
+                    returnRowQuery.setReturnGeneratedKeys(true);
+                    if (resultId == null || resultId.getElements().size() == 0) {
+                        resultId = new Result();
+                        resultId.setResultWrapper("GeneratedKeys");
+                        resultId.setRowName("Entry");
+                        resultId.setUseColumnNumbers("true");
+                        resultId.setEscapeNonPrintableChar(escapeNonPrintableChar);
+                        returnRowQuery.setResult(resultId);
+                    }
+                    Element newElement = new Element();
+                    newElement.setDataSourceType("column");
+                    newElement.setName("ID");
+                    newElement.setDataSourceValue("1");
+                    newElement.setxsdType("integer");
+                    resultId.addElement(newElement);
+                }
+            }
+        } else if (setReturnGeneratedKeys.equals("false")) {
             if (dataService.getQuery(queryId) != null) {
                 Query returnRowQuery = dataService.getQuery(queryId);
                 Result resultId = returnRowQuery.getResult();
@@ -579,26 +577,26 @@
         boolean hasReturnRowProperty = false;
         String eleName = "";
         if (("true").equals(setReturnUpdatedRowCount)) {
-           if(dataService.getQuery(queryId) != null) {
-              Query returnRowQuery = dataService.getQuery(queryId);
-              Result resultRowCount = returnRowQuery.getResult();
-              if (("true").equals(returnUpdatedRowCount) && (!hasReturnRowProperty)) {
-                  returnRowQuery.setReturnUpdatedRowCount(true);
-                  if (null == resultRowCount || resultRowCount.getElements().size() == 0) {
-                      resultRowCount = new Result();
-                      resultRowCount.setResultWrapper("UpdatedRowCount");
-                      resultRowCount.setUseColumnNumbers("true");
-                      resultRowCount.setEscapeNonPrintableChar(escapeNonPrintableChar);
-                      returnRowQuery.setResult(resultRowCount);
-                  }
-                  Element newElement = new Element();
-                  newElement.setDataSourceType("column");
-                  newElement.setName("Value");
-                  newElement.setDataSourceValue("1");
-                  newElement.setxsdType("integer");
-                  resultRowCount.addElement(newElement);
-              }
-           }
+            if (dataService.getQuery(queryId) != null) {
+                Query returnRowQuery = dataService.getQuery(queryId);
+                Result resultRowCount = returnRowQuery.getResult();
+                if (("true").equals(returnUpdatedRowCount) && (!hasReturnRowProperty)) {
+                    returnRowQuery.setReturnUpdatedRowCount(true);
+                    if (null == resultRowCount || resultRowCount.getElements().size() == 0) {
+                        resultRowCount = new Result();
+                        resultRowCount.setResultWrapper("UpdatedRowCount");
+                        resultRowCount.setUseColumnNumbers("true");
+                        resultRowCount.setEscapeNonPrintableChar(escapeNonPrintableChar);
+                        returnRowQuery.setResult(resultRowCount);
+                    }
+                    Element newElement = new Element();
+                    newElement.setDataSourceType("column");
+                    newElement.setName("Value");
+                    newElement.setDataSourceValue("1");
+                    newElement.setxsdType("integer");
+                    resultRowCount.addElement(newElement);
+                }
+            }
         } else if (("false").equals(setReturnUpdatedRowCount)) {
             if (dataService.getQuery(queryId) != null) {
                 Query returnRowQuery = dataService.getQuery(queryId);

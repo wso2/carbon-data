@@ -88,7 +88,7 @@
                     <%--<input class="button" type="button" value="Cancel"--%>
                     <%--onclick="location.href='operations.jsp'"/>--%>
                     <input class="button" type="submit" value="Add"
-               onclick="document.dataForm.action = 'operationParamsProcessor.jsp?flag=add&operationName=<%=operationName%>&action=<%=action%>&editParamName=<%=editParamName%>'"/>
+               onclick="document.dataForm.action = 'operationParamsProcessor.jsp?flag=add&operationName=<%=operationName%>&action=<%=action%>&editParamName=<%=editParamName%>&editparam=<%=editparam%>'"/>
                		<input class="button" type="button" value="Cancel"
                            onclick="location.href='addOperation.jsp?action=edit&operationName=<%=operationName%>&operationDesc=<%=operationsDesc%>&disableStreaming=<%=disableStreaming%>'"/>
                 </td>

@@ -25,6 +25,7 @@
     String paramName = request.getParameter("paramNameId");
     String operationParamName = request.getParameter("operationParamId");
     String editParamName = request.getParameter("editParamName");
+    String editParam = request.getParameter("editparam");
     String flag = request.getParameter("flag");
     String operationName = request.getParameter("operationName");
     String action = request.getParameter("action");
@@ -72,7 +73,7 @@
 </form>
 <script type="text/javascript">
      if(document.getElementById('flag').value == 'add'){
-        location.href= "addOperation.jsp?operationName=<%=operationName%>&action=<%=action%>";
+        location.href= "addOperation.jsp?operationName=<%=operationName%>&action=<%=action%>&editparam=<%=editParam%>";
      } else {
         location.href = "operations.jsp";
      }

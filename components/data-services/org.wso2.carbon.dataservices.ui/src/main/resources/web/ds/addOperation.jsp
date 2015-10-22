@@ -92,6 +92,7 @@
     String flag = request.getParameter("flag");
     String param = request.getParameter("param");
     String action = request.getParameter("action");
+    String editParam = request.getParameter("editparam");
     Operation operation = null;
     if (operationName != null && operationName.trim().length() > 0) {
         operation = dataService.getOperation(operationName);
@@ -126,7 +127,12 @@
     serviceName = dataService.getName();
     
     //Set Display Parameters
-    if (selectedQueryId != null && selectedQueryId.trim().length() > 0) {
+    if (editParam != null && editParam.equals("editparam")) {
+        CallQuery callQuery = operation.getCallQuery();
+            if (callQuery != null) {
+                withParamsList = (ArrayList<WithParam>) callQuery.getWithParams();
+            }
+    } else if (selectedQueryId != null && selectedQueryId.trim().length() > 0) {
         Query query = dataService.getQuery(selectedQueryId);
         if (action.equals("")) {
             // when adding a new operation load all query params to operation params
@@ -148,10 +154,10 @@
         } else if (query != null && operation != null && action.equals("edit")) {
             // when editing a operation load only with-params in callQuery
             CallQuery callQuery = operation.getCallQuery();
-            if (!param.isEmpty() && !param.equals("qparam")) {
+//            if (!param.isEmpty() && !param.equals("qparam")) {
                 if (callQuery != null) {
                     withParamsList = (ArrayList<WithParam>) callQuery.getWithParams();
-                }
+//                }
             } else {
 
                 // change the selected query and click on load query params link
@@ -297,11 +303,11 @@
                                                 <td><%=(aWithParamsList.getParamValue())%>
                                                 </td>
                                                 <td>
-                                                    <% if (!action.equals("")) { %>
+                                                    <%--<% if (!action.equals("")) { %>--%>
                                                     <a class="icon-link"
                                                        style="background-image:url(../admin/images/edit.gif);"
                                                        href='addOperationParameter.jsp?editparam=editparam&operationName=<%=operationName%>&action=<%=action%>&queryId=<%=selectedQueryId%>&paramNameId=<%=aWithParamsList.getName()%>&operationParamId=<%=(aWithParamsList.getParamValue())%>'><fmt:message key="edit"/> </a>
-                                                     <% } %>
+                                                     <%--<% } %>--%>
                                                     <a class="icon-link"
                                                        style="background-image:url(../admin/images/delete.gif);"
                                                        href="#"

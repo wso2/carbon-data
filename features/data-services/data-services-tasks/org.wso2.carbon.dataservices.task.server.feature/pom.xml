@@ -74,15 +74,15 @@
                             <bundles>
                                 <bundleDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.task</bundleDef>
                             </bundles>
-                            <!--<importFeatures>-->
-                                <!--<importFeatureDef>org.wso2.carbon.commons:org.wso2.carbon.ntask.core.feature:${carbon-commons.version}</importFeatureDef>-->
-                                <!--<importFeatureDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.server.feature:${dataservices.version}</importFeatureDef>-->
-                            <!--</importFeatures>-->
+                            <importFeatures>
+                                <importFeatureDef>org.wso2.carbon.ntask.core:${carbon-commons.feature.imp.version}</importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.dataservices.server:${dataservices.version}</importFeatureDef>
+                            </importFeatures>
                             <!--do we need to include this as follows? - rajith -->
-                            <includedFeatures>
-                                <includedFeatureDef>org.wso2.carbon.commons:org.wso2.carbon.ntask.core.feature:${carbon-commons.version}</includedFeatureDef>
-                                <includedFeatureDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.server.feature:${dataservices.version}</includedFeatureDef>
-                            </includedFeatures>
+                            <!--<includedFeatures>-->
+                                <!--<includedFeatureDef>org.wso2.carbon.commons:org.wso2.carbon.ntask.core.feature:${carbon-commons.version}</includedFeatureDef>-->
+                                <!--<includedFeatureDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.server.feature:${dataservices.version}</includedFeatureDef>-->
+                            <!--</includedFeatures>-->
                         </configuration>
                     </execution>
                 </executions>

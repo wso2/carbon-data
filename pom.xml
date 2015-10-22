@@ -1217,7 +1217,7 @@
 
         <carbon.p2.plugin.version>1.5.5</carbon.p2.plugin.version>
 
-        <carbon-commons.version>4.4.7</carbon-commons.version>
+        <carbon-commons.version>4.4.8</carbon-commons.version>
         <carbon-commons.feature.imp.version>4.4.0</carbon-commons.feature.imp.version>
         <carbon-commons.imp.pkg.version>[4.4,4.6)</carbon-commons.imp.pkg.version>
         <carbon-commons.user.mgt.imp.pkg.version>0.0.0</carbon-commons.user.mgt.imp.pkg.version> <!-- todo remove this and use identity.imp.pkg.version - rajith (temparory done)-->

@@ -657,7 +657,7 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
             }
             return connection;
         } catch (SQLException e) {
-            throw new DataServiceFault(e, "Error in opening DBMS connection.");
+            throw new DataServiceFault(e, FaultCodes.DATABASE_ERROR, "Error in opening DBMS connection.");
         }
     }
 

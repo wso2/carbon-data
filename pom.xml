@@ -1103,12 +1103,12 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <dataservices.version>4.3.3-SNAPSHOT</dataservices.version>
-        <dataservices.imp.pkg.version>[4.3,4.4)</dataservices.imp.pkg.version>
+        <dataservices.imp.pkg.version>[4.3.0,5.0.0)</dataservices.imp.pkg.version>
         <dataservices.package.export.version>4.3.1</dataservices.package.export.version>
 
         <carbon.kernel.version>4.4.2</carbon.kernel.version>
         <carbon.kernel.feature.imp.version>4.4.0</carbon.kernel.feature.imp.version>
-        <carbon.kernel.imp.pkg.version>[4.4,4.5)</carbon.kernel.imp.pkg.version>
+        <carbon.kernel.imp.pkg.version>[4.4.0,5.0.0)</carbon.kernel.imp.pkg.version>
 
         <carbon.registry.imp.pkg.version>0.0.0</carbon.registry.imp.pkg.version> <!-- todo remove this and use {carbon.kernel.imp.pkg.version} after registry bundles are corrected to export correct versions-->
         <carbon.base.imp.pkg.version>0.0.0</carbon.base.imp.pkg.version> <!-- todo remove this and use {carbon.kernel.imp.pkg.version} after carbon base bundles are corrected to export correct versions-->
@@ -1124,7 +1124,7 @@
 
 
         <javax.servlet.version>3.0.0.v201112011016</javax.servlet.version>
-        <javax.servlet.imp.pkg.version>[2.6, 3)</javax.servlet.imp.pkg.version>
+        <javax.servlet.imp.pkg.version>[2.6,3)</javax.servlet.imp.pkg.version>
 
         <!--<opencsv.version>1.8</opencsv.version>--> <!--todo test and remove later - rajith-->
         <opencsv.orbit.version>1.8.wso2v1</opencsv.orbit.version>
@@ -1135,7 +1135,7 @@
 
 
         <olingo.orbit.version>4.0.0.wso2v3</olingo.orbit.version>
-        <olingo.orbit.imp.pkg.version>[4.0, 4.1)</olingo.orbit.imp.pkg.version>
+        <olingo.orbit.imp.pkg.version>[4.0,4.1)</olingo.orbit.imp.pkg.version>
 
         <commons.lang3.version>3.4.0.wso2v1</commons.lang3.version>
 
@@ -1143,10 +1143,10 @@
         <jena-arq.orbit.imp.pkg.version>0.0.0</jena-arq.orbit.imp.pkg.version> <!--todo change this to appropriate version range ([1.0.0.wso2v1,1.1.0)) after osgi bundle was corrected -->
 
         <gdata-core.orbit.version>1.47.0.wso2v1</gdata-core.orbit.version>
-        <gdata-core.orbit.imp.pkg.version>[1.47.0, 2.0.0)</gdata-core.orbit.imp.pkg.version>
+        <gdata-core.orbit.imp.pkg.version>[1.47.0,2.0.0)</gdata-core.orbit.imp.pkg.version>
 
         <gdata-spreadsheet.orbit.version>3.0.0.wso2v1</gdata-spreadsheet.orbit.version>
-        <gdata-spreadsheet.orbit.imp.pkg.version>[3.0.0, 3.2.0)</gdata-spreadsheet.orbit.imp.pkg.version>
+        <gdata-spreadsheet.orbit.imp.pkg.version>[3.0.0,3.2.0)</gdata-spreadsheet.orbit.imp.pkg.version>
 
         <google.guava.version>15.0</google.guava.version>
 
@@ -1173,7 +1173,7 @@
         <cassandra-jdbc.orbit.version>1.2.5.wso2v1</cassandra-jdbc.orbit.version>
 
         <mongo-java-driver.orbit.version>3.0.0.wso2v2</mongo-java-driver.orbit.version>
-        <mongo-java-driver.orbit.imp.pkg.version>[3.0.0,3.0.3)</mongo-java-driver.orbit.imp.pkg.version> <!--todo change this to appropriate version range ([2.11.4.wso2v1,2.12.0)) after osgi bundle is corrected - rajith-->
+        <mongo-java-driver.orbit.imp.pkg.version>[3.0.0,4.0.0)</mongo-java-driver.orbit.imp.pkg.version> <!--todo change this to appropriate version range ([2.11.4.wso2v1,2.12.0)) after osgi bundle is corrected - rajith-->
 
         <jongo.orbit.version>1.2.0.wso2v1</jongo.orbit.version>
         <jongo.orbit.imp.pkg.version>[1.2,1.3)</jongo.orbit.imp.pkg.version>
@@ -1219,11 +1219,11 @@
 
         <carbon-commons.version>4.4.8</carbon-commons.version>
         <carbon-commons.feature.imp.version>4.4.0</carbon-commons.feature.imp.version>
-        <carbon-commons.imp.pkg.version>[4.4,4.6)</carbon-commons.imp.pkg.version>
+        <carbon-commons.imp.pkg.version>[4.4.0,5.0.0)</carbon-commons.imp.pkg.version>
         <carbon-commons.user.mgt.imp.pkg.version>0.0.0</carbon-commons.user.mgt.imp.pkg.version> <!-- todo remove this and use identity.imp.pkg.version - rajith (temparory done)-->
 
         <carbon-identity.version>4.5.6</carbon-identity.version>
-        <carbon-identity.imp.pkg.version>[4.5,4.6)</carbon-identity.imp.pkg.version>
+        <carbon-identity.imp.pkg.version>[4.0.0,5.0.0)</carbon-identity.imp.pkg.version>
 
         <carbon-commons.trnsaction.mgt.imp.pkg.version>0.0.0</carbon-commons.trnsaction.mgt.imp.pkg.version> <!-- todo remove this and use {carbon-commons.imp.pkg.version} after org.wso2.carbon.transaction.manager (bundle - org.wso2.carbon.transaction.manager) is corrected to export correct versions-->
 
@@ -1252,20 +1252,20 @@
         <neethi.orbit.imp.pkg.version>[2.0.4.wso2v4,2.1.0)</neethi.orbit.imp.pkg.version>
 
         <jdbc-pool.orbit.version>7.0.34.wso2v2</jdbc-pool.orbit.version>
-        <jdbc-pool.orbit.imp.pkg.version>[1.7.0,1.8.0)</jdbc-pool.orbit.imp.pkg.version>
+        <jdbc-pool.orbit.imp.pkg.version>[1.7.0,2.0.0)</jdbc-pool.orbit.imp.pkg.version>
 
         <carbon.commons.logging.imp.pkg.version>0.0.0</carbon.commons.logging.imp.pkg.version> <!-- todo  org.apache.commons.logging package version changed to this since there are no version in current export, after it was fixed change accordingly (should be able to use carbon.kernel.imp.pkg.version). - rajith-->
 
         <google-api-client.orbit.version>1.20.0.wso2v1</google-api-client.orbit.version>
-        <google-api-client.orbit.imp.pkg.version>[1.20,1.21)</google-api-client.orbit.imp.pkg.version>
+        <google-api-client.orbit.imp.pkg.version>[1.20,2.0)</google-api-client.orbit.imp.pkg.version>
 
         <google-http-client.orbit.version>1.20.0.wso2v1</google-http-client.orbit.version>
-        <google-http-client.orbit.imp.pkg.version>[1.20,1.21)</google-http-client.orbit.imp.pkg.version>
+        <google-http-client.orbit.imp.pkg.version>[1.20,2.0)</google-http-client.orbit.imp.pkg.version>
 
         <google-oauth-client.orbit.version>1.20.0.wso2v1</google-oauth-client.orbit.version>
-        <google-oauth-client.orbit.imp.pkg.version>[1.20,1.21)</google-oauth-client.orbit.imp.pkg.version>
+        <google-oauth-client.orbit.imp.pkg.version>[1.20,2.0)</google-oauth-client.orbit.imp.pkg.version>
 
-        <commons-fileupload.orbit.imp.pkg.version>[1.2,1.3)</commons-fileupload.orbit.imp.pkg.version>
+        <commons-fileupload.orbit.imp.pkg.version>[1.2,2.0)</commons-fileupload.orbit.imp.pkg.version>
 
         <hazelcast.orbit.imp.pkg.version>0.0.0</hazelcast.orbit.imp.pkg.version> <!-- todo change this once moved to kernel 442 -->
         <!--<hazelcast.orbit.imp.pkg.version>[3.2,3.3)</hazelcast.orbit.imp.pkg.version>-->

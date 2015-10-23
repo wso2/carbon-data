@@ -292,6 +292,8 @@ public class SQLParserUtil {
                     inputMappings.add(paramCount, token);
                     isColon = false;
                     paramCount++;
+                } else {
+                    isColon = false;
                 }
             }
         }

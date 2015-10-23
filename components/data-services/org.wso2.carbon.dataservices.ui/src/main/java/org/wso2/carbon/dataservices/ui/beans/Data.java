@@ -394,6 +394,11 @@ public class Data extends DataServiceConfigurationElement{
 		if (id != null) {
 			config.setId(id.getAttributeValue());
 		}
+
+        OMAttribute enableOdataAttribute = configEle.getAttribute(new QName(DBSFields.ENABLE_ODATA));
+        if (enableOdataAttribute != null) {
+            config.setExposeAsOData(Boolean.parseBoolean(enableOdataAttribute.getAttributeValue()));
+        }
         
 		Iterator<OMElement> properties = configEle.getChildrenWithName(new QName("property"));
 		while (properties.hasNext()) {

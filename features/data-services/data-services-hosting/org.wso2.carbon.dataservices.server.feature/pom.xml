@@ -110,7 +110,7 @@
             <artifactId>arq</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.webharvest.wso2</groupId>
+            <groupId>org.wso2.orbit.org.webharvest</groupId>
             <artifactId>webharvest-core</artifactId>
         </dependency>
         <dependency>
@@ -290,7 +290,7 @@
                                 <bundleDef>org.apache.poi.wso2:poi-ooxml</bundleDef>
                                 <!--<bundleDef>org.apache.poi.wso2:ooxml-spreadsheet-schemas</bundleDef>-->
                                 <bundleDef>com.hp.hpl.jena.wso2:arq</bundleDef>
-                                <bundleDef>org.webharvest.wso2:webharvest-core</bundleDef>
+                                <bundleDef>org.wso2.orbit.org.webharvest:webharvest-core</bundleDef>
                                 <bundleDef>net.sf.saxon.wso2:saxon</bundleDef>
                                 <bundleDef>bsh.wso2:bsh</bundleDef>
                                 <bundleDef>org.htmlcleaner.wso2:htmlcleaner</bundleDef>

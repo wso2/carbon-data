@@ -129,7 +129,7 @@
             <artifactId>org.wso2.carbon.dataservices.sql.driver</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.webharvest.wso2</groupId>
+            <groupId>org.wso2.orbit.org.webharvest</groupId>
             <artifactId>webharvest-core</artifactId>
         </dependency>
         <dependency>
@@ -215,6 +215,10 @@
         <dependency>
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.json.wso2</groupId>
+            <artifactId>json</artifactId>
         </dependency>
     </dependencies>
 
@@ -324,7 +328,7 @@
                             org.wso2.carbon.dataservices.sql.driver.util;version="${dataservices.imp.pkg.version}",
                             org.wso2.carbon.dataservices.sql.driver.processor.reader;version="${dataservices.imp.pkg.version}",
                             org.wso2.carbon.dataservices.sql.driver.query;version="${dataservices.imp.pkg.version}",
-                            org.json;version="${webharvest-core.orbit.imp.pkg.version}",
+                            org.json;version="${json.orbit.imp.pkg.version}",
                             org.webharvest.definition;version="${webharvest-core.orbit.imp.pkg.version}",
                             org.webharvest.runtime;version="${webharvest-core.orbit.imp.pkg.version}",
                             org.webharvest.runtime.variables;version="${webharvest-core.orbit.imp.pkg.version}",

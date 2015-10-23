@@ -2140,9 +2140,12 @@ function reDirectToConsent() {
 
 function getData() {
     var data = {};
-    data["gspread_client_id"] = document.getElementById("gspread_client_id").value;
-    data["gspread_client_secret"] = document.getElementById("gspread_client_secret").value;
-    data["gspread_redirect_uris"] = document.getElementById("gspread_redirect_uris").value;
+    data["gspread_client_id"] = document.getElementById("gspread_client_id").value.trim();
+    data["gspread_client_secret"] = document.getElementById("gspread_client_secret").value.trim();
+    data["gspread_redirect_uris"] = document.getElementById("gspread_redirect_uris").value.trim();
+    document.getElementById("gspread_client_id").value = data["gspread_client_id"];
+    document.getElementById("gspread_client_secret").value = data["gspread_client_secret"];
+    document.getElementById("gspread_redirect_uris").value = data["gspread_redirect_uris"];
     return data;
 }
 

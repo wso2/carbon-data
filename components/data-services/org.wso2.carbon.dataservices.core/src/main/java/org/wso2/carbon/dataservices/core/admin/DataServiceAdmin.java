@@ -344,24 +344,29 @@ public class DataServiceAdmin extends AbstractAdmin {
                 log.error(message);
                 return message;
             }
+            HttpTransport httpTransport = new NetHttpTransport();
+            JacksonFactory jsonFactory = new JacksonFactory();
+            GoogleCredential credential = new GoogleCredential.Builder()
+                    .setClientSecrets(clientId, clientSecret)
+                    .setTransport(httpTransport)
+                    .setJsonFactory(jsonFactory)
+                    .build();
+            credential.setRefreshToken(refreshToken);
+            try {
+                credential.refreshToken();
+            } catch (IOException e) {
+                String message = "Google spreadsheet connection failed, Error refreshing the token ";
+                log.debug(message);
+                return message;
+            }
+            service.setOAuth2Credentials(credential);
         }
-
-        HttpTransport httpTransport = new NetHttpTransport();
-        JacksonFactory jsonFactory = new JacksonFactory();
-        GoogleCredential credential = new GoogleCredential.Builder()
-                .setClientSecrets(clientId, clientSecret)
-                .setTransport(httpTransport)
-                .setJsonFactory(jsonFactory)
-                .build();
-        credential.setRefreshToken(refreshToken);
 
         String worksheetFeedURL = GSpreadConfig.BASE_WORKSHEET_URL + key + "/" + visibility
                                   + "/basic";
         try {
             URL url = new URL(worksheetFeedURL);
             try {
-                credential.refreshToken();
-                service.setOAuth2Credentials(credential);
                 service.getFeed(url,  CellFeed.class);
                 String message = "Google spreadsheet connection is successfull ";
                 log.debug(message);

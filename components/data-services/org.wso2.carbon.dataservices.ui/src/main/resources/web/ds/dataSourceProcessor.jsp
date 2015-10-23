@@ -516,21 +516,22 @@
 						updateConfiguration(dsConfig, DBConstants.RDBMS.DRIVER_CLASSNAME, DBConstants.SQL_DRIVER_CLASS_NAME);
 //                        updateConfiguration(dsConfig, DBConstants.RDBMS.URL, gspreadQueryModeUrl);
                         if (gspreadVisibility.equals(DBConstants.GSpreadVisibility.PRIVATE)) {
-                            gspreadClientId = URLEncoder.encode(gspreadClientId,"UTF-8");
-                            gspreadClientSecret = URLEncoder.encode(gspreadClientSecret,"UTF-8");
-                            gspreadRefreshToken = URLEncoder.encode(gspreadRefreshToken,"UTF-8");
+                            gspreadClientId = URLEncoder.encode(gspreadClientId.trim(),"UTF-8");
+                            gspreadClientSecret = URLEncoder.encode(gspreadClientSecret.trim(),"UTF-8");
+                            gspreadRefreshToken = URLEncoder.encode(gspreadRefreshToken.trim(),"UTF-8");
                             gspreadQueryModeUrl = DBConstants.DSSQLDriverPrefixes.GSPRED_PREFIX + ":" +
                                     DBConstants.DSSQLDriverPrefixes.FILE_PATH + "=" + gspreadDatasource + ";" +
                                     DBConstants.GSpread.SHEET_NAME + "=" + gspreadSheetName +";visibility=" +
                                     gspreadVisibility + ";clientId=" + gspreadClientId +
                                     ";clientSecret=" + gspreadClientSecret +
                                     ";refreshToken=" + gspreadRefreshToken;
-//		                    updateConfiguration(dsConfig, DBConstants.RDBMS.USERNAME, gspreadUserName);todo
-//		                    updateConfiguration(dsConfig, DBConstants.RDBMS.PASSWORD, gspreadPassword);todo change this to be merge with url (clientId and secret)
 	                    } else {
                             gspreadQueryModeUrl = DBConstants.DSSQLDriverPrefixes.GSPRED_PREFIX + ":" +
                                     DBConstants.DSSQLDriverPrefixes.FILE_PATH + "=" + gspreadDatasource + ";" +
                                     DBConstants.GSpread.SHEET_NAME + "=" + gspreadSheetName +";visibility=" + gspreadVisibility;
+                            dsConfig.removeProperty(DBConstants.GSpread.CLIENT_ID);
+                            dsConfig.removeProperty(DBConstants.GSpread.CLIENT_SECRET);
+                            dsConfig.removeProperty(DBConstants.GSpread.REFRESH_TOKEN);
 	                    	dsConfig.removeProperty(DBConstants.RDBMS.USERNAME);
 	                    	dsConfig.removeProperty(DBConstants.RDBMS.PASSWORD);
 	                    }
@@ -541,18 +542,21 @@
                 		dsConfig.removeProperty(DBConstants.GSpread.USERNAME);
                 		dsConfig.removeProperty(DBConstants.GSpread.PASSWORD);
                 	} else {
-	                    updateConfiguration(dsConfig, DBConstants.GSpread.DATASOURCE, gspreadDatasource);
-	                    updateConfiguration(dsConfig, DBConstants.GSpread.VISIBILITY, gspreadVisibility);
-//	                    updateConfiguration(dsConfig, DBConstants.GSpread.USERNAME, gspreadUserName);
-//		                updateConfiguration(dsConfig, DBConstants.GSpread.PASSWORD, gspreadPassword);
-                        updateConfiguration(dsConfig, DBConstants.GSpread.CLIENT_ID, gspreadClientId);
-                        updateConfiguration(dsConfig, DBConstants.GSpread.CLIENT_SECRET, gspreadClientSecret);
-                        updateConfiguration(dsConfig, DBConstants.GSpread.REFRESH_TOKEN, gspreadRefreshToken);
-
-	                    dsConfig.removeProperty(DBConstants.RDBMS.DRIVER_CLASSNAME);
-                		dsConfig.removeProperty(DBConstants.RDBMS.URL);
-                		dsConfig.removeProperty(DBConstants.RDBMS.USERNAME);
-                		dsConfig.removeProperty(DBConstants.RDBMS.PASSWORD);
+                        updateConfiguration(dsConfig, DBConstants.GSpread.DATASOURCE, gspreadDatasource);
+                        updateConfiguration(dsConfig, DBConstants.GSpread.VISIBILITY, gspreadVisibility);
+                        if (gspreadVisibility.equals(DBConstants.GSpreadVisibility.PRIVATE)) {
+                            updateConfiguration(dsConfig, DBConstants.GSpread.CLIENT_ID, gspreadClientId.trim());
+                            updateConfiguration(dsConfig, DBConstants.GSpread.CLIENT_SECRET, gspreadClientSecret.trim());
+                            updateConfiguration(dsConfig, DBConstants.GSpread.REFRESH_TOKEN, gspreadRefreshToken.trim());
+                        } else {
+                            dsConfig.removeProperty(DBConstants.GSpread.CLIENT_ID);
+                            dsConfig.removeProperty(DBConstants.GSpread.CLIENT_SECRET);
+                            dsConfig.removeProperty(DBConstants.GSpread.REFRESH_TOKEN);
+                        }
+                        dsConfig.removeProperty(DBConstants.RDBMS.DRIVER_CLASSNAME);
+                        dsConfig.removeProperty(DBConstants.RDBMS.URL);
+                        dsConfig.removeProperty(DBConstants.RDBMS.USERNAME);
+                        dsConfig.removeProperty(DBConstants.RDBMS.PASSWORD);
                 	}
                 } else if (DBConstants.DataSourceTypes.CARBON.equals(datasourceType)) {
                     if (carbonDatasourceName == null || carbonDatasourceName.length() == 0) {

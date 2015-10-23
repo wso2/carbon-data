@@ -56,8 +56,8 @@ public class JWTAuthorizationProvider implements AuthorizationProvider {
     private static final String JWT_TOKEN_HEADER_NAME = "X-JWT-Assertion";
     private static final String UTF_8_ENCODING = "UTF-8";
     private String endUserClaim = null;
-    private static final String ENDUSER_CLAIM = "http://wso2.org/claims/enduser"; //need to make this configurable
-    private static final String ENDUSER_CLAIM_ATTRIBUTE = "claim"; //need to make this configurable
+    private static final String ENDUSER_CLAIM = "http://wso2.org/claims/enduser";
+    private static final String ENDUSER_CLAIM_PROPERTY_KEY = "claimUri";
     //This is the string constant that separates the claim from the value.
     private static final String CLAIM_VALUE_SEPARATOR = "\":\"";
     private static final String ESCAPED_DOUBLE_QUOTATION = "\"";
@@ -93,7 +93,7 @@ public class JWTAuthorizationProvider implements AuthorizationProvider {
 
     @Override
     public void init(Map<String, String> authorizationProps) throws DataServiceFault {
-        endUserClaim = authorizationProps.get(ENDUSER_CLAIM_ATTRIBUTE);
+        endUserClaim = authorizationProps.get(ENDUSER_CLAIM_PROPERTY_KEY);
     }
 
     /**

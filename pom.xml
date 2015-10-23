@@ -398,7 +398,7 @@
                 <version>${dataservices.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.webharvest.wso2</groupId>
+                <groupId>org.wso2.orbit.org.webharvest</groupId>
                 <artifactId>webharvest-core</artifactId>
                 <version>${webharvest-core.orbit.version}</version>
                 <exclusions>
@@ -865,6 +865,11 @@
                 <version>2.5</version>
                 <scope>provided</scope>
             </dependency>
+            <dependency>
+                <groupId>org.json.wso2</groupId>
+                <artifactId>json</artifactId>
+                <version>${json.orbit.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -1161,8 +1166,8 @@
 
         <!--<ooxml-spreadsheet-schemas.orbit.version>1.1.wso2v1</ooxml-spreadsheet-schemas.orbit.version>-->
 
-        <webharvest-core.orbit.version>2.0.0.wso2v2</webharvest-core.orbit.version>
-        <webharvest-core.orbit.imp.pkg.version>0.0.0</webharvest-core.orbit.imp.pkg.version> <!--todo change this to appropriate version range ([2.0.0.wso2v2,2.1.0)) after osgi bundle is corrected - rajith-->
+        <webharvest-core.orbit.version>2.0.0.wso2v3</webharvest-core.orbit.version>
+        <webharvest-core.orbit.imp.pkg.version>[2.0.0,3.0.0)</webharvest-core.orbit.imp.pkg.version> <!--todo change this to appropriate version range ([2.0.0.wso2v2,2.1.0)) after osgi bundle is corrected - rajith-->
 
         <saxon.orbit.version>8.9.0.wso2v2</saxon.orbit.version>
         <commons-httpclient.orbit.version>3.1.0.wso2v2</commons-httpclient.orbit.version>
@@ -1221,6 +1226,9 @@
         <carbon-commons.feature.imp.version>4.4.0</carbon-commons.feature.imp.version>
         <carbon-commons.imp.pkg.version>[4.4.0,5.0.0)</carbon-commons.imp.pkg.version>
         <carbon-commons.user.mgt.imp.pkg.version>0.0.0</carbon-commons.user.mgt.imp.pkg.version> <!-- todo remove this and use identity.imp.pkg.version - rajith (temparory done)-->
+
+        <json.orbit.version>1.0.0.wso2v1</json.orbit.version>
+        <json.orbit.imp.pkg.version>0.0.0</json.orbit.imp.pkg.version> <!-- This comes from carbon-multitenancy, tenant.common.server feature -->
 
         <carbon-identity.version>4.5.6</carbon-identity.version>
         <carbon-identity.imp.pkg.version>[4.0.0,5.0.0)</carbon-identity.imp.pkg.version>

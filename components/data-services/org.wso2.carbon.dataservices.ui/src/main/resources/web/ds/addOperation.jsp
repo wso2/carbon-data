@@ -304,9 +304,12 @@
                                                 <td><%=(aWithParamsList.getParamValue())%>
                                                 </td>
                                                 <td>
+                                                    <% if (!action.equals("")) { %>
                                                     <a class="icon-link"
                                                        style="background-image:url(../admin/images/edit.gif);"
-                                                       href='addOperationParameter.jsp?editparam=editparam&operationName=<%=operationName%>&queryId=<%=selectedQueryId%>&paramNameId=<%=aWithParamsList.getName()%>&operationParamId=<%=(aWithParamsList.getParamValue())%>'><fmt:message key="edit"/> </a>
+                                                       href='addOperationParameter.jsp?editparam=editparam&operationName=<%=operationName%>&action=<%=action%>&queryId=<%=selectedQueryId%>&paramNameId=<%=aWithParamsList.getName()%>&operationParamId=<%=(aWithParamsList.getParamValue())%>'>
+                                                       <fmt:message key="edit"/> </a>
+                                                    <% } %>
                                                     <a class="icon-link"
                                                        style="background-image:url(../admin/images/delete.gif);"
                                                        href="#"

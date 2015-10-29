@@ -315,17 +315,18 @@ public class CassandraQuery extends ExpressionQuery {
             } else if (columnType.getName().equals(DataType.Name.FLOAT)) {
                 paramValue = new ParamValue(row.isNull(i) ? null : Float.toString(row.getFloat(i)));
             } else if (columnType.getName().equals(DataType.Name.INET)) {
-                paramValue = new ParamValue(row.getInet(i).toString());
+                paramValue = new ParamValue(row.isNull(i) ? null :row.getInet(i).toString());
             } else if (columnType.getName().equals(DataType.Name.INT)) {
-                paramValue = new ParamValue(Integer.toString(row.getInt(i)));
+                paramValue = new ParamValue(row.isNull(i) ? null : Integer.toString(row.getInt(i)));
             } else if (columnType.getName().equals(DataType.Name.LIST)) {
-                paramValue = new ParamValue(Arrays.toString(row.getList(i, Object.class).toArray()));
+                paramValue = new ParamValue(row.isNull(i) ? null : Arrays.toString(row.getList(i, Object.class)
+                                                                                      .toArray()));
             } else if (columnType.getName().equals(DataType.Name.MAP)) {
                 paramValue = new ParamValue(row.getMap(i, Object.class, Object.class).toString());
             } else if (columnType.getName().equals(DataType.Name.SET)) {
                 paramValue = new ParamValue(row.getSet(i, Object.class).toString());
             } else if (columnType.getName().equals(DataType.Name.TIMESTAMP)) {
-                paramValue = new ParamValue(ConverterUtil.convertToString(row.getDate(i)));
+                paramValue = new ParamValue(row.isNull(i) ? null : ConverterUtil.convertToString(row.getDate(i)));
             } else if (columnType.getName().equals(DataType.Name.TIMEUUID)) {
                 paramValue = new ParamValue(row.getUUID(i).toString());
             } else if (columnType.getName().equals(DataType.Name.UUID)) {

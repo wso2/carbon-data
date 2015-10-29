@@ -550,7 +550,7 @@ public class ODataAdapter implements ServiceHandler {
     @Override
     public void updateProperty(DataRequest request, final Property property, boolean merge, String entityETag,
                                PropertyResponse response) throws ODataApplicationException, ContentNegotiatorException {
-        if (property.isPrimitive()) {
+        if (!property.isComplex()) {
             EdmEntityType entityType = request.getEntitySet().getEntityType();
             String baseUrl = request.getODataRequest().getRawBaseUri();
             List<UriParameter> keys = request.getKeyPredicates();

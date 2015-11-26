@@ -25,6 +25,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.wso2.carbon.dataservices.common.DBConstants;
 import org.wso2.carbon.dataservices.common.DBConstants.*;
+import org.wso2.carbon.dataservices.common.RDBMSUtils;
 import org.wso2.carbon.dataservices.core.DBUtils;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
 import org.wso2.carbon.dataservices.core.description.config.SQLCarbonDataSourceConfig;
@@ -220,7 +221,7 @@ public class QueryFactory {
 		OMElement propsEl = queryEl.getFirstChildWithName(new QName(DBSFields.PROPERTIES));
 		/* extract advanced query properties */
 		if (propsEl != null) {
-			advancedProperties = DBUtils.extractProperties(propsEl);
+			advancedProperties = RDBMSUtils.convertConfigPropsFromV2toV3(DBUtils.extractProperties(propsEl));
 		} else {
 			advancedProperties = new HashMap<String, String>();
 		}

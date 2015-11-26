@@ -28,7 +28,6 @@ import org.wso2.carbon.dataservices.common.DBConstants.AutoCommit;
 import org.wso2.carbon.dataservices.common.DBConstants.FaultCodes;
 import org.wso2.carbon.dataservices.common.DBConstants.QueryTypes;
 import org.wso2.carbon.dataservices.common.DBConstants.RDBMS;
-import org.wso2.carbon.dataservices.common.RDBMSUtils;
 import org.wso2.carbon.dataservices.core.DBUtils;
 import org.wso2.carbon.dataservices.core.DataServiceConnection;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
@@ -74,11 +73,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
 
 /**
  * This class represents an SQL query in a data service.
@@ -395,12 +390,7 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
             return;
         }
         /* process fetch direction */
-        String fetchDirectionProp;
-        if (props.containsKey(DBConstants.RDBMS_OLD.FETCH_DIRECTION)) {
-            fetchDirectionProp = props.get(DBConstants.RDBMS_OLD.FETCH_DIRECTION);
-        } else {
-            fetchDirectionProp = props.get(RDBMS.FETCH_DIRECTION);
-        }
+        String fetchDirectionProp = props.get(RDBMS.FETCH_DIRECTION);
         if (!DBUtils.isEmptyString(fetchDirectionProp)) {
             fetchDirectionProp = fetchDirectionProp.trim();
             if (AdvancedSQLProps.FETCH_DIRECTION_FORWARD.equals(fetchDirectionProp)) {
@@ -417,12 +407,7 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
             this.hasFetchDirection = false;
         }
         /* process fetch size */
-        String fetchSizeProp;
-        if (props.containsKey(DBConstants.RDBMS_OLD.FETCH_SIZE)) {
-            fetchSizeProp = props.get(DBConstants.RDBMS_OLD.FETCH_SIZE);
-        } else {
-            fetchSizeProp = props.get(RDBMS.FETCH_SIZE);
-        }
+        String fetchSizeProp = props.get(RDBMS.FETCH_SIZE);
         if (!DBUtils.isEmptyString(fetchSizeProp)) {
             fetchSizeProp = fetchSizeProp.trim();
             try {
@@ -436,12 +421,7 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
             this.hasFetchSize = false;
         }
         /* process max field size */
-        String maxFieldSizeProp;
-        if (props.containsKey(DBConstants.RDBMS_OLD.MAX_FIELD_SIZE)) {
-            maxFieldSizeProp = props.get(DBConstants.RDBMS_OLD.MAX_FIELD_SIZE);
-        } else {
-            maxFieldSizeProp = props.get(RDBMS.MAX_FIELD_SIZE);
-        }
+        String maxFieldSizeProp = props.get(RDBMS.MAX_FIELD_SIZE);
         if (!DBUtils.isEmptyString(maxFieldSizeProp)) {
             maxFieldSizeProp = maxFieldSizeProp.trim();
             try {
@@ -459,12 +439,7 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
             this.hasMaxFieldSize = false;
         }
         /* process max rows */
-        String maxRowsProp;
-        if (props.containsKey(DBConstants.RDBMS_OLD.MAX_ROWS)) {
-            maxRowsProp = props.get(DBConstants.RDBMS_OLD.MAX_ROWS);
-        } else {
-            maxRowsProp = props.get(RDBMS.MAX_ROWS);
-        }
+        String maxRowsProp = props.get(RDBMS.MAX_ROWS);
         if (!DBUtils.isEmptyString(maxRowsProp)) {
             maxRowsProp = maxRowsProp.trim();
             try {
@@ -482,12 +457,7 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
             this.hasMaxRows = false;
         }
         /* process query timeout */
-        String queryTimeoutProp;
-        if (props.containsKey(DBConstants.RDBMS_OLD.QUERY_TIMEOUT)) {
-            queryTimeoutProp = props.get(DBConstants.RDBMS_OLD.QUERY_TIMEOUT);
-        } else {
-            queryTimeoutProp = props.get(RDBMS.QUERY_TIMEOUT);
-        }
+        String queryTimeoutProp = props.get(RDBMS.QUERY_TIMEOUT);
         if (!DBUtils.isEmptyString(queryTimeoutProp)) {
             queryTimeoutProp = queryTimeoutProp.trim();
             try {
@@ -506,12 +476,7 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
         }
         /* auto commit */
         /* first check local auto commit setting */
-        String autoCommitProp;
-        if (props.containsKey(DBConstants.RDBMS_OLD.AUTO_COMMIT)) {
-            autoCommitProp = props.get(DBConstants.RDBMS_OLD.AUTO_COMMIT);
-        } else {
-            autoCommitProp = props.get(RDBMS.AUTO_COMMIT);
-        }
+        String autoCommitProp = props.get(RDBMS.AUTO_COMMIT);
         if (!DBUtils.isEmptyString(autoCommitProp)) {
             autoCommitProp = autoCommitProp.trim();
             try {
@@ -530,22 +495,12 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
             this.autoCommit = this.getConfig().getAutoCommit();
         }
         /* force stored procedure */
-        String forceStoredProc;
-        if (props.containsKey(DBConstants.RDBMS_OLD.FORCE_STORED_PROC)) {
-            forceStoredProc = props.get(DBConstants.RDBMS_OLD.FORCE_STORED_PROC);
-        } else {
-            forceStoredProc = props.get(RDBMS.FORCE_STORED_PROC);
-        }
+        String forceStoredProc = props.get(RDBMS.FORCE_STORED_PROC);
         if (!DBUtils.isEmptyString(forceStoredProc)) {
             this.forceStoredProc = Boolean.parseBoolean(forceStoredProc);
         }
         /* force JDBC batch requests */
-        String forceJDBCBatchRequests;
-        if (props.containsKey(DBConstants.RDBMS_OLD.FORCE_JDBC_BATCH_REQUESTS)) {
-            forceJDBCBatchRequests = props.get(DBConstants.RDBMS_OLD.FORCE_JDBC_BATCH_REQUESTS);
-        } else {
-            forceJDBCBatchRequests = props.get(RDBMS.FORCE_JDBC_BATCH_REQUESTS);
-        }
+        String forceJDBCBatchRequests = props.get(RDBMS.FORCE_JDBC_BATCH_REQUESTS);
         if (!DBUtils.isEmptyString(forceJDBCBatchRequests)) {
             this.forceJDBCBatchReqs = Boolean.parseBoolean(forceJDBCBatchRequests);
         }

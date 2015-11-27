@@ -756,8 +756,7 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
                 rs = stmt.executeQuery();
             }
             return new QueryResultInfo(stmt, rs);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
+        } catch (Throwable e) {
             isError = true;
             throw new DataServiceFault(e, FaultCodes.DATABASE_ERROR,
                     "Error in 'SQLQuery.processPreNormalQuery': " + e.getMessage());
@@ -801,7 +800,7 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
                     this.writeResultEntry(xmlWriter, dataEntry, params, queryLevel);
                 }
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error(e.getMessage(), e);
             isError = true;
             throw new DataServiceFault(e, FaultCodes.DATABASE_ERROR,

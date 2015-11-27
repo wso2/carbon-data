@@ -73,7 +73,7 @@ public class DataServiceFault extends Exception {
      */
     private Map<String, Object> propertyMap = new HashMap<String, Object>();
 	
-	public DataServiceFault(Exception nestedException, String code, String dsFaultMessage) {
+	public DataServiceFault(Throwable nestedException, String code, String dsFaultMessage) {
 		super(nestedException);
 		this.code = code;
 		this.dsFaultMessage = dsFaultMessage;
@@ -142,11 +142,11 @@ public class DataServiceFault extends Exception {
 		}
 	}
 	
-	public DataServiceFault(Exception nestedException) {
+	public DataServiceFault(Throwable nestedException) {
 		this(nestedException, null, null);
 	}
 	
-	public DataServiceFault(Exception nestedException, String dsFaultMessage) {
+	public DataServiceFault(Throwable nestedException, String dsFaultMessage) {
 		this(nestedException, null, dsFaultMessage);
 	}
 	

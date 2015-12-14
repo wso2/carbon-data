@@ -235,7 +235,9 @@ function getOperations(obj) {
             dataType:"html",
             async:false,
             success:function(data) {
-                var operations = data.split(",");
+                //added to skip processing copyright notice
+                var copyrightSkippedData = data.replace(/<!--[\s\S]*?-->/g,'');
+                var operations = copyrightSkippedData.split(",");
                 var operationList = $('#operationList');
                 $('>option', operationList).remove();
                 operationList.append('<option value="">------------------------SELECT----------------------------</option>');

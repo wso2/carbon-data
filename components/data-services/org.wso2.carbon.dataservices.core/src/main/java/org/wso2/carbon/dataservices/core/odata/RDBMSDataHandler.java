@@ -981,7 +981,8 @@ public class RDBMSDataHandler implements ODataDataHandler {
                 if (null != columnDefaultVal) {
                     column.setDefaultValue(columnDefaultVal);
                 }
-                if (Types.DOUBLE == columnType || Types.FLOAT == columnType || Types.DECIMAL == columnType) {
+                if (Types.DOUBLE == columnType || Types.FLOAT == columnType || Types.DECIMAL == columnType ||
+                    Types.NUMERIC == columnType || Types.REAL == columnType) {
                     column.setPrecision(precision);
                     if (scale == 0) {
                         //setting default scale as 5

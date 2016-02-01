@@ -4,6 +4,7 @@
 <%@ page import="org.wso2.carbon.CarbonConstants" %>
 <%@ page import="org.wso2.carbon.ui.CarbonUIUtil" %>
 <%@ page import="org.wso2.carbon.utils.ServerConstants" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <!--
 ~ Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 ~
@@ -111,10 +112,10 @@ This is the UI component of the database console.
 
     <div id="workArea" style="padding:0">
         <form action="#">
-            <input type="hidden" id="url" name="url" value="<%=url%>"/>
-            <input type="hidden" id="user" name="user" value="<%=userName%>"/>
-            <input type="hidden" id="password" name="password" value="<%=password%>"/>
-            <input type="hidden" id="driver" name="driver" value="<%=driver%>"/>
+            <input type="hidden" id="url" name="url" value="<%=Encode.forHtmlContent(url)%>"/>
+            <input type="hidden" id="user" name="user" value="<%=Encode.forHtmlContent(userName)%>"/>
+            <input type="hidden" id="password" name="password" value="<%=Encode.forHtmlContent(password)%>"/>
+            <input type="hidden" id="driver" name="driver" value="<%=Encode.forHtmlContent(driver)%>"/>
             <input type="hidden" id="flag" name="flag" value=0>
             <iframe onload='javascript: onPageLoad();' id="page1" name="inlineframe"
                     src="../../dbconsole/login.jsp" frameborder="0" scrolling="no" width="1063"

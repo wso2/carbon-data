@@ -295,9 +295,10 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
         List<Connection> connections = new ArrayList<Connection>();
         if (this.getConfig().hasJDBCBatchUpdateSupport()) {
             if (this.getQueryType() == SQLQuery.DS_QUERY_TYPE_STORED_PROC) {
+                ResultSet rs = null;
                 try {
                     resultMap = this.getStoredProcFuncProps(this.extractStoredProcName(true));
-                    ResultSet rs = (ResultSet) resultMap[1];
+                    rs = (ResultSet) resultMap[1];
                     connections.add((Connection) resultMap[0]);
                     if (!rs.next()) {
                         resultMap = this.getStoredProcFuncProps(this.extractStoredProcName(false));
@@ -334,11 +335,14 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
                 } catch (Throwable e) {
                     throw new DataServiceFault("Error in retrieving database metadata.");
                 } finally {
-                    for (Connection aCon : connections) {
-                        try {
-                            aCon.close();
-                        } catch (SQLException ignore) {
+                    try {
+                        if (rs != null) {
+                            rs.close();
                         }
+                        for (Connection aCon : connections) {
+                            aCon.close();
+                        }
+                    } catch (SQLException ignore) {
                     }
                 }
             } else {
@@ -696,11 +700,18 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
 
     private void writeOutGeneratedKeys(Statement stmt, XMLStreamWriter xmlWriter,
             InternalParamCollection params, int queryLevel) throws DataServiceFault, SQLException {
-        ResultSet krs = stmt.getGeneratedKeys();
+        ResultSet krs = null;
         DataEntry dataEntry;
-        while (krs.next()) {
-            dataEntry = this.getDataEntryFromRS(new ResultSetWrapper(krs));
-            this.writeResultEntry(xmlWriter, dataEntry, params, queryLevel);
+        try {
+            krs = stmt.getGeneratedKeys();
+            while (krs.next()) {
+                dataEntry = this.getDataEntryFromRS(new ResultSetWrapper(krs));
+                this.writeResultEntry(xmlWriter, dataEntry, params, queryLevel);
+            }
+        } finally {
+            if (krs != null) {
+                krs.close();
+            }
         }
     }
 

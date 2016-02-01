@@ -363,11 +363,12 @@ public class RDBMSDataHandler implements ODataDataHandler {
     public List<ODataEntry> readTable(String tableName) throws ODataServiceFault {
         ResultSet resultSet = null;
         Connection connection = null;
-        Statement statement = null;
+        PreparedStatement statement = null;
         try {
             connection = initializeConnection();
-            statement = connection.createStatement();
-            resultSet = statement.executeQuery("select * from " + tableName);
+            String query = "select * from " + tableName;
+            statement = connection.prepareStatement(query);
+            resultSet = statement.executeQuery();
             return createDataEntryCollectionFromRS(tableName, resultSet);
         } catch (SQLException e) {
             throw new ODataServiceFault(e, "Error occurred while reading entities from " + tableName + " table. :" +

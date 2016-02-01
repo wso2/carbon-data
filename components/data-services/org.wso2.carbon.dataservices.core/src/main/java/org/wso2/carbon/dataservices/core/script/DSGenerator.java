@@ -381,13 +381,19 @@ public class DSGenerator {
 
     public static List<String> getTableNamesList(DatabaseMetaData mObject, String dbName,
                                                  String schema) throws SQLException {
-        List<String> tableList = new ArrayList<String>();
-        ResultSet tableNamesList = mObject.getTables(dbName, schema, null, null);
-        while (tableNamesList.next()) {
-            tableList.add(tableNamesList.getString(DBConstants.DataServiceGenerator.TABLE_NAME));
+        ResultSet tableNamesList = null;
+        try {
+            List<String> tableList = new ArrayList<String>();
+            tableNamesList = mObject.getTables(dbName, schema, null, null);
+            while (tableNamesList.next()) {
+                tableList.add(tableNamesList.getString(DBConstants.DataServiceGenerator.TABLE_NAME));
+            }
+            return tableList;
+        } finally {
+            if(tableNamesList != null) {
+                tableNamesList.close();
+            }
         }
-
-        return tableList;
     }
 
 	public static String[] getSchemas(String datasourceId) throws Exception {
@@ -409,19 +415,26 @@ public class DSGenerator {
 	}
 
 	public static String[] getSchemas(Connection connection) throws Exception {
-		if (connection != null) {
-			List<String> schemaList = new ArrayList<String>();
-			DatabaseMetaData mObject = connection.getMetaData();
-			ResultSet schemas = mObject.getSchemas();
-			while (schemas.next()) {
-				schemaList.add(schemas.getString(DBConstants.DataServiceGenerator.TABLE_SCHEM));
-			}
-			String str[] = schemaList.toArray(new String[schemaList.size()]);
-			return str;
-		} else {
-			return null;
-		}
-	}
+        ResultSet schemas = null;
+        try {
+            if (connection != null) {
+                List<String> schemaList = new ArrayList<String>();
+                DatabaseMetaData mObject = connection.getMetaData();
+                schemas = mObject.getSchemas();
+                while (schemas.next()) {
+                    schemaList.add(schemas.getString(DBConstants.DataServiceGenerator.TABLE_SCHEM));
+                }
+                String str[] = schemaList.toArray(new String[schemaList.size()]);
+                return str;
+            } else {
+                return null;
+            }
+        } finally {
+            if (schemas != null) {
+                schemas.close();
+            }
+        }
+    }
 
 	private void setConfig(DataService dataServiceObject, String carbonSourceId)
 			throws DataServiceFault {
@@ -439,23 +452,30 @@ public class DSGenerator {
 	private String getPrimaryKey(DatabaseMetaData meta, String dbName,
 			String schema, String tableName) throws SQLException {
 		String pKey = null;
-		ResultSet resultSet = meta.getPrimaryKeys(dbName, schema, tableName);
-        
-        if (resultSet.next()) {
-             resultSet = meta.getPrimaryKeys(dbName, schema, tableName);
-        }  else {
-             try {
-                 resultSet = meta.getPrimaryKeys(null, schema, tableName);
-             } catch (SQLException e) {
-                 log.error("Failed to extract primary key info ", e);
-                 throw new SQLException("Failed to extract primary key info");
-             }
+        ResultSet resultSet = null;
+        try {
+            resultSet = meta.getPrimaryKeys(dbName, schema, tableName);
+
+            if (resultSet.next()) {
+                resultSet = meta.getPrimaryKeys(dbName, schema, tableName);
+            } else {
+                try {
+                    resultSet = meta.getPrimaryKeys(null, schema, tableName);
+                } catch (SQLException e) {
+                    log.error("Failed to extract primary key info ", e);
+                    throw new SQLException("Failed to extract primary key info");
+                }
+            }
+            while (resultSet.next()) {
+                pKey = resultSet.getString(DBConstants.DataServiceGenerator.COLUMN_NAME);
+                return pKey;
+            }
+        } finally {
+            if (resultSet != null) {
+                resultSet.close();
+            }
         }
-		while (resultSet.next()) {
-			pKey = resultSet.getString(DBConstants.DataServiceGenerator.COLUMN_NAME);
-			return pKey;
-		}
-		return pKey;
+        return pKey;
 	}
 
     private ResultSet getColumnNames (DatabaseMetaData metaData, String schema, String dbName,
@@ -496,33 +516,40 @@ public class DSGenerator {
 	private void addInsertOperation(DataService dataServiceObject,
 			String schema, DatabaseMetaData metaData, String dbName,
 			String tableName) throws DataServiceFault, SQLException {
-
+        ResultSet columnNames = null;
 		/* do insertion operation */
-		Map<String, WithParam> paramMap = new HashMap<String, WithParam>();
-		List<String> paramList = new ArrayList<String>();
-        ResultSet columnNames = getColumnNames (metaData, schema,dbName, tableName, null);
+        try {
+            Map<String, WithParam> paramMap = new HashMap<String, WithParam>();
+            List<String> paramList = new ArrayList<String>();
+            columnNames = getColumnNames(metaData, schema, dbName, tableName, null);
 
-		while (columnNames.next()) {
-			if (this.isAutoIncrementField(columnNames)) {
-				continue;
-			}
-			String name = columnNames.getString(DBConstants.DataServiceGenerator.COLUMN_NAME);
-			WithParam withParam = new WithParam(name, name, name, DBConstants.DataServiceGenerator.QUERY_PARAM);
-			paramMap.put(name, withParam);
-			paramList.add(name);
-		}
-		Set<String> requiredRoles = new HashSet<String>();
-		String queryId = DBConstants.DataServiceGenerator.INSERT_ + tableName + DBConstants.DataServiceGenerator._QUERY;
-		String OpName = DBConstants.DataServiceGenerator.INSERT_ + tableName + DBConstants.DataServiceGenerator._OPERATION;
-		CallQuery callQuery = new CallQuery(dataServiceObject, queryId,
-				paramMap, requiredRoles);
-		// batchRequest=false
-		// parentOperation=null
-		Operation op = new Operation(dataServiceObject, OpName, null,
-				callQuery, false, null, false, false);
-		dataServiceObject.addOperation(op);
-		dataServiceObject.addQuery(this.getInsertQuery(paramList, queryId,
-				tableName, dataServiceObject, metaData, dbName, schema));
+            while (columnNames.next()) {
+                if (this.isAutoIncrementField(columnNames)) {
+                    continue;
+                }
+                String name = columnNames.getString(DBConstants.DataServiceGenerator.COLUMN_NAME);
+                WithParam withParam = new WithParam(name, name, name, DBConstants.DataServiceGenerator.QUERY_PARAM);
+                paramMap.put(name, withParam);
+                paramList.add(name);
+            }
+            Set<String> requiredRoles = new HashSet<String>();
+            String queryId = DBConstants.DataServiceGenerator.INSERT_ + tableName + DBConstants.DataServiceGenerator._QUERY;
+            String OpName = DBConstants.DataServiceGenerator.INSERT_ + tableName + DBConstants.DataServiceGenerator._OPERATION;
+            CallQuery callQuery = new CallQuery(dataServiceObject, queryId,
+                    paramMap, requiredRoles);
+            // batchRequest=false
+            // parentOperation=null
+            Operation op = new Operation(dataServiceObject, OpName, null,
+                    callQuery, false, null, false, false);
+            dataServiceObject.addOperation(op);
+            dataServiceObject.addQuery(this.getInsertQuery(paramList, queryId,
+                    tableName, dataServiceObject, metaData, dbName, schema));
+        } finally {
+            if (columnNames != null) {
+                columnNames.close();
+            }
+        }
+
 	}
 
 	/**
@@ -532,36 +559,42 @@ public class DSGenerator {
 			String schema, DatabaseMetaData metaData, String dbName,
 			String tableName, String pKey) throws SQLException,
 			DataServiceFault {
-		Map<String, WithParam> paramMap = new HashMap<String, WithParam>();
-		List<String> paramList = new ArrayList<String>();
-
-		ResultSet columnNames = getColumnNames (metaData, schema,dbName, tableName, null);
-		while (columnNames.next()) {
-			String name = columnNames.getString(DBConstants.DataServiceGenerator.COLUMN_NAME);
-			if (!name.equals(pKey)) {
-				WithParam withParam1 = new WithParam(name, name, name,
-						 DBConstants.DataServiceGenerator.QUERY_PARAM);
-				paramMap.put(name, withParam1);
-				paramList.add(name);// add to this @param into @param List
-			}
-		}
-		WithParam withParam2 = new WithParam(pKey, pKey, pKey,  DBConstants.DataServiceGenerator.QUERY_PARAM);
-		paramMap.put(pKey, withParam2);
-		paramList.add(pKey);
-		Set<String> requiredRoles = new HashSet<String>();// empty set
-		String queryId = DBConstants.DataServiceGenerator.UPDATE_ + tableName + DBConstants.DataServiceGenerator._QUERY;
-		String OpName = DBConstants.DataServiceGenerator.UPDATE_  + tableName + DBConstants.DataServiceGenerator._OPERATION;
-		CallQuery callQuery = new CallQuery(dataServiceObject, queryId,
-				paramMap, requiredRoles);
-		// batchRequest=false
-		// parentOperation=null
-		Operation operation = new Operation(dataServiceObject, OpName, null,
-				callQuery, false, null, false, false);
-		dataServiceObject.addOperation(operation);
-		dataServiceObject.addQuery(this
-				.getUpdateQuery(paramList, pKey, queryId, tableName,
-						dataServiceObject, metaData, dbName, schema));
-	}
+        ResultSet columnNames = null;
+        try {
+            Map<String, WithParam> paramMap = new HashMap<String, WithParam>();
+            List<String> paramList = new ArrayList<String>();
+            columnNames = getColumnNames(metaData, schema, dbName, tableName, null);
+            while (columnNames.next()) {
+                String name = columnNames.getString(DBConstants.DataServiceGenerator.COLUMN_NAME);
+                if (!name.equals(pKey)) {
+                    WithParam withParam1 = new WithParam(name, name, name,
+                            DBConstants.DataServiceGenerator.QUERY_PARAM);
+                    paramMap.put(name, withParam1);
+                    paramList.add(name);// add to this @param into @param List
+                }
+            }
+            WithParam withParam2 = new WithParam(pKey, pKey, pKey, DBConstants.DataServiceGenerator.QUERY_PARAM);
+            paramMap.put(pKey, withParam2);
+            paramList.add(pKey);
+            Set<String> requiredRoles = new HashSet<String>();// empty set
+            String queryId = DBConstants.DataServiceGenerator.UPDATE_ + tableName + DBConstants.DataServiceGenerator._QUERY;
+            String OpName = DBConstants.DataServiceGenerator.UPDATE_ + tableName + DBConstants.DataServiceGenerator._OPERATION;
+            CallQuery callQuery = new CallQuery(dataServiceObject, queryId,
+                    paramMap, requiredRoles);
+            // batchRequest=false
+            // parentOperation=null
+            Operation operation = new Operation(dataServiceObject, OpName, null,
+                    callQuery, false, null, false, false);
+            dataServiceObject.addOperation(operation);
+            dataServiceObject.addQuery(this
+                    .getUpdateQuery(paramList, pKey, queryId, tableName,
+                            dataServiceObject, metaData, dbName, schema));
+        } finally {
+            if (columnNames != null) {
+                columnNames.close();
+            }
+        }
+    }
 
 	/**
 	 * Delete operation.
@@ -570,34 +603,42 @@ public class DSGenerator {
 			String schema, DatabaseMetaData metaData, String dbName,
 			String tableName, String pKey) throws SQLException,
 			DataServiceFault, NullPointerException {
-		/* get the primary key */
-		Map<String, WithParam> paramMap = new HashMap<String, WithParam>();
-		List<String> paramList = new ArrayList<String>();
+        ResultSet columnNames = null;
+        try {
 
-		ResultSet columnNames = getColumnNames (metaData, schema,dbName, tableName, null);
-		while (columnNames.next()) {
-			String name = columnNames.getString(DBConstants.DataServiceGenerator.COLUMN_NAME);
-			if (pKey.equals(name)) {
-				WithParam withParam = new WithParam(pKey, pKey, pKey,
-						 DBConstants.DataServiceGenerator.QUERY_PARAM);
-				paramMap.put(pKey, withParam);
-				paramList.add(pKey);
-			}
-		}
-		Set<String> requiredRoles = new HashSet<String>();
-		String queryId = DBConstants.DataServiceGenerator.DELETE_ + tableName + DBConstants.DataServiceGenerator._QUERY;
-		String OpName = DBConstants.DataServiceGenerator.DELETE_ + tableName + DBConstants.DataServiceGenerator._OPERATION;
-		CallQuery callQuery = new CallQuery(dataServiceObject, queryId,
-				paramMap, requiredRoles);
-		// batchRequest=false
-		// parentOperation=null
-		Operation operation = new Operation(dataServiceObject, OpName, null,
-				callQuery, false, null, false, false);
-		dataServiceObject.addOperation(operation);
-		dataServiceObject.addQuery(this
-				.getDeleteQuery(paramList, pKey, queryId, tableName,
-						dataServiceObject, metaData, dbName, schema));
-	}
+		/* get the primary key */
+            Map<String, WithParam> paramMap = new HashMap<String, WithParam>();
+            List<String> paramList = new ArrayList<String>();
+
+            columnNames = getColumnNames(metaData, schema, dbName, tableName, null);
+            while (columnNames.next()) {
+                String name = columnNames.getString(DBConstants.DataServiceGenerator.COLUMN_NAME);
+                if (pKey.equals(name)) {
+                    WithParam withParam = new WithParam(pKey, pKey, pKey,
+                            DBConstants.DataServiceGenerator.QUERY_PARAM);
+                    paramMap.put(pKey, withParam);
+                    paramList.add(pKey);
+                }
+            }
+            Set<String> requiredRoles = new HashSet<String>();
+            String queryId = DBConstants.DataServiceGenerator.DELETE_ + tableName + DBConstants.DataServiceGenerator._QUERY;
+            String OpName = DBConstants.DataServiceGenerator.DELETE_ + tableName + DBConstants.DataServiceGenerator._OPERATION;
+            CallQuery callQuery = new CallQuery(dataServiceObject, queryId,
+                    paramMap, requiredRoles);
+            // batchRequest=false
+            // parentOperation=null
+            Operation operation = new Operation(dataServiceObject, OpName, null,
+                    callQuery, false, null, false, false);
+            dataServiceObject.addOperation(operation);
+            dataServiceObject.addQuery(this
+                    .getDeleteQuery(paramList, pKey, queryId, tableName,
+                            dataServiceObject, metaData, dbName, schema));
+        } finally {
+            if (columnNames != null) {
+                columnNames.close();
+            }
+        }
+    }
 
 	/**
 	 * Create the data-service for select data by given key operation.
@@ -606,42 +647,49 @@ public class DSGenerator {
 			String schema, DatabaseMetaData metaData, String dbName,
 			String tableName, String pKey) throws SQLException,
 			DataServiceFault, NullPointerException {
-		Map<String, WithParam> paramMap = new HashMap<String, WithParam>();
-		List<String> paramList = new ArrayList<String>();
+        ResultSet columnNames = null;
+        try {
+            Map<String, WithParam> paramMap = new HashMap<String, WithParam>();
+            List<String> paramList = new ArrayList<String>();
 
-		ResultSet columnNames = getColumnNames (metaData, schema,dbName, tableName, null);
-		String colomNames = "";
-		int i = 0;
-		while (columnNames.next()) {
-			String name = columnNames.getString(DBConstants.DataServiceGenerator.COLUMN_NAME);
-			//get the colomn names for the query
-			if(i == 0) {
-				colomNames = " "+name;
-			} else {
-				colomNames = colomNames+", "+name;
-			}
-			i++;
-			if (pKey.equals(name)) {
-				WithParam withParam = new WithParam(pKey, pKey, pKey,
-						 DBConstants.DataServiceGenerator.QUERY_PARAM);
-				paramMap.put(pKey, withParam);
-				paramList.add(pKey);
-			}
-		}
-		Set<String> requiredRoles = new HashSet<String>();
-		String queryId = DBConstants.DataServiceGenerator.SELECT_WITH_KEY + tableName + DBConstants.DataServiceGenerator._QUERY;
-		String OpName = DBConstants.DataServiceGenerator.SELECT_WITH_KEY + tableName + DBConstants.DataServiceGenerator._OPERATION;
-		CallQuery callQuery = new CallQuery(dataServiceObject, queryId,
-				paramMap, requiredRoles);
-		// batchRequest=false
-		// parentOperation=null
-		Operation operation = new Operation(dataServiceObject, OpName, null,
-				callQuery, false, null, false, false);
-		dataServiceObject.addOperation(operation);
-		dataServiceObject.addQuery(this
-				.getSelectWithKeyQuery(paramList, pKey, queryId, tableName,
-						dataServiceObject, metaData, dbName, schema,colomNames));
-	}
+            columnNames = getColumnNames(metaData, schema, dbName, tableName, null);
+            String colomNames = "";
+            int i = 0;
+            while (columnNames.next()) {
+                String name = columnNames.getString(DBConstants.DataServiceGenerator.COLUMN_NAME);
+                //get the colomn names for the query
+                if (i == 0) {
+                    colomNames = " " + name;
+                } else {
+                    colomNames = colomNames + ", " + name;
+                }
+                i++;
+                if (pKey.equals(name)) {
+                    WithParam withParam = new WithParam(pKey, pKey, pKey,
+                            DBConstants.DataServiceGenerator.QUERY_PARAM);
+                    paramMap.put(pKey, withParam);
+                    paramList.add(pKey);
+                }
+            }
+            Set<String> requiredRoles = new HashSet<String>();
+            String queryId = DBConstants.DataServiceGenerator.SELECT_WITH_KEY + tableName + DBConstants.DataServiceGenerator._QUERY;
+            String OpName = DBConstants.DataServiceGenerator.SELECT_WITH_KEY + tableName + DBConstants.DataServiceGenerator._OPERATION;
+            CallQuery callQuery = new CallQuery(dataServiceObject, queryId,
+                    paramMap, requiredRoles);
+            // batchRequest=false
+            // parentOperation=null
+            Operation operation = new Operation(dataServiceObject, OpName, null,
+                    callQuery, false, null, false, false);
+            dataServiceObject.addOperation(operation);
+            dataServiceObject.addQuery(this
+                    .getSelectWithKeyQuery(paramList, pKey, queryId, tableName,
+                            dataServiceObject, metaData, dbName, schema, colomNames));
+        } finally {
+            if (columnNames != null) {
+                columnNames.close();
+            }
+        }
+    }
 
 	/**
 	 * Select all operation.
@@ -650,39 +698,45 @@ public class DSGenerator {
 			String schema, DatabaseMetaData metaData, String dbName,
 			String tableName, String pKey) throws SQLException,
 			DataServiceFault, NullPointerException {
-
-		Map<String, WithParam> paramMap = new HashMap<String, WithParam>();
-		List<String> paramList = new ArrayList<String>();
-		/* get the primary key */
-		// ResultSet resultSet = this.metaObject.getColumns(this.dbName, null,
-		// this.tableName, null);
-		ResultSet columnNames = getColumnNames (metaData, schema,dbName, tableName, null);
-		String colomNames = "";
-		int i = 0;
-		while (columnNames.next()) {
-			String name = columnNames.getString(DBConstants.DataServiceGenerator.COLUMN_NAME);
-			if(i == 0) {
-				colomNames = " "+name;
-			} else {
-				colomNames = colomNames+", "+name;
-			}
-			i++;
-		}
-		paramMap.clear();
-		Set<String> requiredRoles = new HashSet<String>();// empty set
-		String queryId = new StringBuilder().append(DBConstants.DataServiceGenerator.SELECT_ALL)
-				.append(tableName).append(DBConstants.DataServiceGenerator._QUERY).toString();
-		String OpName = new StringBuilder().append(DBConstants.DataServiceGenerator.SELECT_ALL)
-				.append(tableName).append(DBConstants.DataServiceGenerator._OPERATION).toString();
-		CallQuery callQuery = new CallQuery(dataServiceObject, queryId,
-				paramMap, requiredRoles);
-		// batchRequest=false
-		// parentOperation=null
-		Operation operation = new Operation(dataServiceObject, OpName, null,
-				callQuery, false, null, false, false);
-		dataServiceObject.addOperation(operation);
-		dataServiceObject.addQuery(this.getSelectAllQuery(paramList, queryId,
-				tableName, dataServiceObject, metaData, dbName, schema,colomNames));
+        ResultSet columnNames = null;
+        try {
+            Map<String, WithParam> paramMap = new HashMap<String, WithParam>();
+            List<String> paramList = new ArrayList<String>();
+		    /* get the primary key */
+            // ResultSet resultSet = this.metaObject.getColumns(this.dbName, null,
+            // this.tableName, null);
+            columnNames = getColumnNames(metaData, schema, dbName, tableName, null);
+            String colomNames = "";
+            int i = 0;
+            while (columnNames.next()) {
+                String name = columnNames.getString(DBConstants.DataServiceGenerator.COLUMN_NAME);
+                if (i == 0) {
+                    colomNames = " " + name;
+                } else {
+                    colomNames = colomNames + ", " + name;
+                }
+                i++;
+            }
+            paramMap.clear();
+            Set<String> requiredRoles = new HashSet<String>();// empty set
+            String queryId = new StringBuilder().append(DBConstants.DataServiceGenerator.SELECT_ALL)
+                    .append(tableName).append(DBConstants.DataServiceGenerator._QUERY).toString();
+            String OpName = new StringBuilder().append(DBConstants.DataServiceGenerator.SELECT_ALL)
+                    .append(tableName).append(DBConstants.DataServiceGenerator._OPERATION).toString();
+            CallQuery callQuery = new CallQuery(dataServiceObject, queryId,
+                    paramMap, requiredRoles);
+            // batchRequest=false
+            // parentOperation=null
+            Operation operation = new Operation(dataServiceObject, OpName, null,
+                    callQuery, false, null, false, false);
+            dataServiceObject.addOperation(operation);
+            dataServiceObject.addQuery(this.getSelectAllQuery(paramList, queryId,
+                    tableName, dataServiceObject, metaData, dbName, schema, colomNames));
+        } finally {
+            if (columnNames != null) {
+                columnNames.close();
+            }
+        }
 
 	}
 
@@ -806,32 +860,39 @@ public class DSGenerator {
 			DatabaseMetaData metaData, String dbName, String schema,
 			String tableName) throws DataServiceFault,
 			IllegalArgumentException, SQLException {
-		// row name is equal to table Name
-		String rowElementName = tableName + DBConstants.DataServiceGenerator.ROW_ELEMENT_NAME_SUFFIX;
-		Result result = new Result(rowElementName, tableName, null,
-				null, ResultTypes.XML);
-		ResultSet columnNames = getColumnNames (metaData, schema,dbName, tableName, null);
-		OutputElementGroup defGroup = new OutputElementGroup(null, null, null, null);
-		while (columnNames.next()) {
-			String columnName = columnNames.getString(DBConstants.DataServiceGenerator.COLUMN_NAME);
-			int typeInt = columnNames.getInt("DATA_TYPE");
-			if ((-1 == typeInt) || (-16 == typeInt) || (-15 == typeInt)
-					|| (2009 == typeInt) || (1111 == typeInt)) {
-				typeInt = 1;
-			}
-			String type = DSSqlTypes.getQNameType(typeInt);
-			QName qName = QueryFactory.getXsdTypeQName(type);
-			Set<String> requiredRoles = new HashSet<String>();// empty set
-			StaticOutputElement outputElement = new StaticOutputElement(
-					dataServiceObject, columnName, columnName, columnName,
-					DBConstants.DataServiceGenerator.COLUMN, DBConstants.DataServiceGenerator.ELEMENT, 
-					null, qName, requiredRoles, 0, 0, null,
-					ParamValue.PARAM_VALUE_SCALAR, null);
-			defGroup.addAttributeEntry(outputElement);
-		}
-		result.setDefaultElementGroup(defGroup);
-		return result;
-	}
+        ResultSet columnNames = null;
+		try {
+		    // row name is equal to table Name
+            String rowElementName = tableName + DBConstants.DataServiceGenerator.ROW_ELEMENT_NAME_SUFFIX;
+            Result result = new Result(rowElementName, tableName, null,
+                    null, ResultTypes.XML);
+            columnNames = getColumnNames(metaData, schema, dbName, tableName, null);
+            OutputElementGroup defGroup = new OutputElementGroup(null, null, null, null);
+            while (columnNames.next()) {
+                String columnName = columnNames.getString(DBConstants.DataServiceGenerator.COLUMN_NAME);
+                int typeInt = columnNames.getInt("DATA_TYPE");
+                if ((-1 == typeInt) || (-16 == typeInt) || (-15 == typeInt)
+                        || (2009 == typeInt) || (1111 == typeInt)) {
+                    typeInt = 1;
+                }
+                String type = DSSqlTypes.getQNameType(typeInt);
+                QName qName = QueryFactory.getXsdTypeQName(type);
+                Set<String> requiredRoles = new HashSet<String>();// empty set
+                StaticOutputElement outputElement = new StaticOutputElement(
+                        dataServiceObject, columnName, columnName, columnName,
+                        DBConstants.DataServiceGenerator.COLUMN, DBConstants.DataServiceGenerator.ELEMENT,
+                        null, qName, requiredRoles, 0, 0, null,
+                        ParamValue.PARAM_VALUE_SCALAR, null);
+                defGroup.addAttributeEntry(outputElement);
+            }
+            result.setDefaultElementGroup(defGroup);
+            return result;
+        } finally {
+            if(columnNames != null) {
+                columnNames.close();
+            }
+        }
+    }
 
 	public DataService getGeneratedService() {
 		return generatedService;

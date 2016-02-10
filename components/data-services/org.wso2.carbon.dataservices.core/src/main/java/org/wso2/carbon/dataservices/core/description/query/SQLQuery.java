@@ -570,12 +570,16 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
     private List<QueryParam> extractOutQueryParams(List<QueryParam> queryParams) {
         List<QueryParam> inOutQueryParams = new ArrayList<QueryParam>();
         for (QueryParam queryParam : queryParams) {
-            if (queryParam.getType().endsWith(QueryTypes.OUT)
-                    && !queryParam.getSqlType().equals(DBConstants.DataTypes.ORACLE_REF_CURSOR)) {
+            if (this.isOutQueryParam(queryParam.getType(), queryParam.getSqlType())) {
                 inOutQueryParams.add(queryParam);
             }
         }
         return inOutQueryParams;
+    }
+
+    private boolean isOutQueryParam(String queryType, String sqlType) {
+        return queryType.endsWith(QueryTypes.OUT)
+                && !sqlType.equals(DBConstants.DataTypes.ORACLE_REF_CURSOR);
     }
 
     public List<QueryParam> getOutQueryParams() {
@@ -943,7 +947,8 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
             } else {
                 if (rs == null || this.isRSClosed(rs) || !rs.next()) {
                     if (this.hasOutParams()) {
-                        DataEntry outParamDataEntry = this.getDataEntryFromOutParams(stmt);
+                        DataEntry outParamDataEntry = this.getDataEntryFromOutParams(stmt,
+                                this.extractRuntimeOutParams(params));
                         if (outParamDataEntry != null) {
                             this.writeResultEntry(xmlWriter, outParamDataEntry, params, queryLevel);
                         }
@@ -955,7 +960,8 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
                         List<DataEntry> entries = this.getAllDataEntriesFromRS(rs, true);
                         /* result sets must be processed before extracting out
                          * params */
-                        DataEntry outParamDataEntry = this.getDataEntryFromOutParams(stmt);
+                        DataEntry outParamDataEntry = this.getDataEntryFromOutParams(stmt,
+                                this.extractRuntimeOutParams(params));
                         for (DataEntry dataEntry : entries) {
                             this.mergeDataEntries(dataEntry, outParamDataEntry);
                             this.writeResultEntry(xmlWriter, dataEntry, params, queryLevel);
@@ -1055,14 +1061,24 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
         lhs.getData().putAll(rhs.getData());
     }
 
-    private DataEntry getDataEntryFromOutParams(CallableStatement stmt) throws DataServiceFault {
+    private List<InternalParam> extractRuntimeOutParams(InternalParamCollection params) {
+        List<InternalParam> result = new ArrayList<>();
+        for (InternalParam param : params.getParams()) {
+            if (this.isOutQueryParam(param.getType(), param.getSqlType())) {
+                result.add(param);
+            }
+        }
+        return result;
+    }
+
+    private DataEntry getDataEntryFromOutParams(CallableStatement stmt, List<InternalParam> outParams) throws DataServiceFault {
         DataEntry dataEntry = new DataEntry();
         String name;
         ParamValue value;
-        for (QueryParam queryParam : this.getOutQueryParams()) {
-            name = queryParam.getName();
-            value = this.getOutparameterValue(stmt, queryParam.getSqlType(),
-                    queryParam.getOrdinal());
+        for (InternalParam param : outParams) {
+            name = param.getName();
+            value = this.getOutparameterValue(stmt, param.getSqlType(),
+                    param.getOrdinal());
             dataEntry.addValue(name, value);
         }
         return dataEntry;
@@ -1403,6 +1419,7 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
                  * handle array values, if value is null, this param has to be
                  * an OUT param
                  */
+                param.setOrdinal(currentOrdinal + 1);
                 if (value != null && value.getValueType() == ParamValue.PARAM_VALUE_ARRAY) {
                     for (ParamValue arrayElement : value.getArrayValue()) {
                         this.setParamInPreparedStatement(

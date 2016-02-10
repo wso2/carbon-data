@@ -90,7 +90,14 @@ public abstract class Query extends XMLWriterHelper {
 	    }
 	};
 
-	private static ThreadLocal<Boolean> queryPreprocessInitial = new ThreadLocal<Boolean>() {
+        private static ThreadLocal<InternalParamCollection> currentInternalParams = new ThreadLocal<InternalParamCollection>() {
+            @Override
+            public InternalParamCollection initialValue() {
+                return null;
+            }
+        };
+
+        private static ThreadLocal<Boolean> queryPreprocessInitial = new ThreadLocal<Boolean>() {
 	    @Override
         public Boolean initialValue() {
             return false;
@@ -191,7 +198,12 @@ public abstract class Query extends XMLWriterHelper {
 	 */
 	private InternalParamCollection extractParams(Map<String, ParamValue> params)
 			throws DataServiceFault {
-		InternalParamCollection ipc = new InternalParamCollection();
+            InternalParamCollection ipc = Query.getCurrentInternalParams();
+            if (ipc != null) {
+                return ipc;
+            } else {
+                ipc = new InternalParamCollection();
+            }
 		/* exported values from earlier queries */
 		Map<String, ParamValue> exportedParams = TLParamStore.getParameterMap();
 		ParamValue tmpParamValue;
@@ -216,6 +228,7 @@ public abstract class Query extends XMLWriterHelper {
                         ordinal));
 			}
 		}
+                Query.setCurrentInternalParams(ipc);
 		return ipc;
 	}
 	
@@ -288,6 +301,7 @@ public abstract class Query extends XMLWriterHelper {
             if (secondary) {
                 /* required for nested query processing, nested queries
                  * must execute both phases at once */
+                Query.resetCurrentInternalParams();
                 Query.setQueryPreprocessingInitial(true);
                 result = Query.getAndRemoveQueryPreprocessObject();
                 this.runPostQuery(result, xmlWriter, internalParams, queryLevel);
@@ -474,9 +488,22 @@ public abstract class Query extends XMLWriterHelper {
 	}
 
 	public static void resetQueryPreprocessing() {
+            currentInternalParams.set(null);
 	    queryPreprocessObjects.set(new Object());
 	    setQueryPreprocessingInitial(false);
 	    setQueryPreprocessingSecondary(false);
 	}
+
+        public static InternalParamCollection getCurrentInternalParams() {
+             return currentInternalParams.get();
+        }
+
+        public static void resetCurrentInternalParams() {
+             currentInternalParams.set(null);
+        }
+
+        public static void setCurrentInternalParams(InternalParamCollection params) {
+             currentInternalParams.set(params);
+        }
 
 }

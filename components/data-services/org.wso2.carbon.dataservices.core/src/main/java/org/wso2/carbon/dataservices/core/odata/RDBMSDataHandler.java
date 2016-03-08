@@ -975,8 +975,10 @@ public class RDBMSDataHandler implements ODataDataHandler {
                 int size = resultSet.getInt("COLUMN_SIZE");
                 boolean nullable = resultSet.getBoolean("NULLABLE");
                 String columnDefaultVal = resultSet.getString("COLUMN_DEF");
-                int precision = resultSet.getMetaData().getPrecision(i);
-                int scale = resultSet.getMetaData().getScale(i);
+                //int precision = resultSet.getMetaData().getPrecision(i);
+                //int scale = resultSet.getMetaData().getScale(i);
+                int precision = size;
+                int scale = resultSet.getInt("DECIMAL_DIGITS");
                 DataColumn column = new DataColumn(columnName, getODataDataType(columnType), i, nullable, size);
                 if (null != columnDefaultVal) {
                     column.setDefaultValue(columnDefaultVal);

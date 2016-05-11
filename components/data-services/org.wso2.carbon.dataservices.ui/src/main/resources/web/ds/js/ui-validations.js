@@ -2008,6 +2008,20 @@ function changeVisiblityOnTypeSelection(obj, document) {
     }
 }
 
+function adjustParameterType(obj, document) {
+    var selectedSqlType = obj[obj.selectedIndex].value;
+    var arrayOptionElement = document.getElementById("paramTypeArrayOptionId");
+    if (selectedSqlType == 'QUERY_STRING') {
+        arrayOptionElement.disabled = true;
+        var parameterTypeElement = document.getElementById("paramTypeId");
+        if (parameterTypeElement.value == "ARRAY") {
+            parameterTypeElement.value = "SCALAR"
+        }
+    } else {
+        arrayOptionElement.disabled = false;
+    }
+}
+
 function ValidateDataSourceProperties() {
 	if (isNaN(document.getElementById("maxActive").value) || document.getElementById("maxActive").value < 0) {
 		CARBON.showErrorDialog("Please enter a positive numeric value for Max Active");

@@ -87,6 +87,10 @@ public class RDBMSDataHandler implements ODataDataHandler {
      */
     private List<String> tableList;
 
+    public static final String TABLE_NAME = "TABLE_NAME";
+    public static final String TABLE = "TABLE";
+    public static final String ORACLE_SERVER = "oracle";
+
     private ThreadLocal<Connection> transactionalConnection = new ThreadLocal<Connection>() {
         protected synchronized Connection initialValue() {
             return null;
@@ -975,18 +979,17 @@ public class RDBMSDataHandler implements ODataDataHandler {
                 int size = resultSet.getInt("COLUMN_SIZE");
                 boolean nullable = resultSet.getBoolean("NULLABLE");
                 String columnDefaultVal = resultSet.getString("COLUMN_DEF");
-                int precision = resultSet.getMetaData().getPrecision(i);
-                int scale = resultSet.getMetaData().getScale(i);
                 DataColumn column = new DataColumn(columnName, getODataDataType(columnType), i, nullable, size);
                 if (null != columnDefaultVal) {
                     column.setDefaultValue(columnDefaultVal);
                 }
                 if (Types.DOUBLE == columnType || Types.FLOAT == columnType || Types.DECIMAL == columnType ||
                     Types.NUMERIC == columnType || Types.REAL == columnType) {
-                    column.setPrecision(precision);
+                    int scale = resultSet.getInt("DECIMAL_DIGITS");
+                    column.setPrecision(size);
                     if (scale == 0) {
                         //setting default scale as 5
-                        column.setScale(precision);
+                        column.setScale(size);
                     } else {
                         column.setScale(scale);
                     }
@@ -1043,9 +1046,13 @@ public class RDBMSDataHandler implements ODataDataHandler {
         try {
             connection = initializeConnection();
             DatabaseMetaData meta = connection.getMetaData();
-            rs = meta.getTables(null, null, null, new String[] { "TABLE" });
+            if (meta.getDatabaseProductName().toLowerCase().contains(ORACLE_SERVER)) {
+                rs = meta.getTables(null, meta.getUserName(), null, new String[] { TABLE });
+            } else {
+                rs = meta.getTables(null, null, null, new String[] { TABLE });
+            }
             while (rs.next()) {
-                String tableName = rs.getString("TABLE_NAME");
+                String tableName = rs.getString(TABLE_NAME);
                 tableList.add(tableName);
             }
             return tableList;

@@ -94,7 +94,17 @@ public class DataServiceAdmin extends AbstractAdmin {
 		AxisService axisService = getAxisConfig().getServiceForActivation(serviceId);
 		StringBuffer fileContents = new StringBuffer();
 		String filePath;
-		// construct data service configuration file path
+
+		// This is a workaround to fix DS-1075. The proper fix should be in kernel but it could break
+		// existing functionality
+		if (serviceId.contains("/")) {
+			String[] splitArray = serviceId.split("\\/");
+			if(splitArray.length >= 1) {
+				serviceId = splitArray[splitArray.length - 1];
+			}
+		}
+
+		// construct data service configuration file path-
 		if (axisService != null) {
 			filePath = ((DataService) axisService.getParameter(DBConstants.DATA_SERVICE_OBJECT)
 					.getValue()).getDsLocation();
@@ -148,6 +158,16 @@ public class DataServiceAdmin extends AbstractAdmin {
 		String dataServiceFilePath;
 		ConfigurationContext configCtx = this.getConfigContext();
 		AxisConfiguration axisConfig = configCtx.getAxisConfiguration();
+
+		// This is a workaround to fix DS-1075. The proper fix should be in kernel but it could break
+		// existing functionality
+		if (serviceName.contains("/")) {
+			String[] splitArray = serviceName.split("\\/");
+			if(splitArray.length >= 1) {
+				serviceName = splitArray[splitArray.length - 1];
+			}
+		}
+
 		AxisService axisService = axisConfig.getServiceForActivation(serviceName);
 
 		if (serviceHierarchy == null) {

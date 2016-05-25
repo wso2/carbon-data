@@ -179,7 +179,7 @@ public abstract class ExpressionQuery extends Query {
 					 * split params in situations like ":a,:b", ":a :b", ":a:b",
 					 * "(:a,:b)"
 					 */
-                    tmpParam = query.substring(i + 1, query.length()).split(" |,|\\)|\\(|:")[0];
+                    tmpParam = query.substring(i + 1, query.length()).split(" |,|\\)|\\(|:|\\r|\\n")[0];
                     if (queryParams.contains(tmpParam)) {
 						/*
 						 * only consider this as a parameter if it's in input

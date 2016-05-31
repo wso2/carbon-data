@@ -87,7 +87,7 @@
                             !org.wso2.carbon.dataservices.task.internal,
                             org.wso2.carbon.dataservices.task;version="${project.version}"
                         </Export-Package>
-                        <!--<DynamicImport-Package>*</DynamicImport-Package>-->
+                        <DynamicImport-Package>*</DynamicImport-Package>
                         <Import-Package>
                             !org.wso2.carbon.dataservices.task,
                             org.apache.commons.logging;version="${carbon.commons.logging.imp.pkg.version}",

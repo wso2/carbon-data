@@ -281,7 +281,7 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
     }
 
     private Object[] getStoredProcFuncProps(String name) throws DataServiceFault, SQLException {
-        Connection conn = this.getConfig().createConnection();
+        Connection conn = (Connection) this.getConfig().createConnection()[0];
         DatabaseMetaData md = conn.getMetaData();
         ResultSet rs = null;
         boolean error = true;
@@ -653,8 +653,10 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
             Connection connection;
             DataServiceConnection dsCon = TLConnectionStore.getConnection(this.getConfigId(), creds[0], queryLevel);
             if (dsCon == null) {
-                connection = this.getConfig().createConnection(creds[0], creds[1]);
-                dsCon = new SQLDataServicesConnection(connection);
+                Object[] connInfo = this.getConfig().createConnection(creds[0], creds[1]);
+                connection = (Connection) connInfo[0];
+                boolean isXA = (Boolean) connInfo[1];
+                dsCon = new SQLDataServicesConnection(connection, isXA);
                 TLConnectionStore.addConnection(this.getConfigId(), creds[0], queryLevel, dsCon);
             } else {
                 connection = ((SQLDataServicesConnection) dsCon).getJDBCConnection();

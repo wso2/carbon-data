@@ -33,9 +33,11 @@ import org.wso2.carbon.dataservices.core.DataServiceFault;
 public class SQLDataServicesConnection implements DataServiceConnection {
 
     private Connection jdbcConn;
+    private boolean isXA;
     
-    public SQLDataServicesConnection(Connection jdbcConn) {
+    public SQLDataServicesConnection(Connection jdbcConn, boolean isXA) {
         this.jdbcConn = jdbcConn;
+        this.isXA = isXA;
     }
     
     @Override
@@ -73,7 +75,7 @@ public class SQLDataServicesConnection implements DataServiceConnection {
 
     @Override
     public boolean isXA() {
-        return jdbcConn instanceof XAConnection;
+        return isXA;
     }
     
     public Connection getJDBCConnection() {

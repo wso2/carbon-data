@@ -99,7 +99,7 @@ public class DataServiceAdmin extends AbstractAdmin {
 		// existing functionality
 		if (serviceId.contains("/")) {
 			String[] splitArray = serviceId.split("\\/");
-			if(splitArray.length >= 1) {
+			if (splitArray.length >= 1) {
 				serviceId = splitArray[splitArray.length - 1];
 			}
 		}
@@ -163,7 +163,7 @@ public class DataServiceAdmin extends AbstractAdmin {
 		// existing functionality
 		if (serviceName.contains("/")) {
 			String[] splitArray = serviceName.split("\\/");
-			if(splitArray.length >= 1) {
+			if (splitArray.length >= 1) {
 				serviceName = splitArray[splitArray.length - 1];
 			}
 		}

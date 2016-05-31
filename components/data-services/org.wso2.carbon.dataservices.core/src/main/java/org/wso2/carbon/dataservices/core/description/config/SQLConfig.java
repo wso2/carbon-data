@@ -18,6 +18,7 @@
  */
 package org.wso2.carbon.dataservices.core.description.config;
 
+import com.atomikos.jdbc.AtomikosDataSourceBean;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.util.AXIOMUtil;
 import org.apache.commons.logging.Log;
@@ -32,6 +33,7 @@ import org.wso2.carbon.dataservices.core.engine.DataService;
 
 import javax.sql.DataSource;
 import javax.sql.XAConnection;
+import javax.sql.XADataSource;
 import javax.transaction.Transaction;
 import javax.transaction.xa.XAResource;
 import javax.xml.stream.XMLStreamException;
@@ -148,7 +150,7 @@ public abstract class SQLConfig extends Config {
 	}
 		
 	protected void initSQLDataSource() throws SQLException, DataServiceFault {
-		Connection conn = this.createConnection();
+        Connection conn = (Connection) this.createConnection()[0];
 		try {
 		    /* check if we have JDBC batch update support */
 		    this.jdbcBatchUpdateSupport = conn.getMetaData().supportsBatchUpdates();
@@ -169,16 +171,17 @@ public abstract class SQLConfig extends Config {
 		return validationQuery;
 	}
 	
-	public Connection createConnection() throws SQLException, DataServiceFault {
+	public Object[] createConnection() throws SQLException, DataServiceFault {
 		return this.createConnection(null, null);
 	}
 	
-	public Connection createConnection(String user, String pass) 
+	public Object[] createConnection(String user, String pass)
 			throws SQLException, DataServiceFault {
 		if (log.isDebugEnabled()){
 			log.debug("Creating data source connection");
 		}
 		DataSource ds = this.getDataSource();
+        Boolean xaConn = false;
 		if (ds != null) {
 			Connection conn;
 			if (user != null) {
@@ -186,32 +189,59 @@ public abstract class SQLConfig extends Config {
 			} else {
 			    conn = ds.getConnection();
 			}
-			if (conn instanceof XAConnection) {
-				try {
-					Transaction tx = this.getDataService().getDSSTxManager().
-							getTransactionManager().getTransaction();
-					/* add only if there is a transaction */
-					if (tx != null) { 
-					    XAResource xaResource = ((XAConnection) conn).getXAResource();
-					    if (!isXAResourceEnlisted(xaResource)) {
-						    tx.enlistResource(xaResource);
-						    addToEnlistedXADataSources(xaResource);
-					    }
-					}
-				} catch (IllegalStateException e) {
-					// ignore: can be because we are trying to enlist again
-				} catch (Exception e) {
-					throw new DataServiceFault(e, 
-							"Error in getting current transaction: " + e.getMessage());
-				}
-			}
-			return conn;
+            Object tds = this.extractSourceDS(ds);
+            boolean[] xaResult = this.isXADataSource(tds);
+            xaConn = xaResult[0] | xaResult[1];
+            if (xaResult[0] && !xaResult[1]) {
+                XAConnection xac = ((XADataSource) tds).getXAConnection();
+                if (xac != null) {
+                    try {
+                        Transaction tx = this.getDataService().getDSSTxManager().
+                                getTransactionManager().getTransaction();
+                        /* add only if there is a transaction */
+                        if (tx != null) {
+                            XAResource xaResource = ((XAConnection) conn).getXAResource();
+                            if (!isXAResourceEnlisted(xaResource)) {
+                                tx.enlistResource(xaResource);
+                                addToEnlistedXADataSources(xaResource);
+                            }
+                        }
+                    } catch (IllegalStateException e) {
+                        // ignore: can be because we are trying to enlist again
+                    } catch (Exception e) {
+                        throw new DataServiceFault(e, "Error in getting current transaction: " + e.getMessage());
+                    }
+                }
+            }
+            return new Object[] { conn, xaConn };
 		} else {
 			throw new DataServiceFault("The data source is nonexistent");
 		}
 	}
-	
-	@Override
+
+    private boolean[] isXADataSource(Object tds) {
+        /* [0] - XADataSource, [1] - Atomikos XA */
+        boolean[] result = new boolean[2];
+        result[0] = tds instanceof XADataSource;
+        if (tds instanceof AtomikosDataSourceBean) {
+            AtomikosDataSourceBean atb = (AtomikosDataSourceBean) tds;
+            if (atb.getXaDataSource() != null) {
+                result[1] = true;
+            }
+        }
+        return result;
+    }
+
+    private Object extractSourceDS(DataSource ds) {
+        Object tds = ds;
+        if (ds instanceof org.apache.tomcat.jdbc.pool.DataSource) {
+            org.apache.tomcat.jdbc.pool.DataSource jpDS = (org.apache.tomcat.jdbc.pool.DataSource) ds;
+            tds = jpDS.getDataSource();
+        }
+        return tds;
+    }
+
+    @Override
 	public boolean isActive() {
 		try {
 			Connection conn = this.getDataSource().getConnection();

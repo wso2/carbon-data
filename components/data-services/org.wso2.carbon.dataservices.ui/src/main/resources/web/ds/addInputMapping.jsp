@@ -142,8 +142,7 @@
 </tr>
 <tr>
     <td class="leftCol-small"><fmt:message key="dataservices.param.type"/></td>
-    <td><select id="paramTypeId" name="paramType"
-                >
+    <td><select id="paramTypeId" name="paramType">
         <% if (paramType.equals("") || paramType.equals("SCALAR")) { %>
         <option value="SCALAR" selected="selected">SCALAR</option>
         <% } else { %>
@@ -151,14 +150,18 @@
         <% } %>
         <% if (paramType.equals("ARRAY")) { %>
         <option value="ARRAY" selected="selected">ARRAY</option>
-        <% } else { %>
-        <option value="ARRAY">ARRAY</option>
+        <% } else {
+            if (!sqlType.equals("QUERY_STRING")) {%>
+        <option id="paramTypeArrayOptionId" value="ARRAY">ARRAY</option>
+        <%} else {%>
+        <option id="paramTypeArrayOptionId" disabled value="ARRAY">ARRAY</option>
+        <% } %>
         <% } %>
     </select></td>
 </tr>
 <tr>
     <td class="leftCol-small"><fmt:message key="datasources.sql.type"/><font color="red">*</font></td>
-    <td><select id="inputMappingSqlTypeId" name="inputMappingSqlType" onchange="changeVisiblityOnTypeSelection(this, document)">
+    <td><select id="inputMappingSqlTypeId" name="inputMappingSqlType" onchange="changeVisiblityOnTypeSelection(this, document); adjustParameterType(this, document);">
         <% if (sqlType.equals("")) { %>
         <option value="" selected="selected">--SELECT--</option>
         <% } else { %>

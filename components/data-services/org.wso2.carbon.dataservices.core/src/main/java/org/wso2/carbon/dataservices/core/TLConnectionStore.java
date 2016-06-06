@@ -64,7 +64,8 @@ public class TLConnectionStore {
 		    try {
 		        conn.commit();
                 if (log.isDebugEnabled()) {
-                    log.debug("Committing connection. ThreadID:" + Thread.currentThread().getId());
+                    log.debug("Committing connection: " + conn.toString() + ",ThreadID - " +
+                              Thread.currentThread().getId());
                 }
 		    } catch (Exception e) {
                 log.warn("Error in committing connection: " + e.getMessage(), e);
@@ -79,7 +80,8 @@ public class TLConnectionStore {
                 try {
                     conn.commit();
                     if (log.isDebugEnabled()) {
-                        log.debug("Committing non-XA connection. ThreadID:" + Thread.currentThread().getId());
+                        log.debug("Committing non-XA connection: " + conn.toString() + ",ThreadID - " +
+                                  Thread.currentThread().getId());
                     }
                 } catch (Exception e) {
                     log.warn("Error in committing non-XA connection: " + e.getMessage(), e);
@@ -94,7 +96,8 @@ public class TLConnectionStore {
             try {
                 conn.rollback();
                 if (log.isDebugEnabled()) {
-                    log.debug("Rolling back connection. ThreadID:" + Thread.currentThread().getId());
+                    log.debug("Rolling back connection: " + conn.toString() + ",ThreadID - " +
+                              Thread.currentThread().getId());
                 }
             } catch (Exception e) {
                 log.warn("Error in rolling back connection: " + e.getMessage(), e);
@@ -109,7 +112,8 @@ public class TLConnectionStore {
                 try {
                     conn.rollback();
                     if (log.isDebugEnabled()) {
-                        log.debug("Rolling back non-XA connection. ThreadID:" + Thread.currentThread().getId());
+                        log.debug("Rolling back non-XA connection: " + conn.toString() + ",ThreadID - " +
+                                  Thread.currentThread().getId());
                     }
                 } catch (Exception e) {
                     log.warn("Error in rolling back non-XA connection: " + e.getMessage(), e);
@@ -124,7 +128,8 @@ public class TLConnectionStore {
             try {
                 conn.close();
                 if (log.isDebugEnabled()) {
-                    log.debug("Closing connections. ThreadID:" + Thread.currentThread().getId());
+                    log.debug("Closing connection: " + conn.toString() + ",ThreadID - " +
+                              Thread.currentThread().getId());
                 }
             } catch (Exception e) {
                 log.error("Error in closing connection: " + e.getMessage(), e);

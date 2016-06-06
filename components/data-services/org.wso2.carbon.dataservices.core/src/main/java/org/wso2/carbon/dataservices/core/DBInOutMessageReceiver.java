@@ -50,27 +50,27 @@ public class DBInOutMessageReceiver extends RawXMLINOutMessageReceiver {
 			MessageContext newMsgContext) throws AxisFault {
 		try {
 			if (log.isDebugEnabled()) {
-				log.debug("Request received to DSS.  Data Service :" + msgContext.getServiceContext().getName() + ", " +
-				          "Operation :" + msgContext.getSoapAction() + ", Request body: " +
-				          msgContext.getEnvelope().toString() + ", ThreadID:" + Thread.currentThread().getId());
+				log.debug("Request received to DSS:  Data Service - " + msgContext.getServiceContext().getName() +
+				          ", " + "Operation - " + msgContext.getSoapAction() + ", Request body - " +
+				          msgContext.getEnvelope().toString() + ", ThreadID - " + Thread.currentThread().getId());
 			}
-            OMElement result = DataServiceProcessor.dispatch(msgContext);
+			OMElement result = DataServiceProcessor.dispatch(msgContext);
 			SOAPFactory fac = getSOAPFactory(msgContext);
 			SOAPEnvelope envelope = fac.getDefaultEnvelope();
 			if (result != null) {
 				envelope.getBody().addChild(result);
 			}
 			newMsgContext.setEnvelope(envelope);
-		} catch(Exception e) {
-		    e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
 			log.error("Error in in-out message receiver", e);
 			msgContext.setProperty(Constants.FAULT_NAME, DBConstants.DS_FAULT_NAME);
 			throw DBUtils.createAxisFault(e);
 		} finally {
 			if (log.isDebugEnabled()) {
-				log.debug("Response send from DSS.  Data Service :" + msgContext.getServiceContext().getName() +
-				          ", Operation :" + msgContext.getSoapAction() + ", Response body: " +
-				          newMsgContext.getEnvelope().toString() + ", ThreadID:" + Thread.currentThread().getId());
+				log.debug("Response send from DSS:  Data Service - " + msgContext.getServiceContext().getName() +
+				          ", Operation - " + msgContext.getSoapAction() + ", Response body - " +
+				          newMsgContext.getEnvelope().toString() + ", ThreadID - " + Thread.currentThread().getId());
 			}
 		}
 	}

@@ -788,7 +788,7 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
                     "Error in 'SQLQuery.processPreNormalQuery': " + e.getMessage());
         } finally {
             if (log.isDebugEnabled()) {
-                log.debug("Stopping DB calls. ThreadID:" + Thread.currentThread().getId());
+                log.debug("Stopping DB calls: ThreadID - " + Thread.currentThread().getId());
             }
             if (isError) {
                 this.releaseResources(rs, this.isStatementClosable(isError) ? stmt : null);
@@ -944,8 +944,8 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
             throw new DataServiceFault(e, FaultCodes.DATABASE_ERROR,
                     "Error in 'SQLQuery.processStoredProcQuery': " + e.getMessage());
         } finally {
-            if (log.isDebugEnabled()){
-                log.debug("Stopping DB calls. ThreadID:" + Thread.currentThread().getId());
+            if (log.isDebugEnabled()) {
+                log.debug("Stopping DB calls: ThreadID - " + Thread.currentThread().getId());
             }
             if (isError) {
                 this.releaseResources(rs, this.isStatementClosable(isError) ? stmt : null);                
@@ -1387,8 +1387,8 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
                     for (int i = 1; i <= this.getParamCount(); i++) {
                         paramsStr = paramsStr + params.getParam(i) + ",";
                     }
-                    log.debug("Starting DB calls for " + processedSQL + " with params: " + paramsStr + ". ThreadID:" +
-                              Thread.currentThread().getId());
+                    log.debug("Starting DB calls: for \"" + processedSQL + "\" with params - " + paramsStr +
+                              ", ThreadID - " + Thread.currentThread().getId());
                 }
                 if (queryType == SQLQuery.DS_QUERY_TYPE_NORMAL) {
                     if (this.isReturnGeneratedKeys()) {

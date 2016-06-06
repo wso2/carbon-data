@@ -174,8 +174,8 @@ public abstract class SQLConfig extends Config {
 	
 	public Object[] createConnection(String user, String pass)
 			throws SQLException, DataServiceFault {
-		if (log.isDebugEnabled()){
-			log.debug("Creating data source connection. ThreadID:" + Thread.currentThread().getId());
+		if (log.isDebugEnabled()) {
+			log.debug("Creating data source connection: ThreadID - " + Thread.currentThread().getId());
 		}
 		DataSource ds = this.getDataSource();
         Boolean xaConn = false;

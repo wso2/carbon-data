@@ -318,7 +318,7 @@ public class DataServiceDocLitWrappedSchemaGenerator {
 		AxisMessage outMessage = axisOp.getMessage(WSDLConstants.MESSAGE_LABEL_OUT_VALUE);
 		outMessage.setName(request.getRequestName() + Java2WSDLConstants.RESPONSE);
 		
-		if (request.isReturnRequestStatus()) {
+		if (request.isReturnRequestStatus() && !callQuery.getQuery().hasResult()) {
 			outMessage.setElementQName(new QName(DBConstants.WSO2_DS_NAMESPACE,
 					DBConstants.REQUEST_STATUS_WRAPPER_ELEMENT));
 			return;

@@ -35,6 +35,7 @@ import org.apache.olingo.server.api.uri.queryoption.expression.Expression;
 import org.apache.olingo.server.api.uri.queryoption.expression.ExpressionVisitException;
 import org.apache.olingo.server.api.uri.queryoption.expression.ExpressionVisitor;
 import org.apache.olingo.server.api.uri.queryoption.expression.Literal;
+import org.apache.olingo.server.api.uri.queryoption.expression.Member;
 import org.apache.olingo.server.api.uri.queryoption.expression.MethodKind;
 import org.apache.olingo.server.api.uri.queryoption.expression.UnaryOperatorKind;
 import org.wso2.carbon.dataservices.core.odata.expression.operand.TypedOperand;
@@ -171,9 +172,8 @@ public class ExpressionVisitorImpl implements ExpressionVisitor<VisitorOperand> 
     }
 
     @Override
-    public VisitorOperand visitMember(final UriInfoResource member)
-            throws ExpressionVisitException, ODataApplicationException {
-        final List<UriResource> uriResourceParts = member.getUriResourceParts();
+    public VisitorOperand visitMember(Member member) throws ExpressionVisitException, ODataApplicationException {
+        final List<UriResource> uriResourceParts = member.getResourcePath().getUriResourceParts();
         int size = uriResourceParts.size();
         if (uriResourceParts.get(0) instanceof UriResourceProperty) {
             EdmProperty currentEdmProperty = ((UriResourceProperty) uriResourceParts.get(0)).getProperty();

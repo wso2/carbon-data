@@ -64,7 +64,7 @@ public class TLConnectionStore {
 		    try {
 		        conn.commit();
                 if (log.isDebugEnabled()) {
-                    log.debug("Committing connection: " + conn.toString() + ",ThreadID - " +
+                    log.debug("Committing connection: " + conn.toString() + ", ThreadID - " +
                               Thread.currentThread().getId());
                 }
 		    } catch (Exception e) {
@@ -80,7 +80,7 @@ public class TLConnectionStore {
                 try {
                     conn.commit();
                     if (log.isDebugEnabled()) {
-                        log.debug("Committing non-XA connection: " + conn.toString() + ",ThreadID - " +
+                        log.debug("Committing non-XA connection: " + conn.toString() + ", ThreadID - " +
                                   Thread.currentThread().getId());
                     }
                 } catch (Exception e) {
@@ -96,7 +96,7 @@ public class TLConnectionStore {
             try {
                 conn.rollback();
                 if (log.isDebugEnabled()) {
-                    log.debug("Rolling back connection: " + conn.toString() + ",ThreadID - " +
+                    log.debug("Rolling back connection: " + conn.toString() + ", ThreadID - " +
                               Thread.currentThread().getId());
                 }
             } catch (Exception e) {
@@ -112,7 +112,7 @@ public class TLConnectionStore {
                 try {
                     conn.rollback();
                     if (log.isDebugEnabled()) {
-                        log.debug("Rolling back non-XA connection: " + conn.toString() + ",ThreadID - " +
+                        log.debug("Rolling back non-XA connection: " + conn.toString() + ", ThreadID - " +
                                   Thread.currentThread().getId());
                     }
                 } catch (Exception e) {
@@ -128,7 +128,7 @@ public class TLConnectionStore {
             try {
                 conn.close();
                 if (log.isDebugEnabled()) {
-                    log.debug("Closing connection: " + conn.toString() + ",ThreadID - " +
+                    log.debug("Closing connection: " + conn.toString() + ", ThreadID - " +
                               Thread.currentThread().getId());
                 }
             } catch (Exception e) {

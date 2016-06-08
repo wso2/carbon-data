@@ -636,9 +636,8 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
                 if (this.isValidCreds(creds)) {
                     return creds;
                 } else {
-                    throw new DataServiceFault(
-                            "A username/password mapping does not exist for the "
-                                    + "request user: " + user);
+                    throw new DataServiceFault("A username/password mapping does not exist for the request user: " +
+                                               user);
                 }
             }
         } else {

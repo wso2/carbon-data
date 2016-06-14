@@ -19,7 +19,6 @@
 package org.wso2.carbon.dataservices.core.description.query;
 
 import com.datastax.driver.core.BatchStatement;
-import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.ColumnDefinitions;
 import com.datastax.driver.core.DataType;
 import com.datastax.driver.core.PreparedStatement;
@@ -102,7 +101,7 @@ public class CassandraQuery extends ExpressionQuery {
         return this.config.isNativeBatchRequestsSupported();
     }
 
-    private BoundStatement bindParams(InternalParamCollection params) throws DataServiceFault {
+    private Object[] bindParams(InternalParamCollection params) throws DataServiceFault {
         int count = params.getSize();
         List<Object> values = new ArrayList<>(count);
         InternalParam param;
@@ -212,7 +211,7 @@ public class CassandraQuery extends ExpressionQuery {
                     values.add(param.getValue().toString());
             }
         }
-        return this.getStatement().bind(values.toArray());
+        return values.toArray();
     }
 
     private void checkAndCreateStatement() throws DataServiceFault {
@@ -248,7 +247,8 @@ public class CassandraQuery extends ExpressionQuery {
                     this.getSession().execute(this.batchStatement.get());
                 }
             } else {
-                rs = this.getSession().execute(processedSQL);
+                SimpleStatement statement = new SimpleStatement(processedSQL, this.bindParams(params));
+                rs = this.getSession().execute(statement);
             }
         } else {
             this.checkAndCreateStatement();
@@ -257,12 +257,12 @@ public class CassandraQuery extends ExpressionQuery {
                 if (DispatchStatus.isFirstBatchRequest()) {
                     this.batchStatement.set(new BatchStatement());
                 }
-                this.batchStatement.get().add(this.bindParams(params));
+                this.batchStatement.get().add(this.getStatement().bind(this.bindParams(params)));
                 if (DispatchStatus.isLastBatchRequest()) {
                     this.getSession().execute(this.batchStatement.get());
                 }
             } else {
-                rs = this.getSession().execute(this.bindParams(params));
+                rs = this.getSession().execute(this.getStatement().bind(this.bindParams(params)));
             }
         }
         return rs;

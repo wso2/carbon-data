@@ -55,6 +55,7 @@
     boolean boxcarring = false;
     boolean batchRequest = false;
     boolean enableStreaming = true;
+    boolean disableLegacyBoxcarringMode = false;
     boolean finishButton = false;
     boolean enableHTTP = true;
     boolean enableHTTPS = true;
@@ -87,6 +88,7 @@
                 protectedTokens = dataService.getProtectedTokens();
                 passwordProvider = dataService.getPasswordProvider();
                 boxcarring = dataService.isBoxcarring();
+                disableLegacyBoxcarringMode = dataService.isDisableLegacyBoxcarringMode();
                 //useAppServerTS = dataService.isUseAppServerTS();
                 batchRequest = dataService.isBatchRequest();
                 enableStreaming = !dataService.isDisableStreaming();
@@ -123,6 +125,7 @@
                 protectedTokens = data.getProtectedTokens();
                 passwordProvider = data.getPasswordProvider();
                 boxcarring = data.isBoxcarring();
+                disableLegacyBoxcarringMode = dataService.isDisableLegacyBoxcarringMode();
                 //useAppServerTS = data.isUseAppServerTS();
                 batchRequest = data.isBatchRequest();
                 data.setServiceHierarchy(detailedServiceName);
@@ -172,6 +175,7 @@
             passwordProvider = (passwordProvider == null) ? "" : passwordProvider;
             batchRequest = dataService.isBatchRequest();
             enableStreaming = !dataService.isDisableStreaming();
+            disableLegacyBoxcarringMode = dataService.isDisableLegacyBoxcarringMode();
             boxcarring = dataService.isBoxcarring();
             enableHTTP = dataService.isEnableHTTP();
             enableHTTPS = dataService.isEnableHTTPS();
@@ -280,10 +284,21 @@
                                 <td>
                                     <input type="checkbox" value="<%=boxcarring%>"
                                            id="enableBoxcarring"
+                                           onclick="viewdisableLegacyBoxcarringMode();"
+                                           onload="onLoadPage();"
                                            name="enableBoxcarring" <%=(boxcarring) ? "checked=\"checked\"" : ""%>>
                                 </td>
                                 <td align="left"><label for="enableBoxcarring"><fmt:message
                                         key="service.boxcarring"/></label></td>
+                                <td/>
+                                <td id="disableLegacyBoxcarringModeCheckbox" hidden>
+                                    <input type="checkbox"
+                                           id="disableLegacyBoxcarringMode"
+                                           name="disableLegacyBoxcarringMode"  <%=(disableLegacyBoxcarringMode) ? "checked=\"checked\"" : ""%>
+                                           value=<%=disableLegacyBoxcarringMode%>>
+                                </td>
+                                <td align="left" id="disableLegacyBoxcarringModeLabel" hidden><label for="disableLegacyBoxcarringMode"><fmt:message
+                                        key="service.boxcarring.disable.legacy.mode"/></label></td>
                             </tr>
                             <tr>
                                 <td>
@@ -455,6 +470,7 @@
 
 <script type="text/javascript">
 var editingDataService = <%=editingDataService %> ;
+window.onload = onLoadPage();
     function showAdvancedServiceDetailsConfigurations() {
         var symbolMax = document.getElementById('txManagerJNDINameMax');
         var advancedConfigFields = document.getElementById('txManagerNameRow');
@@ -467,6 +483,19 @@ var editingDataService = <%=editingDataService %> ;
             symbolMax.innerHTML = 'Show Advanced Distributed Transactions Settings';
             advancedConfigFields.style.display = 'none';
         }
+    }
+    function viewdisableLegacyBoxcarringMode() {
+        var chboxEnableBoxcarring = document.getElementById("enableBoxcarring");
+        if (chboxEnableBoxcarring.checked) {
+            document.getElementById("disableLegacyBoxcarringModeCheckbox").hidden = false;
+            document.getElementById("disableLegacyBoxcarringModeLabel").hidden = false;
+        } else {
+            document.getElementById("disableLegacyBoxcarringModeCheckbox").hidden = true;
+            document.getElementById("disableLegacyBoxcarringModeLabel").hidden = true;
+        }
+    }
+    function onLoadPage() {
+        viewdisableLegacyBoxcarringMode();
     }
 </script>
 

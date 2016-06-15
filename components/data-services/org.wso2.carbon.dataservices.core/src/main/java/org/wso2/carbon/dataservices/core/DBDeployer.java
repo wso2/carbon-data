@@ -101,7 +101,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -876,7 +875,7 @@ public class DBDeployer extends AbstractDeployer {
 			createDSSchema(axisService, dataService);
 
 			/* set session scope type for boxcarring */
-			if (dataService.isBoxcarringEnabled()) {
+			if (dataService.isBoxcarringEnabled() && !dataService.isDisableLegacyBoxcarringMode()) {
 				axisService.setScope(Constants.SCOPE_TRANSPORT_SESSION);
 			}
 

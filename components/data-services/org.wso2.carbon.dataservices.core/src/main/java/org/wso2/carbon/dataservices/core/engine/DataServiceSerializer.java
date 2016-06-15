@@ -63,12 +63,15 @@ public class DataServiceSerializer {
         }
         
         /* set 'enableBatchRequests' attribute */
-        dataEl.addAttribute(DBSFields.ENABLE_BATCH_REQUESTS, 
+        dataEl.addAttribute(DBSFields.ENABLE_BATCH_REQUESTS,
         		Boolean.toString(dataService.isBatchRequestsEnabled()), null);
         /* set 'enableBoxcarring' attribute */
-        dataEl.addAttribute(DBSFields.ENABLE_BOXCARRING, 
+        dataEl.addAttribute(DBSFields.ENABLE_BOXCARRING,
         		Boolean.toString(dataService.isBoxcarringEnabled()), null);
-        
+        /* set 'disableLegacyBoxcarringMode' attribute */
+        dataEl.addAttribute(DBSFields.DISABLE_LEGACY_BOXCARRING_MODE,
+                            Boolean.toString(dataService.isDisableLegacyBoxcarringMode()), null);
+
         /* add configs */
         for (Config config : dataService.getConfigs().values()) {
         	dataEl.addChild(ConfigSerializer.serializeConfig(config));
@@ -94,5 +97,5 @@ public class DataServiceSerializer {
         fac.createOMDocument().addChild(dataEl);
 		return dataEl;
 	}
-	
+
 }

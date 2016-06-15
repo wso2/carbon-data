@@ -91,7 +91,7 @@ public class DataServiceDocLitWrappedSchemaGenerator {
             processRequest(cparams, resource);
         }
         /* process requestBox operation (Only have one element) */
-        if (dataservice.isBoxcarringEnabled()) {
+        if (dataservice.isBoxcarringEnabled() && dataservice.isDisableLegacyBoxcarringMode()) {
             Operation requestBoxOperation = dataservice.getOperation(DBConstants.REQUEST_BOX_ELEMENT);
             if (requestBoxOperation != null) {
                 processRequestBox(cparams, requestBoxOperation, (List<List<CallableRequest>>)(List<?>)allOps);

@@ -50,6 +50,7 @@
         <input type="hidden" name="enableXA" id="enableXA" value="<%=request.getParameter("enableXA") %>" />
         <input type="hidden" name="useAppServerTS" id="isUseAppServerTS" value="<%=request.getParameter("useAppServerTS") %>" />
         <input type="hidden" name="enableBoxcarring" id="enableBoxcarring" value="<%=request.getParameter("enableBoxcarring") %>" />
+        <input type="hidden" name="disableLegacyBoxcarringMode" id="disableLegacyBoxcarringMode" value="<%=request.getParameter("disableLegacyBoxcarringMode") %>" />
         <input type="hidden" name="protectedTokens" id="protectedTokens" value="<%=request.getParameter("protectedTokens") %>" />
         <input type="hidden" name="passwordProvider" id="passwordProvider" value="<%=request.getParameter("passwordProvider") %>" />
         <input type="hidden" name="serviceNamespace" id="protectedTokens" value="<%=request.getParameter("serviceNamespace") %>" />
@@ -61,6 +62,7 @@
             String batchRequest = request.getParameter("batchResponse");
             String isUseAppServerTS = request.getParameter("useAppServerTS");
             String boxcarring = request.getParameter("enableBoxcarring");
+            String disableLegacyBoxcarringMode = request.getParameter("disableLegacyBoxcarringMode");
             String protectedTokens = request.getParameter("protectedTokens");
             String passwordProvider = request.getParameter("passwordProvider");
             String serviceNamespace = request.getParameter("serviceNamespace");
@@ -103,7 +105,12 @@
             }
             if (boxcarring != null && boxcarring.trim().length() > 0) {
             	dataService.setBoxcarring(Boolean.parseBoolean(boxcarring));
-            }  
+            }
+            if (disableLegacyBoxcarringMode != null && disableLegacyBoxcarringMode.trim().length() > 0) {
+                dataService.setDisableLegacyBoxcarringMode(true);
+            } else {
+                dataService.setDisableLegacyBoxcarringMode(false);
+            }
             if (disableStreaming != null && disableStreaming.trim().length() > 0) {
             	dataService.setDisableStreaming(true);
             } 

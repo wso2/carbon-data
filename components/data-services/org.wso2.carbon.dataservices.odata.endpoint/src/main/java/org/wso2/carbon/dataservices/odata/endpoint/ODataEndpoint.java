@@ -41,10 +41,6 @@ public class ODataEndpoint {
      */
     public static void process(HttpServletRequest request, HttpServletResponse response) {
         String tenantDomain = TenantAxisUtils.getTenantDomain(request.getRequestURI());
-        if (log.isDebugEnabled()) {
-            log.debug("OData Request received to DSS: Request body - " + request.toString() + ", ThreadID - " +
-                      Thread.currentThread().getId());
-        }
         try {
             String[] serviceParams = getServiceDetails(request.getRequestURI(), tenantDomain);
             String serviceRootPath;
@@ -72,11 +68,6 @@ public class ODataEndpoint {
             response.setStatus(BAD_REQUEST);
             if (log.isDebugEnabled()) {
                 log.debug("Bad Request invoked. :" + e.getMessage());
-            }
-        } finally {
-            if (log.isDebugEnabled()) {
-                log.debug("OData Response send from DSS: Response body - " + response.toString() + ", ThreadID - " +
-                          Thread.currentThread().getId());
             }
         }
     }

@@ -73,11 +73,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
 
 /**
  * This class represents an SQL query in a data service.
@@ -636,8 +632,9 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
                 if (this.isValidCreds(creds)) {
                     return creds;
                 } else {
-                    throw new DataServiceFault("A username/password mapping does not exist for the request user: " +
-                                               user);
+                    throw new DataServiceFault(
+                            "A username/password mapping does not exist for the "
+                                    + "request user: " + user);
                 }
             }
         } else {
@@ -786,9 +783,6 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
             throw new DataServiceFault(e, FaultCodes.DATABASE_ERROR,
                     "Error in 'SQLQuery.processPreNormalQuery': " + e.getMessage());
         } finally {
-            if (log.isDebugEnabled()) {
-                log.debug("Stopping DB calls: ThreadID - " + Thread.currentThread().getId());
-            }
             if (isError) {
                 this.releaseResources(rs, this.isStatementClosable(isError) ? stmt : null);
             }
@@ -943,9 +937,6 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
             throw new DataServiceFault(e, FaultCodes.DATABASE_ERROR,
                     "Error in 'SQLQuery.processStoredProcQuery': " + e.getMessage());
         } finally {
-            if (log.isDebugEnabled()) {
-                log.debug("Stopping DB calls: ThreadID - " + Thread.currentThread().getId());
-            }
             if (isError) {
                 this.releaseResources(rs, this.isStatementClosable(isError) ? stmt : null);                
             }
@@ -1381,14 +1372,6 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
                 String dynamicSQL = (String) result[0];
                 currentParamCount = (Integer) result[1];
                 String processedSQL = this.createProcessedQuery(dynamicSQL, params, currentParamCount);
-                if (log.isDebugEnabled()) {
-                    String paramsStr = "";
-                    for (int i = 1; i <= this.getParamCount(); i++) {
-                        paramsStr = paramsStr + params.getParam(i) + ",";
-                    }
-                    log.debug("Starting DB calls: for \"" + processedSQL + "\" with params - " + paramsStr +
-                              ", ThreadID - " + Thread.currentThread().getId());
-                }
                 if (queryType == SQLQuery.DS_QUERY_TYPE_NORMAL) {
                     if (this.isReturnGeneratedKeys()) {
                         if (this.getKeyColumns() != null) {

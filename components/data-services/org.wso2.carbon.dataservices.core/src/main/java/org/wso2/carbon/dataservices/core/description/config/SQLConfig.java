@@ -85,14 +85,16 @@ public abstract class SQLConfig extends Config {
 			try {
 				dynUserAuthPropEl = AXIOMUtil.stringToOM(dynAuthMapping);
 			} catch (XMLStreamException e) {
-				throw new DataServiceFault(e, "Error in reading dynamic user auth mapping configuration: " +
-				                           e.getMessage());
+				throw new DataServiceFault(e, 
+						"Error in reading dynamic user auth mapping configuration: " + 
+				                e.getMessage());
 			}
 			OMElement dynUserAuthConfEl = dynUserAuthPropEl.getFirstElement();
 			if (dynUserAuthConfEl == null) {
 				throw new DataServiceFault("Invalid dynamic user auth mapping configuration");
 			}
-			this.primaryDynAuth = new ConfigurationBasedAuthenticator(dynUserAuthConfEl.toString());
+			this.primaryDynAuth = new ConfigurationBasedAuthenticator(
+					dynUserAuthConfEl.toString());
 		}
 		String dynAuthClass = this.getProperty(RDBMS.DYNAMIC_USER_AUTH_CLASS);
 		if (!DBUtils.isEmptyString(dynAuthClass)) {
@@ -105,7 +107,8 @@ public abstract class SQLConfig extends Config {
 					this.secondaryDynAuth = authObj;
 				}
 			} catch (Exception e) {
-				throw new DataServiceFault(e, "Error in creating dynamic user authenticator: " + e.getMessage());
+				throw new DataServiceFault(e, 
+						"Error in creating dynamic user authenticator: " + e.getMessage());
 			}
 		}
 	}
@@ -122,8 +125,8 @@ public abstract class SQLConfig extends Config {
 					this.autoCommit = AutoCommit.AUTO_COMMIT_OFF;
 				}
 			} catch (Exception e) {
-				throw new DataServiceFault(e, "Invalid autocommit value in config: " + autoCommitProp +
-				                           ", autocommit should be a boolean value");
+				throw new DataServiceFault(e, "Invalid autocommit value in config: " + 
+						autoCommitProp + ", autocommit should be a boolean value");
 			}		
 		} else {
 			this.autoCommit = AutoCommit.DEFAULT;			
@@ -174,8 +177,8 @@ public abstract class SQLConfig extends Config {
 	
 	public Object[] createConnection(String user, String pass)
 			throws SQLException, DataServiceFault {
-		if (log.isDebugEnabled()) {
-			log.debug("Creating data source connection: ThreadID - " + Thread.currentThread().getId());
+		if (log.isDebugEnabled()){
+			log.debug("Creating data source connection");
 		}
 		DataSource ds = this.getDataSource();
         Boolean xaConn = false;

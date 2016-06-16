@@ -18,11 +18,11 @@
  */
 package org.wso2.carbon.dataservices.core;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * This class represents a thread local connection repository.
@@ -63,10 +63,6 @@ public class TLConnectionStore {
 		for (DataServiceConnection conn : conns.values()) {
 		    try {
 		        conn.commit();
-                if (log.isDebugEnabled()) {
-                    log.debug("Committing connection: " + conn.toString() + ", ThreadID - " +
-                              Thread.currentThread().getId());
-                }
 		    } catch (Exception e) {
                 log.warn("Error in committing connection: " + e.getMessage(), e);
             }
@@ -79,10 +75,6 @@ public class TLConnectionStore {
             if (!conn.isXA()) {
                 try {
                     conn.commit();
-                    if (log.isDebugEnabled()) {
-                        log.debug("Committing non-XA connection: " + conn.toString() + ", ThreadID - " +
-                                  Thread.currentThread().getId());
-                    }
                 } catch (Exception e) {
                     log.warn("Error in committing non-XA connection: " + e.getMessage(), e);
                 }
@@ -95,10 +87,6 @@ public class TLConnectionStore {
         for (DataServiceConnection conn : conns.values()) {
             try {
                 conn.rollback();
-                if (log.isDebugEnabled()) {
-                    log.debug("Rolling back connection: " + conn.toString() + ", ThreadID - " +
-                              Thread.currentThread().getId());
-                }
             } catch (Exception e) {
                 log.warn("Error in rolling back connection: " + e.getMessage(), e);
             }
@@ -111,10 +99,6 @@ public class TLConnectionStore {
             if (!conn.isXA()) {
                 try {
                     conn.rollback();
-                    if (log.isDebugEnabled()) {
-                        log.debug("Rolling back non-XA connection: " + conn.toString() + ", ThreadID - " +
-                                  Thread.currentThread().getId());
-                    }
                 } catch (Exception e) {
                     log.warn("Error in rolling back non-XA connection: " + e.getMessage(), e);
                 }
@@ -127,10 +111,6 @@ public class TLConnectionStore {
         for (DataServiceConnection conn : conns.values()) {
             try {
                 conn.close();
-                if (log.isDebugEnabled()) {
-                    log.debug("Closing connection: " + conn.toString() + ", ThreadID - " +
-                              Thread.currentThread().getId());
-                }
             } catch (Exception e) {
                 log.error("Error in closing connection: " + e.getMessage(), e);
             }

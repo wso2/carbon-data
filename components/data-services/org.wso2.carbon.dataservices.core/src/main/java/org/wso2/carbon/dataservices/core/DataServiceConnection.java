@@ -46,11 +46,5 @@ public interface DataServiceConnection {
      * @return XA compatible connection or not
      */
     boolean isXA();
-
-    /**
-     * Returns information of the the connection object.
-     * @return  a string representation of the object
-     */
-    String toString();
     
 }

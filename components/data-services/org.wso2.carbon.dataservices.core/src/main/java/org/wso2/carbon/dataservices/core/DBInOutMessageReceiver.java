@@ -49,18 +49,35 @@ public class DBInOutMessageReceiver extends RawXMLINOutMessageReceiver {
 	public void invokeBusinessLogic(MessageContext msgContext,
 			MessageContext newMsgContext) throws AxisFault {
 		try {
-            OMElement result = DataServiceProcessor.dispatch(msgContext);
+			if (log.isDebugEnabled()) {
+				log.debug("Request received to DSS:  Data Service - " + msgContext.getServiceContext().getName() +
+				          ", Operation - " + msgContext.getSoapAction() + ", Request body - " +
+				          msgContext.getEnvelope().getText() + ", ThreadID - " + Thread.currentThread().getId());
+			}
+			OMElement result = DataServiceProcessor.dispatch(msgContext);
 			SOAPFactory fac = getSOAPFactory(msgContext);
 			SOAPEnvelope envelope = fac.getDefaultEnvelope();
 			if (result != null) {
 				envelope.getBody().addChild(result);
 			}
 			newMsgContext.setEnvelope(envelope);
-		} catch(Exception e) {
-		    e.printStackTrace();
+		} catch (Exception e) {
 			log.error("Error in in-out message receiver", e);
 			msgContext.setProperty(Constants.FAULT_NAME, DBConstants.DS_FAULT_NAME);
 			throw DBUtils.createAxisFault(e);
+		} finally {
+			if (log.isDebugEnabled()) {
+				String response;
+				if (msgContext.getProperty(Constants.FAULT_NAME) != null &&
+				    msgContext.getProperty(Constants.FAULT_NAME).equals(DBConstants.DS_FAULT_NAME)) {
+					response = "Error in Response";
+				} else {
+					response = newMsgContext.getEnvelope().getText();
+				}
+				log.debug("Response send from DSS:  Data Service - " + msgContext.getServiceContext().getName() +
+				          ", Operation - " + msgContext.getSoapAction() + ", Response body - " + response +
+				          ", ThreadID - " + Thread.currentThread().getId());
+			}
 		}
 	}
     

@@ -18,14 +18,11 @@
  */
 package org.wso2.carbon.dataservices.core.description.query;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
-
-import javax.sql.XAConnection;
-
 import org.wso2.carbon.dataservices.core.DataServiceConnection;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
+
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * This class represents a SQL data services connection.
@@ -34,16 +31,16 @@ public class SQLDataServicesConnection implements DataServiceConnection {
 
     private Connection jdbcConn;
     private boolean isXA;
-    
+
     public SQLDataServicesConnection(Connection jdbcConn, boolean isXA) {
         this.jdbcConn = jdbcConn;
         this.isXA = isXA;
     }
-    
+
     @Override
     public void commit() throws DataServiceFault {
         try {
-            if (!this.jdbcConn.isClosed() && !this.getAutoCommit(this.jdbcConn)) {
+            if (!this.jdbcConn.isClosed() && !this.getAutoCommit()) {
                 this.jdbcConn.commit();
             }
         } catch (SQLException e) {
@@ -54,7 +51,7 @@ public class SQLDataServicesConnection implements DataServiceConnection {
     @Override
     public void rollback() throws DataServiceFault {
         try {
-            if (!this.jdbcConn.isClosed() && !this.getAutoCommit(this.jdbcConn)) {
+            if (!this.jdbcConn.isClosed() && !this.getAutoCommit()) {
                 this.jdbcConn.rollback();
             }
         } catch (SQLException e) {
@@ -75,21 +72,26 @@ public class SQLDataServicesConnection implements DataServiceConnection {
 
     @Override
     public boolean isXA() {
-        return isXA;
-    }
-    
-    public Connection getJDBCConnection() {
-        return jdbcConn;
+        return this.isXA;
     }
 
-    private boolean getAutoCommit(Connection conn) {
+    public Connection getJDBCConnection() {
+        return this.jdbcConn;
+    }
+
+    private boolean getAutoCommit() {
         try {
-            return conn.getAutoCommit();
+            return this.jdbcConn.getAutoCommit();
         } catch (SQLException ignore) {
             /* some databases does not support this, if so, that means it is
              * similar to being always in autoCommit=true mode */
             return true;
         }
     }
-    
+
+    @Override
+    public String toString() {
+        return "SQLDataServicesConnection , " + this.jdbcConn.toString() + ", isXA=" + isXA + ", autoCommit=" +
+               getAutoCommit();
+    }
 }

@@ -70,9 +70,9 @@ public class Resource extends CallableRequest {
 	/**
 	 * Represents the identifier used to uniquely identify a resource.
 	 */
-	public static class ResourceID {
-		
-		private String path;
+	public static class ResourceID implements Comparable {
+
+        private String path;
 		
 		private String method;
 		
@@ -104,7 +104,13 @@ public class Resource extends CallableRequest {
 			}
 			return this.hashCode() == rhs.hashCode();
 		}
-		
-	}
-	
+
+        @Override
+        public int compareTo(Object obj) {
+            ResourceID resource = (ResourceID) obj;
+            return generateRequestName(this.path, this.method).
+                    compareTo(generateRequestName(resource.getPath(), resource.getMethod()));
+        }
+
+    }
 }

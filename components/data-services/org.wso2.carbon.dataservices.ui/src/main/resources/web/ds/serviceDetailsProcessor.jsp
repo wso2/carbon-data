@@ -36,6 +36,7 @@
     String batchRequest = request.getParameter("enableBatchReq");
     String isUseAppServerTS = request.getParameter("useAppServerTS");
     String boxcarring = request.getParameter("enableBoxcarring");
+    String disableLegacyBoxcarringMode = request.getParameter("disableLegacyBoxcarringMode");
     String protectedTokens = request.getParameter("protectedTokens");
     String passwordProvider = request.getParameter("passwordProvider");
     String serviceNamespace = request.getParameter("serviceNamespace");
@@ -81,6 +82,11 @@
             dataService.setBoxcarring(true);
         } else {
             dataService.setBoxcarring(false);
+        }
+        if (disableLegacyBoxcarringMode != null && disableLegacyBoxcarringMode.trim().length() > 0) {
+            dataService.setDisableLegacyBoxcarringMode(true);
+        } else {
+            dataService.setDisableLegacyBoxcarringMode(false);
         }
 
         if (serviceNamespace != null) {

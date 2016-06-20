@@ -877,7 +877,7 @@ public class DBDeployer extends AbstractDeployer {
 			createDSSchema(axisService, dataService);
 
 			/* set session scope type for boxcarring */
-			if (dataService.isBoxcarringEnabled()) {
+			if (dataService.isBoxcarringEnabled() && !dataService.isDisableLegacyBoxcarringMode()) {
 				axisService.setScope(Constants.SCOPE_TRANSPORT_SESSION);
 			}
 

@@ -19,9 +19,9 @@ package org.wso2.carbon.dataservices.core;
 
 import org.apache.axiom.om.OMElement;
 import org.wso2.carbon.dataservices.common.DBConstants;
+import org.wso2.carbon.dataservices.common.DBConstants.AuthorizationProviderConfig;
 import org.wso2.carbon.dataservices.common.DBConstants.BoxcarringOps;
 import org.wso2.carbon.dataservices.common.DBConstants.DBSFields;
-import org.wso2.carbon.dataservices.common.DBConstants.AuthorizationProviderConfig;
 import org.wso2.carbon.dataservices.core.auth.AuthorizationProvider;
 import org.wso2.carbon.dataservices.core.auth.UserStoreAuthorizationProvider;
 import org.wso2.carbon.dataservices.core.description.config.ConfigFactory;
@@ -39,7 +39,6 @@ import org.wso2.securevault.SecretResolverFactory;
 import org.wso2.securevault.SecurityConstants;
 
 import javax.xml.namespace.QName;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -110,6 +109,13 @@ public class DataServiceFactory {
                 disableStreaming = Boolean.parseBoolean(disableStreamingStr);
             }
 
+            boolean disableLegacyBoxcarringMode = false;
+            String disableLegacyBoxcarringModeStr =
+                    dbsElement.getAttributeValue(new QName(DBSFields.DISABLE_LEGACY_BOXCARRING_MODE));
+            if (disableLegacyBoxcarringModeStr != null) {
+                disableLegacyBoxcarringMode = Boolean.parseBoolean(disableLegacyBoxcarringModeStr);
+            }
+
             /* txManagerName property */
             String userTxJNDIName = dbsElement.getAttributeValue(
                     new QName(DBSFields.TRANSACTION_MANAGER_JNDI_NAME));
@@ -135,6 +141,9 @@ public class DataServiceFactory {
 
             /* set disable streaming */
             dataService.setDisableStreaming(disableStreaming);
+
+            /* set disable legacy boxcarring mode */
+            dataService.setDisableLegacyBoxcarringMode(disableLegacyBoxcarringMode);
 
             /* add the password manager */
             Iterator<OMElement> passwordMngrItr = dbsElement.getChildrenWithName(

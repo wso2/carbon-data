@@ -20,9 +20,6 @@ package org.wso2.carbon.dataservices.core.engine;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.dataservices.core.auth.AuthorizationProvider;
-import org.wso2.carbon.dataservices.core.description.resource.ResourceFactory;
-import org.wso2.securevault.SecretResolver;
 import org.wso2.carbon.dataservices.common.DBConstants;
 import org.wso2.carbon.dataservices.common.DBConstants.DBSFields;
 import org.wso2.carbon.dataservices.common.DBConstants.ResultTypes;
@@ -30,6 +27,7 @@ import org.wso2.carbon.dataservices.common.DBConstants.ServiceStatusValues;
 import org.wso2.carbon.dataservices.core.DBUtils;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
 import org.wso2.carbon.dataservices.core.DataServiceUser;
+import org.wso2.carbon.dataservices.core.auth.AuthorizationProvider;
 import org.wso2.carbon.dataservices.core.description.config.Config;
 import org.wso2.carbon.dataservices.core.description.event.EventTrigger;
 import org.wso2.carbon.dataservices.core.description.operation.Operation;
@@ -37,11 +35,13 @@ import org.wso2.carbon.dataservices.core.description.operation.OperationFactory;
 import org.wso2.carbon.dataservices.core.description.query.Query;
 import org.wso2.carbon.dataservices.core.description.resource.Resource;
 import org.wso2.carbon.dataservices.core.description.resource.Resource.ResourceID;
+import org.wso2.carbon.dataservices.core.description.resource.ResourceFactory;
 import org.wso2.carbon.dataservices.core.description.xa.DSSXATransactionManager;
 import org.wso2.carbon.dataservices.core.internal.DataServicesDSComponent;
 import org.wso2.carbon.event.core.EventBroker;
 import org.wso2.carbon.event.core.exception.EventBrokerException;
 import org.wso2.carbon.event.core.subscription.Subscription;
+import org.wso2.securevault.SecretResolver;
 
 import javax.transaction.TransactionManager;
 import javax.xml.stream.XMLStreamWriter;
@@ -166,6 +166,11 @@ public class DataService {
      * flag to check if streaming is disabled
      */
     private boolean disableStreaming;
+
+    /**
+     * flag to check if boxcarring legacy mode is disabled
+     */
+    private boolean disableLegacyBoxcarringMode;
     
     /**
      * The tenant to which this service belongs to.
@@ -336,9 +341,11 @@ public class DataService {
      */
     public void init() throws DataServiceFault {
          /* add operations related to boxcarring and request Box */
-        if (this.isBoxcarringEnabled()) {
+        if (this.isBoxcarringEnabled() && this.disableLegacyBoxcarringMode) {
             initRequestBox();
+        } else {
             initBoxcarring();
+            initRequestBox();
         }
         /* init callable requests */
         for (CallableRequest callableRequest : this.getCallableRequests().values()) {
@@ -362,6 +369,14 @@ public class DataService {
 
     public void setDisableStreaming(boolean disableStreaming) {
         this.disableStreaming = disableStreaming;
+    }
+
+    public boolean isDisableLegacyBoxcarringMode() {
+        return this.disableLegacyBoxcarringMode;
+    }
+
+    public void setDisableLegacyBoxcarringMode(boolean disableLegacyBoxcarringMode) {
+        this.disableLegacyBoxcarringMode = disableLegacyBoxcarringMode;
     }
 
     public DSSXATransactionManager getDSSTxManager() {

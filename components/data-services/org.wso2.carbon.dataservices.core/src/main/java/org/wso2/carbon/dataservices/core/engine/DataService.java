@@ -344,6 +344,7 @@ public class DataService {
             initRequestBox();
         } else {
             initBoxcarring();
+            initRequestBox();
         }
         /* init callable requests */
         for (CallableRequest callableRequest : this.getCallableRequests().values()) {

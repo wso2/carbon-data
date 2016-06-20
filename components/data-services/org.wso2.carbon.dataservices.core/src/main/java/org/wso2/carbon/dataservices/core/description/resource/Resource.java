@@ -70,9 +70,9 @@ public class Resource extends CallableRequest {
 	/**
 	 * Represents the identifier used to uniquely identify a resource.
 	 */
-	public static class ResourceID implements Comparable{
-		
-		private String path;
+	public static class ResourceID implements Comparable {
+
+        private String path;
 		
 		private String method;
 		

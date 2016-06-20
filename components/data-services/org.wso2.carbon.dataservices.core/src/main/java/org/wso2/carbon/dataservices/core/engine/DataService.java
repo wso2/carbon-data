@@ -47,6 +47,7 @@ import javax.transaction.TransactionManager;
 import javax.xml.stream.XMLStreamWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -184,7 +185,7 @@ public class DataService {
         this.name = name;
         this.callableRequests = new HashMap<String, CallableRequest>();
         this.operations = new HashMap<String, Operation>();
-        this.resourceMap = new HashMap<ResourceID, Resource>();
+        this.resourceMap = new LinkedHashMap<ResourceID, Resource>();
         this.configs = new HashMap<String, Config>();
         this.eventTriggers = new HashMap<String, EventTrigger>();
         this.queries = new HashMap<String, Query>();

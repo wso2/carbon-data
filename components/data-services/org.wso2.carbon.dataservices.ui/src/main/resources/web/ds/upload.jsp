@@ -17,6 +17,7 @@
  -->
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar" prefix="carbon" %>
+<%@ taglib uri="http://www.owasp.org/index.php/Category:OWASP_CSRFGuard_Project/Owasp.CsrfGuard.tld" prefix="csrf" %>
 <jsp:include page="../dialog/display_messages.jsp"/>
 
 <fmt:bundle basename="org.wso2.carbon.dataservices.ui.i18n.Resources">
@@ -41,7 +42,7 @@
         <h2><fmt:message key="upload.dataservice"/></h2>
 
         <div id="workArea">
-            <form method="post" name="dbsUpload" action="../../fileupload/dbs"
+            <form method="post" name="dbsUpload" action="../../fileupload/dbs?<csrf:tokenname/>=<csrf:tokenvalue/>"
                   enctype="multipart/form-data" target="_self">
                 <table class="styledLeft">
                     <thead>

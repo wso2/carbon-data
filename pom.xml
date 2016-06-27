@@ -691,6 +691,11 @@
                 <version>${cassandra-driver-core.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.wso2.orbit.com.datastax.cassandra</groupId>
+                <artifactId>cassandra-driver-core</artifactId>
+                <version>${cassandra-driver-core.215.orbit.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty</artifactId>
                 <version>${netty.version}</version>
@@ -1190,6 +1195,7 @@
         <cassandra-driver-core.orbit.imp.pkg.version>0.0.0</cassandra-driver-core.orbit.imp.pkg.version>
 
         <cassandra-driver-core.version>2.1.5</cassandra-driver-core.version>
+        <cassandra-driver-core.215.orbit.version>2.1.5.wso2v1</cassandra-driver-core.215.orbit.version>
         <cassandra-driver-core.imp.pkg.version>[2.1.5,2.1.6)</cassandra-driver-core.imp.pkg.version>
         <netty.version>3.9.0.Final</netty.version>
         <netty.imp.pkg.version>[3.9.0.Final,4.0.0)</netty.imp.pkg.version>
@@ -1202,8 +1208,8 @@
         <axiom.orbit.version>1.2.11.wso2v11</axiom.orbit.version>
         <axiom.orbit.imp.pkg.version>0.0.0</axiom.orbit.imp.pkg.version> <!--todo change this to appropriate version range ([1.2.11,1.3.0)) after osgi bundle is corrected - rajith-->
 
-        <hadoop-client.orbit.version.>2.6.0.wso2v3</hadoop-client.orbit.version.>
-        <hadoop-client.orbit.imp.pkg.version.>[2.6.0.wso2v1,2.7.0)</hadoop-client.orbit.imp.pkg.version.>
+        <hadoop-client.orbit.version.>2.7.2.wso2v1</hadoop-client.orbit.version.>
+        <hadoop-client.orbit.imp.pkg.version.>[2.7.0, 2.8.0)</hadoop-client.orbit.imp.pkg.version.>
         <zookeeper.orbit.version>3.4.5.wso2v1</zookeeper.orbit.version>
         <htrace.version>3.0.4.wso2v1</htrace.version>
         <apache.htrace.version>3.1.0-incubating.wso2v1</apache.htrace.version>

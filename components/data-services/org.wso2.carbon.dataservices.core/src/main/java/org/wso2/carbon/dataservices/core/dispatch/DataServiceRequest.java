@@ -34,7 +34,13 @@ import org.wso2.carbon.dataservices.core.engine.DataService;
 import org.wso2.carbon.dataservices.core.engine.ParamValue;
 
 import javax.xml.namespace.QName;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Represents a data services request.
@@ -281,6 +287,10 @@ public abstract class DataServiceRequest {
     private static DataServiceRequest createRequestBoxRequest(DataService dataService, String requestName,
                                                               OMElement inputMessage) throws DataServiceFault {
         RequestBoxRequest dsRequest = new RequestBoxRequest(dataService, requestName);
+
+	    if (inputMessage == null) {
+		    throw new DataServiceFault("Input message is null for REQUEST_BOX request");
+	    }
 
         Iterator<OMElement> paramItr = inputMessage.getChildElements();
         OMElement paramEl;

@@ -52,7 +52,7 @@ public class DBInOutMessageReceiver extends RawXMLINOutMessageReceiver {
 			if (log.isDebugEnabled()) {
 				log.debug("Request received to DSS:  Data Service - " + msgContext.getServiceContext().getName() +
 				          ", Operation - " + msgContext.getSoapAction() + ", Request body - " +
-				          msgContext.getEnvelope().toString() + ", ThreadID - " + Thread.currentThread().getId());
+				          msgContext.getEnvelope().getText() + ", ThreadID - " + Thread.currentThread().getId());
 			}
 			OMElement result = DataServiceProcessor.dispatch(msgContext);
 			SOAPFactory fac = getSOAPFactory(msgContext);
@@ -67,9 +67,16 @@ public class DBInOutMessageReceiver extends RawXMLINOutMessageReceiver {
 			throw DBUtils.createAxisFault(e);
 		} finally {
 			if (log.isDebugEnabled()) {
+				String response;
+				if (msgContext.getProperty(Constants.FAULT_NAME) != null &&
+				    msgContext.getProperty(Constants.FAULT_NAME).equals(DBConstants.DS_FAULT_NAME)) {
+					response = "Error in Response";
+				} else {
+					response = newMsgContext.getEnvelope().getText();
+				}
 				log.debug("Response send from DSS:  Data Service - " + msgContext.getServiceContext().getName() +
-				          ", Operation - " + msgContext.getSoapAction() + ", Response body - " +
-				          newMsgContext.getEnvelope().toString() + ", ThreadID - " + Thread.currentThread().getId());
+				          ", Operation - " + msgContext.getSoapAction() + ", Response body - " + response +
+				          ", ThreadID - " + Thread.currentThread().getId());
 			}
 		}
 	}

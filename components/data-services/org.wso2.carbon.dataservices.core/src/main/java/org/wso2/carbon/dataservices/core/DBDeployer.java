@@ -101,10 +101,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 /**
@@ -849,7 +849,8 @@ public class DBDeployer extends AbstractDeployer {
 
 			/* REST processing - adding DS resources to AxisService */
 			Set<ResourceID> resourceIds = dataService.getResourceIds();
-			for (ResourceID resourceId : resourceIds) {
+            Set<ResourceID> sortedResourceIds = new TreeSet<>(resourceIds).descendingSet();
+			for (ResourceID resourceId : sortedResourceIds) {
 				Resource resource = dataService.getResource(resourceId);
 				AxisOperation axisOperation = createAxisOperationFromDSResource(
 						resource, soap11Binding, soap12Binding, httpBinding);
@@ -876,7 +877,7 @@ public class DBDeployer extends AbstractDeployer {
 			createDSSchema(axisService, dataService);
 
 			/* set session scope type for boxcarring */
-			if (dataService.isBoxcarringEnabled()) {
+			if (dataService.isBoxcarringEnabled() && !dataService.isDisableLegacyBoxcarringMode()) {
 				axisService.setScope(Constants.SCOPE_TRANSPORT_SESSION);
 			}
 

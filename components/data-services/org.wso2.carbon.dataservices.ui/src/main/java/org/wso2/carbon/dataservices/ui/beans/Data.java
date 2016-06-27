@@ -25,7 +25,12 @@ import org.wso2.carbon.dataservices.common.DBConstants.DBSFields;
 import org.wso2.carbon.dataservices.common.conf.DynamicAuthConfiguration;
 
 import javax.xml.namespace.QName;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Object Model for the data service configuration.
@@ -46,6 +51,8 @@ public class Data extends DataServiceConfigurationElement{
     private boolean batchRequest;
 
     private boolean boxcarring;
+
+    private boolean disableLegacyBoxcarringMode;
     
 	private boolean enableXA;
 	
@@ -190,6 +197,14 @@ public class Data extends DataServiceConfigurationElement{
 
     public void setBoxcarring(boolean boxcarring) {
         this.boxcarring = boxcarring;
+    }
+
+    public boolean isDisableLegacyBoxcarringMode() {
+        return disableLegacyBoxcarringMode;
+    }
+
+    public void setDisableLegacyBoxcarringMode(boolean disableLegacyBoxcarringMode) {
+        this.disableLegacyBoxcarringMode = disableLegacyBoxcarringMode;
     }
 
     public boolean isEnableHTTP() {
@@ -1032,6 +1047,11 @@ public class Data extends DataServiceConfigurationElement{
 		if (enableBoxcarring != null) {
 			setBoxcarring(Boolean.parseBoolean(enableBoxcarring.getAttributeValue()));
 		}
+        /* disable legacy boxcarring mode property */
+        OMAttribute disableLegacyBoxcarringMode = dsXml.getAttribute(new QName(DBSFields.DISABLE_LEGACY_BOXCARRING_MODE));
+        if (disableLegacyBoxcarringMode != null) {
+            setDisableLegacyBoxcarringMode(Boolean.parseBoolean(disableLegacyBoxcarringMode.getAttributeValue()));
+        }
 
 		/* disable streaming property */
 		OMAttribute disableStreaming = dsXml.getAttribute(new QName("disableStreaming"));
@@ -1357,7 +1377,7 @@ public class Data extends DataServiceConfigurationElement{
 		OMFactory fac = OMAbstractFactory.getOMFactory();
 		OMElement dataEl = fac.createOMElement("data", null);
 		if (this.getName() != null) {
-		    dataEl.addAttribute("name", this.getName(), null);
+            dataEl.addAttribute("name", this.getName(), null);
 		}
 		if (this.getDescription() != null && this.getDescription().trim().length() > 0) {
 			OMElement descEl = fac.createOMElement("description", null);
@@ -1369,6 +1389,11 @@ public class Data extends DataServiceConfigurationElement{
 		}
         if (this.isBoxcarring()) {
         	dataEl.addAttribute("enableBoxcarring", String.valueOf(this.isBoxcarring()), null);
+        }
+
+        if (this.isDisableLegacyBoxcarringMode()) {
+            dataEl.addAttribute(DBSFields.DISABLE_LEGACY_BOXCARRING_MODE,
+                                String.valueOf(this.isDisableLegacyBoxcarringMode()), null);
         }
 
         if (this.isDisableStreaming()) {

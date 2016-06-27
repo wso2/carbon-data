@@ -48,7 +48,7 @@ public class DBInOnlyMessageReceiver extends RawXMLINOnlyMessageReceiver {
 			if (log.isDebugEnabled()) {
 				log.debug("Request received to DSS:  Data Service - " + msgContext.getServiceContext().getName() +
 				          ", Operation - " + msgContext.getSoapAction() + ", Request body - " +
-				          msgContext.getEnvelope().toString() + ", ThreadID - " + Thread.currentThread().getId());
+				          msgContext.getEnvelope().getText() + ", ThreadID - " + Thread.currentThread().getId());
 			}
 			DataServiceProcessor.dispatch(msgContext);
 		} catch (Exception e) {

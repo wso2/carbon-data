@@ -875,6 +875,11 @@
                 <artifactId>json</artifactId>
                 <version>${json.orbit.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.org.owasp.encoder</groupId>
+                <artifactId>encoder</artifactId>
+                <version>${encoder.wso2.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -1282,6 +1287,7 @@
         <commons-fileupload.orbit.imp.pkg.version>[1.2,2.0)</commons-fileupload.orbit.imp.pkg.version>
 
         <hazelcast.orbit.imp.pkg.version>0.0.0</hazelcast.orbit.imp.pkg.version> <!-- todo change this once moved to kernel 442 -->
+        <encoder.wso2.version>1.2.0.wso2v1</encoder.wso2.version>
         <!--<hazelcast.orbit.imp.pkg.version>[3.2,3.3)</hazelcast.orbit.imp.pkg.version>-->
     </properties>
 

@@ -80,6 +80,7 @@ public class H2TestUtils {
 		SimpleResultSet srs = new SimpleResultSet();
 		srs.addColumn("phoneNumber", Types.VARCHAR, 255, 0);
 		srs.addRow(new Object[] { phoneNo });
+               rs.close();
 		return srs;
 	}
 

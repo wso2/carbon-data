@@ -112,6 +112,10 @@ public class DataServiceAdmin extends AbstractAdmin {
 
 		// load file content into a string buffer
 		if (filePath != null) {
+			/*
+			    Security Comment :
+			    This path is trustworthy, constructed file path cannot be access by the user.
+			*/
 			File config = new File(filePath);
 			try {
 				FileReader fileReader = new FileReader(config);
@@ -166,6 +170,10 @@ public class DataServiceAdmin extends AbstractAdmin {
 					+ fileExtension;
 
 			/* create the directory, if it does not exist */
+			/*
+			    Security Comment :
+			    This dataServiceDirectory path is trustworthy, constructed dataServiceDirectory path cannot be access by the user.
+			*/
 			File directory = new File(dataServiceDirectory);
 			if (!directory.exists() && !directory.mkdirs()) {
 				throw new AxisFault("Cannot create directory: " + directory.getAbsolutePath());
@@ -184,6 +192,10 @@ public class DataServiceAdmin extends AbstractAdmin {
 
 		/* save contents to .dbs file */
 		try {
+			/*
+			    Security Comment :
+			    This path is trustworthy, constructed file path cannot be access by the user.
+			*/
 			BufferedWriter out = new BufferedWriter(new FileWriter(dataServiceFilePath));
 			out.write(serviceContents);
 			out.close();

@@ -44,6 +44,13 @@ public class ODataEndpoint {
         try {
             String[] serviceParams = getServiceDetails(request.getRequestURI(), tenantDomain);
             String serviceRootPath;
+            /*
+                Security Comment :
+                Here we get the serviceRootPath from the request uri, and then we check whether there is a particular service handler for the service request.
+                ODataServiceRegistry stores the all the service handlers. There is a key to a handler, which is the combination of service name and configID,
+                These two parameters (Service Name, Config ID) are coming from the requests, therefore we call getServiceDetails to retrieve these information from the request.
+                and then we check whether there is a handler for this requests, if there is a handler we process the request. otherwise we don't process the request.
+             */
             if (tenantDomain == null) {
                 tenantDomain = MultitenantConstants.SUPER_TENANT_DOMAIN_NAME;
                 serviceRootPath = "/" + serviceParams[0] + "/" + serviceParams[1];

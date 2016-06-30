@@ -68,7 +68,10 @@ public class ConsentUrl extends HttpServlet {
             } else {
                 String[] SCOPESArray = {"https://spreadsheets.google.com/feeds"};
                 final List SCOPES = Arrays.asList(SCOPESArray);
-
+                /*
+                    Security Comment :
+                    This response is trustworthy, url is hard coded in GoogleAuthorizationCodeRequestUrl constructor.
+                 */
                 responseString = new GoogleAuthorizationCodeRequestUrl(clientId, redirectURIs, SCOPES).setAccessType("offline").setApprovalPrompt("force").build();
 
                 response.setContentType("text/html");

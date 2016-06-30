@@ -230,6 +230,10 @@ public class TDriverUtil {
         OutputStream out = null;
         PipedInputStream pin = null;
         try {
+            /*
+                Security Comment :
+                This file path is trustworthy, this path is configured in the dbs file.
+            */
             if (isRegistryPath(filePath)) {
                 try {
                     RegistryService registryService = SQLDriverDSComponent.getRegistryService();
@@ -308,6 +312,10 @@ public class TDriverUtil {
         InputStream ins;
         if (path.startsWith("http://")) {
             /* This is a url file path */
+            /*
+                Security Comment :
+                This file path is trustworthy, this path is configured in the dbs file.
+            */
             URL url = new URL(path);
             ins = url.openStream();
         } else if (isRegistryPath(path)) {

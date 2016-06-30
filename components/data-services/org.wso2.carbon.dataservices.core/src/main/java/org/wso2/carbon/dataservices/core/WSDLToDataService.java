@@ -20,7 +20,11 @@ package org.wso2.carbon.dataservices.core;
 
 import org.apache.axiom.om.util.AXIOMUtil;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.description.*;
+import org.apache.axis2.description.AxisMessage;
+import org.apache.axis2.description.AxisOperation;
+import org.apache.axis2.description.AxisService;
+import org.apache.axis2.description.WSDL11ToAxisServiceBuilder;
+import org.apache.axis2.description.WSDL20ToAxisServiceBuilder;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.axis2.schema.CompilerOptions;
 import org.apache.axis2.schema.SchemaCompilationException;
@@ -28,20 +32,34 @@ import org.apache.axis2.schema.SchemaCompiler;
 import org.apache.axis2.util.XMLPrettyPrinter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.ws.commons.schema.*;
+import org.apache.ws.commons.schema.XmlSchemaAttribute;
+import org.apache.ws.commons.schema.XmlSchemaComplexType;
+import org.apache.ws.commons.schema.XmlSchemaElement;
+import org.apache.ws.commons.schema.XmlSchemaObject;
+import org.apache.ws.commons.schema.XmlSchemaObjectCollection;
+import org.apache.ws.commons.schema.XmlSchemaParticle;
+import org.apache.ws.commons.schema.XmlSchemaSequence;
+import org.apache.ws.commons.schema.XmlSchemaSimpleType;
+import org.apache.ws.commons.schema.XmlSchemaType;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.wso2.carbon.dataservices.common.DBConstants;
-import org.wso2.carbon.dataservices.core.auth.AuthorizationProvider;
 import org.wso2.carbon.dataservices.core.auth.UserStoreAuthorizationProvider;
 import org.wso2.carbon.dataservices.core.description.config.Config;
 import org.wso2.carbon.dataservices.core.description.config.RDBMSConfig;
 import org.wso2.carbon.dataservices.core.description.operation.Operation;
 import org.wso2.carbon.dataservices.core.description.query.SQLQuery;
-import org.wso2.carbon.dataservices.core.engine.*;
+import org.wso2.carbon.dataservices.core.engine.CallQuery;
 import org.wso2.carbon.dataservices.core.engine.CallQuery.WithParam;
+import org.wso2.carbon.dataservices.core.engine.DataService;
+import org.wso2.carbon.dataservices.core.engine.DataServiceSerializer;
+import org.wso2.carbon.dataservices.core.engine.OutputElementGroup;
+import org.wso2.carbon.dataservices.core.engine.ParamValue;
+import org.wso2.carbon.dataservices.core.engine.QueryParam;
+import org.wso2.carbon.dataservices.core.engine.Result;
+import org.wso2.carbon.dataservices.core.engine.StaticOutputElement;
 import org.wso2.carbon.dataservices.core.validation.Validator;
 
 import javax.xml.namespace.QName;
@@ -49,9 +67,18 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class is used to create a data service using a given WSDL (create
@@ -143,6 +170,10 @@ public class WSDLToDataService {
 			if (!parentFile.exists()) {
 				parentFile.mkdirs();
 			}
+			/*
+			    Security Comment :
+			    This dataservices File path is trustworthy, file path cannot be access by the user.
+			*/
 			BufferedWriter writer = new BufferedWriter(new FileWriter(dataservicesFile));
 			writer.write(dsContents);
 			writer.close();

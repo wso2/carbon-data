@@ -36,6 +36,10 @@ public class AuthCodeReceiver extends HttpServlet {
             log.debug("Auth code received for the Google Authentication code request");
         }
         CodeHolder tokenGen = CodeHolder.getInstance();
+        /*
+            Security Comment :
+            This request is secured, user has to be authenticated to send the request.
+         */
         tokenGen.addCodeToMap(req.getSession().getId(), req.getParameter("code"), req.getParameter("error"));
     }
 }

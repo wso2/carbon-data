@@ -40,6 +40,10 @@ public class DSTaskManagementHelper {
 
     public static DSTaskInfo createTaskInfo(
             HttpServletRequest request) throws ServletException, AxisFault {
+        /*
+            Security Comment :
+            This request is secured, request is validating in saveTask.jsp
+         */
         if (log.isDebugEnabled()) {
             log.debug("Creating the task description corresponds to the task");
         }

@@ -101,7 +101,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -487,6 +486,10 @@ public class DBDeployer extends AbstractDeployer {
 		FileInputStream fis = null;
 		boolean changed = false;
 		try {
+			/*
+			    Security Comment :
+			    This config file  path is trustworthy, file path cannot be access by the user.
+			*/
 			fis = new FileInputStream(configFilePath);
 			OMElement configElement = (new StAXOMBuilder(fis)).getDocumentElement();
 			configElement.build();
@@ -771,6 +774,10 @@ public class DBDeployer extends AbstractDeployer {
 			AxisConfiguration axisConfiguration) throws DataServiceFault {
 		FileInputStream fis = null;
 		try {
+			/*
+			    Security Comment :
+			    This config file  path is trustworthy, file path cannot be access by the user.
+			*/
 			/* convert to multiple config format */
 			convertConfigToMultipleDSFormat(configFilePath);
 
@@ -1136,6 +1143,10 @@ public class DBDeployer extends AbstractDeployer {
 	private AxisService processService(DeploymentFileData currentFile,
 			AxisServiceGroup axisServiceGroup, ConfigurationContext configCtx)
 			throws DataServiceFault {
+		/*
+			Security Comment
+			CurrentFile contains the actual dbs data location in the server. there isn't any input from the user.
+		 */
 		AxisService axisService = createDBService(currentFile.getAbsolutePath(), configCtx.getAxisConfiguration());
 		axisService.setParent(axisServiceGroup);
 		axisService.setClassLoader(axisConfig.getServiceClassLoader());

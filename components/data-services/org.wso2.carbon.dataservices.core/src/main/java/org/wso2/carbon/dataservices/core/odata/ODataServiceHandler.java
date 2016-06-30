@@ -74,6 +74,10 @@ public class ODataServiceHandler {
      * @param serviceRootPath Service root Path
      */
     public void process(HttpServletRequest req, HttpServletResponse resp, String serviceRootPath) {
+        /*
+            Security Comment :
+            Modifying only servlet path in the request.
+         */
         handler.process(modifyServletPath(req, serviceRootPath), resp);
     }
 

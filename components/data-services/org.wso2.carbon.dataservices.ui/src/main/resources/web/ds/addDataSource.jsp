@@ -2155,12 +2155,12 @@ private String getRefreshToken(String gSpreadJDBCUrl) {
 	               		<td>
 	               		<%if(useSecretAlias) {%>
 	               			<input type="text" size="50" id="pwdalias" name="pwdalias" value="<%=propertyValue%>">
-	               			<input type="password" size="50" id="<%=propertyName%>" name="<%=propertyName%>" value="<%=propertyValue%>" style="display:none"/>
+	               			<input type="password" autocomplete="off" size="50" id="<%=propertyName%>" name="<%=propertyName%>" value="<%=propertyValue%>" style="display:none"/>
 	               			<input type="checkbox" id="useSecretAlias" name="useSecretAlias" onclick="getUseSecretAliasValue(this, '<%=propertyName%>')" checked/>
 	               			<fmt:message key="usePasswordAlias"/>
 	               		<%} else { %>
 	               			<input type="text" size="50" id="pwdalias" name="pwdalias" value="<%=propertyValue%>" style="display:none">
-	               			<input type="password" size="50" id="<%=propertyName%>" name="<%=propertyName%>" value="<%=propertyValue%>"/>
+	               			<input type="password" autocomplete="off" size="50" id="<%=propertyName%>" name="<%=propertyName%>" value="<%=propertyValue%>"/>
 	               			<input type="checkbox" id="useSecretAlias" name="useSecretAlias" onclick="getUseSecretAliasValue(this, '<%=propertyName%>')"/>
 	               			<fmt:message key="usePasswordAlias"/>
 	               		<%} %>

@@ -26,10 +26,6 @@
             <artifactId>hadoop-client</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.orbit.org.apache.hbase</groupId>
-            <artifactId>hbase-client</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.wso2.orbit.org.apache.htrace</groupId>
             <artifactId>htrace-core-apache</artifactId>
         </dependency>
@@ -46,20 +42,8 @@
             <artifactId>xercesImpl</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.zookeeper.wso2</groupId>
-            <artifactId>apache-zookeeper</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.protobuf</groupId>
-            <artifactId>protobuf-java</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-codec.wso2</groupId>
-            <artifactId>commons-codec</artifactId>
+            <groupId>org.wso2.orbit.org.apache.hbase</groupId>
+            <artifactId>hbase-shaded-client</artifactId>
         </dependency>
     </dependencies>
 
@@ -82,21 +66,15 @@
                             <adviceFile>
                                 <properties>
                                     <propertyDef>org.wso2.carbon.p2.category.type:server</propertyDef>
-                                    <propertyDef>org.eclipse.equinox.p2.type.group:false</propertyDef>
+                                    <propertyDef>org.eclipse.equinox.p2.type.group:true</propertyDef>
                                 </properties>
                             </adviceFile>
                             <bundles>
                                 <bundleDef>org.wso2.carbon.data:org.wso2.carbon.datasource.reader.hadoop</bundleDef>
                                 <bundleDef>org.wso2.orbit.org.apache.hadoop:hadoop-client</bundleDef>
-                                <bundleDef>org.wso2.orbit.org.apache.hbase:hbase-client</bundleDef>
-                                <bundleDef>com.google.protobuf:protobuf-java</bundleDef>
-                                <bundleDef>org.wso2.orbit.com.google.protobuf.fragment:protobuf-java-fragment
-                                </bundleDef>
+                                <bundleDef>org.wso2.orbit.org.apache.hbase:hbase-shaded-client</bundleDef>
                                 <bundleDef>org.wso2.orbit.org.apache.htrace:htrace-core-apache</bundleDef>
                                 <bundleDef>org.wso2.orbit.org.htrace:htrace-core</bundleDef>
-                                <bundleDef>commons-codec.wso2:commons-codec</bundleDef>
-                                <bundleDef>com.google.guava:guava</bundleDef>
-                                <bundleDef>org.apache.zookeeper.wso2:apache-zookeeper</bundleDef>
                             </bundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.core.server:${carbon.kernel.version}

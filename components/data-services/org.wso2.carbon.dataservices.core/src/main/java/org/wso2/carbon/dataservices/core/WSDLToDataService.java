@@ -98,7 +98,7 @@ public class WSDLToDataService {
 			String dsContents = DataServiceSerializer.serializeDataService(dataService).toString();
 			writeToRepository(axisConfig, serviceName, dsContents);
 		} catch (DataServiceFault e) {
-			log.error("Error in deploying contract first data service", e);
+			log.error("Error in deploying contract first data service", e); //TODO
 			throw e;
 		}
 	}

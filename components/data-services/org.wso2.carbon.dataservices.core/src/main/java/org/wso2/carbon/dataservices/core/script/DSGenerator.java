@@ -462,7 +462,6 @@ public class DSGenerator {
                 try {
                     resultSet = meta.getPrimaryKeys(null, schema, tableName);
                 } catch (SQLException e) {
-                    log.error("Failed to extract primary key info ", e);
                     throw new SQLException("Failed to extract primary key info");
                 }
             }

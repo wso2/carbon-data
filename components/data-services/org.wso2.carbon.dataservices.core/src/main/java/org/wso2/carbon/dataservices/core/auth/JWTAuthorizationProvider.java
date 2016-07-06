@@ -170,12 +170,10 @@ public class JWTAuthorizationProvider implements AuthorizationProvider {
                 try {
                     publicCert = keystore.getCertificate(alias);
                 }catch (KeyStoreException e) {
-                    log.error("Error getting public certificate from keystore using alias");
                     throw new AxisFault("Error getting public certificate from keystore using alias");
                 }
             }
         }else{
-            log.error("No keystore found");
             throw new AxisFault("No keystore found");
         }
         if(publicCert != null){
@@ -188,21 +186,16 @@ public class JWTAuthorizationProvider implements AuthorizationProvider {
                 verifySig.update((base64EncodedHeader+"."+base64EncodedBody).getBytes());
                 isVerified = verifySig.verify(decodedSignature);
             }catch (NoSuchAlgorithmException e) {
-                log.error("SHA256withRSA cannot be found");
                 throw new AxisFault("SHA256withRSA cannot be found");
             }catch (InvalidKeyException e) {
-                log.error("Invalid Key");
                 throw new AxisFault("Invalid Key");
             } catch (SignatureException e) {
-                log.error("Signature Object not initialized properly");
                 throw new AxisFault("Signature Object not initialized properly");
             }
         }else{
-            log.error("No public cert found");
             throw new AxisFault("No public cert found");
         }
         if(!isVerified){
-            log.error("Signature validation failed");
             throw new AxisFault("Signature validation failed");
         }
         return isVerified;
@@ -233,7 +226,6 @@ public class JWTAuthorizationProvider implements AuthorizationProvider {
                     keyStore = tenantKSM.getPrimaryKeyStore();
                 }
             }catch (Exception e) {
-                log.error("Error getting keystore");
                 throw new AxisFault("Error getting keystore");
             }
         }
@@ -254,7 +246,6 @@ public class JWTAuthorizationProvider implements AuthorizationProvider {
         try {
             sha = MessageDigest.getInstance("SHA-1");
         } catch (NoSuchAlgorithmException e1) {
-            log.error("noSHA1availabe");
             throw new AxisFault("noSHA1availabe");
         }
         try {
@@ -277,7 +268,6 @@ public class JWTAuthorizationProvider implements AuthorizationProvider {
                 try {
                     sha.update(cert.getEncoded());
                 } catch (CertificateEncodingException e1) {
-                    log.error("Error encoding certificate");
                     throw new AxisFault("Error encoding certificate");
                 }
                 byte[] data = sha.digest();
@@ -286,7 +276,6 @@ public class JWTAuthorizationProvider implements AuthorizationProvider {
                 }
             }
         } catch (KeyStoreException e) {
-            log.error("KeyStore exception while getting alias for X509CertThumb");
             throw new AxisFault("KeyStore exception while getting alias for X509CertThumb");
         }
         return null;

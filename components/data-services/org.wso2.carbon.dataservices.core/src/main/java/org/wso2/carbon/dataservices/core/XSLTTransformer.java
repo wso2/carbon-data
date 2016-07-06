@@ -105,7 +105,6 @@ public class XSLTTransformer {
             return builder.getDocumentElement();
         } catch (Exception e) {
             String msg = "Error in transforming with XSLT: " + e.getMessage();
-            log.error(msg, e);
             throw new DataServiceFault(e, msg);
         }
     }

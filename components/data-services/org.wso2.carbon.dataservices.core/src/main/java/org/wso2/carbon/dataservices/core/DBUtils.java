@@ -260,7 +260,6 @@ public class DBUtils {
         } catch (Exception e) {
             String msg = "Error in retrieving the realm for the tenant id: " + tenantId
                     + ", username: " + username + ". " + e.getMessage();
-            log.error(msg);
             throw new DataServiceFault(msg);
         }
     }
@@ -281,7 +280,6 @@ public class DBUtils {
         } catch (Exception e) {
             String msg = "Error in retrieving the realm for the tenant id: " + tenantId
                          + ". " + e.getMessage();
-            log.error(msg);
             throw new DataServiceFault(msg);
         }
     }
@@ -317,7 +315,6 @@ public class DBUtils {
         } catch (Exception e) {
             String msg = "Error in retrieving the realm for the tenant id: " + tenantId
                          + ". " + e.getMessage();
-            log.error(msg);
             throw new DataServiceFault(msg);
         }
     }
@@ -431,7 +428,6 @@ public class DBUtils {
                 }
             } catch (RegistryException e) {
                 String msg = "Error in retrieving the resource: " + path;
-                log.error(msg, e);
                 throw new DataServiceFault(e, msg);
             }
         } else {

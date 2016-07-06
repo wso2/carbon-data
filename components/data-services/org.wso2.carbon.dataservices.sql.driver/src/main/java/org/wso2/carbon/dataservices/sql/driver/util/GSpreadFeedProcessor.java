@@ -317,7 +317,6 @@ public class GSpreadFeedProcessor {
     private String getAccessTokenFromRegistry() throws Exception {
         if (SQLDriverDSComponent.getRegistryService() == null) {
             String msg = "GSpreadConfig.getFeed(): Registry service is not available, authentication key sharing fails";
-            log.error(msg);
             throw new SQLException(msg);
         }
         Registry registry = SQLDriverDSComponent.getRegistryService()
@@ -341,7 +340,6 @@ public class GSpreadFeedProcessor {
         if (SQLDriverDSComponent.getRegistryService() == null) {
             String msg = "GSpreadConfig.getFeed(): Registry service is not available, authentication key cannot be" +
                          " saved";
-            log.error(msg);
             throw new SQLException(msg);
         }
         Registry registry = SQLDriverDSComponent.getRegistryService()

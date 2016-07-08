@@ -121,6 +121,7 @@
       onsubmit="return validateInputMappings();">
 <input type="hidden" name="queryId" value="<%=queryId%>" id="<%=queryId%>"/>
 <input type="hidden" name="oldInputMappingId" value="<%=paramName%>" id="oldInputMappingId"/>
+<input type="hidden" id="dsValidatorProperties" name="dsValidatorProperties" class="longInput"/>
     <%--<table class="styledLeft">--%>
     <%--<table class="normal">--%>
 
@@ -359,10 +360,41 @@ paramType.equals("") ? "" : "display:none"%>"
         <td class="leftCol-small"><fmt:message key="dataservice.validator.custom.class"/><font color="red">*</font></td>
         <td><input type="text" id="customClass" name="customClass" size="30"></td>
     </tr>
+    <tr id="customValidatorPropertyElementsRow" style="display:none">
+        <td>
+            <fmt:message key="custom.properties"/>
+        </td>
+        <td>
+            <div id="nameValueAdd">
+                <a class="icon-link"
+                   href="#addNameLink"
+                   onclick="addValidatorProperties();"
+                   style="background-image: url(../admin/images/add.gif);"><fmt:message
+                        key="add.new.validator.properties"/></a>
+
+                <div style="clear:both;"></div>
+            </div>
+            <div>
+                <table cellpadding="0" cellspacing="0" border="0" class="styledLeft"
+                       id="dsValidatorPropertyTable"
+                       style="display:none;">
+                    <thead>
+                    <tr>
+                        <th style="width:40%"><fmt:message key="validator.prop.name"/></th>
+                        <th style="width:40%"><fmt:message key="validator.prop.value"/></th>
+                        <th style="width:20%"><fmt:message key="validator.prop.action"/></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </td>
+    </tr>
     <tr>
         <td class="leftCol-small"><input type="submit" style="display:none" id="addValidator"
                    value="<fmt:message key="dataservices.addValidator"/>" class="button"
-                   onclick="document.getElementById('inputMappings').action = 'inputMappingProcessor.jsp?flag=validate';return validateValidators(this,document);"/>
+                   onclick="var val = validateValidators(this,document); if (val) {addValidators()} else return false;"/>
                 <%--onclick="validateValidators(this,document);"/>--%>
         </td>
     </tr>

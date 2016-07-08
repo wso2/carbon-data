@@ -81,6 +81,7 @@
     <%--    <form method="post" id="inputMappings" name="inputMappings" action="inputMappingProcessor.jsp" ">--%>
 <form method="post" id="sparqlInputMappings" name="sparqlInputMappings" action="sparqlInputMappingProcessor.jsp" onsubmit="return validateSparqlInputMappings();">
 <input type="hidden" name="queryId" value="<%=queryId%>" id="<%=queryId%>"/>
+<input type="hidden" id="dsValidatorProperties" name="dsValidatorProperties" class="longInput"/>
 <table class="styledLeft">
 <tr>
 <td>
@@ -244,10 +245,41 @@
             <td><fmt:message key="dataservice.validator.custom.class"/></td>
             <td><input type="text" id="customClass" name="customClass" size="30"></td>
         </tr>
+        <tr id="customValidatorPropertyElementsRow" style="display:none">
+            <td>
+                <fmt:message key="custom.properties"/>
+            </td>
+            <td>
+                <div id="nameValueAdd">
+                    <a class="icon-link"
+                       href="#addNameLink"
+                       onclick="addValidatorProperties();"
+                       style="background-image: url(../admin/images/add.gif);"><fmt:message
+                            key="add.new.validator.properties"/></a>
+
+                    <div style="clear:both;"></div>
+                </div>
+                <div>
+                    <table cellpadding="0" cellspacing="0" border="0" class="styledLeft"
+                           id="dsValidatorPropertyTable"
+                           style="display:none;">
+                        <thead>
+                        <tr>
+                            <th style="width:40%"><fmt:message key="validator.prop.name"/></th>
+                            <th style="width:40%"><fmt:message key="validator.prop.value"/></th>
+                            <th style="width:20%"><fmt:message key="validator.prop.action"/></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </td>
+        </tr>
         <tr>
             <td><input type="submit" style="display:none" id="addValidator"
                        value="<fmt:message key="dataservices.addValidator"/>" class="button"
-                                             onclick="document.sparqlInputMappings.action = 'sparqlInputMappingProcessor.jsp?flag=validate'"/>
+                       onclick="addValidatorsForSparqlInput();"/>
                         <%--onclick="validateValidators(this,document);"/>--%>
             </td>
         </tr>

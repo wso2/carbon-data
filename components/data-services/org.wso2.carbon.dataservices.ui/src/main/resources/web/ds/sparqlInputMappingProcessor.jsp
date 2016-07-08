@@ -41,16 +41,18 @@
     String valMax = request.getParameter("max");
     String valPattern = request.getParameter("pattern");
     String valCustomClass = request.getParameter("customClass");
+    String dsValidatorProperties = request.getParameter("dsValidatorProperties");
     paramType = (paramType == null ) ? "SCALAR" : paramType;
     sqlType = (sqlType == null) ? "" : sqlType;
     paramName = (paramName == null) ? "" : paramName;
     flag = (flag == null) ? "" : flag;
     origin = (origin == null) ? "" : origin;
     Query query = dataService.getQuery(queryId);
-    boolean addValidation = true; 
+    boolean addValidation = true;
     /* add validator button pressed */
     if (flag.equals("validate")) {
         Map<String, String> fields;
+        Map<String, String> customfields = new HashMap<String, String>();
         Iterator<Validator> itr = (Iterator<Validator>) validators.iterator();
         Validator tmpVal;
         while (itr.hasNext()) {
@@ -69,15 +71,24 @@
                 fields = new HashMap<String, String>();
                 fields.put("minimum", valMin);
                 fields.put("maximum", valMax);
-                validators.add(new Validator(validateElementName, fields));
+                validators.add(new Validator(validateElementName, fields, customfields));
             } else if (validateElementName.equals("validatePattern")) {
                 fields = new HashMap<String, String>();
                 fields.put("pattern", valPattern);
-                validators.add(new Validator(validateElementName, fields));
+                validators.add(new Validator(validateElementName, fields, customfields));
             } else if (validateElementName.equals("validateCustom")) {
                 fields = new HashMap<String, String>();
                 fields.put("class", valCustomClass);
-                validators.add(new Validator(validateElementName, fields));
+                if (dsValidatorProperties != null) {
+                    String[] propsList = dsValidatorProperties.split("::");
+                    for (int i = 0; i < propsList.length; i++) {
+                        String[] property = propsList[i].split(",");
+                        if (property.length == 2) {
+                            customfields.put(property[0], property[1]);
+                        }
+                    }
+                }
+                validators.add(new Validator(validateElementName, fields, customfields));
             }
         }
     }else if (flag.equals("deleteValidator")) {

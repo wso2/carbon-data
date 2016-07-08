@@ -106,10 +106,11 @@
     DataServiceAdminClient client =
             new DataServiceAdminClient(cookie, backendServerURL, configContext);
 
+    ////Fix for DS-1214 - new validator list created at each param constructor
     /* clear the validator session bean for add input mappings page */
-    if (flag != null && flag.equals("inputMapping")) {
-        session.setAttribute("validators", new ArrayList());
-    }
+    /*if (flag != null && flag.equals("inputMapping")) {
+       session.setAttribute("validators", new ArrayList());
+    }*/
     
     if (queryId != null) {
         query = dataService.getQuery(queryId);
@@ -720,8 +721,9 @@
                         param.setParamType("SCALAR");
                         param.setSqlType("STRING");
                         param.setType("IN");
-                        param.setValidarors(validators);
-                        session.setAttribute("validators", new ArrayList());
+                        //Fix for DS-1214 - new validator list created at each param constructor
+                        //param.setValidarors(validators);
+                        //session.setAttribute("validators", new ArrayList());
                         q.addParam(param);
                     }
                 }

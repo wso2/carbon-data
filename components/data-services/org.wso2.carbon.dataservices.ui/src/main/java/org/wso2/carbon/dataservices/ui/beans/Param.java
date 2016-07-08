@@ -19,6 +19,7 @@ import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -135,10 +136,11 @@ public class Param extends DataServiceConfigurationElement {
 		this(name, paramType, sqlType, type, "0", defaultValue, null, validators);
 	}
 
-	
-	public Param(){		
-	}
-	
+
+	public Param(){
+        this.validators = new ArrayList<Validator>();
+    }
+
 	public String getOperationParamName() {
 		return operationParamName;
 	}

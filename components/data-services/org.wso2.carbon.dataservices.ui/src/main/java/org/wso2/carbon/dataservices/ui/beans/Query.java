@@ -284,8 +284,9 @@ public class Query extends DataServiceConfigurationElement {
 				attr = attrItr.next();
 				propMap.put(attr.getLocalName(), attr.getAttributeValue());
 			}
-			vals.add(new Validator(valElementName, propMap));
-		}
+            Map<String, String> customPropMap = extractAdvancedProps(valEl);
+            vals.add(new Validator(valElementName, propMap, customPropMap));
+        }
 		return vals;
 	}
 

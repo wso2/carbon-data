@@ -1166,13 +1166,13 @@ public class QueryFactory {
 		String className = valEl.getAttributeValue(new QName(DBSFields.CLASS));
 		try {
 		    Class<Validator> clazz = (Class<Validator>) Class.forName(className);
-            Validator validator = clazz.newInstance();
-            if (validator instanceof ValidatorExt) {
-                Map<String, String> properties = extractAdvancedProps(valEl);
-                ((ValidatorExt) validator).init(properties);
-            }
-            return validator;
-        } catch (Exception e) {
+		    Validator validator = clazz.newInstance();
+		    if (validator instanceof ValidatorExt) {
+		        Map<String, String> properties = extractAdvancedProps(valEl);
+		        ((ValidatorExt) validator).init(properties);
+		    }
+		    return validator;
+		} catch (Exception e) {
 			throw new DataServiceFault(e, "Problem in creating custom validator class: " + className);
 		}		
 	}

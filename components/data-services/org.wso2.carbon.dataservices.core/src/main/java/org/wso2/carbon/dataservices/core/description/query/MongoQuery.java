@@ -41,9 +41,11 @@ import org.wso2.carbon.dataservices.core.engine.DataService;
 import org.wso2.carbon.dataservices.core.engine.InternalParam;
 import org.wso2.carbon.dataservices.core.engine.InternalParamCollection;
 import org.wso2.carbon.dataservices.core.engine.OutputElement;
+import org.wso2.carbon.dataservices.core.engine.OutputElementGroup;
 import org.wso2.carbon.dataservices.core.engine.ParamValue;
 import org.wso2.carbon.dataservices.core.engine.QueryParam;
 import org.wso2.carbon.dataservices.core.engine.Result;
+import org.wso2.carbon.dataservices.core.engine.StaticOutputElement;
 
 import javax.xml.stream.XMLStreamWriter;
 import java.util.ArrayList;
@@ -95,8 +97,25 @@ public class MongoQuery extends Query {
             currentRow = queryResult.next();
             tmpVal = currentRow.getValueAt(DBConstants.MongoDB.RESULT_COLUMN_NAME);
             // if tmpVal is not a json then the query is a count query therefore we add count as the column name.
-            dataEntry = wrapMongoRow(tmpVal, this.getResult().getDefaultElementGroup().getAllElements());
+
+            List<OutputElement> elements = this.getResult().getDefaultElementGroup().getAllElements();
+            List<String> totalParamList = new ArrayList<>();
+            for (OutputElement element : elements) {
+                addInnerElements(element, totalParamList);
+            }
+            dataEntry = wrapMongoRow(tmpVal, totalParamList);
             this.writeResultEntry(xmlWriter, dataEntry, params, queryLevel);
+        }
+    }
+
+    private void addInnerElements(OutputElement outputElement, List<String> paramList) {
+        if (outputElement instanceof StaticOutputElement) {
+            paramList.add(outputElement.getParam());
+        } else if (outputElement instanceof OutputElementGroup) {
+            List<OutputElement> outputElements = ((OutputElementGroup) outputElement).getAllElements();
+            for (OutputElement element : outputElements) {
+                addInnerElements(element, paramList);
+            }
         }
     }
 
@@ -107,12 +126,12 @@ public class MongoQuery extends Query {
      * @return DataEntry
      * @throws DataServiceFault
      */
-    public DataEntry wrapMongoRow(String jsonString, List<OutputElement> elementList) throws DataServiceFault {
+    private DataEntry wrapMongoRow(String jsonString, List<String> keyList) throws DataServiceFault {
         DataEntry dataEntry = new DataEntry();
         try {
             JSONObject jsonObject = new JSONObject(jsonString);
-            for (OutputElement element : elementList) {
-                String key = element.getParam();
+            for (String key : keyList) {
+                //String key = element.getParam();
                 dataEntry.addValue(key, new ParamValue(getElementValueFromJson(jsonString, jsonObject, key)));
             }
         } catch (JSONException e) {

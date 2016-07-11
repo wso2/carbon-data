@@ -24,5 +24,10 @@ import java.util.Map;
  * This interface represents a custom validator with property support for data services fields.
  */
 public interface ValidatorExt extends Validator {
+
+    /**
+     * method used to set properties for the custom validator class
+     * @param props map of property name value pairs
+     */
     public void init(Map<String, String> props);
 }

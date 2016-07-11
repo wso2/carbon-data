@@ -17,6 +17,10 @@ package org.wso2.carbon.dataservices.ui.beans;
 
 import org.apache.axiom.om.OMElement;
 
+import javax.xml.namespace.QName;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 public abstract class DataServiceConfigurationElement {
 
@@ -58,4 +62,35 @@ public abstract class DataServiceConfigurationElement {
      * @return OMElement
      */
     public abstract OMElement buildXML();
+
+    public Map<String, String> extractAdvancedProps(OMElement queryEl) {
+        Map<String, String> advancedProperties;
+        OMElement propsEl = queryEl.getFirstChildWithName(new QName("properties"));
+        /* extract advanced query properties */
+        if (propsEl != null) {
+            advancedProperties = extractProperties(propsEl);
+        } else {
+            advancedProperties = new HashMap<String, String>();
+        }
+        return advancedProperties;
+    }
+
+    private Map<String, String> extractProperties(OMElement propsParentEl) {
+        Map<String, String> properties = new HashMap<String, String>();
+        OMElement propEl = null;
+        Iterator<OMElement> itr = propsParentEl.getChildrenWithName(new QName("property"));
+        String text;
+        while (itr.hasNext()) {
+            propEl = itr.next();
+            if (propEl.getChildElements().hasNext()) {
+                text = propEl.toString();
+            } else {
+                text = propEl.getText();
+            }
+            if (text != null && !text.equals("")) {
+                properties.put(propEl.getAttributeValue(new QName("name")), text);
+            }
+        }
+        return properties;
+    }
 }

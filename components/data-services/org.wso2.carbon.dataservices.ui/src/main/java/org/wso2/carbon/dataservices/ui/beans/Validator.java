@@ -31,8 +31,9 @@ public class Validator extends DataServiceConfigurationElement {
     private String name;
 
     private Map<String, String> validatorElements = new HashMap<String, String>();  /* key - validator Element name, value - value of the validator element */
+    private Map<String, String> customProperties = new HashMap<String, String>();
 
-    public Validator(String elementName, Map<String, String> validatorElements) {
+    public Validator(String elementName, Map<String, String> validatorElements, Map<String, String> customProperties) {
         this.elementName = elementName;
         if (this.elementName.equals("validateLongRange")) {
             this.name = "Long Range Validator";
@@ -46,6 +47,7 @@ public class Validator extends DataServiceConfigurationElement {
             this.name = "Custom Validator";
         }
         this.validatorElements = validatorElements;
+        this.customProperties = customProperties;
     }
 
     public String getName() {
@@ -64,11 +66,25 @@ public class Validator extends DataServiceConfigurationElement {
         this.validatorElements = validatorElements;
     }
 
+    public void setCustomProperties(Map<String, String> customProperties) {
+        this.customProperties = customProperties;
+    }
+
     public OMElement buildXML(){
         OMFactory fac = OMAbstractFactory.getOMFactory();
         OMElement valEl = fac.createOMElement(this.getElementName(), null);
         for (Map.Entry<String,  String> entry : this.getValidatorElements().entrySet()) {
             valEl.addAttribute(entry.getKey(), entry.getValue(), null);
+            if (customProperties.size() > 0) {
+                OMElement propEl = fac.createOMElement("properties", null);
+                for (Map.Entry<String, String> propEntry : this.customProperties.entrySet()) {
+                    OMElement propNestedEl = fac.createOMElement("property", null);
+                    propNestedEl.addAttribute("name", propEntry.getKey(), null);
+                    propNestedEl.setText(propEntry.getValue());
+                    propEl.addChild(propNestedEl);
+                }
+                valEl.addChild(propEl);
+            }
         }
         return valEl;
     }

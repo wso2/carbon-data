@@ -1320,7 +1320,7 @@ public class Data extends DataServiceConfigurationElement{
 			if (userSetOrdinalValue == null || userSetOrdinalValue.trim().length() == 0){
 				userSetOrdinalValue = String.valueOf(ordinal);
 			}
-			/* end: work-a-round to maintain backward compatibility */			
+			/* end: work-a-round to maintain backward compatibility */
 			param = new Param(paramElement.getAttributeValue(new QName("name")),
                         paramElement.getAttributeValue(new QName("paramType")),
 						paramElement.getAttributeValue(new QName("sqlType")),
@@ -1354,7 +1354,8 @@ public class Data extends DataServiceConfigurationElement{
                 attr = attrItr.next();
                 propMap.put(attr.getLocalName(), attr.getAttributeValue());
             }
-            vals.add(new Validator(valElementName, propMap));
+            Map<String, String> customPropMap = extractAdvancedProps(valEl);
+            vals.add(new Validator(valElementName, propMap, customPropMap));
         }
         return vals;
     }

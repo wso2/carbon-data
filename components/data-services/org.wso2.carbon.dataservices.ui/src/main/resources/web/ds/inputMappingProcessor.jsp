@@ -43,6 +43,7 @@
     String valPattern = request.getParameter("pattern");
     String valCustomClass = request.getParameter("customClass");
     String structType = request.getParameter("structType");
+    String dsValidatorProperties = request.getParameter("dsValidatorProperties");
     paramType = (paramType == null ) ? "SCALAR" : paramType;
     sqlType = (sqlType == null) ? "" : sqlType;
     paramName = (paramName == null) ? "" : paramName.trim();
@@ -51,11 +52,12 @@
     origin = (origin == null) ? "" : origin;
     structType = (structType == null) ? "" : structType;
     Query query = dataService.getQuery(queryId);
-    boolean addValidation = true;    
+    boolean addValidation = true;
    
     /* add validator button pressed */
     if (flag.equals("validate")) {
         Map<String, String> fields = new HashMap<String, String>();
+        Map<String, String> customProperties = new HashMap<String, String>();
         
         
         if (validateElementName.equals("validateLongRange") ||
@@ -66,7 +68,16 @@
         } else if (validateElementName.equals("validatePattern")) {
         	fields.put("pattern", valPattern);
         } else if (validateElementName.equals("validateCustom")) {
-        	fields.put("class", valCustomClass);
+            fields.put("class", valCustomClass);
+            if (dsValidatorProperties != null) {
+                String[] propsList = dsValidatorProperties.split("::");
+                for (int i = 0; i < propsList.length; i++) {
+                    String[] property = propsList[i].split(",");
+                    if (property.length == 2) {
+                        customProperties.put(property[0], property[1]);
+                    }
+                }
+            }
         }
         
         Iterator<Validator> itr = (Iterator<Validator>) validators.iterator();
@@ -76,12 +87,13 @@
            if (tmpVal.getElementName().equals(validateElementName)) {
         	   /* edit validator */
                tmpVal.setValidatorElements(fields);
+               tmpVal.setCustomProperties(customProperties);
                addValidation = false;
                break;
            }
         }
         if (addValidation) {
-            validators.add(new Validator(validateElementName, fields));
+            validators.add(new Validator(validateElementName, fields, customProperties));
          }
     } else if (flag.equals("deleteValidator")) {
             Iterator<Validator> itr = (Iterator<Validator>) validators.iterator();

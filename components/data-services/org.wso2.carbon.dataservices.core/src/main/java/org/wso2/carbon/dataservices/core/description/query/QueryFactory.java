@@ -35,6 +35,7 @@ import org.wso2.carbon.dataservices.core.description.event.EventTrigger;
 import org.wso2.carbon.dataservices.core.engine.*;
 import org.wso2.carbon.dataservices.core.engine.CallQuery.WithParam;
 import org.wso2.carbon.dataservices.core.validation.Validator;
+import org.wso2.carbon.dataservices.core.validation.ValidatorExt;
 import org.wso2.carbon.dataservices.core.validation.standard.*;
 
 import javax.sql.DataSource;
@@ -1165,7 +1166,12 @@ public class QueryFactory {
 		String className = valEl.getAttributeValue(new QName(DBSFields.CLASS));
 		try {
 		    Class<Validator> clazz = (Class<Validator>) Class.forName(className);
-		    return clazz.newInstance();
+		    Validator validator = clazz.newInstance();
+		    if (validator instanceof ValidatorExt) {
+		        Map<String, String> properties = extractAdvancedProps(valEl);
+		        ((ValidatorExt) validator).init(properties);
+		    }
+		    return validator;
 		} catch (Exception e) {
 			throw new DataServiceFault(e, "Problem in creating custom validator class: " + className);
 		}		

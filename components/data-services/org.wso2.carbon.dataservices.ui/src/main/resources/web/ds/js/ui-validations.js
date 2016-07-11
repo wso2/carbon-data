@@ -1427,6 +1427,7 @@ function changeAddValidatorFields(obj,document) {
     document.getElementById('minRangeValidatorElementsRow').style.display = visibleRangeVal;
     document.getElementById('patternValidatorElementsRow').style.display = visiblePattern;
     document.getElementById('customValidatorElementsRow').style.display = visibleCustom;
+    document.getElementById('customValidatorPropertyElementsRow').style.display = visibleCustom;
     document.getElementById('addValidator').style.display = '';
 
     document.getElementById('max').value = "";
@@ -2206,12 +2207,87 @@ function getStatus() {
            });
 }
 
+function addValidatorProperties() {
+    //check to see if there are empty fields left
+    var theTable = document.getElementById('dsValidatorPropertyTable');
+    var inputs = theTable.getElementsByTagName('input');
+    for (var i = 0; i < inputs.length; i++) {
+        if (inputs[i].value == "") {
+            CARBON.showErrorDialog("Cannot add a property with empty key or value. Please specify a key and a value");
+            return;
+        }
+    }
+    addValidatorServiceParamRow("", "", "dsValidatorPropertyTable", "deleteValidatorPropRow");
+    if (document.getElementById('dsValidatorPropertyTable').style.display == "none") {
+        document.getElementById('dsValidatorPropertyTable').style.display = "";
+    }
+}
 
+function deleteValidatorPropRow(index) {
+    CARBON.showConfirmationDialog('Do you want to delete the Validator Property?', function () {
+        document.getElementById('dsValidatorPropertyTable').deleteRow(index);
+        if (document.getElementById('dsValidatorPropertyTable').rows.length == 1) {
+            document.getElementById('dsValidatorPropertyTable').style.display = 'none';
+        }
+    });
+}
 
+function addValidatorServiceParamRow(key, value, table, delFunction) {
+    var tableElement = document.getElementById(table);
+    var param1Cell = document.createElement('td');
+    var inputElem = document.createElement('input');
+    inputElem.type = "text";
+    inputElem.name = "spName";
+    inputElem.value = key;
+    param1Cell.appendChild(inputElem); //'<input type="text" name="spName" value="'+prop1+' />';
 
+    var param2Cell = document.createElement('td');
+    inputElem = document.createElement('input');
+    inputElem.type = "text";
+    inputElem.type = "text";
+    inputElem.name = "spValue";
+    inputElem.value = value;
+    param2Cell.appendChild(inputElem);
 
+    var delCell = document.createElement('td');
+    delCell.innerHTML = '<a id="deleteLink" href="#" onClick="' + delFunction + '(this.parentNode.parentNode.rowIndex)" alt="Delete" class="icon-link" style="background-image:url(../admin/images/delete.gif);">Delete</a>';
 
+    var rowtoAdd = document.createElement('tr');
+    rowtoAdd.appendChild(param1Cell);
+    rowtoAdd.appendChild(param2Cell);
+    rowtoAdd.appendChild(delCell);
 
+    tableElement.tBodies[0].appendChild(rowtoAdd);
+    tableElement.style.display = "";
+}
 
+function extractDataSourceProps(document) {
+    var i;
+    var str = '';
+    var dsPropertyTable = document.getElementById("dsValidatorPropertyTable");
+    for (var j = 1; j < dsPropertyTable.rows.length; j++) {
+        var parmName = dsPropertyTable.rows[j].getElementsByTagName("input")[0].value;
+        var parmValue = dsPropertyTable.rows[j].getElementsByTagName("input")[1].value;
+        if (parmName == "" || parmValue == "") {
+            return;
+        }
+        if (j == 1) {
+            str += parmName + ',' + parmValue;
+        } else {
+            str += '::' + parmName + ',' + parmValue;
+        }
+    }
+    document.getElementById("dsValidatorProperties").value = str;
+}
 
+function addValidators() {
+    extractDataSourceProps(document);
+    var str = document.getElementById('dsValidatorProperties').value;
+    document.getElementById('inputMappings').action = 'inputMappingProcessor.jsp?flag=validate&dsValidatorProperties=' + str;
+}
 
+function addValidatorsForSparqlInput() {
+    extractDataSourceProps(document);
+    var str = document.getElementById('dsValidatorProperties').value;
+    document.getElementById('sparqlInputMappings').action = 'sparqlInputMappingProcessor.jsp?flag=validate&dsValidatorProperties=' + str;
+}

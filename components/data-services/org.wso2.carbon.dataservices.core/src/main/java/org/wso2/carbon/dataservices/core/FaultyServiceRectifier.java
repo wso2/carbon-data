@@ -77,6 +77,10 @@ public class FaultyServiceRectifier implements Runnable {
 			PrivilegedCarbonContext.startTenantFlow();
 			PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(this.tenantId, true);
 			deploymentFilePath = deploymentFileData.getFile().getAbsolutePath();
+	        /*
+	            Security Comment :
+	            This path is trustworthy, path is configured in the dbs file.
+	         */
 			File file = new File(deploymentFilePath);
 			if (file.isFile()) {
 				if (log.isDebugEnabled()) {

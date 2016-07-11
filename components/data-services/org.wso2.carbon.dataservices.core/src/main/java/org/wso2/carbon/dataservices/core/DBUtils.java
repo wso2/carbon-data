@@ -72,14 +72,38 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.sql.*;
+import java.sql.Array;
 import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Struct;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.text.ParseException;
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
@@ -396,6 +420,10 @@ public class DBUtils {
     public static InputStream getInputStreamFromPath(String path) throws IOException,
             DataServiceFault {
         InputStream ins;
+        /*
+            Security Comment :
+            This path is trustworthy, path is configured in the dbs file.
+         */
         if (path.startsWith("http://")) {
             /* This is a url file path */
             URL url = new URL(path);
@@ -629,9 +657,10 @@ public class DBUtils {
     /**
      * Prettify a given XML file
      */
-    public static void prettifyXMLFile(String filePath) throws IOException {
-        String prettyXML = prettifyXML(FileUtils.readFileToString(new File(filePath)));
-        FileUtils.writeStringToFile(new File(filePath), prettyXML);
+    public static void prettifyXMLFile(String filePath) throws IOException, URISyntaxException {
+        File file = new File(new URI(filePath).normalize().toString());
+        String prettyXML = prettifyXML(FileUtils.readFileToString(file));
+        FileUtils.writeStringToFile(file, prettyXML);
     }
 
     /**

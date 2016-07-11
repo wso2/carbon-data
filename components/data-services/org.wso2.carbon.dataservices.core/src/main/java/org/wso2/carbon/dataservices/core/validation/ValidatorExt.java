@@ -15,7 +15,6 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-
 package org.wso2.carbon.dataservices.core.validation;
 
 import java.util.Map;
@@ -26,8 +25,9 @@ import java.util.Map;
 public interface ValidatorExt extends Validator {
 
     /**
-     * method used to set properties for the custom validator class
+     * Method used to set properties for the custom validator class.
      * @param props map of property name value pairs
      */
     public void init(Map<String, String> props);
+
 }

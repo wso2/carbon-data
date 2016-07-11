@@ -131,7 +131,6 @@ public class MongoQuery extends Query {
         try {
             JSONObject jsonObject = new JSONObject(jsonString);
             for (String key : keyList) {
-                //String key = element.getParam();
                 dataEntry.addValue(key, new ParamValue(getElementValueFromJson(jsonString, jsonObject, key)));
             }
         } catch (JSONException e) {

@@ -23,9 +23,10 @@
 <%@ page import="org.apache.axis2.AxisFault"%>
 <%@ page import="org.wso2.carbon.CarbonError" %>
 <%@ page import="java.io.PrintWriter" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%
 	String driverClass = request.getParameter("driver");
-	String jdbcUrl = request.getParameter("jdbcUrl");
+	String jdbcUrl = Encode.forHtmlContent(request.getParameter("jdbcUrl"));
 	String userName = request.getParameter("userName");
 	String password = request.getParameter("password");
     String passwordAlias = request.getParameter("passwordAlias");

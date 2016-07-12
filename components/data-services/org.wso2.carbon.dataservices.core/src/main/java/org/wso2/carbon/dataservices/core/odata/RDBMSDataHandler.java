@@ -126,7 +126,12 @@ public class RDBMSDataHandler implements ODataDataHandler {
                 this.defaultAutoCommit = connection.getAutoCommit();
                 connection.setAutoCommit(false);
                 this.defaultTransactionalIsolation = connection.getTransactionIsolation();
-                connection.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
+                try {
+                    connection.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
+                } catch (SQLException e) {
+                    // Some Databases are not supported REPEATABLE_READ Isolation level.
+                    connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+                }
                 transactionalConnection.set(connection);
             }
         } catch (SQLException e) {

@@ -164,6 +164,7 @@
     } else {
         if (flag.equals("back")) {
             serviceName = dataService.getName();
+            detailedServiceName = serviceName;
             editingDataService = true;
             description = dataService.getDescription();
             description = (description == null) ? "" : description;
@@ -224,7 +225,7 @@
                                     if (!serviceName.equals("")) {
                                 %>
                                     <input type="text" name="serviceName" id="serviceName" size="35"
-                                           value="<%=serviceName%>" readonly="readonly"/>
+                                           value="<%=detailedServiceName%>" readonly="readonly"/>
                                     <%
                                     } else {
                                     %>

@@ -26,51 +26,46 @@ import com.google.gdata.client.spreadsheet.SpreadsheetService;
 import com.google.gdata.data.spreadsheet.CellFeed;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
-
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.description.AxisServiceGroup;
-import org.apache.axis2.description.Parameter;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
-import org.wso2.carbon.core.AbstractAdmin;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.core.AbstractAdmin;
 import org.wso2.carbon.dataservices.common.DBConstants;
 import org.wso2.carbon.dataservices.core.DBDeployer;
 import org.wso2.carbon.dataservices.core.DBUtils;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
-import org.wso2.carbon.dataservices.core.description.config.SQLCarbonDataSourceConfig;
 import org.wso2.carbon.dataservices.core.description.config.GSpreadConfig;
+import org.wso2.carbon.dataservices.core.description.config.SQLCarbonDataSourceConfig;
 import org.wso2.carbon.dataservices.core.description.query.QueryFactory;
 import org.wso2.carbon.dataservices.core.engine.DataService;
 import org.wso2.carbon.dataservices.core.engine.DataServiceSerializer;
-import org.wso2.carbon.dataservices.core.internal.DataServicesDSComponent;
 import org.wso2.carbon.dataservices.core.script.DSGenerator;
 import org.wso2.carbon.dataservices.core.script.PaginatedTableInfo;
 import org.wso2.carbon.dataservices.core.sqlparser.SQLParserUtil;
 import org.wso2.carbon.utils.Pageable;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.BufferedWriter;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.Set;
-import java.util.Collections;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Data Services admin service class, for the basic functions.
@@ -163,16 +158,19 @@ public class DataServiceAdmin extends AbstractAdmin {
 		ConfigurationContext configCtx = this.getConfigContext();
 		AxisConfiguration axisConfig = configCtx.getAxisConfiguration();
 
+		AxisService axisService = DBUtils.getActiveAxisServiceAccordingToDataServiceGroup(axisConfig, serviceName);
+
 		// This is a workaround to fix DS-1075. The proper fix should be in kernel but it could break
 		// existing functionality
 		if (serviceName.contains("/")) {
 			String[] splitArray = serviceName.split("\\/");
 			if (splitArray.length >= 1) {
+				String fullServiceName = serviceName;
 				serviceName = splitArray[splitArray.length - 1];
+				serviceHierarchy = splitArray[splitArray.length - 2];
+				serviceContents = serviceContents.replace(fullServiceName,serviceName);
 			}
 		}
-
-		AxisService axisService = axisConfig.getServiceForActivation(serviceName);
 
 		if (serviceHierarchy == null) {
 			serviceHierarchy = "";

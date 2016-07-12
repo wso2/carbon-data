@@ -28,6 +28,7 @@ import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.databinding.utils.ConverterUtil;
 import org.apache.axis2.description.AxisService;
+import org.apache.axis2.description.AxisServiceGroup;
 import org.apache.axis2.description.Parameter;
 import org.apache.axis2.description.java2wsdl.TypeTable;
 import org.apache.axis2.engine.AxisConfiguration;
@@ -350,7 +351,7 @@ public class DBUtils {
     	try {
             RegistryService registryService = DataServicesDSComponent.getRegistryService();
             UserRealm realm = registryService.getUserRealm(
-            		PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());
+                    PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());
     		username = MultitenantUtils.getTenantAwareUsername(username);
     		return realm.getUserStoreManager().authenticate(username, password);
     	} catch (Exception e) {
@@ -401,6 +402,63 @@ public class DBUtils {
             }
         }
         return false;
+    }
+
+    /**
+     * This method verifies whether there's an existing data service group for the given name data service group.
+     *
+     * @param axisConfiguration Axis configuration
+     * @param dataServiceGroup  Data service Group
+     * @return Boolean (Is available)
+     * @throws AxisFault
+     */
+    public static boolean isAvailableDSServiceGroup(AxisConfiguration axisConfiguration, String dataServiceGroup)
+            throws AxisFault {
+        Iterator<AxisServiceGroup> map = axisConfiguration.getServiceGroups();
+        while (map.hasNext()) {
+            AxisServiceGroup serviceGroup = map.next();
+            if (serviceGroup.getServiceGroupName().equals(dataServiceGroup)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * This method returns an active existing Axis Service for the given name data service group.
+     *
+     * @param axisConfiguration Axis configuration
+     * @param serviceName       Data service Name
+     * @return Boolean (Is available)
+     * @throws AxisFault
+     */
+    public static AxisService getActiveAxisServiceAccordingToDataServiceGroup(AxisConfiguration axisConfiguration,
+                                                                              String serviceName) throws AxisFault {
+        Iterator<AxisServiceGroup> map = axisConfiguration.getServiceGroups();
+        AxisServiceGroup serviceGroup = null;
+        while (map.hasNext()) {
+            serviceGroup = map.next();
+            if ( serviceGroup.getServiceGroupName().equals(serviceName)) {
+                break;
+            } else {
+                serviceGroup = null;
+            }
+        }
+
+        if (serviceName.contains("/")) {
+            String[] splitArray = serviceName.split("\\/");
+            if (splitArray.length >= 1) {
+                serviceName = splitArray[splitArray.length - 1];
+            }
+        }
+
+        if (serviceGroup != null) {
+            AxisService service = serviceGroup.getService(serviceName);
+            if (service != null && service.isActive()) {
+                return service;
+            }
+        }
+        return null;
     }
 
     public static boolean isRegistryPath(String path) {

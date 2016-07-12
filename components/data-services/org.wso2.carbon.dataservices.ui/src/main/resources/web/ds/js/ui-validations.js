@@ -22,7 +22,7 @@ function validateServiceDetailsForm(){
         CARBON.showWarningDialog("Data Service Name is mandatory");
         return false;
     }
-    var  reWhiteSpace = new RegExp("^[a-zA-Z0-9_]+$");
+    var  reWhiteSpace = new RegExp("^[a-zA-Z0-9_]+$?//");
     // Check for white space
     if (!reWhiteSpace.test(serviceName)) {
         CARBON.showWarningDialog("Alphanumeric characters and underscores are only allowed in the data service name");

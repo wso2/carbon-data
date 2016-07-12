@@ -187,6 +187,12 @@ public class DBDeployer extends AbstractDeployer {
             String serviceGroupName = serviceHierarchy +
                     this.getServiceNameFromDSContents(deploymentFileData.getFile());
 
+			if (DBUtils.isAvailableDSServiceGroup(axisConfig, serviceGroupName)) {
+				throw new DataServiceFault("Data Service name is already exists. Please choose different name for \'" +
+				                           this.getServiceNameFromDSContents(deploymentFileData.getFile()) +
+				                           "\' data service.");
+			}
+
 			/* service active property */
 			boolean serviceActive;
 
@@ -793,10 +799,6 @@ public class DBDeployer extends AbstractDeployer {
 			DataService dataService = DataServiceFactory.createDataService(dbsElement, configFilePath);
 
 			String serviceName = dataService.getName();
-			if (DBUtils.isAvailableDS(axisConfig, serviceName)) {
-				throw new DataServiceFault("Data Service name is already exists. Please choose different name for \'" +
-				                           serviceName + "\' data service.");
-			}
 
 			/*create the odata service */
 			for (String configId : dataService.getConfigs().keySet()) {

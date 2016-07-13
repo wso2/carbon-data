@@ -693,7 +693,7 @@
             <dependency>
                 <groupId>org.wso2.orbit.com.datastax.cassandra</groupId>
                 <artifactId>cassandra-driver-core</artifactId>
-                <version>${cassandra-driver-core.215.orbit.version}</version>
+                <version>${cassandra-driver-core.21102.orbit.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.netty</groupId>
@@ -1204,9 +1204,9 @@
         <cassandra-driver-core.orbit.version>2.1.1.wso2v1</cassandra-driver-core.orbit.version>
         <cassandra-driver-core.orbit.imp.pkg.version>0.0.0</cassandra-driver-core.orbit.imp.pkg.version>
 
-        <cassandra-driver-core.version>2.1.5</cassandra-driver-core.version>
-        <cassandra-driver-core.215.orbit.version>2.1.5.wso2v1</cassandra-driver-core.215.orbit.version>
-        <cassandra-driver-core.imp.pkg.version>[2.1.5,2.1.6)</cassandra-driver-core.imp.pkg.version>
+        <cassandra-driver-core.version>2.1.10.2</cassandra-driver-core.version>
+        <cassandra-driver-core.21102.orbit.version>2.1.10.2.wso2v1</cassandra-driver-core.21102.orbit.version>
+        <cassandra-driver-core.imp.pkg.version>[2.1.0,2.2.0)</cassandra-driver-core.imp.pkg.version>
         <netty.version>3.9.0.Final</netty.version>
         <netty.imp.pkg.version>[3.9.0.Final,4.0.0)</netty.imp.pkg.version>
 

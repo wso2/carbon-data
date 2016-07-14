@@ -18,7 +18,7 @@
     <parent>
         <groupId>org.wso2.carbon.data</groupId>
         <artifactId>dbconsole</artifactId>
-        <version>4.3.5-alpha</version>
+        <version>4.3.5-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 

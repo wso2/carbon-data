@@ -85,4 +85,9 @@ public class InlineCustomQueryBasedDSConfig extends CustomQueryBasedDSConfig {
 		                           " Datasource.");
 	}
 
+	@Override
+	public boolean isCaseSensitive() {
+		return false;
+	}
+
 }

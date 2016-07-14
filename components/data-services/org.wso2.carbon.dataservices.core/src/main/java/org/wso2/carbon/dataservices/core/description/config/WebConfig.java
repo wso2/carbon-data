@@ -108,4 +108,9 @@ public class WebConfig extends Config {
         throw new ODataServiceFault("Expose as OData Service feature doesn't support for the " + getConfigId() +
                                    " Datasource.");
     }
+
+    @Override
+    public boolean isCaseSensitive() {
+        return false;
+    }
 }

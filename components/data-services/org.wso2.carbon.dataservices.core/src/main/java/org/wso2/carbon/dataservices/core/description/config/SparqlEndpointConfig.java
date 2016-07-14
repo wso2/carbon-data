@@ -59,4 +59,8 @@ public class SparqlEndpointConfig extends Config {
 		                           " Datasource.");
 	}
 
+	@Override
+	public boolean isCaseSensitive() {
+		return false;
+	}
 }

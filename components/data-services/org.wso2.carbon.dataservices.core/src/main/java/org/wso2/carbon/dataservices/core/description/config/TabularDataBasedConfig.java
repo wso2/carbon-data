@@ -402,4 +402,8 @@ public class TabularDataBasedConfig extends SQLConfig {
 		
 	}
 
+	@Override
+	public boolean isCaseSensitive() {
+		return false;
+	}
 }

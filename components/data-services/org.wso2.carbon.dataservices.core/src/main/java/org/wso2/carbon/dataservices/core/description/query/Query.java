@@ -452,13 +452,24 @@ public abstract class Query extends XMLWriterHelper {
 			InternalParamCollection queryParams) {
 		ExternalParamCollection pc = new ExternalParamCollection();
 		/* 'toLowerCase' - workaround for different character case issues in column names */
-		for (String name : dataEntry.getNames()) {
-			pc.addParam(new org.wso2.carbon.dataservices.core.engine.ExternalParam(
-					name.toLowerCase(), dataEntry.getValue(name), DBSFields.COLUMN));
-		}
-		for (InternalParam iParam : queryParams.getParams()) {
-			pc.addParam(new org.wso2.carbon.dataservices.core.engine.ExternalParam(
-					iParam.getName().toLowerCase(), iParam.getValue(), DBSFields.QUERY_PARAM));
+		if(!dataService.getConfig(configId).isCaseSensitive()) {
+			for (String name : dataEntry.getNames()) {
+				pc.addParam(new org.wso2.carbon.dataservices.core.engine.ExternalParam(name.toLowerCase(), dataEntry.getValue(name),
+				                                                                       DBSFields.COLUMN));
+			}
+			for (InternalParam iParam : queryParams.getParams()) {
+				pc.addParam(new org.wso2.carbon.dataservices.core.engine.ExternalParam(iParam.getName().toLowerCase(),
+				                                                                       iParam.getValue(), DBSFields.QUERY_PARAM));
+			}
+		} else {
+			for (String name : dataEntry.getNames()) {
+				pc.addParam(new org.wso2.carbon.dataservices.core.engine.ExternalParam(name, dataEntry.getValue(name),
+				                                                                       DBSFields.COLUMN));
+			}
+			for (InternalParam iParam : queryParams.getParams()) {
+				pc.addParam(new org.wso2.carbon.dataservices.core.engine.ExternalParam(iParam.getName(),
+				                                                                       iParam.getValue(), DBSFields.QUERY_PARAM));
+			}
 		}
 		return pc;
 	}

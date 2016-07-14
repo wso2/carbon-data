@@ -212,4 +212,9 @@ public class MongoConfig extends Config {
     public Jongo getJongo() {
         return jongo;
     }
+
+    @Override
+    public boolean isCaseSensitive() {
+        return true;
+    }
 }

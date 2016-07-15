@@ -81,7 +81,7 @@ public class RDFConfig extends Config {
 	}
 
 	@Override
-	public boolean isCaseSensitive() {
+	public boolean isResultSetFieldsCaseSensitive() {
 		return false;
 	}
 }

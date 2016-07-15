@@ -144,7 +144,7 @@ public class GSpreadConfig extends Config {
 	}
 
 	@Override
-	public boolean isCaseSensitive() {
+	public boolean isResultSetFieldsCaseSensitive() {
 		return false;
 	}
 

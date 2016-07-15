@@ -218,10 +218,5 @@ public class SQLCarbonDataSourceConfig extends SQLConfig {
 	public ODataDataHandler createODataHandler() throws ODataServiceFault {
 		return new RDBMSDataHandler(getDataSource(), getConfigId());
 	}
-
-	@Override
-	public boolean isCaseSensitive() {
-		return false;
-	}
 }
 

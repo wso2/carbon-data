@@ -18,6 +18,7 @@
  */
 package org.wso2.carbon.dataservices.core.description.query;
 
+import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.json.JSONArray;
@@ -675,8 +676,15 @@ public class QueryFactory {
 		}
 
 		// Checking data source case sensitivity mode
-		String datasourceID = queryEl.getAttribute(new QName(DBSFields.USE_CONFIG)).getAttributeValue();
-		boolean isCaseSensitiveDataSource = dataService.getConfig(datasourceID).isCaseSensitive();
+		OMAttribute datasourceIDAttribute = queryEl.getAttribute(new QName(DBSFields.USE_CONFIG));
+		boolean isResultSetFieldsCaseSensitive;
+		if (datasourceIDAttribute != null) {
+			isResultSetFieldsCaseSensitive =
+					dataService.getConfig(datasourceIDAttribute.getAttributeValue()).isResultSetFieldsCaseSensitive();
+		} else {
+			isResultSetFieldsCaseSensitive =
+					dataService.getConfigs().values().iterator().next().isResultSetFieldsCaseSensitive();
+		}
 		
 		String namespace = resEl.getAttributeValue(new QName(DBSFields.DEFAULT_NAMESPACE));
 		if (namespace == null || namespace.trim().length() == 0) {
@@ -713,13 +721,13 @@ public class QueryFactory {
         result.setEscapeNonPrintableChar(escapeNonPrintableChar);
 
 		if (result.getResultType() == ResultTypes.XML) {
-			populateXMLResult(result, dataService, resEl, namespace, isCaseSensitiveDataSource);
+			populateXMLResult(result, dataService, resEl, namespace, isResultSetFieldsCaseSensitive);
 		} else if (result.getResultType() == ResultTypes.RDF) {
-			populateRDFResult(result, dataService, resEl, namespace, isCaseSensitiveDataSource);
+			populateRDFResult(result, dataService, resEl, namespace, isResultSetFieldsCaseSensitive);
 		} else if (result.getResultType() == ResultTypes.JSON) {
 			populateJSONResult(result, dataService, resEl,
 			                   calculateJSONXMLQueryNS(namespace, queryEl.getAttributeValue(new QName(DBSFields.ID))),
-			                   isCaseSensitiveDataSource);
+			                   isResultSetFieldsCaseSensitive);
 		}
 		
 		return result;
@@ -1234,10 +1242,8 @@ public class QueryFactory {
 		
 		/* workaround for different character case issues in column names,
 		 * constant values will be as it is */
-		if (!DBSFields.VALUE.equals(paramType)) {
-			if (!isCaseSensitive) {
-				param = param.toLowerCase();
-			}
+		if (!DBSFields.VALUE.equals(paramType) && !isCaseSensitive) {
+			param = param.toLowerCase();
 		}
 		
 		/* namespace handling */
@@ -1269,10 +1275,8 @@ public class QueryFactory {
 
         /* If the element represents an array, its name - in Lower case */
 		String arrayName = el.getAttributeValue(new QName("arrayName"));
-		if (arrayName != null) {
-			if (!isCaseSensitive) {
-				arrayName = arrayName.toLowerCase();
-			}
+		if (arrayName != null && !isCaseSensitive) {
+			arrayName = arrayName.toLowerCase();
 		}
 		
 		/* export type */
@@ -1344,13 +1348,12 @@ public class QueryFactory {
 		String queryId = el.getAttributeValue(new QName(DBSFields.HREF));
 		Map<String, WithParam> withParamList = new HashMap<String, WithParam>();
 		Iterator<OMElement> wpItr = el.getChildrenWithName(new QName(DBSFields.WITH_PARAM));
-		boolean isCaseSensitive = dataService.getConfig(dataService.getQuery(queryId).getConfigId()).isCaseSensitive();
 		OMElement wpEl;
-        WithParam withParam;
+		WithParam withParam;
 		while (wpItr.hasNext()) {
 			wpEl = wpItr.next();
-			withParam = createWithParam(wpEl, isCaseSensitive);
-	        /* key - target query's name, value - withparam */
+			withParam = createWithParam(wpEl);
+		    /* key - target query's name, value - withparam */
 			withParamList.put(withParam.getName(), withParam);
 		}		
 		/* get the required roles for the call query */
@@ -1373,7 +1376,7 @@ public class QueryFactory {
 		return callQuery;
 	}
 	
-	private static WithParam createWithParam(OMElement el, boolean isCaseSensitive) throws DataServiceFault {
+	private static WithParam createWithParam(OMElement el) throws DataServiceFault {
 		String name = el.getAttributeValue(new QName("name"));
         if (name != null) {
             name = name.trim();
@@ -1393,9 +1396,7 @@ public class QueryFactory {
 		} else {
 			originalParam = param;
 			/* 'toLowerCase' - workaround for different character case issues in column names */
-			if (!isCaseSensitive) {
-				param = param.toLowerCase();
-			}
+			param = param.toLowerCase();
 		}		
 		WithParam withParam = new CallQuery.WithParam(name, originalParam, param, paramType);
 		return withParam;

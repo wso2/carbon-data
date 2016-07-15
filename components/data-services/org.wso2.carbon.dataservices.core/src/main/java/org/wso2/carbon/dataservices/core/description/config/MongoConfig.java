@@ -214,7 +214,7 @@ public class MongoConfig extends Config {
     }
 
     @Override
-    public boolean isCaseSensitive() {
+    public boolean isResultSetFieldsCaseSensitive() {
         return true;
     }
 }

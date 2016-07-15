@@ -261,5 +261,9 @@ public abstract class SQLConfig extends Config {
     private boolean isXAResourceEnlisted(XAResource resource) {
     	return enlistedXADataSources.get().contains(resource);
     }
-	
+
+	@Override
+	public boolean isResultSetFieldsCaseSensitive() {
+		return false;
+	}
 }

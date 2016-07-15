@@ -64,8 +64,4 @@ public class RDBMSConfig extends JDBCPoolSQLConfig {
 		return new RDBMSDataHandler(getDataSource(), getConfigId());
 	}
 
-	@Override
-	public boolean isCaseSensitive() {
-		return false;
-	}
 }

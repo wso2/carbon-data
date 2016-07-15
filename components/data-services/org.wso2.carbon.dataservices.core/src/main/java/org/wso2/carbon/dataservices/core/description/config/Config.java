@@ -82,5 +82,5 @@ public abstract class Config {
 		return oDataEnabled;
 	}
 
-	public abstract boolean isCaseSensitive();
+	public abstract boolean isResultSetFieldsCaseSensitive();
 }

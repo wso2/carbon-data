@@ -86,8 +86,7 @@ public class InlineCustomQueryBasedDSConfig extends CustomQueryBasedDSConfig {
 	}
 
 	@Override
-	public boolean isCaseSensitive() {
+	public boolean isResultSetFieldsCaseSensitive() {
 		return false;
 	}
-
 }

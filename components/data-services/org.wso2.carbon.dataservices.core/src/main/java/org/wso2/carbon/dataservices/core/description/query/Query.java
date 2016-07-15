@@ -21,7 +21,6 @@ package org.wso2.carbon.dataservices.core.description.query;
 import org.apache.axiom.om.OMDocument;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
-import org.wso2.carbon.dataservices.common.DBConstants;
 import org.wso2.carbon.dataservices.common.DBConstants.DBSFields;
 import org.wso2.carbon.dataservices.common.DBConstants.FaultCodes;
 import org.wso2.carbon.dataservices.common.DBConstants.QueryParamTypes;
@@ -447,19 +446,21 @@ public abstract class Query extends XMLWriterHelper {
 			}
 		}
 	}
-	
-	private ExternalParamCollection createExternalParamCollection(DataEntry dataEntry, 
-			InternalParamCollection queryParams) {
+
+	private ExternalParamCollection createExternalParamCollection(DataEntry dataEntry,
+	                                                              InternalParamCollection queryParams) {
 		ExternalParamCollection pc = new ExternalParamCollection();
 		/* 'toLowerCase' - workaround for different character case issues in column names */
-		if(!dataService.getConfig(configId).isCaseSensitive()) {
+		if (!dataService.getConfig(configId).isResultSetFieldsCaseSensitive()) {
 			for (String name : dataEntry.getNames()) {
-				pc.addParam(new org.wso2.carbon.dataservices.core.engine.ExternalParam(name.toLowerCase(), dataEntry.getValue(name),
+				pc.addParam(new org.wso2.carbon.dataservices.core.engine.ExternalParam(name.toLowerCase(),
+				                                                                       dataEntry.getValue(name),
 				                                                                       DBSFields.COLUMN));
 			}
 			for (InternalParam iParam : queryParams.getParams()) {
 				pc.addParam(new org.wso2.carbon.dataservices.core.engine.ExternalParam(iParam.getName().toLowerCase(),
-				                                                                       iParam.getValue(), DBSFields.QUERY_PARAM));
+				                                                                       iParam.getValue(),
+				                                                                       DBSFields.QUERY_PARAM));
 			}
 		} else {
 			for (String name : dataEntry.getNames()) {
@@ -467,8 +468,9 @@ public abstract class Query extends XMLWriterHelper {
 				                                                                       DBSFields.COLUMN));
 			}
 			for (InternalParam iParam : queryParams.getParams()) {
-				pc.addParam(new org.wso2.carbon.dataservices.core.engine.ExternalParam(iParam.getName(),
-				                                                                       iParam.getValue(), DBSFields.QUERY_PARAM));
+				pc.addParam(
+						new org.wso2.carbon.dataservices.core.engine.ExternalParam(iParam.getName(), iParam.getValue(),
+						                                                           DBSFields.QUERY_PARAM));
 			}
 		}
 		return pc;

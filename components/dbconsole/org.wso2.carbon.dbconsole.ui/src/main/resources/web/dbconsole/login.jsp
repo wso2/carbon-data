@@ -114,7 +114,7 @@ This is the UI component of the database console.
         <form action="#">
             <input type="hidden" id="url" name="url" value="<%=Encode.forHtmlContent(url)%>"/>
             <input type="hidden" id="user" name="user" value="<%=Encode.forHtmlContent(userName)%>"/>
-            <input type="hidden" id="password" name="password" value="<%=Encode.forHtmlContent(password)%>"/>
+            <input type="hidden" id="password" autocomplete="off" name="password" value="<%=Encode.forHtmlContent(password)%>"/>
             <input type="hidden" id="driver" name="driver" value="<%=Encode.forHtmlContent(driver)%>"/>
             <input type="hidden" id="flag" name="flag" value=0>
             <iframe onload='javascript: onPageLoad();' id="page1" name="inlineframe"

@@ -100,4 +100,8 @@ public class CustomQueryCarbonDataSourceConfig extends CustomQueryBasedDSConfig 
 		                           " Datasource.");
 	}
 
+	@Override
+	public boolean isResultSetFieldsCaseSensitive() {
+		return false;
+	}
 }

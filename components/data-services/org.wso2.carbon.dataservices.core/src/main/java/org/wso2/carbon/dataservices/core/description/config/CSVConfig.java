@@ -210,4 +210,8 @@ public class CSVConfig extends Config {
                                    " Datasource.");
     }
 
+    @Override
+    public boolean isResultSetFieldsCaseSensitive() {
+        return false;
+    }
 }

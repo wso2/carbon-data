@@ -18,33 +18,59 @@
  */
 package org.wso2.carbon.dataservices.core.description.query;
 
+import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.wso2.carbon.dataservices.common.DBConstants;
-import org.wso2.carbon.dataservices.common.DBConstants.*;
+import org.wso2.carbon.dataservices.common.DBConstants.CarbonDatasource;
+import org.wso2.carbon.dataservices.common.DBConstants.DBSFields;
+import org.wso2.carbon.dataservices.common.DBConstants.DataSourceTypes;
+import org.wso2.carbon.dataservices.common.DBConstants.JNDI;
+import org.wso2.carbon.dataservices.common.DBConstants.QueryParamTypes;
+import org.wso2.carbon.dataservices.common.DBConstants.QueryTypes;
+import org.wso2.carbon.dataservices.common.DBConstants.RDBMS;
+import org.wso2.carbon.dataservices.common.DBConstants.ResultTypes;
 import org.wso2.carbon.dataservices.common.RDBMSUtils;
 import org.wso2.carbon.dataservices.core.DBUtils;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
-import org.wso2.carbon.dataservices.core.description.config.SQLCarbonDataSourceConfig;
 import org.wso2.carbon.dataservices.core.description.config.Config;
 import org.wso2.carbon.dataservices.core.description.config.JNDIConfig;
+import org.wso2.carbon.dataservices.core.description.config.SQLCarbonDataSourceConfig;
 import org.wso2.carbon.dataservices.core.description.event.EventTrigger;
-import org.wso2.carbon.dataservices.core.engine.*;
+import org.wso2.carbon.dataservices.core.engine.CallQuery;
 import org.wso2.carbon.dataservices.core.engine.CallQuery.WithParam;
+import org.wso2.carbon.dataservices.core.engine.DataService;
+import org.wso2.carbon.dataservices.core.engine.OutputElementGroup;
+import org.wso2.carbon.dataservices.core.engine.ParamValue;
+import org.wso2.carbon.dataservices.core.engine.QueryParam;
+import org.wso2.carbon.dataservices.core.engine.Result;
+import org.wso2.carbon.dataservices.core.engine.SQLDialect;
+import org.wso2.carbon.dataservices.core.engine.StaticOutputElement;
 import org.wso2.carbon.dataservices.core.validation.Validator;
 import org.wso2.carbon.dataservices.core.validation.ValidatorExt;
-import org.wso2.carbon.dataservices.core.validation.standard.*;
+import org.wso2.carbon.dataservices.core.validation.standard.ArrayTypeValidator;
+import org.wso2.carbon.dataservices.core.validation.standard.DoubleRangeValidator;
+import org.wso2.carbon.dataservices.core.validation.standard.LengthValidator;
+import org.wso2.carbon.dataservices.core.validation.standard.LongRangeValidator;
+import org.wso2.carbon.dataservices.core.validation.standard.PatternValidator;
+import org.wso2.carbon.dataservices.core.validation.standard.ScalarTypeValidator;
 
 import javax.sql.DataSource;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
-
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * A factory class to create queries in a data service.
@@ -648,6 +674,17 @@ public class QueryFactory {
 		if (resEl == null) {
 			return null;
 		}
+
+		// Checking data source case sensitivity mode
+		OMAttribute datasourceIDAttribute = queryEl.getAttribute(new QName(DBSFields.USE_CONFIG));
+		boolean isResultSetFieldsCaseSensitive;
+		if (datasourceIDAttribute != null) {
+			isResultSetFieldsCaseSensitive =
+					dataService.getConfig(datasourceIDAttribute.getAttributeValue()).isResultSetFieldsCaseSensitive();
+		} else {
+			isResultSetFieldsCaseSensitive =
+					dataService.getConfigs().values().iterator().next().isResultSetFieldsCaseSensitive();
+		}
 		
 		String namespace = resEl.getAttributeValue(new QName(DBSFields.DEFAULT_NAMESPACE));
 		if (namespace == null || namespace.trim().length() == 0) {
@@ -682,15 +719,16 @@ public class QueryFactory {
             escapeNonPrintableChar = Boolean.parseBoolean(escapeNonPrintableCharStr);
         }
         result.setEscapeNonPrintableChar(escapeNonPrintableChar);
-		
-        if (result.getResultType() == ResultTypes.XML) {
-            populateXMLResult(result, dataService, resEl, namespace);
-        } else if (result.getResultType() == ResultTypes.RDF) {
-            populateRDFResult(result, dataService, resEl, namespace);
-        } else if (result.getResultType() == ResultTypes.JSON) {
-            populateJSONResult(result, dataService, resEl, calculateJSONXMLQueryNS(
-                    namespace, queryEl.getAttributeValue(new QName(DBSFields.ID))));
-        }
+
+		if (result.getResultType() == ResultTypes.XML) {
+			populateXMLResult(result, dataService, resEl, namespace, isResultSetFieldsCaseSensitive);
+		} else if (result.getResultType() == ResultTypes.RDF) {
+			populateRDFResult(result, dataService, resEl, namespace, isResultSetFieldsCaseSensitive);
+		} else if (result.getResultType() == ResultTypes.JSON) {
+			populateJSONResult(result, dataService, resEl,
+			                   calculateJSONXMLQueryNS(namespace, queryEl.getAttributeValue(new QName(DBSFields.ID))),
+			                   isResultSetFieldsCaseSensitive);
+		}
 		
 		return result;
 	}
@@ -703,7 +741,7 @@ public class QueryFactory {
 	}
 	
 	private static void populateRDFResult(Result result, DataService dataService, OMElement resEl,
-	        String namespace) throws DataServiceFault {
+	        String namespace, boolean isCaseSensitive) throws DataServiceFault {
 	    result.setElementName(DBConstants.DBSFields.RDF);
 	    result.setRowName(DBConstants.DBSFields.RDF_DESCRIPTION);
 	    result.setNamespace(namespace);
@@ -714,12 +752,12 @@ public class QueryFactory {
         addRHSChildrenToLHS(groupEl, resEl);
         /* create output element group and set it to the result */
         OutputElementGroup defGroup = createOutputElementGroup(dataService, groupEl, 
-                namespace, result, 0, false);
+                namespace, result, 0, false, isCaseSensitive);
         result.setDefaultElementGroup(defGroup);
 	}
 	
     private static void populateXMLResult(Result result, DataService dataService, OMElement resEl,
-            String namespace) throws DataServiceFault {
+            String namespace, boolean isCaseSensitive) throws DataServiceFault {
         result.setElementName(resEl.getAttributeValue(new QName(DBSFields.ELEMENT)));
         result.setRowName(resEl.getAttributeValue(new QName(DBSFields.ROW_NAME)));
         result.setNamespace(namespace);
@@ -728,7 +766,7 @@ public class QueryFactory {
         addRHSChildrenToLHS(groupEl, resEl);
         /* create output element group and set it to the result */
         OutputElementGroup defGroup = createOutputElementGroup(dataService, groupEl, 
-                namespace, result, 0, false);
+                namespace, result, 0, false, isCaseSensitive);
         result.setDefaultElementGroup(defGroup);
     }
     
@@ -943,15 +981,15 @@ public class QueryFactory {
             throw new DataServiceFault(e, "Error in parsing JSON result mapping: " + e.getMessage());
         }
     }
-    
-    private static void populateJSONResult(Result result, DataService dataService,
-            OMElement resultEl, String namespace) throws DataServiceFault {
-        /* create the XML mapping from the JSON mapping */
-        resultEl = getJSONResultFromText(resultEl.getText());
-        result.setResultType(ResultTypes.XML);
-        /* process the XML mapping */
-        populateXMLResult(result, dataService, resultEl, namespace);
-    }
+
+	private static void populateJSONResult(Result result, DataService dataService, OMElement resultEl, String namespace,
+	                                       boolean isCaseSensitive) throws DataServiceFault {
+	    /* create the XML mapping from the JSON mapping */
+		resultEl = getJSONResultFromText(resultEl.getText());
+		result.setResultType(ResultTypes.XML);
+		/* process the XML mapping */
+		populateXMLResult(result, dataService, resultEl, namespace, isCaseSensitive);
+	}
 	
 	private static OMElement createElement(String name) {
 		OMFactory factory = DBUtils.getOMFactory();
@@ -986,7 +1024,7 @@ public class QueryFactory {
 
 	@SuppressWarnings("unchecked")
 	private static OutputElementGroup createOutputElementGroup(DataService dataService, OMElement groupEl, 
-			String parentNamespace, Result parentResult, int level, boolean optionalOverrideCurrent) throws DataServiceFault {
+			String parentNamespace, Result parentResult, int level, boolean optionalOverrideCurrent, boolean isCaseSensitive) throws DataServiceFault {
 		String name = groupEl.getAttributeValue(new QName(DBSFields.NAME));
 		String namespace = groupEl.getAttributeValue(new QName(DBSFields.NAMESPACE));
         String arrayName = groupEl.getAttributeValue(new QName("arrayName"));
@@ -1007,13 +1045,13 @@ public class QueryFactory {
 			el = resElItr.next();
 			if (el.getQName().equals(elQName) && isElementGroup(el)) {
                 elGroup.addOutputElementGroupEntry(createOutputElementGroup(dataService, el,
-                        namespace, parentResult, ++level, targetOptionalOverride));
+                        namespace, parentResult, ++level, targetOptionalOverride, isCaseSensitive));
 			} else if (el.getQName().equals(elQName)) {
 				elGroup.addElementEntry(createStaticOutputElement(dataService, el, namespace,
-                        resultType, targetOptionalOverride));
+                        resultType, targetOptionalOverride, isCaseSensitive));
 			} else if (el.getQName().equals(attrQName)) {
 				elGroup.addAttributeEntry(createStaticOutputElement(dataService, el, namespace,
-                        resultType, targetOptionalOverride));
+                        resultType, targetOptionalOverride, isCaseSensitive));
 			} else if (el.getQName().equals(cqQName)) {
 				CallQuery callQuery = createCallQuery(dataService, el, targetOptionalOverride);
 				elGroup.addCallQueryEntry(callQuery);
@@ -1178,7 +1216,7 @@ public class QueryFactory {
 	}
 	
 	private static StaticOutputElement createStaticOutputElement(DataService dataService, 
-			OMElement el, String namespace, int resultType, boolean optionalOverride) 
+			OMElement el, String namespace, int resultType, boolean optionalOverride, boolean isCaseSensitive)
 	            throws DataServiceFault {
 		String name = el.getAttributeValue(new QName(DBSFields.NAME));
 		String paramType = DBSFields.COLUMN;
@@ -1204,8 +1242,8 @@ public class QueryFactory {
 		
 		/* workaround for different character case issues in column names,
 		 * constant values will be as it is */
-		if (!DBSFields.VALUE.equals(paramType)) {
-		    param = param.toLowerCase();
+		if (!DBSFields.VALUE.equals(paramType) && !isCaseSensitive) {
+			param = param.toLowerCase();
 		}
 		
 		/* namespace handling */
@@ -1237,9 +1275,9 @@ public class QueryFactory {
 
         /* If the element represents an array, its name - in Lower case */
 		String arrayName = el.getAttributeValue(new QName("arrayName"));
-        if (arrayName != null) {
-            arrayName = arrayName.toLowerCase();
-        }
+		if (arrayName != null && !isCaseSensitive) {
+			arrayName = arrayName.toLowerCase();
+		}
 		
 		/* export type */
 		int exportType = ParamValue.PARAM_VALUE_SCALAR;
@@ -1311,11 +1349,11 @@ public class QueryFactory {
 		Map<String, WithParam> withParamList = new HashMap<String, WithParam>();
 		Iterator<OMElement> wpItr = el.getChildrenWithName(new QName(DBSFields.WITH_PARAM));
 		OMElement wpEl;
-        WithParam withParam;
+		WithParam withParam;
 		while (wpItr.hasNext()) {
 			wpEl = wpItr.next();
-            withParam = createWithParam(wpEl);
-            /* key - target query's name, value - withparam */
+			withParam = createWithParam(wpEl);
+		    /* key - target query's name, value - withparam */
 			withParamList.put(withParam.getName(), withParam);
 		}		
 		/* get the required roles for the call query */

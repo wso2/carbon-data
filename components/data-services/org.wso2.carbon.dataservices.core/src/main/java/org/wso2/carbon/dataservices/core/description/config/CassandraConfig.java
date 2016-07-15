@@ -323,4 +323,8 @@ public class CassandraConfig extends Config {
         return new CassandraDataHandler(getConfigId(), getSession(), getProperty(DBConstants.Cassandra.KEYSPACE));
     }
 
+    @Override
+    public boolean isResultSetFieldsCaseSensitive() {
+        return false;
+    }
 }

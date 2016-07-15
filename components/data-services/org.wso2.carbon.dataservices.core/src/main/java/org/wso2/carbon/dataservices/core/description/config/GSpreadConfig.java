@@ -143,4 +143,9 @@ public class GSpreadConfig extends Config {
 		                           " Datasource.");
 	}
 
+	@Override
+	public boolean isResultSetFieldsCaseSensitive() {
+		return false;
+	}
+
 }

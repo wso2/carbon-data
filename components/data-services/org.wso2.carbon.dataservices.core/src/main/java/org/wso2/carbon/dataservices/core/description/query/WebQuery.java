@@ -32,7 +32,6 @@ import org.wso2.carbon.dataservices.core.engine.QueryParam;
 import org.wso2.carbon.dataservices.core.engine.Result;
 
 import javax.xml.stream.XMLStreamWriter;
-
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -104,8 +103,7 @@ public class WebQuery extends Query {
                 this.writeResultEntry(xmlWriter, dataEntry, params, queryLevel);
             }
         } catch (Exception e) {
-            log.error("Error in executing web scraping query", e);
-            throw new DataServiceFault(e);
+            throw new DataServiceFault(e, "Error in executing web scraping query");
         }
     }
 

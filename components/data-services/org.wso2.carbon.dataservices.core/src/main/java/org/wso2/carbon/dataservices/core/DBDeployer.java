@@ -231,8 +231,6 @@ public class DBDeployer extends AbstractDeployer {
 
 		} catch (DataServiceFault e) {
 			errorMessage = DBUtils.getStacktraceFromException(e);
-			log.error(Messages.getMessage(DeploymentErrorMsgs.INVALID_SERVICE,
-					deploymentFileData.getName()), e);
 			/* if there is a request to re-schedule in the exception, do it .. */
 			if (DBConstants.FaultCodes.CONNECTION_UNAVAILABLE_ERROR.equals(e.getCode())) {
 				this.sheduleRedeploy(deploymentFileData, service);
@@ -252,8 +250,6 @@ public class DBDeployer extends AbstractDeployer {
 					deploymentFileData.getName()), e);
 		} catch (Throwable e) {
 			errorMessage = DBUtils.getStacktraceFromException(e);
-			log.error(Messages.getMessage(DeploymentErrorMsgs.INVALID_SERVICE,
-					deploymentFileData.getName()), e);
 			throw new DeploymentException(Messages.getMessage(
 					DeploymentErrorMsgs.INVALID_SERVICE,
 					deploymentFileData.getName()), e);
@@ -478,7 +474,6 @@ public class DBDeployer extends AbstractDeployer {
             super.undeploy(servicePath);
 		} catch (Exception e) {
 			String msg = "Error in undeploying service";
-			log.error(msg, e);
 			throw new DeploymentException(msg, e);
 		}
 	}

@@ -840,7 +840,6 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
                 }
             }
         } catch (Throwable e) {
-            log.error(e.getMessage(), e);
             isError = true;
             throw new DataServiceFault(e, FaultCodes.DATABASE_ERROR,
                     "Error in 'SQLQuery.processPostNormalQuery': " + e.getMessage());
@@ -949,7 +948,6 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
             }
             return new QueryResultInfo(stmt, rs);
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
             isError = true;
             throw new DataServiceFault(e, FaultCodes.DATABASE_ERROR,
                     "Error in 'SQLQuery.processStoredProcQuery': " + e.getMessage());
@@ -1015,7 +1013,6 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
                 }
             }
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
             isError = true;
             throw new DataServiceFault(e, FaultCodes.DATABASE_ERROR,
                     "Error in 'SQLQuery.processStoredProcQuery': " + e.getMessage());

@@ -18,16 +18,16 @@
  */
 package org.wso2.carbon.dataservices.core.admin;
 
-import java.io.*;
-import java.net.URL;
-import java.net.URLConnection;
-
-import javax.activation.DataHandler;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.dataservices.common.DBConstants;
 import org.wso2.carbon.dataservices.core.WSDLToDataService;
+
+import javax.activation.DataHandler;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 
 /**
  * Data Services admin service class used for file uploading.
@@ -48,11 +48,7 @@ public class DataServiceFileUploader extends DataServiceAdmin {
     		}    		
 			this.saveDataService(serviceName, serviceHierarchy, serviceContents);
 		} catch (Exception e) {
-			String msg = "Error occured while uploading the service "
-					+ fileName;
-			log.error(msg, e);
-			throw new Exception("Failed to upload the service archive "
-					+ fileName, e);
+		    throw new Exception("Failed to upload the service archive " + fileName, e);
 		}
 
 		return DBConstants.LABEL_SUCESSFULL;

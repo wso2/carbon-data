@@ -600,12 +600,10 @@ public class DataService {
             		this.extractParams(params));
         } catch (DataServiceFault e) {
             this.fillInDataServiceFault(e, requestName, params);
-            log.error(e.getFullMessage(), e);
             throw e;
         } catch (Exception e) {
             DataServiceFault dsf = new DataServiceFault(e);
             this.fillInDataServiceFault(dsf, requestName, params);
-            log.error(dsf.getFullMessage(), e);
             throw dsf;
         }
     }

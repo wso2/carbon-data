@@ -33,7 +33,6 @@ import org.apache.olingo.server.api.uri.queryoption.SkipTokenOption;
 import org.apache.olingo.server.api.uri.queryoption.TopOption;
 import org.apache.olingo.server.api.uri.queryoption.expression.ExpressionVisitException;
 import org.wso2.carbon.dataservices.core.odata.expression.ExpressionVisitorImpl;
-import org.wso2.carbon.dataservices.core.odata.expression.ODataConstants;
 import org.wso2.carbon.dataservices.core.odata.expression.operand.TypedOperand;
 import org.wso2.carbon.dataservices.core.odata.expression.operand.VisitorOperand;
 

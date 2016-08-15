@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.dataservices.core.odata.expression;
+package org.wso2.carbon.dataservices.core.odata;
 
 import org.apache.olingo.commons.api.edm.EdmPrimitiveType;
 import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
@@ -72,4 +72,5 @@ public class ODataConstants {
     public static final int EQUALS = 0;
     public static final int LESS_THAN = -1;
     public static final int GREATER_THAN = 1;
+    public static final String E_TAG = "E_TAG";
 }

@@ -411,15 +411,18 @@ public class RDBMSDataHandler implements ODataDataHandler {
     }
 
     @Override
-    public String
-
-    insertEntityToTable(String tableName, ODataEntry entry) throws ODataServiceFault {
+    public ODataEntry insertEntityToTable(String tableName, ODataEntry entry) throws ODataServiceFault {
         Connection connection = null;
         PreparedStatement statement = null;
         try {
             connection = initializeConnection();
             String query = createInsertSQL(tableName, entry);
-            statement = connection.prepareStatement(query);
+            boolean isAvailableAutoIncrementColumns = isAvailableAutoIncrementColumns(tableName);
+            if(isAvailableAutoIncrementColumns) {
+                statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            } else {
+                statement = connection.prepareStatement(query);
+            }
             int index = 1;
             for (String column : entry.getNames()) {
                 if (this.rdbmsDataTypes.get(tableName).keySet().contains(column)) {
@@ -429,9 +432,32 @@ public class RDBMSDataHandler implements ODataDataHandler {
                     index++;
                 }
             }
-            statement.execute();
+            ODataEntry createdEntry = new ODataEntry();
+            if (isAvailableAutoIncrementColumns(tableName)) {
+                statement.executeUpdate();
+                ResultSet resultSet = statement.getGeneratedKeys();
+                String paramValue;
+                int i = 1;
+                while (resultSet.next()) {
+                    for (DataColumn column : this.tableMetaData.get(tableName).values()) {
+                        if (column.isAutoIncrement() && !entry.getNames().contains(column.getColumnName())) {
+                            String resultSetColumnName = resultSet.getMetaData().getColumnName(i);
+                            String columnName = column.getColumnName();
+                            int columnType = this.rdbmsDataTypes.get(tableName).get(columnName);
+                            paramValue = getValueFromResultSet(columnType, resultSetColumnName, resultSet);
+                            createdEntry.addValue(columnName, paramValue);
+                            // Need to add this column to generate the E-tag
+                            entry.addValue(columnName, paramValue);
+                        }
+                    }
+                    i++;
+                }
+            } else {
+                statement.execute();
+            }
             commitExecution(connection);
-            return ODataUtils.generateETag(this.configID, tableName, entry);
+            createdEntry.addValue(ODataConstants.E_TAG, ODataUtils.generateETag(this.configID, tableName, entry));
+            return createdEntry;
         } catch (SQLException | ParseException e) {
             throw new ODataServiceFault(e, "Error occurred while writing entities to " + tableName + " table. :" +
                                            e.getMessage());
@@ -439,6 +465,15 @@ public class RDBMSDataHandler implements ODataDataHandler {
             releaseResources(null, statement);
             releaseConnection(connection);
         }
+    }
+
+    private boolean isAvailableAutoIncrementColumns(String table) {
+        for (DataColumn column : this.tableMetaData.get(table).values()) {
+            if (column.isAutoIncrement()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -985,7 +1020,13 @@ public class RDBMSDataHandler implements ODataDataHandler {
                 int size = resultSet.getInt("COLUMN_SIZE");
                 boolean nullable = resultSet.getBoolean("NULLABLE");
                 String columnDefaultVal = resultSet.getString("COLUMN_DEF");
-                DataColumn column = new DataColumn(columnName, getODataDataType(columnType), i, nullable, size);
+                String autoIncrement = resultSet.getString("IS_AUTOINCREMENT").toLowerCase();
+                boolean isAutoIncrement = false;
+                if (autoIncrement.contains("yes") || autoIncrement.contains("true")) {
+                    isAutoIncrement = true;
+                }
+                DataColumn column = new DataColumn(columnName, getODataDataType(columnType), i, nullable, size,
+                                                   isAutoIncrement);
                 if (null != columnDefaultVal) {
                     column.setDefaultValue(columnDefaultVal);
                 }

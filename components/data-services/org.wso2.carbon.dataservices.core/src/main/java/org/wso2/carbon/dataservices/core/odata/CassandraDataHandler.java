@@ -154,7 +154,7 @@ public class CassandraDataHandler implements ODataDataHandler {
     }
 
     @Override
-    public String insertEntityToTable(String tableName, ODataEntry entity) throws ODataServiceFault {
+    public ODataEntry insertEntityToTable(String tableName, ODataEntry entity) throws ODataServiceFault {
         List<ColumnMetadata> cassandraTableMetaData = this.session.getCluster().getMetadata().getKeyspace(this.keyspace)
                                                                   .getTable(tableName).getColumns();
         String query = createInsertCQL(tableName, entity);
@@ -171,7 +171,9 @@ public class CassandraDataHandler implements ODataDataHandler {
             this.preparedStatementMap.put(query, statement);
         }
         this.session.execute(statement.bind(values.toArray()));
-        return ODataUtils.generateETag(this.configID, tableName, entity);
+        ODataEntry createdEntry = new ODataEntry();
+        createdEntry.addValue(ODataConstants.E_TAG, ODataUtils.generateETag(this.configID, tableName, entity));
+        return entity;
     }
 
     @Override

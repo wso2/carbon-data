@@ -19,7 +19,7 @@ package org.wso2.carbon.dataservices.core.odata.expression.operation;
 
 import org.apache.olingo.commons.api.http.HttpStatusCode;
 import org.apache.olingo.server.api.ODataApplicationException;
-import org.wso2.carbon.dataservices.core.odata.expression.ODataConstants;
+import org.wso2.carbon.dataservices.core.odata.ODataConstants;
 import org.wso2.carbon.dataservices.core.odata.expression.operand.TypedOperand;
 import org.wso2.carbon.dataservices.core.odata.expression.operand.VisitorOperand;
 

@@ -58,7 +58,7 @@ public interface ODataDataHandler {
      * @param entity    Entity
      * @throws ODataServiceFault
      */
-    String insertEntityToTable(String tableName, ODataEntry entity) throws ODataServiceFault;
+    ODataEntry insertEntityToTable(String tableName, ODataEntry entity) throws ODataServiceFault;
 
     /**
      * This method deletes entity from table.

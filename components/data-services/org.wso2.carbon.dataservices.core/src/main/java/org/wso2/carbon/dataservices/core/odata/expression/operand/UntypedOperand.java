@@ -21,7 +21,7 @@ import org.apache.olingo.commons.api.edm.EdmPrimitiveType;
 import org.apache.olingo.commons.api.edm.EdmProperty;
 import org.apache.olingo.commons.api.http.HttpStatusCode;
 import org.apache.olingo.server.api.ODataApplicationException;
-import org.wso2.carbon.dataservices.core.odata.expression.ODataConstants;
+import org.wso2.carbon.dataservices.core.odata.ODataConstants;
 
 import java.util.Locale;
 

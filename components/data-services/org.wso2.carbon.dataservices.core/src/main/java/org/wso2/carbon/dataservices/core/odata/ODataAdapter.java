@@ -398,9 +398,9 @@ public class ODataAdapter implements ServiceHandler {
         EdmEntitySet edmEntitySet = request.getEntitySet();
         String baseURL = request.getODataRequest().getRawBaseUri();
         try {
-            entity.setId(new URI(EntityResponse.buildLocation(baseURL, entity, edmEntitySet.getName(),
-                                                              edmEntitySet.getEntityType())));
             Entity created = createEntityInTable(edmEntitySet.getEntityType(), entity);
+            entity.setId(new URI(EntityResponse.buildLocation(baseURL, created, edmEntitySet.getName(),
+                                                              edmEntitySet.getEntityType())));
             response.writeCreatedEntity(edmEntitySet, created);
         } catch (ODataServiceFault | SerializerException | URISyntaxException e) {
             response.writeNotModified();
@@ -979,15 +979,21 @@ public class ODataAdapter implements ServiceHandler {
      * @see #wrapEntityToDataEntry(EdmEntityType, Entity)
      */
     private Entity createEntityInTable(EdmEntityType entityType, Entity entity) throws ODataServiceFault {
-        String eTag;
         try {
             if (!entity.getNavigationBindings().isEmpty()) {
                 initializeTransactionalConnection();
             }
             String rootTable = entityType.getName();
-            eTag = this.dataHandler.insertEntityToTable(rootTable, wrapEntityToDataEntry(entityType, entity));
+            ODataEntry createdEntity = this.dataHandler.insertEntityToTable(rootTable,
+                                                                            wrapEntityToDataEntry(entityType, entity));
+            for(String paramName : createdEntity.getNames()) {
+                if(!paramName.equals(ODataConstants.E_TAG)) {
+                    DataColumn column = this.dataHandler.getTableMetadata().get(rootTable).get(paramName);
+                    entity.addProperty(createPrimitive(column.getColumnType(), paramName, createdEntity.getValue(paramName)));
+                }
+            }
             if (!entity.getNavigationBindings().isEmpty()) {
-                ODataEntry rootKeys = getKeyPredicatesFromReference(entity.getId().toASCIIString(), rootTable);
+                ODataEntry rootKeys = getKeyPredicatesFromEntity(entityType, entity);
                 for (Link reference : entity.getNavigationBindings()) {
                     String navigationTable = reference.getTitle();
                     if (reference.getBindingLinks().isEmpty()) {
@@ -1002,9 +1008,9 @@ public class ODataAdapter implements ServiceHandler {
                     }
                 }
             }
-            entity.setETag(eTag);
+            entity.setETag(createdEntity.getValue(ODataConstants.E_TAG));
             return entity;
-        } catch (ODataServiceFault | ODataApplicationException e) {
+        } catch (ODataServiceFault | ODataApplicationException | ParseException e) {
             throw new ODataServiceFault(e.getMessage());
         } finally {
             if (!entity.getNavigationBindings().isEmpty()) {
@@ -1048,6 +1054,16 @@ public class ODataAdapter implements ServiceHandler {
             entry.addValue(property.getName(), readPrimitiveValueInString(propertyType, property.getValue()));
         }
         return entry;
+    }
+
+    private ODataEntry getKeyPredicatesFromEntity(EdmEntityType entityType, Entity entity)
+            throws ODataApplicationException {
+        ODataEntry keyPredicates = new ODataEntry();
+        for (String key : entityType.getKeyPredicateNames()) {
+            EdmProperty propertyType = (EdmProperty) entityType.getProperty(key);
+            keyPredicates.addValue(key, readPrimitiveValueInString(propertyType, entity.getProperty(key).getValue()));
+        }
+        return keyPredicates;
     }
 
     /**

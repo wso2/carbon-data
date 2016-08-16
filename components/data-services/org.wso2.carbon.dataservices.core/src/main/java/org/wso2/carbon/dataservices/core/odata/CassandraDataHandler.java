@@ -46,6 +46,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * This class implements cassandra datasource related operations for ODataDataHandler.
@@ -157,7 +158,8 @@ public class CassandraDataHandler implements ODataDataHandler {
     public ODataEntry insertEntityToTable(String tableName, ODataEntry entity) throws ODataServiceFault {
         List<ColumnMetadata> cassandraTableMetaData = this.session.getCluster().getMetadata().getKeyspace(this.keyspace)
                                                                   .getTable(tableName).getColumns();
-        String query = createInsertCQL(tableName, entity);
+        UUID uuid = UUID.randomUUID();
+        String query = createInsertCQL(tableName, entity, uuid);
         List<Object> values = new ArrayList<>();
         for (DataColumn column : this.tableMetaData.get(tableName).values()) {
             String columnName = column.getColumnName();
@@ -171,8 +173,12 @@ public class CassandraDataHandler implements ODataDataHandler {
             this.preparedStatementMap.put(query, statement);
         }
         this.session.execute(statement.bind(values.toArray()));
-        ODataEntry createdEntry = new ODataEntry();
-        createdEntry.addValue(ODataConstants.E_TAG, ODataUtils.generateETag(this.configID, tableName, entity));
+        entity.addValue(ODataConstants.E_TAG, ODataUtils.generateETag(this.configID, tableName, entity));
+        for( String pkey: this.primaryKeys.get(tableName)) {
+            if(!entity.getNames().contains(pkey) && this.tableMetaData.get(tableName).get(pkey).getColumnType().equals(ODataDataType.GUID)) {
+                entity.addValue(pkey,uuid.toString());
+            }
+        }
         return entity;
     }
 
@@ -391,10 +397,10 @@ public class CassandraDataHandler implements ODataDataHandler {
                         paramValue = row.getString(i);
                         break;
                     case TIMESTAMP:
-                        paramValue = ConverterUtil.convertToString(row.getDate(i));
+                        paramValue = row.isNull(i) ? null : ConverterUtil.convertToString(row.getDate(i));
                         break;
                     case UUID:
-                        paramValue = ConverterUtil.convertToString(row.getUUID(i));
+                        paramValue = row.isNull(i) ? null : ConverterUtil.convertToString(row.getUUID(i));
                         break;
                     case VARCHAR:
                         paramValue = row.getString(i);
@@ -403,25 +409,25 @@ public class CassandraDataHandler implements ODataDataHandler {
                         paramValue = row.isNull(i) ? null : ConverterUtil.convertToString(row.getVarint(i));
                         break;
                     case TIMEUUID:
-                        paramValue = ConverterUtil.convertToString(row.getUUID(i));
+                        paramValue = row.isNull(i) ? null : ConverterUtil.convertToString(row.getUUID(i));
                         break;
                     case LIST:
-                        paramValue = Arrays.toString(row.getList(i, Object.class).toArray());
+                        paramValue = row.isNull(i) ? null : Arrays.toString(row.getList(i, Object.class).toArray());
                         break;
                     case SET:
-                        paramValue = row.getSet(i, Object.class).toString();
+                        paramValue = row.isNull(i) ? null : row.getSet(i, Object.class).toString();
                         break;
                     case MAP:
-                        paramValue = row.getMap(i, Object.class, Object.class).toString();
+                        paramValue = row.isNull(i) ? null : row.getMap(i, Object.class, Object.class).toString();
                         break;
                     case UDT:
-                        paramValue = row.getUDTValue(i).toString();
+                        paramValue = row.isNull(i) ? null : row.getUDTValue(i).toString();
                         break;
                     case TUPLE:
-                        paramValue = row.getTupleValue(i).toString();
+                        paramValue = row.isNull(i) ? null : row.getTupleValue(i).toString();
                         break;
                     case CUSTOM:
-                        paramValue = this.base64EncodeByteBuffer(row.getBytes(i));
+                        paramValue = row.isNull(i) ? null : this.base64EncodeByteBuffer(row.getBytes(i));
                         break;
                     default:
                         paramValue = row.getString(i);
@@ -502,9 +508,10 @@ public class CassandraDataHandler implements ODataDataHandler {
                 case VARCHAR:
 				/* fall through */
                 case TIMEUUID:
-				/* fall through */
-                case UUID:
                     values.add(value);
+                    break;
+                case UUID:
+                    values.add(UUID.fromString(value));
                     break;
                 case BIGINT:
 				/* fall through */
@@ -553,9 +560,10 @@ public class CassandraDataHandler implements ODataDataHandler {
             case VARCHAR:
 				/* fall through */
             case TIMEUUID:
-				/* fall through */
-            case UUID:
                 dataType = ODataDataType.STRING;
+                break;
+            case UUID:
+                dataType = ODataDataType.GUID;
                 break;
             case BIGINT:
 				/* fall through */
@@ -678,7 +686,7 @@ public class CassandraDataHandler implements ODataDataHandler {
      * @param tableName Name of the table
      * @return sqlQuery
      */
-    private String createInsertCQL(String tableName, ODataEntry entry) {
+    private String createInsertCQL(String tableName, ODataEntry entry, UUID uuid) {
         StringBuilder sql = new StringBuilder();
         sql.append("INSERT INTO ").append(tableName).append(" (");
         boolean propertyMatch = false;
@@ -689,16 +697,36 @@ public class CassandraDataHandler implements ODataDataHandler {
                 }
                 sql.append(column.getColumnName());
                 propertyMatch = true;
+            } else if (this.primaryKeys.get(tableName).contains(column.getColumnName())) {
+                //supporting auto generated ids in cassandra
+                if (column.getColumnType().equals(ODataDataType.GUID)) {
+                    if (propertyMatch) {
+                        sql.append(",");
+                    }
+                    sql.append(column.getColumnName());
+                    propertyMatch = true;
+                }
             }
         }
         sql.append(" ) VALUES ( ");
         propertyMatch = false;
         for (DataColumn column : this.tableMetaData.get(tableName).values()) {
-            if (propertyMatch) {
-                sql.append(",");
+            if (entry.getValue(column.getColumnName()) != null) {
+                if (propertyMatch) {
+                    sql.append(",");
+                }
+                sql.append(" ? ");
+                propertyMatch = true;
+            } else if (this.primaryKeys.get(tableName).contains(column.getColumnName())) {
+                //supporting auto generated ids in cassandra
+                if (column.getColumnType().equals(ODataDataType.GUID)) {
+                    if (propertyMatch) {
+                        sql.append(",");
+                    }
+                    sql.append(uuid.toString());
+                    propertyMatch = true;
+                }
             }
-            sql.append(" ? ");
-            propertyMatch = true;
         }
         sql.append(" ) ");
         return sql.toString();

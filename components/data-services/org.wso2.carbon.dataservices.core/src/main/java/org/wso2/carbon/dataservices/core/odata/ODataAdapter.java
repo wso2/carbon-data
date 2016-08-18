@@ -105,6 +105,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * This class implements the olingo serviceHandler to process requests and response.
@@ -1735,7 +1736,7 @@ public class ODataAdapter implements ServiceHandler {
                 break;
             case GUID:
                 propertyType = EdmPrimitiveTypeKind.Guid.getFullQualifiedName().getFullQualifiedNameAsString();
-                value = paramValue;
+                value = UUID.fromString(paramValue);
                 break;
             case STREAM:
                 propertyType = EdmPrimitiveTypeKind.Stream.getFullQualifiedName().getFullQualifiedNameAsString();

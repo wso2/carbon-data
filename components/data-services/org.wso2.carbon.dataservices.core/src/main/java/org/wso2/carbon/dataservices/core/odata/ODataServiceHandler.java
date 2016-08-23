@@ -18,10 +18,10 @@
 
 package org.wso2.carbon.dataservices.core.odata;
 
+import org.apache.olingo.commons.api.edmx.EdmxReference;
 import org.apache.olingo.server.api.OData;
 import org.apache.olingo.server.api.ODataHttpHandler;
 import org.apache.olingo.server.api.ServiceMetadata;
-import org.apache.olingo.server.api.edmx.EdmxReference;
 import org.apache.olingo.server.core.OData4Impl;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
 

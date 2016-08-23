@@ -79,6 +79,7 @@ import org.apache.olingo.server.core.requests.ServiceDocumentRequest;
 import org.apache.olingo.server.core.responses.CountResponse;
 import org.apache.olingo.server.core.responses.EntityResponse;
 import org.apache.olingo.server.core.responses.EntitySetResponse;
+import org.apache.olingo.server.core.responses.ErrorResponse;
 import org.apache.olingo.server.core.responses.MetadataResponse;
 import org.apache.olingo.server.core.responses.NoContentResponse;
 import org.apache.olingo.server.core.responses.PrimitiveValueResponse;
@@ -403,9 +404,10 @@ public class ODataAdapter implements ServiceHandler {
             entity.setId(new URI(EntityResponse.buildLocation(baseURL, created, edmEntitySet.getName(),
                                                               edmEntitySet.getEntityType())));
             response.writeCreatedEntity(edmEntitySet, created);
-        } catch (ODataServiceFault | SerializerException | URISyntaxException e) {
+        } catch (ODataServiceFault | SerializerException | URISyntaxException | EdmPrimitiveTypeException e) {
             response.writeNotModified();
-            log.error("Error occurred while creating entity. :" + e.getMessage(), e);
+            String error = "Error occurred while creating entity. :" + e.getMessage();
+            throw new ODataApplicationException(error, 500, Locale.ENGLISH);
         }
     }
 
@@ -549,6 +551,96 @@ public class ODataAdapter implements ServiceHandler {
     }
 
     @Override
+    public void updateProperty(DataRequest request, Property property, boolean rawValue, boolean merge,
+                               String entityETag, PropertyResponse response)
+            throws ODataLibraryException, ODataApplicationException {
+        if (rawValue && property.getValue() != null) {
+            // this is more generic, stricter conversion rules must taken in a real service
+            byte[] value = (byte[])property.getValue();
+            property.setValue(ValueType.PRIMITIVE, new String(value));
+        }
+
+        if (!property.isComplex()) {
+            EdmEntityType entityType = request.getEntitySet().getEntityType();
+            String baseUrl = request.getODataRequest().getRawBaseUri();
+            List<UriParameter> keys = request.getKeyPredicates();
+            ODataEntry entry = new ODataEntry();
+            for (UriParameter key : keys) {
+                String value = key.getText();
+                if (value.startsWith("'") && value.endsWith("'")) {
+                    value = value.substring(1, value.length() - 1);
+                }
+                entry.addValue(key.getName(), value);
+            }
+            entry.addValue(property.getName(),
+                           readPrimitiveValueInString(entityType.getStructuralProperty(property.getName()),
+                                                      property.getValue()));
+		/*checking for the E-Tag option, If E-Tag didn't specify in the request we don't need to check the E-Tag checksum,
+		we can do the update operation directly */
+            try {
+                if (EMPTY_E_TAG.equals(entityETag)) {
+                    this.dataHandler.updateEntityInTable(entityType.getName(), entry);
+                    if (property.getValue() == null) {
+                        response.writePropertyDeleted();
+                    } else {
+                        response.writePropertyUpdated();
+                    }
+                } else {
+                    // This should be done in transactional, for the sake of E-Tag
+                    initializeTransactionalConnection();
+                    Entity entity = getEntity(request.getEntitySet().getEntityType(), keys, baseUrl);
+                    if (entity == null) {
+                        response.writeNotFound(true);
+                        if (log.isDebugEnabled()) {
+                            StringBuilder message = new StringBuilder();
+                            message.append("Entity couldn't find , For ");
+                            for (UriParameter parameter : keys) {
+                                message.append(parameter.getName()).append(" = ").append(parameter.getText())
+                                       .append(" ,");
+                            }
+                            message.append(".");
+                            log.debug(message);
+                        }
+                    } else {
+                        entity = getETagMatchedEntity(entityETag, getIfMatch(request), entity);
+                        if (entity != null) {
+                            this.dataHandler.updateEntityInTableTransactional(entityType.getName(),
+                                                                              wrapEntityToDataEntry(entityType, entity),
+                                                                              entry);
+                            if (property.getValue() == null) {
+                                response.writePropertyDeleted();
+                            } else {
+                                response.writePropertyUpdated();
+                            }
+                        } else {
+                            response.writeError(new ODataServerError().setStatusCode(
+                                    HttpStatusCode.PRECONDITION_FAILED.getStatusCode())
+                                                                      .setMessage("E-Tag checksum didn't match."));
+                        }
+                    }
+                }
+            } catch (DataServiceFault e) {
+                response.writeNotModified();
+                log.error("Error occurred while updating property. :" + e.getMessage(), e);
+            } finally {
+                if (!EMPTY_E_TAG.equals(entityETag)) {
+                    try {
+                        finalizeTransactionalConnection();
+                    } catch (DataServiceFault e) {
+                        response.writeNotModified();
+                        log.error("Error occurred while updating property. :" + e.getMessage(), e);
+                    }
+                }
+            }
+        } else {
+            response.writeNotModified();
+            if (log.isDebugEnabled()) {
+                log.debug("Only Primitive type properties are allowed to update.");
+            }
+        }
+    }
+
+
     public void updateProperty(DataRequest request, final Property property, boolean merge, String entityETag,
                                PropertyResponse response) throws ODataApplicationException, ContentNegotiatorException {
         if (!property.isComplex()) {
@@ -928,6 +1020,19 @@ public class ODataAdapter implements ServiceHandler {
         response.setStatusCode(HttpStatusCode.NOT_IMPLEMENTED.getStatusCode());
     }
 
+    @Override
+    public boolean supportsDataIsolation() {
+        return false;
+    }
+
+    @Override
+    public void processError(ODataServerError oDataServerError, ErrorResponse errorResponse) {
+        String error = "Error occurred. :" + oDataServerError.getMessage();
+        oDataServerError.setMessage(error);
+        log.error(error, oDataServerError.getException());
+        errorResponse.writeError(oDataServerError);
+    }
+
     /**
      * Returns entity collection from the data entry list to use in olingo.  .
      *
@@ -963,6 +1068,9 @@ public class ODataAdapter implements ServiceHandler {
         } catch (URISyntaxException e) {
             throw new ODataServiceFault(e, "Error occurred when creating id for the entity. :" + e.getMessage());
         } catch (ParseException e) {
+            throw new ODataServiceFault(e, "Error occurred when creating a property for the entity. :" +
+                                           e.getMessage());
+        } catch (EdmPrimitiveTypeException e) {
             throw new ODataServiceFault(e, "Error occurred when creating a property for the entity. :" +
                                            e.getMessage());
         }

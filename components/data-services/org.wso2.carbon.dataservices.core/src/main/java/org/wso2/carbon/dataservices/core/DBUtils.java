@@ -610,8 +610,10 @@ public class DBUtils {
      * Create a Timestamp object from the given timestamp string.
      */
     public static Timestamp getTimestamp(String value) throws DataServiceFault, ParseException {
-        if (value == null || value.isEmpty()){
-            throw new DataServiceFault("Empty string or null value was found as timeStamp.");
+        if (value == null) {
+            return null;
+        } else if (value.isEmpty()) {
+            throw new DataServiceFault("Empty string was found as timeStamp.");
         }
         return new Timestamp(ConverterUtil.convertToDateTime(value).getTimeInMillis());
     }
@@ -620,8 +622,10 @@ public class DBUtils {
      * Create a Time object from the given time string.
      */
     public static Time getTime(String value) throws DataServiceFault, ParseException {
-        if (value == null || value.isEmpty()){
-            throw new DataServiceFault("Empty string or null value was found as time.");
+        if (value == null) {
+            return null;
+        } else if (value.isEmpty()) {
+            throw new DataServiceFault("Empty string was found as time.");
         }
         return new Time(ConverterUtil.convertToTime(value).getAsCalendar().getTimeInMillis());
     }
@@ -635,19 +639,16 @@ public class DBUtils {
            * some service clients send a full date-time string for a date */
         try {
             java.util.Date date = ConverterUtil.convertToDate(value);
-            if (null == date) {
-                throw new DataServiceFault("Empty string or null value was found as date.");
-            } else {
+            if (date != null) {
                 return new Date(date.getTime());
             }
         } catch (Exception e) {
             java.util.Calendar calendarDate = ConverterUtil.convertToDateTime(value);
-            if (null == calendarDate) {
-                throw new DataServiceFault("Empty string or null value was found as date.");
-            } else {
+            if (calendarDate != null) {
                 return new Date(calendarDate.getTimeInMillis());
             }
         }
+        return null;
     }
 
     /**
@@ -1159,15 +1160,26 @@ public class DBUtils {
 			} else if (DBConstants.DataTypes.BOOLEAN.equals(type)) {
 				return Boolean.parseBoolean(value);
 			} else if (DBConstants.DataTypes.DATE.equals(type)) {
-				return new java.util.Date(DBUtils.getDate(value).getTime());
+                Date tempDate = DBUtils.getDate(value);
+                if(tempDate != null) {
+                    return new java.util.Date(tempDate.getTime());
+                } else {
+                    return null;
+                }
 			} else if (DBConstants.DataTypes.TIME.equals(type)) {
-				Calendar cal = Calendar.getInstance();
-				cal.setTimeInMillis(DBUtils.getTime(value).getTime());
-				return cal;
+                Calendar cal = Calendar.getInstance();
+                Time tempTime = DBUtils.getTime(value);
+                if (tempTime != null) {
+                    cal.setTimeInMillis(tempTime.getTime());
+                }
+                return cal;
 			} else if (DBConstants.DataTypes.TIMESTAMP.equals(type)) {
-				Calendar cal = Calendar.getInstance();
-				cal.setTimeInMillis(DBUtils.getTimestamp(value).getTime());
-				return cal;
+                Calendar cal = Calendar.getInstance();
+                Timestamp tempTimeStamp = DBUtils.getTimestamp(value);
+                if (tempTimeStamp != null) {
+                    cal.setTimeInMillis(tempTimeStamp.getTime());
+                }
+                return cal;
 			} else {
 				return value;
 			}

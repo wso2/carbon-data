@@ -343,7 +343,7 @@ public class DataService {
          /* add operations related to boxcarring and request Box */
         if (this.isBoxcarringEnabled() && this.disableLegacyBoxcarringMode) {
             initRequestBox();
-        } else {
+        } else if (this.isBoxcarringEnabled()) {
             initBoxcarring();
             initRequestBox();
         }

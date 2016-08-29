@@ -11,7 +11,7 @@
 
 
 
-Latest Released Version v4.3.1.
+Latest Released Version v4.3.5.
 
 #### carbon-data repo contains the following components.
 

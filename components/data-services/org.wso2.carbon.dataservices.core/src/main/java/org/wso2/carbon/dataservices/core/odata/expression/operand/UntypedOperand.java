@@ -107,8 +107,14 @@ public class UntypedOperand extends VisitorOperand {
         if ((newValue = tryCast(literal, ODataConstants.primitiveSingle)) != null) {
             return new TypedOperand(newValue, ODataConstants.primitiveSingle);
         }
+        if ((newValue = tryCast(literal, ODataConstants.primitiveGuid)) != null) {
+            return new TypedOperand(newValue, ODataConstants.primitiveGuid);
+        }
         if ((newValue = tryCast(literal, ODataConstants.primitiveDouble)) != null) {
             return new TypedOperand(newValue, ODataConstants.primitiveDouble);
+        }
+        if ((newValue = tryCast(literal, ODataConstants.primitiveBinary)) != null) {
+            return new TypedOperand(newValue, ODataConstants.primitiveBinary);
         }
         throw new ODataApplicationException("Could not determine type for literal " + literal,
                                             HttpStatusCode.INTERNAL_SERVER_ERROR.getStatusCode(), Locale.ROOT);

@@ -564,13 +564,13 @@ public final class DBConstants {
         /* integer */
         public static final String REMOTE_MAX_CONNECTIONS_PER_HOST = "remoteMaxConnectionsPerHost";
         /* integer */
-        public static final String LOCAL_MAX_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST = "localMaxSimultaneousRequestsPerConnectionThreshold";
+        public static final String LOCAL_NEW_CONNECTION_THRESHOLD= "localNewConnectionThreshold";
         /* integer */
-        public static final String REMOTE_MAX_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST = "remoteMaxSimultaneousRequestsPerConnectionThreshold";
+        public static final String REMOTE_NEW_CONNECTION_THRESHOLD = "remoteNewConnectionThreshold";
         /* integer */
-        public static final String LOCAL_MIN_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST = "localMinSimultaneousRequestsPerConnectionThreshold";
+        public static final String LOCAL_MAX_REQUESTS_PER_CONNECTION = "localMaxRequestsPerConnection";
         /* integer */
-        public static final String REMOTE_MIN_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST = "remoteMinSimultaneousRequestsPerConnectionThreshold";
+        public static final String REMOTE_MAX_REQUESTS_PER_CONNECTION = "remoteMaxRequestsPerConnection";
         /* integer */
         public static final String PROTOCOL_VERSION = "protocolVersion";
         /* "ALL", "ANY", "EACH_QUORUM", "LOCAL_ONE", "LOCAL_QUORUM", "LOCAL_SERIAL", "ONE", "QUORUM", "SERIAL", "THREE", "TWO" */

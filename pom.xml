@@ -681,19 +681,9 @@
                 <version>${bson4jackson.orbit.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.datastax.cassandra.wso2</groupId>
-                <artifactId>cassandra-driver-core</artifactId>
-                <version>${cassandra-driver-core.orbit.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.datastax.cassandra</groupId>
-                <artifactId>cassandra-driver-core</artifactId>
-                <version>${cassandra-driver-core.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.wso2.orbit.com.datastax.cassandra</groupId>
                 <artifactId>cassandra-driver-core</artifactId>
-                <version>${cassandra-driver-core.21102.orbit.version}</version>
+                <version>${cassandra-driver-core.orbit.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.netty</groupId>
@@ -1201,12 +1191,11 @@
         <jackson-core.orbit.version>2.6.1.wso2v1</jackson-core.orbit.version>
         <bson4jackson.orbit.version>2.5.0</bson4jackson.orbit.version>
 
-        <cassandra-driver-core.orbit.version>2.1.1.wso2v1</cassandra-driver-core.orbit.version>
-        <cassandra-driver-core.orbit.imp.pkg.version>0.0.0</cassandra-driver-core.orbit.imp.pkg.version>
+        <cassandra-driver-core.orbit.version>3.0.2.wso2v1</cassandra-driver-core.orbit.version>
+        <cassandra-driver-core.orbit.imp.pkg.version>[3.0.2,3.1.0)</cassandra-driver-core.orbit.imp.pkg.version>
 
-        <cassandra-driver-core.version>2.1.10.2</cassandra-driver-core.version>
-        <cassandra-driver-core.21102.orbit.version>2.1.10.2.wso2v2</cassandra-driver-core.21102.orbit.version>
-        <cassandra-driver-core.imp.pkg.version>[2.1.0,2.2.0)</cassandra-driver-core.imp.pkg.version>
+        <cassandra-driver-core.version>3.0.2</cassandra-driver-core.version>
+        <cassandra-driver-core.imp.pkg.version>[3.0.2,3.1.0)</cassandra-driver-core.imp.pkg.version>
         <netty.version>3.9.0.Final</netty.version>
         <netty.imp.pkg.version>[3.9.0.Final,4.0.0)</netty.imp.pkg.version>
 

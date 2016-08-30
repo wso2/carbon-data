@@ -24,6 +24,7 @@ import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.HostDistance;
 import com.datastax.driver.core.PoolingOptions;
 import com.datastax.driver.core.ProtocolOptions.Compression;
+import com.datastax.driver.core.ProtocolVersion;
 import com.datastax.driver.core.QueryOptions;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.SocketOptions;
@@ -72,7 +73,7 @@ public class CassandraConfig extends Config {
                 this.session = this.cluster.connect();
             }
             this.nativeBatchRequestsSupported = this.session.getCluster().
-                    getConfiguration().getProtocolOptions().getProtocolVersion() > 1;
+                    getConfiguration().getProtocolOptions().getProtocolVersion().toInt() > 1;
         } catch (NoHostAvailableException e) {
             throw new DataServiceFault(e, DBConstants.FaultCodes.CONNECTION_UNAVAILABLE_ERROR, e.getMessage());
         }
@@ -115,10 +116,10 @@ public class CassandraConfig extends Config {
         String remoteCoreConnectionsPerHost = properties.get(DBConstants.Cassandra.REMOTE_CORE_CONNECTIONS_PER_HOST);
         String localMaxConnectionsPerHost = properties.get(DBConstants.Cassandra.LOCAL_MAX_CONNECTIONS_PER_HOST);
         String remoteMaxConnectionsPerHost = properties.get(DBConstants.Cassandra.REMOTE_MAX_CONNECTIONS_PER_HOST);
-        String localMaxSimultaneousRequestsPerConnectionThreshold = properties.get(DBConstants.Cassandra.LOCAL_MAX_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST);
-        String remoteMaxSimultaneousRequestsPerConnectionThreshold = properties.get(DBConstants.Cassandra.REMOTE_MAX_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST);
-        String localMinSimultaneousRequestsPerConnectionThreshold = properties.get(DBConstants.Cassandra.LOCAL_MIN_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST);
-        String remoteMinSimultaneousRequestsPerConnectionThreshold = properties.get(DBConstants.Cassandra.REMOTE_MIN_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST);
+        String localNewConnectionThreshold = properties.get(DBConstants.Cassandra.LOCAL_NEW_CONNECTION_THRESHOLD);
+        String remoteNewConnectionThreshold = properties.get(DBConstants.Cassandra.REMOTE_NEW_CONNECTION_THRESHOLD);
+        String localMaxRequestsPerConnection = properties.get(DBConstants.Cassandra.LOCAL_MAX_REQUESTS_PER_CONNECTION);
+        String remoteMaxRequestsPerConnection = properties.get(DBConstants.Cassandra.REMOTE_MAX_REQUESTS_PER_CONNECTION);
         PoolingOptions options = new PoolingOptions();
         if (localCoreConnectionsPerHost != null) {
             options.setCoreConnectionsPerHost(HostDistance.LOCAL, Integer.parseInt(localCoreConnectionsPerHost));
@@ -131,19 +132,19 @@ public class CassandraConfig extends Config {
         }
         if (remoteMaxConnectionsPerHost != null) {
             options.setMaxConnectionsPerHost(HostDistance.REMOTE, Integer.parseInt(remoteMaxConnectionsPerHost));
-        }        
-        if (localMaxSimultaneousRequestsPerConnectionThreshold != null) {
-            options.setMaxSimultaneousRequestsPerConnectionThreshold(HostDistance.LOCAL, Integer.parseInt(localMaxSimultaneousRequestsPerConnectionThreshold));
         }
-        if (remoteMaxSimultaneousRequestsPerConnectionThreshold != null) {
-            options.setMaxSimultaneousRequestsPerConnectionThreshold(HostDistance.REMOTE, Integer.parseInt(remoteMaxSimultaneousRequestsPerConnectionThreshold));
-        }        
-        if (localMinSimultaneousRequestsPerConnectionThreshold != null) {
-            options.setMinSimultaneousRequestsPerConnectionThreshold(HostDistance.LOCAL, Integer.parseInt(localMinSimultaneousRequestsPerConnectionThreshold));
+        if (localNewConnectionThreshold != null) {
+            options.setNewConnectionThreshold(HostDistance.LOCAL, Integer.parseInt(localNewConnectionThreshold));
         }
-        if (remoteMinSimultaneousRequestsPerConnectionThreshold != null) {
-            options.setMinSimultaneousRequestsPerConnectionThreshold(HostDistance.REMOTE, Integer.parseInt(remoteMinSimultaneousRequestsPerConnectionThreshold));
-        }        
+        if (remoteNewConnectionThreshold != null) {
+            options.setNewConnectionThreshold(HostDistance.REMOTE, Integer.parseInt(remoteNewConnectionThreshold));
+        }
+        if (localMaxRequestsPerConnection != null) {
+            options.setMaxRequestsPerConnection(HostDistance.LOCAL, Integer.parseInt(localMaxRequestsPerConnection));
+        }
+        if (remoteMaxRequestsPerConnection != null) {
+            options.setMaxRequestsPerConnection(HostDistance.REMOTE, Integer.parseInt(remoteMaxRequestsPerConnection));
+        }
         builder = builder.withPoolingOptions(options);
         return builder;
     }    
@@ -288,7 +289,7 @@ public class CassandraConfig extends Config {
         builder = this.populatePoolingSettings(properties, builder);        
         String versionProp = properties.get(DBConstants.Cassandra.PROTOCOL_VERSION);
         if (versionProp != null) {
-            builder = builder.withProtocolVersion(Integer.parseInt(versionProp));
+            builder = builder.withProtocolVersion(ProtocolVersion.fromInt(Integer.parseInt(versionProp)));
         }
         builder = this.populateQueryOptions(properties, builder);
         builder = this.populateReconnectPolicy(properties, builder);

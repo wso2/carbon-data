@@ -90,7 +90,7 @@
             <artifactId>bson4jackson</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.datastax.cassandra.wso2</groupId>
+            <groupId>org.wso2.orbit.com.datastax.cassandra</groupId>
             <artifactId>cassandra-driver-core</artifactId>
         </dependency>
         <dependency>
@@ -285,7 +285,7 @@
                                 <bundleDef>org.wso2.orbit.com.fasterxml.jackson.core:jackson-databind</bundleDef>
                                 <bundleDef>org.wso2.orbit.com.fasterxml.jackson.core:jackson-annotations</bundleDef>
                                 <bundleDef>de.undercouch:bson4jackson</bundleDef>
-                                <bundleDef>com.datastax.cassandra.wso2:cassandra-driver-core</bundleDef>
+                                <bundleDef>org.wso2.orbit.com.datastax.cassandra:cassandra-driver-core</bundleDef>
                                 <bundleDef>org.apache.poi.wso2:poi</bundleDef>
                                 <bundleDef>org.apache.poi.wso2:poi-ooxml</bundleDef>
                                 <!--<bundleDef>org.apache.poi.wso2:ooxml-spreadsheet-schemas</bundleDef>-->

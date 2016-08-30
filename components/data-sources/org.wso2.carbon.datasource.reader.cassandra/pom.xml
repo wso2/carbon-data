@@ -25,7 +25,7 @@
             <artifactId>org.wso2.carbon.utils</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.datastax.cassandra</groupId>
+            <groupId>org.wso2.orbit.com.datastax.cassandra</groupId>
             <artifactId>cassandra-driver-core</artifactId>
         </dependency>
     </dependencies>

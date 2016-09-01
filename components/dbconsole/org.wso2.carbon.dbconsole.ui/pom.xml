@@ -43,8 +43,8 @@
             <artifactId>org.wso2.carbon.core</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.h2database.wso2</groupId>
-            <artifactId>h2-database-engine</artifactId>
+            <groupId>org.wso2.orbit.com.h2database</groupId>
+            <artifactId>h2</artifactId>
         </dependency>
         <dependency>
             <groupId>org.wso2.orbit.org.owasp.encoder</groupId>
@@ -101,7 +101,7 @@
                         <Import-Package>
                             !org.wso2.carbon.dbconsole.ui.internal.*,
                             <!--org.h2.server.web;version="${h2.engine.orbit.imp.pkg.version}",--> <!-- todo this is the correct one, but since existing h2 bundle doesn't export versions, keep without versions for time being, once h2 bundle is corrected, use with versions -->
-                            org.h2.server.web,
+                            org.h2.server.web;version="${h2.engine.orbit.imp.pkg.version}",
                             org.osgi.framework;version="${osgi.imp.pkg.version}",
                             org.osgi.service.http;version="${osgi.service.imp.pkg.version}",
                             org.osgi.service.component;version="${osgi.service.imp.pkg.version}",

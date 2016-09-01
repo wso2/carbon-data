@@ -84,15 +84,19 @@ public class H2TestUtils {
 		return srs;
 	}
 
-        public static void updateCustomerInfo(Connection conn,
+	public static void updateCustomerInfo(Connection conn,
                                                        int customerNumber, String contactLastName) throws SQLException {
-                PreparedStatement stmt = conn.prepareStatement("update Customers SET contactLastName = ? where customerNumber = ?");
-                stmt.setString(1, contactLastName);
-                stmt.setInt(2, customerNumber);
-                stmt.executeUpdate();
-                stmt.executeUpdate("WRONG SQL STATEMENT");
-
-        }
+		try {
+		     PreparedStatement stmt = conn.prepareStatement("update Customers SET contactLastName = ? where customerNumber = ?");
+			 stmt.setString(1, contactLastName);
+		     stmt.setInt(2, customerNumber);
+		     stmt.executeUpdate();
+		     conn.createStatement().execute("WRONG SQL STATEMENT");
+		} catch (SQLException e) {
+		     conn.rollback();
+		     throw e;
+	    }
+    }
 
     public static void addCustomerInfo(Connection conn,
                                           int customerNumber, String customerName, String contactLastName, String contactFirstName) throws SQLException {

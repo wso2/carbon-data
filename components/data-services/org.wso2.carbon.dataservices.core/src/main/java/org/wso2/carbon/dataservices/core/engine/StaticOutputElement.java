@@ -92,7 +92,11 @@ public class StaticOutputElement extends OutputElement {
     /* If this element corresponds to a UDT then that UDT's metadata */
     private UDT udtInfo;
 
-    private static final String NON_PRINTABLE_CHARS = "[^\\x09\\x0A\\x0D\\x20-\\xD7FF\\xE000-\\xFFFD\\x10000-x10FFFF]";
+    /**
+     * @see <a href="https://www.w3.orcg/TR/REC-xml/#charsets">https://www.w3.org/TR/REC-xml/#charsets</a>
+     */
+    private static final String NON_PRINTABLE_CHARS = "[^\u0009\r\n\u0020-\uD7FF\uE000-\uFFFD\ud800\udc00-\udbff\udfff"
+            + "]";
 
     public StaticOutputElement(DataService dataService, String name,
                                String param, String originalParam, String paramType,

@@ -30,6 +30,7 @@ import com.datastax.driver.core.Session;
 import com.datastax.driver.core.SocketOptions;
 import com.datastax.driver.core.exceptions.NoHostAvailableException;
 import com.datastax.driver.core.policies.ConstantReconnectionPolicy;
+import com.datastax.driver.core.policies.DCAwareRoundRobinPolicy;
 import com.datastax.driver.core.policies.DefaultRetryPolicy;
 import com.datastax.driver.core.policies.DowngradingConsistencyRetryPolicy;
 import com.datastax.driver.core.policies.ExponentialReconnectionPolicy;
@@ -82,21 +83,61 @@ public class CassandraConfig extends Config {
     public boolean isNativeBatchRequestsSupported() {
         return nativeBatchRequestsSupported;
     }
-    
+
     private Builder populateLoadBalancingProp(Map<String, String> properties, Builder builder) throws DataServiceFault {
         String loadBalancingProp = properties.get(DBConstants.Cassandra.LOAD_BALANCING_POLICY);
         if (loadBalancingProp != null) {
             if ("LatencyAwareRoundRobinPolicy".equals(loadBalancingProp)) {
-                builder = builder.withLoadBalancingPolicy(LatencyAwarePolicy.builder(
-                        new RoundRobinPolicy()).build());
+                builder = builder.withLoadBalancingPolicy(LatencyAwarePolicy.builder(new RoundRobinPolicy()).build());
             } else if ("RoundRobinPolicy".equals(loadBalancingProp)) {
                 builder = builder.withLoadBalancingPolicy(new RoundRobinPolicy());
+            } else if ("DCAwareRoundRobinPolicy".equals(loadBalancingProp)) {
+                String dataCenter = properties.get(DBConstants.Cassandra.DATA_CENTER);
+                boolean allowRemoteDCsForLocalConsistencyLevel = Boolean.parseBoolean(
+                        properties.get(DBConstants.Cassandra.ALLOW_REMOTE_DCS_FOR_LOCAL_CONSISTENCY_LEVEL));
+                if (dataCenter != null && !dataCenter.isEmpty()) {
+                    if (allowRemoteDCsForLocalConsistencyLevel) {
+                        builder = builder.withLoadBalancingPolicy(
+                                DCAwareRoundRobinPolicy.builder().withLocalDc(dataCenter)
+                                                       .allowRemoteDCsForLocalConsistencyLevel().build());
+                    } else {
+                        builder = builder.withLoadBalancingPolicy(
+                                DCAwareRoundRobinPolicy.builder().withLocalDc(dataCenter).build());
+                    }
+                } else {
+                    if (allowRemoteDCsForLocalConsistencyLevel) {
+                        builder = builder.withLoadBalancingPolicy(
+                                (DCAwareRoundRobinPolicy.builder().allowRemoteDCsForLocalConsistencyLevel().build()));
+                    } else {
+                        builder = builder.withLoadBalancingPolicy((DCAwareRoundRobinPolicy.builder().build()));
+                    }
+                }
             } else if ("TokenAwareRoundRobinPolicy".equals(loadBalancingProp)) {
-                builder = builder.withLoadBalancingPolicy(new TokenAwarePolicy(
-                        new RoundRobinPolicy()));
+                builder = builder.withLoadBalancingPolicy(new TokenAwarePolicy(new RoundRobinPolicy()));
+            } else if ("TokenAwareDCAwareRoundRobinPolicy".equals(loadBalancingProp)) {
+                String dataCenter = properties.get(DBConstants.Cassandra.DATA_CENTER);
+                boolean allowRemoteDCsForLocalConsistencyLevel = Boolean.parseBoolean(
+                        properties.get(DBConstants.Cassandra.ALLOW_REMOTE_DCS_FOR_LOCAL_CONSISTENCY_LEVEL));
+                if (dataCenter != null && !dataCenter.isEmpty()) {
+                    if (allowRemoteDCsForLocalConsistencyLevel) {
+                        builder = builder.withLoadBalancingPolicy(new TokenAwarePolicy(
+                                DCAwareRoundRobinPolicy.builder().withLocalDc(dataCenter)
+                                                       .allowRemoteDCsForLocalConsistencyLevel().build()));
+                    } else {
+                        builder = builder.withLoadBalancingPolicy(new TokenAwarePolicy(
+                                DCAwareRoundRobinPolicy.builder().withLocalDc(dataCenter).build()));
+                    }
+                } else {
+                    if (allowRemoteDCsForLocalConsistencyLevel) {
+                        builder = builder.withLoadBalancingPolicy(new TokenAwarePolicy(
+                                DCAwareRoundRobinPolicy.builder().allowRemoteDCsForLocalConsistencyLevel().build()));
+                    } else {
+                        builder = builder.withLoadBalancingPolicy(
+                                new TokenAwarePolicy(DCAwareRoundRobinPolicy.builder().build()));
+                    }
+                }
             } else {
-                throw new DataServiceFault("Unsupported Cassandra load balancing "
-                        + "policy: " + loadBalancingProp);
+                throw new DataServiceFault("Unsupported Cassandra load balancing " + "policy: " + loadBalancingProp);
             }
         }
         return builder;

@@ -164,6 +164,8 @@
 
     String cassandraServers = request.getParameter(DBConstants.Cassandra.CASSANDRA_SERVERS);
     String cassandraKeySpace = request.getParameter(DBConstants.Cassandra.KEYSPACE);
+    String cassandraDataCenter = request.getParameter(DBConstants.Cassandra.DATA_CENTER);
+    String cassandraAllowRemoteDCsForLocalConsistencyLevel = request.getParameter(DBConstants.Cassandra.ALLOW_REMOTE_DCS_FOR_LOCAL_CONSISTENCY_LEVEL);
     String cassandraPort = request.getParameter(DBConstants.Cassandra.PORT);
     String cassandraClusterName = request.getParameter(DBConstants.Cassandra.CLUSTER_NAME);
     String cassandraCompression = request.getParameter(DBConstants.Cassandra.COMPRESSION);
@@ -176,10 +178,10 @@
     String cassandraRemoteCoreConnPerHost = request.getParameter(DBConstants.Cassandra.REMOTE_CORE_CONNECTIONS_PER_HOST);
     String cassandraLocalMaxConnPerHost = request.getParameter(DBConstants.Cassandra.LOCAL_MAX_CONNECTIONS_PER_HOST);
     String cassandraRemoteMaxConnPerHost = request.getParameter(DBConstants.Cassandra.REMOTE_MAX_CONNECTIONS_PER_HOST);
-    String cassandraLocalMaxSimulReq = request.getParameter(DBConstants.Cassandra.LOCAL_MAX_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST);
-    String cassandraRemoteMaxSimulReq = request.getParameter(DBConstants.Cassandra.REMOTE_MAX_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST);
-    String cassandraLocalMinSimulReq = request.getParameter(DBConstants.Cassandra.LOCAL_MIN_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST);
-    String cassandraRemoteMinSimulReq = request.getParameter(DBConstants.Cassandra.REMOTE_MIN_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST);
+    String cassandraLocalMaxSimulReq = request.getParameter(DBConstants.Cassandra.LOCAL_NEW_CONNECTION_THRESHOLD);
+    String cassandraRemoteMaxSimulReq = request.getParameter(DBConstants.Cassandra.REMOTE_NEW_CONNECTION_THRESHOLD);
+    String cassandraLocalMinSimulReq = request.getParameter(DBConstants.Cassandra.LOCAL_MAX_REQUESTS_PER_CONNECTION);
+    String cassandraRemoteMinSimulReq = request.getParameter(DBConstants.Cassandra.REMOTE_MAX_REQUESTS_PER_CONNECTION);
     String cassandraProtocolVer = request.getParameter(DBConstants.Cassandra.PROTOCOL_VERSION);
     String cassandraConsistencyLevel = request.getParameter(DBConstants.Cassandra.CONSISTENCY_LEVEL);
     String cassandraFetchSize = request.getParameter(DBConstants.Cassandra.FETCH_SIZE);
@@ -573,6 +575,8 @@
                     updateConfiguration(dsConfig, DBConstants.Cassandra.CASSANDRA_SERVERS, cassandraServers);
                     dsConfig.setExposeAsOData(isOData);
                     updateConfiguration(dsConfig, DBConstants.Cassandra.KEYSPACE, cassandraKeySpace);
+                    updateConfiguration(dsConfig, DBConstants.Cassandra.DATA_CENTER, cassandraDataCenter);
+                    updateConfiguration(dsConfig, DBConstants.Cassandra.ALLOW_REMOTE_DCS_FOR_LOCAL_CONSISTENCY_LEVEL, cassandraAllowRemoteDCsForLocalConsistencyLevel);
                     updateConfiguration(dsConfig, DBConstants.Cassandra.PORT, cassandraPort);
                     updateConfiguration(dsConfig, DBConstants.Cassandra.CLUSTER_NAME, cassandraClusterName);
                     updateConfiguration(dsConfig, DBConstants.Cassandra.COMPRESSION, cassandraCompression);
@@ -585,10 +589,10 @@
                     updateConfiguration(dsConfig, DBConstants.Cassandra.REMOTE_CORE_CONNECTIONS_PER_HOST, cassandraRemoteCoreConnPerHost);
                     updateConfiguration(dsConfig, DBConstants.Cassandra.LOCAL_MAX_CONNECTIONS_PER_HOST, cassandraLocalMaxConnPerHost);
                     updateConfiguration(dsConfig, DBConstants.Cassandra.REMOTE_MAX_CONNECTIONS_PER_HOST, cassandraRemoteMaxConnPerHost);
-                    updateConfiguration(dsConfig, DBConstants.Cassandra.LOCAL_MAX_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST, cassandraLocalMaxSimulReq);
-                    updateConfiguration(dsConfig, DBConstants.Cassandra.REMOTE_MAX_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST, cassandraRemoteMaxSimulReq);
-                    updateConfiguration(dsConfig, DBConstants.Cassandra.LOCAL_MIN_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST, cassandraLocalMinSimulReq);
-                    updateConfiguration(dsConfig, DBConstants.Cassandra.REMOTE_MIN_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST, cassandraRemoteMinSimulReq);
+                    updateConfiguration(dsConfig, DBConstants.Cassandra.LOCAL_NEW_CONNECTION_THRESHOLD, cassandraLocalMaxSimulReq);
+                    updateConfiguration(dsConfig, DBConstants.Cassandra.REMOTE_NEW_CONNECTION_THRESHOLD, cassandraRemoteMaxSimulReq);
+                    updateConfiguration(dsConfig, DBConstants.Cassandra.LOCAL_MAX_REQUESTS_PER_CONNECTION, cassandraLocalMinSimulReq);
+                    updateConfiguration(dsConfig, DBConstants.Cassandra.REMOTE_MAX_REQUESTS_PER_CONNECTION, cassandraRemoteMinSimulReq);
                     updateConfiguration(dsConfig, DBConstants.Cassandra.PROTOCOL_VERSION, cassandraProtocolVer);
                     updateConfiguration(dsConfig, DBConstants.Cassandra.CONSISTENCY_LEVEL, cassandraConsistencyLevel);
                     updateConfiguration(dsConfig, DBConstants.Cassandra.FETCH_SIZE, cassandraFetchSize);

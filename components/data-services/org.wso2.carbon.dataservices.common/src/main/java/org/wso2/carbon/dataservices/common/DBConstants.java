@@ -608,7 +608,11 @@ public final class DBConstants {
         public static final String TCP_NODELAY = "tcpNoDelay";
         /* boolean */
         public static final String ENABLE_SSL = "enableSSL";
-        
+        /* string */
+        public static final String DATA_CENTER = "localDataCenter";
+        /* boolean */
+        public static final String ALLOW_REMOTE_DCS_FOR_LOCAL_CONSISTENCY_LEVEL = "allowRemoteDCsForLocalConsistencyLevel";
+
     }
 
     /**

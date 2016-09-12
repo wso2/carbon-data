@@ -450,6 +450,12 @@ private Config addNotAvailableFunctions(Config config,String selectedType, HttpS
         if (config.getPropertyValue(DBConstants.Cassandra.LOAD_BALANCING_POLICY) == null) {
             config.addProperty(DBConstants.Cassandra.LOAD_BALANCING_POLICY, "");
         }
+        if (config.getPropertyValue(DBConstants.Cassandra.DATA_CENTER) == null) {
+	        config.addProperty(DBConstants.Cassandra.DATA_CENTER, "");
+        }
+        if (config.getPropertyValue(DBConstants.Cassandra.ALLOW_REMOTE_DCS_FOR_LOCAL_CONSISTENCY_LEVEL) == null) {
+            config.addProperty(DBConstants.Cassandra.ALLOW_REMOTE_DCS_FOR_LOCAL_CONSISTENCY_LEVEL, "");
+        }
         if (config.getPropertyValue(DBConstants.Cassandra.ENABLE_JMX_REPORTING) == null) {
             config.addProperty(DBConstants.Cassandra.ENABLE_JMX_REPORTING, "");
         }
@@ -468,17 +474,17 @@ private Config addNotAvailableFunctions(Config config,String selectedType, HttpS
         if (config.getPropertyValue(DBConstants.Cassandra.REMOTE_MAX_CONNECTIONS_PER_HOST) == null) {
             config.addProperty(DBConstants.Cassandra.REMOTE_MAX_CONNECTIONS_PER_HOST, "");
         }
-        if (config.getPropertyValue(DBConstants.Cassandra.LOCAL_MAX_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST) == null) {
-            config.addProperty(DBConstants.Cassandra.LOCAL_MAX_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST, "");
+        if (config.getPropertyValue(DBConstants.Cassandra.LOCAL_NEW_CONNECTION_THRESHOLD) == null) {
+            config.addProperty(DBConstants.Cassandra.LOCAL_NEW_CONNECTION_THRESHOLD, "");
         }
-        if (config.getPropertyValue(DBConstants.Cassandra.REMOTE_MAX_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST) == null) {
-            config.addProperty(DBConstants.Cassandra.REMOTE_MAX_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST, "");
+        if (config.getPropertyValue(DBConstants.Cassandra.REMOTE_NEW_CONNECTION_THRESHOLD) == null) {
+            config.addProperty(DBConstants.Cassandra.REMOTE_NEW_CONNECTION_THRESHOLD, "");
         }
-        if (config.getPropertyValue(DBConstants.Cassandra.LOCAL_MIN_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST) == null) {
-            config.addProperty(DBConstants.Cassandra.LOCAL_MIN_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST, "");
+        if (config.getPropertyValue(DBConstants.Cassandra.LOCAL_MAX_REQUESTS_PER_CONNECTION) == null) {
+            config.addProperty(DBConstants.Cassandra.LOCAL_MAX_REQUESTS_PER_CONNECTION, "");
         }
-        if (config.getPropertyValue(DBConstants.Cassandra.REMOTE_MIN_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST) == null) {
-            config.addProperty(DBConstants.Cassandra.REMOTE_MIN_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST, "");
+        if (config.getPropertyValue(DBConstants.Cassandra.REMOTE_MAX_REQUESTS_PER_CONNECTION) == null) {
+            config.addProperty(DBConstants.Cassandra.REMOTE_MAX_REQUESTS_PER_CONNECTION, "");
         }
         if (config.getPropertyValue(DBConstants.Cassandra.PROTOCOL_VERSION) == null) {
             config.addProperty(DBConstants.Cassandra.PROTOCOL_VERSION, "");
@@ -846,16 +852,18 @@ private String getRefreshToken(String gSpreadJDBCUrl) {
                     newConfig.addProperty(DBConstants.Cassandra.USERNAME, "");
                     newConfig.addProperty(DBConstants.Cassandra.PASSWORD,"");
                     newConfig.addProperty(DBConstants.Cassandra.LOAD_BALANCING_POLICY,"");
+                    newConfig.addProperty(DBConstants.Cassandra.DATA_CENTER,"");
+                    newConfig.addProperty(DBConstants.Cassandra.ALLOW_REMOTE_DCS_FOR_LOCAL_CONSISTENCY_LEVEL,"");
                     newConfig.addProperty(DBConstants.Cassandra.ENABLE_JMX_REPORTING,"");
                     newConfig.addProperty(DBConstants.Cassandra.ENABLE_METRICS, "");
                     newConfig.addProperty(DBConstants.Cassandra.LOCAL_CORE_CONNECTIONS_PER_HOST,"");
                     newConfig.addProperty(DBConstants.Cassandra.REMOTE_CORE_CONNECTIONS_PER_HOST,"");
                     newConfig.addProperty(DBConstants.Cassandra.LOCAL_MAX_CONNECTIONS_PER_HOST,"");
                     newConfig.addProperty(DBConstants.Cassandra.REMOTE_MAX_CONNECTIONS_PER_HOST,"");
-                    newConfig.addProperty(DBConstants.Cassandra.LOCAL_MAX_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST,"");
-                    newConfig.addProperty(DBConstants.Cassandra.REMOTE_MAX_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST,"");
-                    newConfig.addProperty(DBConstants.Cassandra.LOCAL_MIN_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST, "");
-                    newConfig.addProperty(DBConstants.Cassandra.REMOTE_MIN_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST, "");
+                    newConfig.addProperty(DBConstants.Cassandra.LOCAL_NEW_CONNECTION_THRESHOLD,"");
+                    newConfig.addProperty(DBConstants.Cassandra.REMOTE_NEW_CONNECTION_THRESHOLD,"");
+                    newConfig.addProperty(DBConstants.Cassandra.LOCAL_MAX_REQUESTS_PER_CONNECTION, "");
+                    newConfig.addProperty(DBConstants.Cassandra.REMOTE_MAX_REQUESTS_PER_CONNECTION, "");
                     newConfig.addProperty(DBConstants.Cassandra.PROTOCOL_VERSION,"");
                     newConfig.addProperty(DBConstants.Cassandra.CONSISTENCY_LEVEL,"");
                     newConfig.addProperty(DBConstants.Cassandra.FETCH_SIZE, "");
@@ -1013,16 +1021,18 @@ private String getRefreshToken(String gSpreadJDBCUrl) {
                     conf.addProperty(DBConstants.Cassandra.USERNAME, "");
                     conf.addProperty(DBConstants.Cassandra.PASSWORD,"");
                     conf.addProperty(DBConstants.Cassandra.LOAD_BALANCING_POLICY,"");
+                    conf.addProperty(DBConstants.Cassandra.DATA_CENTER,"");
+                    conf.addProperty(DBConstants.Cassandra.ALLOW_REMOTE_DCS_FOR_LOCAL_CONSISTENCY_LEVEL,"");
                     conf.addProperty(DBConstants.Cassandra.ENABLE_JMX_REPORTING,"");
                     conf.addProperty(DBConstants.Cassandra.ENABLE_METRICS, "");
                     conf.addProperty(DBConstants.Cassandra.LOCAL_CORE_CONNECTIONS_PER_HOST,"");
                     conf.addProperty(DBConstants.Cassandra.REMOTE_CORE_CONNECTIONS_PER_HOST,"");
                     conf.addProperty(DBConstants.Cassandra.LOCAL_MAX_CONNECTIONS_PER_HOST,"");
                     conf.addProperty(DBConstants.Cassandra.REMOTE_MAX_CONNECTIONS_PER_HOST,"");
-                    conf.addProperty(DBConstants.Cassandra.LOCAL_MAX_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST,"");
-                    conf.addProperty(DBConstants.Cassandra.REMOTE_MAX_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST,"");
-                    conf.addProperty(DBConstants.Cassandra.LOCAL_MIN_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST, "");
-                    conf.addProperty(DBConstants.Cassandra.REMOTE_MIN_SIMULTANEOUS_REQUEST_PER_CONNECTION_THRESHOST, "");
+                    conf.addProperty(DBConstants.Cassandra.LOCAL_NEW_CONNECTION_THRESHOLD,"");
+                    conf.addProperty(DBConstants.Cassandra.REMOTE_NEW_CONNECTION_THRESHOLD,"");
+                    conf.addProperty(DBConstants.Cassandra.LOCAL_MAX_REQUESTS_PER_CONNECTION, "");
+                    conf.addProperty(DBConstants.Cassandra.REMOTE_MAX_REQUESTS_PER_CONNECTION, "");
                     conf.addProperty(DBConstants.Cassandra.PROTOCOL_VERSION,"");
                     conf.addProperty(DBConstants.Cassandra.CONSISTENCY_LEVEL,"");
                     conf.addProperty(DBConstants.Cassandra.FETCH_SIZE, "");
@@ -1968,15 +1978,25 @@ private String getRefreshToken(String gSpreadJDBCUrl) {
                 <% } else { %>
                 <option value="RoundRobinPolicy">RoundRobinPolicy</option>
                 <% } %>
-                <% if (propertyValue.equals("LatencyAwarePolicy")) { %>
-                <option value="LatencyAwarePolicy" selected="selected">LatencyAwarePolicy</option>
+                <% if (propertyValue.equals("DCAwareRoundRobinPolicy")) { %>
+                <option value="DCAwareRoundRobinPolicy" selected="selected">DCAwareRoundRobinPolicy</option>
                 <% } else { %>
-                <option value="LatencyAwarePolicy">LatencyAwarePolicy</option>
+                <option value="DCAwareRoundRobinPolicy">DCAwareRoundRobinPolicy</option>
                 <% } %>
-                <% if (propertyValue.equals("TokenAwarePolicy")) { %>
-                <option value="TokenAwarePolicy" selected="selected">TokenAwarePolicy</option>
+                <% if (propertyValue.equals("LatencyAwareRoundRobinPolicy")) { %>
+                <option value="LatencyAwareRoundRobinPolicy" selected="selected">LatencyAwareRoundRobinPolicy</option>
                 <% } else { %>
-                <option value="TokenAwarePolicy">TokenAwarePolicy</option>
+                <option value="LatencyAwareRoundRobinPolicy">LatencyAwareRoundRobinPolicy</option>
+                <% } %>
+                <% if (propertyValue.equals("TokenAwareRoundRobinPolicy")) { %>
+                <option value="TokenAwareRoundRobinPolicy" selected="selected">TokenAwareRoundRobinPolicy</option>
+                <% } else { %>
+                <option value="TokenAwareRoundRobinPolicy">TokenAwareRoundRobinPolicy</option>
+                <% } %>
+                <% if (propertyValue.equals("TokenAwareDCAwareRoundRobinPolicy")) { %>
+                <option value="TokenAwareDCAwareRoundRobinPolicy" selected="selected">TokenAwareDCAwareRoundRobinPolicy</option>
+                <% } else { %>
+                <option value="TokenAwareDCAwareRoundRobinPolicy">TokenAwareDCAwareRoundRobinPolicy</option>
                 <% } %>
             </select>
             <%  } else if (propertyName.equals(DBConstants.Cassandra.CONSISTENCY_LEVEL) || propertyName.equals(DBConstants.Cassandra.SERIAL_CONSISTENCY_LEVEL)) { %>

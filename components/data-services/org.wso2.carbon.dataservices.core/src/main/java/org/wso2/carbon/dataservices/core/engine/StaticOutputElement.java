@@ -93,6 +93,7 @@ public class StaticOutputElement extends OutputElement {
     private UDT udtInfo;
 
     /**
+     * This is the regex to filter out invalid characters w.r.t XML 1.0
      * @see <a href="https://www.w3.orcg/TR/REC-xml/#charsets">https://www.w3.org/TR/REC-xml/#charsets</a>
      */
     private static final String NON_PRINTABLE_CHARS = "[^\u0009\r\n\u0020-\uD7FF\uE000-\uFFFD\ud800\udc00-\udbff\udfff"

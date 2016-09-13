@@ -21,13 +21,41 @@
             <artifactId>org.wso2.carbon.datasource.reader.cassandra</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.orbit.com.datastax.cassandra</groupId>
+            <groupId>com.datastax.cassandra</groupId>
             <artifactId>cassandra-driver-core</artifactId>
         </dependency>
 
         <dependency>
             <groupId>io.netty</groupId>
-            <artifactId>netty</artifactId>
+            <artifactId>netty-handler</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.dropwizard.metrics</groupId>
+            <artifactId>metrics-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-buffer</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-transport</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-common</artifactId>
         </dependency>
     </dependencies>
 
@@ -55,8 +83,15 @@
                             </adviceFile>
                             <bundles>
                                 <bundleDef>org.wso2.carbon.data:org.wso2.carbon.datasource.reader.cassandra</bundleDef>
-                                <bundleDef>org.wso2.orbit.com.datastax.cassandra:cassandra-driver-core</bundleDef>
-                                <bundleDef>io.netty:netty</bundleDef>
+                                <bundleDef>com.datastax.cassandra:cassandra-driver-core</bundleDef>
+                                <bundleDef>io.netty:netty-handler</bundleDef>
+                                <bundleDef>io.netty:netty-buffer</bundleDef>
+                                <bundleDef>io.netty:netty-transport</bundleDef>
+                                <bundleDef>io.netty:netty-common</bundleDef>
+                                <bundleDef>io.netty:netty-codec</bundleDef>
+                                <bundleDef>org.slf4j:slf4j-api</bundleDef>
+                                <bundleDef>org.slf4j:slf4j-log4j12</bundleDef>
+                                <bundleDef>io.dropwizard.metrics:metrics-core</bundleDef>
                             </bundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.core.server:${carbon.kernel.feature.imp.version}</importFeatureDef>

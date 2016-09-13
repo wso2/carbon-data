@@ -1833,7 +1833,7 @@ private String getRefreshToken(String gSpreadJDBCUrl) {
         <% } else if (propertyName.equals(DBConstants.Cassandra.ENABLE_JMX_REPORTING)
                   || propertyName.equals(DBConstants.Cassandra.ENABLE_METRICS) || propertyName.equals(DBConstants.Cassandra.KEEP_ALIVE)
                   || propertyName.equals(DBConstants.Cassandra.REUSE_ADDRESS) || propertyName.equals(DBConstants.Cassandra.TCP_NODELAY)
-                  || propertyName.equals(DBConstants.Cassandra.ENABLE_SSL))
+                  || propertyName.equals(DBConstants.Cassandra.ENABLE_SSL) || propertyName.equals(DBConstants.Cassandra.ALLOW_REMOTE_DCS_FOR_LOCAL_CONSISTENCY_LEVEL))
                   { %>
         <select id="<%=propertyName%>" name="<%=propertyName%>">
             <% if (propertyValue.equals("")) { %>
@@ -2078,6 +2078,16 @@ private String getRefreshToken(String gSpreadJDBCUrl) {
                 <option value="2" selected="selected">2</option>
                 <% } else { %>
                 <option value="2">2</option>
+                <% } %>
+                <% if (propertyValue.equals("3")) { %>
+                <option value="3" selected="selected">3</option>
+                <% } else { %>
+                <option value="3">3</option>
+                <% } %>
+                <% if (propertyValue.equals("4")) { %>
+                <option value="4" selected="selected">4</option>
+                <% } else { %>
+                <option value="4">4</option>
                 <% } %>
             </select>
             <%  } else if (propertyName.equals(DBConstants.Cassandra.RECONNECTION_POLICY)) { %>

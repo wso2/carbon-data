@@ -90,7 +90,7 @@
             <artifactId>bson4jackson</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.orbit.com.datastax.cassandra</groupId>
+            <groupId>com.datastax.cassandra</groupId>
             <artifactId>cassandra-driver-core</artifactId>
         </dependency>
         <dependency>
@@ -132,6 +132,38 @@
         <dependency>
             <groupId>commons-pool.wso2</groupId>
             <artifactId>commons-pool</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.dropwizard.metrics</groupId>
+            <artifactId>metrics-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-handler</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-buffer</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-transport</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec</artifactId>
         </dependency>
         <dependency>
             <groupId>org.wso2.orbit.org.antlr</groupId>
@@ -285,7 +317,7 @@
                                 <bundleDef>org.wso2.orbit.com.fasterxml.jackson.core:jackson-databind</bundleDef>
                                 <bundleDef>org.wso2.orbit.com.fasterxml.jackson.core:jackson-annotations</bundleDef>
                                 <bundleDef>de.undercouch:bson4jackson</bundleDef>
-                                <bundleDef>org.wso2.orbit.com.datastax.cassandra:cassandra-driver-core</bundleDef>
+                                <bundleDef>com.datastax.cassandra:cassandra-driver-core</bundleDef>
                                 <bundleDef>org.apache.poi.wso2:poi</bundleDef>
                                 <bundleDef>org.apache.poi.wso2:poi-ooxml</bundleDef>
                                 <!--<bundleDef>org.apache.poi.wso2:ooxml-spreadsheet-schemas</bundleDef>-->
@@ -302,6 +334,14 @@
                                 <bundleDef>org.wso2.orbit.org.apache.olingo:odata-server</bundleDef>
                                 <bundleDef>org.wso2.orbit.org.antlr:antlr4-runtime</bundleDef>
                                 <bundleDef>org.wso2.orbit.org.apache.commons:commons-lang3</bundleDef>
+                                <bundleDef>org.slf4j:slf4j-api</bundleDef>
+                                <bundleDef>org.slf4j:slf4j-log4j12</bundleDef>
+                                <bundleDef>io.dropwizard.metrics:metrics-core</bundleDef>
+                                <bundleDef>io.netty:netty-handler</bundleDef>
+                                <bundleDef>io.netty:netty-buffer</bundleDef>
+                                <bundleDef>io.netty:netty-transport</bundleDef>
+                                <bundleDef>io.netty:netty-codec</bundleDef>
+                                <bundleDef>io.netty:netty-common</bundleDef>
                             </bundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.service.mgt.server:${carbon-deployment.feature.imp.version}</importFeatureDef>

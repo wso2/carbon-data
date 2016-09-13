@@ -218,6 +218,7 @@ public class DataServiceAdmin extends AbstractAdmin {
 			out.write(serviceContents);
 			out.close();
 		} catch (IOException e) {
+			log.error("Error while saving " + serviceName, e);
 			throw new AxisFault(
 					"Error occurred while writing the contents for the service config file for the new service "
 							+ serviceName, e);

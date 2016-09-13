@@ -371,6 +371,21 @@
                 <version>${google.guava.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-log4j12</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.dropwizard.metrics</groupId>
+                <artifactId>metrics-core</artifactId>
+                <version>3.1.0</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.poi.wso2</groupId>
                 <artifactId>poi</artifactId>
                 <version>${poi.orbit.version}</version>
@@ -681,23 +696,33 @@
                 <version>${bson4jackson.orbit.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.datastax.cassandra.wso2</groupId>
+                <groupId>com.datastax.cassandra</groupId>
                 <artifactId>cassandra-driver-core</artifactId>
                 <version>${cassandra-driver-core.orbit.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.datastax.cassandra</groupId>
-                <artifactId>cassandra-driver-core</artifactId>
-                <version>${cassandra-driver-core.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.orbit.com.datastax.cassandra</groupId>
-                <artifactId>cassandra-driver-core</artifactId>
-                <version>${cassandra-driver-core.21102.orbit.version}</version>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-handler</artifactId>
+                <version>${netty.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.netty</groupId>
-                <artifactId>netty</artifactId>
+                <artifactId>netty-transport</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-codec</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-common</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-buffer</artifactId>
                 <version>${netty.version}</version>
             </dependency>
             <dependency>
@@ -1201,14 +1226,14 @@
         <jackson-core.orbit.version>2.6.1.wso2v1</jackson-core.orbit.version>
         <bson4jackson.orbit.version>2.5.0</bson4jackson.orbit.version>
 
-        <cassandra-driver-core.orbit.version>2.1.1.wso2v1</cassandra-driver-core.orbit.version>
-        <cassandra-driver-core.orbit.imp.pkg.version>0.0.0</cassandra-driver-core.orbit.imp.pkg.version>
+        <slf4j.version>1.7.2</slf4j.version>
+        <cassandra-driver-core.orbit.version>3.0.2</cassandra-driver-core.orbit.version>
+        <cassandra-driver-core.orbit.imp.pkg.version>[3.0.2,3.1.0)</cassandra-driver-core.orbit.imp.pkg.version>
 
-        <cassandra-driver-core.version>2.1.10.2</cassandra-driver-core.version>
-        <cassandra-driver-core.21102.orbit.version>2.1.10.2.wso2v2</cassandra-driver-core.21102.orbit.version>
-        <cassandra-driver-core.imp.pkg.version>[2.1.0,2.2.0)</cassandra-driver-core.imp.pkg.version>
-        <netty.version>3.9.0.Final</netty.version>
-        <netty.imp.pkg.version>[3.9.0.Final,4.0.0)</netty.imp.pkg.version>
+        <cassandra-driver-core.version>3.0.2</cassandra-driver-core.version>
+        <cassandra-driver-core.imp.pkg.version>[3.0.2,3.1.0)</cassandra-driver-core.imp.pkg.version>
+        <netty.version>4.0.33.Final</netty.version>
+        <netty.imp.pkg.version>[4.0.33.Final,4.1.0)</netty.imp.pkg.version>
 
         <snappy-java.orbit.version>1.1.1.6.wso2v1</snappy-java.orbit.version>
         <lz4.orbit.version>1.2.0.wso2v1</lz4.orbit.version>

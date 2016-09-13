@@ -511,10 +511,11 @@ public class CassandraDataHandler implements ODataDataHandler {
                     values.add(value);
                     break;
                 case UUID:
-                    values.add(UUID.fromString(value));
+                    values.add(value == null ? null : UUID.fromString(value));
                     break;
                 case BIGINT:
-				/* fall through */
+                    values.add(value == null ? null : Long.parseLong(value));
+                    break;
                 case VARINT:
 				/* fall through */
                 case COUNTER:
@@ -539,13 +540,19 @@ public class CassandraDataHandler implements ODataDataHandler {
                     values.add(value == null ? null : Integer.parseInt(value));
                     break;
                 case TIMESTAMP:
+                    values.add(value == null ? null : DBUtils.getTimestamp(value));
+                    break;
+                case TIME:
+                    values.add(value == null ? null : DBUtils.getTime(value));
+                    break;
+                case DATE:
                     values.add(value == null ? null : DBUtils.getDate(value));
                     break;
                 default:
                     values.add(value);
                     break;
             }
-        } catch (DataServiceFault e) {
+        } catch (Exception e) {
             throw new ODataServiceFault(e, "Error occurred when binding data. :" + e.getMessage());
         }
     }
@@ -590,7 +597,13 @@ public class CassandraDataHandler implements ODataDataHandler {
                 dataType = ODataDataType.INT32;
                 break;
             case TIMESTAMP:
+                dataType = ODataDataType.DATE_TIMEOFFSET;
+                break;
+            case TIME:
                 dataType = ODataDataType.TIMEOFDAY;
+                break;
+            case DATE:
+                dataType = ODataDataType.DATE;
                 break;
             default:
                 dataType = ODataDataType.STRING;
@@ -612,10 +625,10 @@ public class CassandraDataHandler implements ODataDataHandler {
         sql.append("UPDATE ").append(tableName).append(" SET ");
         boolean propertyMatch = false;
         for (String column : newProperties.getNames()) {
-            if (propertyMatch) {
-                sql.append(",");
-            }
             if (!pKeys.contains(column)) {
+                if (propertyMatch) {
+                    sql.append(",");
+                }
                 sql.append(column).append(" = ").append(" ? ");
                 propertyMatch = true;
             }
@@ -648,10 +661,10 @@ public class CassandraDataHandler implements ODataDataHandler {
         sql.append("UPDATE ").append(tableName).append(" SET ");
         boolean propertyMatch = false;
         for (String column : newProperties.getNames()) {
-            if (propertyMatch) {
-                sql.append(",");
-            }
             if (!pKeys.contains(column)) {
+                if (propertyMatch) {
+                    sql.append(",");
+                }
                 sql.append(column).append(" = ").append(" ? ");
                 propertyMatch = true;
             }

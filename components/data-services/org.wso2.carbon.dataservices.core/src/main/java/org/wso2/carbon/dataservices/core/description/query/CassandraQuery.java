@@ -326,13 +326,25 @@ public class CassandraQuery extends ExpressionQuery {
             } else if (columnType.getName().equals(DataType.Name.SET)) {
                 paramValue = new ParamValue(row.getSet(i, Object.class).toString());
             } else if (columnType.getName().equals(DataType.Name.TIMESTAMP)) {
-                paramValue = new ParamValue(row.isNull(i) ? null : ConverterUtil.convertToString(row.getDate(i)));
+                paramValue = new ParamValue(row.isNull(i) ? null : ConverterUtil.convertToString(row.getTimestamp(i)));
             } else if (columnType.getName().equals(DataType.Name.TIMEUUID)) {
                 paramValue = new ParamValue(row.getUUID(i).toString());
             } else if (columnType.getName().equals(DataType.Name.UUID)) {
                 paramValue = new ParamValue(row.getUUID(i).toString());
             } else if (columnType.getName().equals(DataType.Name.VARINT)) {
                 paramValue = new ParamValue(row.getVarint(i).toString());
+            } else if (columnType.getName().equals(DataType.Name.UDT)) {
+                paramValue = new ParamValue(row.isNull(i) ? null : ConverterUtil.convertToString(row.getUDTValue(i)));
+            } else if (columnType.getName().equals(DataType.Name.TUPLE)) {
+                paramValue = new ParamValue(row.isNull(i) ? null : ConverterUtil.convertToString(row.getTupleValue(i)));
+            } else if (columnType.getName().equals(DataType.Name.TINYINT)) {
+                paramValue = new ParamValue(row.isNull(i) ? null : Integer.toString(row.getByte(i)));
+            } else if (columnType.getName().equals(DataType.Name.SMALLINT)) {
+                paramValue = new ParamValue(row.isNull(i) ? null : Integer.toString(row.getShort(i)));
+            } else if (columnType.getName().equals(DataType.Name.TIME)) {
+                paramValue = new ParamValue(row.isNull(i) ? null : ConverterUtil.convertToString(row.getTime(i)));
+            } else if (columnType.getName().equals(DataType.Name.DATE)) {
+                paramValue = new ParamValue(row.isNull(i) ? null : ConverterUtil.convertToString(row.getDate(i)));
             }
             entry.addValue(useColumnNumbers ? Integer.toString(i) : defs.getName(i), paramValue);
         }

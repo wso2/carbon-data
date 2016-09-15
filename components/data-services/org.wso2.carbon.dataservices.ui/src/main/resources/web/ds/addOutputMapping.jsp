@@ -567,12 +567,12 @@
                         <td class="leftCol-small"><fmt:message key="dataservices.param.type"/></td>
                         <td><select id="paramTypeId" name="paramType"
                                     onchange="arrayNameVisibilityOnChange(this, document)">
-                            <% if ("".equals(arrayName)) { %>
+                            <% if ("".equals(arrayName) || "null".equals(arrayName)) { %>
                             <option value="SCALAR" selected="selected">SCALAR</option>
                             <% } else { %>
                             <option value="SCALAR">SCALAR</option>
                             <% } %>
-                            <% if (!"".equals(arrayName)) { %>
+                            <% if (!"".equals(arrayName) && !"null".equals(arrayName)) { %>
                             <option value="ARRAY" selected="selected">ARRAY</option>
                             <% } else { %>
                             <option value="ARRAY">ARRAY</option>
@@ -580,7 +580,7 @@
                         </select></td>
                     </tr>
                     <tr id="arrayNameRow"
-                        style="<%=!"".equals(arrayName) ? "" : "display:none"%>">
+                        style="<%=!"".equals(arrayName) && !"null".equals(arrayName) ? "" : "display:none"%>">
                         <td class="leftCol-med"><fmt:message
                                 key="dataservice.output.array.name"/></td>
                         <td><input value="<%=arrayName%>" id="arrayName"

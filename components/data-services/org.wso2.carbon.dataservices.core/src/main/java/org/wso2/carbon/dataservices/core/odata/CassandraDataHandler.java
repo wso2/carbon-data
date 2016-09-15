@@ -158,8 +158,14 @@ public class CassandraDataHandler implements ODataDataHandler {
     public ODataEntry insertEntityToTable(String tableName, ODataEntry entity) throws ODataServiceFault {
         List<ColumnMetadata> cassandraTableMetaData = this.session.getCluster().getMetadata().getKeyspace(this.keyspace)
                                                                   .getTable(tableName).getColumns();
-        UUID uuid = UUID.randomUUID();
-        String query = createInsertCQL(tableName, entity, uuid);
+        for (String pkey : this.primaryKeys.get(tableName)) {
+            if (this.tableMetaData.get(tableName).get(pkey).getColumnType().equals(ODataDataType.GUID) &&
+                entity.getValue(pkey) == null) {
+                UUID uuid = UUID.randomUUID();
+                entity.addValue(pkey, uuid.toString());
+            }
+        }
+        String query = createInsertCQL(tableName, entity);
         List<Object> values = new ArrayList<>();
         for (DataColumn column : this.tableMetaData.get(tableName).values()) {
             String columnName = column.getColumnName();
@@ -174,11 +180,6 @@ public class CassandraDataHandler implements ODataDataHandler {
         }
         this.session.execute(statement.bind(values.toArray()));
         entity.addValue(ODataConstants.E_TAG, ODataUtils.generateETag(this.configID, tableName, entity));
-        for( String pkey: this.primaryKeys.get(tableName)) {
-            if(!entity.getNames().contains(pkey) && this.tableMetaData.get(tableName).get(pkey).getColumnType().equals(ODataDataType.GUID)) {
-                entity.addValue(pkey,uuid.toString());
-            }
-        }
         return entity;
     }
 
@@ -699,7 +700,7 @@ public class CassandraDataHandler implements ODataDataHandler {
      * @param tableName Name of the table
      * @return sqlQuery
      */
-    private String createInsertCQL(String tableName, ODataEntry entry, UUID uuid) {
+    private String createInsertCQL(String tableName, ODataEntry entry) {
         StringBuilder sql = new StringBuilder();
         sql.append("INSERT INTO ").append(tableName).append(" (");
         boolean propertyMatch = false;
@@ -710,15 +711,6 @@ public class CassandraDataHandler implements ODataDataHandler {
                 }
                 sql.append(column.getColumnName());
                 propertyMatch = true;
-            } else if (this.primaryKeys.get(tableName).contains(column.getColumnName())) {
-                //supporting auto generated ids in cassandra
-                if (column.getColumnType().equals(ODataDataType.GUID)) {
-                    if (propertyMatch) {
-                        sql.append(",");
-                    }
-                    sql.append(column.getColumnName());
-                    propertyMatch = true;
-                }
             }
         }
         sql.append(" ) VALUES ( ");
@@ -730,15 +722,6 @@ public class CassandraDataHandler implements ODataDataHandler {
                 }
                 sql.append(" ? ");
                 propertyMatch = true;
-            } else if (this.primaryKeys.get(tableName).contains(column.getColumnName())) {
-                //supporting auto generated ids in cassandra
-                if (column.getColumnType().equals(ODataDataType.GUID)) {
-                    if (propertyMatch) {
-                        sql.append(",");
-                    }
-                    sql.append(uuid.toString());
-                    propertyMatch = true;
-                }
             }
         }
         sql.append(" ) ");

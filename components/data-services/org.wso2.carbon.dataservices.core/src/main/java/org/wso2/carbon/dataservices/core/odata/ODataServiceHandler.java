@@ -23,7 +23,6 @@ import org.apache.olingo.server.api.OData;
 import org.apache.olingo.server.api.ODataHttpHandler;
 import org.apache.olingo.server.api.ServiceMetadata;
 import org.apache.olingo.server.core.OData4Impl;
-import org.wso2.carbon.dataservices.core.DataServiceFault;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.DispatcherType;
@@ -108,17 +107,44 @@ public class ODataServiceHandler {
 
             @Override
             public String getHeader(String s) {
-                return req.getHeader(s);
+                if ("accept".equalsIgnoreCase(s)) {
+                    req.getHeader(s).equalsIgnoreCase("application/json;odata.metadata=full");
+                    return "application/json";
+                } else if ("prefer".equalsIgnoreCase(s) && "post".equalsIgnoreCase(req.getMethod())) {
+                    return "return=representation";
+                } else {
+                    return req.getHeader(s);
+                }
             }
 
             @Override
             public Enumeration<String> getHeaders(String s) {
-                return req.getHeaders(s);
+                if ("accept".equalsIgnoreCase(s)) {
+                    if(req.getHeader(s).equalsIgnoreCase("application/json;odata.metadata=full")) {
+                        CustomEnumeration<String> enumeration = new CustomEnumeration<>();
+                        enumeration.addValues("application/json");
+                        return enumeration;
+                    } else {
+                        return req.getHeaders(s);
+                    }
+                } else if ("prefer".equalsIgnoreCase(s) && "post".equalsIgnoreCase(req.getMethod())  && req.getHeader("accept").equalsIgnoreCase("application/json;odata.metadata=full")) {
+                    CustomEnumeration<String> enumeration = new CustomEnumeration<>();
+                    enumeration.addValues("return=representation");
+                    return enumeration;
+                } else {
+                    return req.getHeaders(s);
+                }
             }
 
             @Override
             public Enumeration<String> getHeaderNames() {
-                return req.getHeaderNames();
+                if("post".equalsIgnoreCase(req.getMethod()) && req.getHeader("accept").equalsIgnoreCase("application/json;odata.metadata=full")) {
+                    CustomEnumeration<String> headerNames = new CustomEnumeration<>(req.getHeaderNames());
+                    headerNames.addValues("prefer");
+                    return headerNames;
+                } else {
+                    return req.getHeaderNames();
+                }
             }
 
             @Override
@@ -422,4 +448,42 @@ public class ODataServiceHandler {
             }
         };
     }
+
+    private class CustomEnumeration<E> implements Enumeration<E> {
+
+        private Enumeration<E> enumeration = null;
+        private ArrayList<E> arrayList = new ArrayList<E>();
+        private int pos = -1;
+
+
+        CustomEnumeration(Enumeration<E> e) {
+            this.enumeration = e;
+        }
+
+        CustomEnumeration() {
+        }
+
+        public void addValues(E ob) {
+            this.arrayList.add(ob);
+        }
+
+        @Override
+        public boolean hasMoreElements() {
+            return pos < arrayList.size() - 1 || (enumeration != null && enumeration.hasMoreElements());
+        }
+
+        @Override
+        public E nextElement() {
+            if (enumeration != null && enumeration.hasMoreElements()) {
+                return enumeration.nextElement();
+            } else if (pos < arrayList.size() - 1) {
+                pos++;
+                return this.arrayList.get(pos);
+            } else {
+                return null;
+            }
+        }
+    }
+
 }
+

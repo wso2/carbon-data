@@ -440,7 +440,7 @@ public class RDBMSDataHandler implements ODataDataHandler {
                 int i = 1;
                 while (resultSet.next()) {
                     for (DataColumn column : this.tableMetaData.get(tableName).values()) {
-                        if (column.isAutoIncrement() && !entry.getNames().contains(column.getColumnName())) {
+                        if (column.isAutoIncrement()) {
                             String resultSetColumnName = resultSet.getMetaData().getColumnName(i);
                             String columnName = column.getColumnName();
                             int columnType = this.rdbmsDataTypes.get(tableName).get(columnName);
@@ -1036,7 +1036,8 @@ public class RDBMSDataHandler implements ODataDataHandler {
                     column.setPrecision(size);
                     if (scale == 0) {
                         //setting default scale as 5
-                        column.setScale(size);
+                        scale = 5;
+                        column.setScale(scale);
                     } else {
                         column.setScale(scale);
                     }

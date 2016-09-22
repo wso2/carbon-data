@@ -1233,10 +1233,7 @@
         <guava.import.version>[19.0, 20.0)</guava.import.version>
         <zookeeper.import.version>[3.4.5, 3.5.0)</zookeeper.import.version>
 
-        <hbase-client.orbit.version>1.1.2.wso2v1</hbase-client.orbit.version>
-        <hbase-client.orbit.imp.pkg.version>[1.0.0.wso2v1,2.0)</hbase-client.orbit.imp.pkg.version>
-
-        <hbase.shaded.client.version>1.2.1.wso2v1</hbase.shaded.client.version>
+        <hbase.shaded.client.version>1.2.1.wso2v2</hbase.shaded.client.version>
         <hbase-client.orbit.imp.pkg.version>[1.2.1, 2.0)</hbase-client.orbit.imp.pkg.version>
 
         <carbon.p2.plugin.version>1.5.5</carbon.p2.plugin.version>

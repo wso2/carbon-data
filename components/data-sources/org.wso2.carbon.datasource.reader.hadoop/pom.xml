@@ -29,7 +29,7 @@
             <artifactId>hadoop-client</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.orbit.org.apache.hadoop.hbase</groupId>
+            <groupId>org.wso2.orbit.org.apache.hbase</groupId>
             <artifactId>hbase-shaded-client</artifactId>
         </dependency>
     </dependencies>

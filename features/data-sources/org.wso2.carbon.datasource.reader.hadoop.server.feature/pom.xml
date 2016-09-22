@@ -42,7 +42,7 @@
             <artifactId>xercesImpl</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.orbit.org.apache.hbase</groupId>
+            <groupId>org.wso2.orbit.org.apache.hadoop.hbase</groupId>
             <artifactId>hbase-shaded-client</artifactId>
         </dependency>
     </dependencies>
@@ -72,7 +72,7 @@
                             <bundles>
                                 <bundleDef>org.wso2.carbon.data:org.wso2.carbon.datasource.reader.hadoop</bundleDef>
                                 <bundleDef>org.wso2.orbit.org.apache.hadoop:hadoop-client</bundleDef>
-                                <bundleDef>org.wso2.orbit.org.apache.hbase:hbase-shaded-client</bundleDef>
+                                <bundleDef>org.wso2.orbit.org.apache.hadoop.hbase:hbase-shaded-client</bundleDef>
                                 <bundleDef>org.wso2.orbit.org.apache.htrace:htrace-core-apache</bundleDef>
                                 <bundleDef>org.wso2.orbit.org.htrace:htrace-core</bundleDef>
                             </bundles>

@@ -111,6 +111,5 @@ public class Resource extends CallableRequest {
             return generateRequestName(this.path, this.method).
                     compareTo(generateRequestName(resource.getPath(), resource.getMethod()));
         }
-
     }
 }

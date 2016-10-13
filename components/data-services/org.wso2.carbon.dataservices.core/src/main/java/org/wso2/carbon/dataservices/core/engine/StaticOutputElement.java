@@ -91,6 +91,14 @@ public class StaticOutputElement extends OutputElement {
 
     /* If this element corresponds to a UDT then that UDT's metadata */
     private UDT udtInfo;
+    
+	/**
+	 * Defines if the output element only have to write once time. For example in case
+	 * a procedure returns a refcursor with scalar values and scalar needs to write once time.
+	 */
+	private boolean printOnce=false;
+    
+    
 
     /**
      * This is the regex to filter out invalid characters w.r.t XML 1.0
@@ -98,6 +106,15 @@ public class StaticOutputElement extends OutputElement {
      */
     private static final String NON_PRINTABLE_CHARS = "[^\u0009\r\n\u0020-\uD7FF\uE000-\uFFFD\ud800\udc00-\udbff\udfff"
             + "]";
+    
+	public StaticOutputElement(DataService dataService, String name, String param, String originalParam,
+			String paramType, String elementType, String namespace, QName xsdType, Set<String> requiredRoles,
+			int dataCategory, int resultType, String export, int exportType, String arrayName, Boolean printOnce) throws DataServiceFault {
+		this(dataService, name, param, originalParam, paramType, elementType, namespace, xsdType,
+				requiredRoles, dataCategory, resultType, export, exportType, arrayName);
+		this.printOnce = printOnce;
+
+	}
 
     public StaticOutputElement(DataService dataService, String name,
                                String param, String originalParam, String paramType,
@@ -165,6 +182,14 @@ public class StaticOutputElement extends OutputElement {
     public UDT getUDTInfo() {
         return udtInfo;
     }
+    
+    public boolean isPrintOnce() {
+		return printOnce;
+	}
+
+	public void setPrintOnce(boolean printOnce) {
+		this.printOnce = printOnce;
+	}
 
     /**
      * Checks whether this output element corresponds to a UDT and if so an object of UDT

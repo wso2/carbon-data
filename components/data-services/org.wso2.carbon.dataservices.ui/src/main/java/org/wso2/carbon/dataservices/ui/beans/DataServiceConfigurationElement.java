@@ -63,6 +63,12 @@ public abstract class DataServiceConfigurationElement {
      */
     public abstract OMElement buildXML();
 
+    /**
+     * Extract advance property name value pairs from the query configuration.
+     *
+     * @param queryEl DBS query config element which contains the advanced properties
+     * @return Map of property name value pairs
+     */
     public Map<String, String> extractAdvancedProps(OMElement queryEl) {
         Map<String, String> advancedProperties;
         OMElement propsEl = queryEl.getFirstChildWithName(new QName("properties"));
@@ -75,6 +81,12 @@ public abstract class DataServiceConfigurationElement {
         return advancedProperties;
     }
 
+    /**
+     * Helper method to extract individual property values from the parent element.
+     *
+     * @param propsParentEl Parent OMElement which contains the property data
+     * @return Map of property name value pairs
+     */
     private Map<String, String> extractProperties(OMElement propsParentEl) {
         Map<String, String> properties = new HashMap<String, String>();
         OMElement propEl = null;

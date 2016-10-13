@@ -216,8 +216,13 @@ public abstract class SQLConfig extends Config {
 		}
 	}
 
+    /**
+     * Check the given datasource object type for XA support.
+     *
+     * @param tds Datasource object constructed from the configuraiton
+     * @return array of two booleans [0] - IsXADataSource, [1] - IsAtomikosXADataSource
+     */
     private boolean[] isXADataSource(Object tds) {
-        /* [0] - XADataSource, [1] - Atomikos XA */
         boolean[] result = new boolean[2];
         result[0] = tds instanceof XADataSource;
         if (tds instanceof AtomikosDataSourceBean) {
@@ -229,6 +234,12 @@ public abstract class SQLConfig extends Config {
         return result;
     }
 
+    /**
+     * Extract the datasource which is being used to create connections.
+     *
+     * @param ds the datasource created from the configuration.
+     * @return the DataSource to be used for creating connections to be pooled.
+     */
     private Object extractSourceDS(DataSource ds) {
         Object tds = ds;
         if (ds instanceof org.apache.tomcat.jdbc.pool.DataSource) {

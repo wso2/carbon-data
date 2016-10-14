@@ -171,21 +171,20 @@ public abstract class SQLConfig extends Config {
 	public Object[] createConnection() throws SQLException, DataServiceFault {
 		return this.createConnection(null, null);
 	}
-	
-	public Object[] createConnection(String user, String pass)
-			throws SQLException, DataServiceFault {
-		if (log.isDebugEnabled()) {
-			log.debug("Creating data source connection: ThreadID - " + Thread.currentThread().getId());
-		}
-		DataSource ds = this.getDataSource();
+
+    public Object[] createConnection(String user, String pass) throws SQLException, DataServiceFault {
+        if (log.isDebugEnabled()) {
+            log.debug("Creating data source connection: ThreadID - " + Thread.currentThread().getId());
+        }
+        DataSource ds = this.getDataSource();
         Boolean xaConn = false;
-		if (ds != null) {
-			Connection conn;
-			if (user != null) {
-				conn = ds.getConnection(user, pass);
-			} else {
-			    conn = ds.getConnection();
-			}
+        if (ds != null) {
+            Connection conn;
+            if (user != null) {
+                conn = ds.getConnection(user, pass);
+            } else {
+                conn = ds.getConnection();
+            }
             Object tds = this.extractSourceDS(ds);
             boolean[] xaResult = this.isXADataSource(tds);
             xaConn = xaResult[0] | xaResult[1];
@@ -211,10 +210,10 @@ public abstract class SQLConfig extends Config {
                 }
             }
             return new Object[] { conn, xaConn };
-		} else {
-			throw new DataServiceFault("The data source is nonexistent");
-		}
-	}
+        } else {
+            throw new DataServiceFault("The data source is nonexistent");
+        }
+    }
 
     /**
      * Check the given datasource object type for XA support.

@@ -33,6 +33,7 @@ public class CassandraDataSourceConfiguration {
     private String username;
     private String password;
     private String protocolVersion;
+    private boolean withSSL;
 
     /* Query options */
     private QueryOptionsConfig queryOptionsConfig;
@@ -140,5 +141,14 @@ public class CassandraDataSourceConfiguration {
 
     public void setPoolingOptionsConfig(PoolingOptionsConfig poolingOptionsConfig) {
         this.poolingOptionsConfig = poolingOptionsConfig;
+    }
+
+    @XmlElement(name = "withSSL")
+    public boolean isWithSSL() {
+        return withSSL;
+    }
+
+    public void setWithSSL(boolean withSSL) {
+        this.withSSL = withSSL;
     }
 }

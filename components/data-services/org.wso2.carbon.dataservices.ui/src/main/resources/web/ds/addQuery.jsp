@@ -424,10 +424,14 @@ window.onload=function() {
     <td colspan="2">
         <table>
             <tr>
-                <td align="left" class="leftCol-small"><fmt:message key="datasources.query.sql"/><font
-                        color='red'>*</font></td>
-                <td><textarea cols="50" rows="8" id="sql"
-                              name="sql"><%=(query != null) ? sql : ""%></textarea></td>
+                <td align="left" class="leftCol-small">
+                    <fmt:message key="datasources.query.sql" /><font color='red'>*</font>
+                </td>
+                <td>
+                    <textarea cols="50" rows="8" id="sql" name="sql" onchange="validateQuery()">
+                        <%=(null != query) ? sql : ""%>
+                    </textarea>
+                </td>
             </tr>
            
             <tr>

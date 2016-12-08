@@ -92,7 +92,7 @@ public class EDMProvider extends CsdlAbstractEdmProvider {
     public EDMProvider(List<String> tableList, String containerName, String namespace,
                        Map<String, List<CsdlProperty>> propertiesMap, Map<String, List<CsdlPropertyRef>> pkeys,
                        List<String> entitySet, Map<String, NavigationTable> navigationProperties) {
-        this.containerFullQName = new FullQualifiedName(containerName, namespace);
+        this.containerFullQName = new FullQualifiedName(namespace, containerName);
         this.namespace = namespace;
         if (navigationProperties != null) {
             this.manyToOneRelationList = generateManyToOneRelationships(navigationProperties);

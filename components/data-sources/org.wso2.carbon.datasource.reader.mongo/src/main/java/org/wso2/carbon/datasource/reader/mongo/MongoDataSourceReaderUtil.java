@@ -1,4 +1,4 @@
-package es.eci.carbon.datasource.reader.mongo;
+package org.wso2.carbon.datasource.reader.mongo;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.xml.bind.JAXBContext;
 
+import org.wso2.carbon.datasource.reader.mongo.config.MongoDataSourceConfiguration;
 import org.wso2.carbon.ndatasource.common.DataSourceException;
 import org.wso2.carbon.utils.CarbonUtils;
 
@@ -17,8 +18,12 @@ import com.mongodb.MongoClientURI;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 
-import es.eci.carbon.datasource.reader.mongo.config.MongoDataSourceConfiguration;
-
+/**
+ * @author jmalvarezf
+ * 
+ *         Utilities to read the configuration for Mongo databases.
+ *
+ */
 public class MongoDataSourceReaderUtil {
 
 	public static MongoClient loadConfiguration(String xmlConfiguration) throws DataSourceException {

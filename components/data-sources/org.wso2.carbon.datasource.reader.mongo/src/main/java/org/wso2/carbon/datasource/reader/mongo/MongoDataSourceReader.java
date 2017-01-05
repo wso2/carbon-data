@@ -1,10 +1,16 @@
-package es.eci.carbon.datasource.reader.mongo;
+package org.wso2.carbon.datasource.reader.mongo;
 
 import org.wso2.carbon.ndatasource.common.DataSourceException;
 import org.wso2.carbon.ndatasource.common.spi.DataSourceReader;
 
 import com.mongodb.MongoClient;
 
+/**
+ * @author jmalvarezf
+ * 
+ *         Reader of the datasource Mongo based.
+ *
+ */
 public class MongoDataSourceReader implements DataSourceReader {
 
 	public static final String DATASOURCE_TYPE = "MONGO";

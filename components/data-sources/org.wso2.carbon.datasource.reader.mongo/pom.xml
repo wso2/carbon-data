@@ -9,7 +9,7 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>es.eci.carbon.datasource.reader.mongo</artifactId>
+    <artifactId>org.wso2.carbon.datasource.reader.mongo</artifactId>
     <packaging>bundle</packaging>
     <name>WSO2 Carbon - MongoDB Data Source Implementation</name>
     <url>http://wso2.org</url>
@@ -49,9 +49,9 @@
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
-                        <Export-Package>es.eci.carbon.datasource.reader.mongo;version="${project.version}"</Export-Package>
+                        <Export-Package>org.wso2.carbon.datasource.reader.mongo;version="${project.version}"</Export-Package>
                         <Import-Package>
-                            !es.eci.carbon.datasource.reader.mongo,
+                            !org.wso2.carbon.datasource.reader.mongo,
                             com.mongodb;version="${mongo-java-driver.imp.pkg.version}",
                             org.wso2.carbon.ndatasource.common;version="${carbon.kernel.imp.pkg.version}",
                             org.wso2.carbon.ndatasource.common.spi;version="${carbon.kernel.imp.pkg.version}",

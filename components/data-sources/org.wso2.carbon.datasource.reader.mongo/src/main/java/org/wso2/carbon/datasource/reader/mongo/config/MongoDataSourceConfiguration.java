@@ -1,8 +1,14 @@
-package es.eci.carbon.datasource.reader.mongo.config;
+package org.wso2.carbon.datasource.reader.mongo.config;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ * @author jmalvarezf
+ * 
+ *         Configuration class for MongoDB.
+ *
+ */
 @XmlRootElement(name = "configuration")
 public class MongoDataSourceConfiguration {
 

@@ -18,11 +18,16 @@
 
 package org.wso2.carbon.dataservices.core.odata;
 
-import org.apache.commons.codec.binary.Base64;
-import org.wso2.carbon.dataservices.common.DBConstants;
+import org.apache.olingo.commons.api.data.Entity;
+import org.apache.olingo.commons.api.edm.EdmEntityType;
+import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeException;
+import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
+import org.apache.olingo.commons.api.edm.EdmProperty;
+import org.apache.olingo.commons.core.Encoder;
+import org.apache.olingo.commons.core.edm.primitivetype.EdmPrimitiveTypeFactory;
+import org.apache.olingo.commons.core.edm.primitivetype.EdmString;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
+import java.util.Iterator;
 import java.util.UUID;
 
 /**
@@ -44,6 +49,57 @@ public class ODataUtils {
             uniqueString.append(columnName).append(entry.getValue(columnName));
         }
         return UUID.nameUUIDFromBytes((uniqueString.toString()).getBytes()).toString();
+    }
+
+    /**
+     * This method creates access uri for the entity.
+     *
+     * @param baseURL      base URL
+     * @param entity       entity
+     * @param enitySetName entity Set Name
+     * @param type         entity Type
+     * @return Entity URI
+     * @throws EdmPrimitiveTypeException
+     */
+    public static String buildLocation(String baseURL, Entity entity, String enitySetName, EdmEntityType type)
+            throws EdmPrimitiveTypeException {
+        StringBuilder location = new StringBuilder();
+        location.append(baseURL).append("/").append(enitySetName);
+        int i = 0;
+        boolean usename = type.getKeyPredicateNames().size() > 1;
+        location.append("(");
+
+        String value;
+        for (Iterator var7 = type.getKeyPredicateNames().iterator(); var7.hasNext(); location.append(value)) {
+            String key = (String) var7.next();
+            if (i > 0) {
+                location.append(",");
+            }
+
+            ++i;
+            if (usename) {
+                location.append(key).append("=");
+            }
+
+            String propertyType = entity.getProperty(key).getType();
+            Object propertyValue = entity.getProperty(key).getValue();
+            if (propertyType.startsWith("Edm.")) {
+                propertyType = propertyType.substring(4);
+            }
+
+            EdmPrimitiveTypeKind kind = EdmPrimitiveTypeKind.valueOf(propertyType);
+            EdmProperty property = type.getStructuralProperty(key);
+            value = EdmPrimitiveTypeFactory.getInstance(kind)
+                                           .valueToString(propertyValue, property.isNullable(), property.getMaxLength(),
+                                                          property.getPrecision(), property.getScale(),
+                                                          property.isUnicode());
+            if (kind == EdmPrimitiveTypeKind.String) {
+                value = EdmString.getInstance().toUriLiteral(Encoder.encode(value));
+            }
+        }
+
+        location.append(")");
+        return location.toString();
     }
 
 }

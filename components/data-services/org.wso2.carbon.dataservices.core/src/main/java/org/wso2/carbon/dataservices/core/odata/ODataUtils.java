@@ -51,6 +51,16 @@ public class ODataUtils {
         return UUID.nameUUIDFromBytes((uniqueString.toString()).getBytes()).toString();
     }
 
+    /**
+     * This method creates access uri for the entity.
+     *
+     * @param baseURL      base URL
+     * @param entity       entity
+     * @param enitySetName entity Set Name
+     * @param type         entity Type
+     * @return Entity URI
+     * @throws EdmPrimitiveTypeException
+     */
     public static String buildLocation(String baseURL, Entity entity, String enitySetName, EdmEntityType type)
             throws EdmPrimitiveTypeException {
         StringBuilder location = new StringBuilder();

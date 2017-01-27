@@ -13,11 +13,6 @@
     <packaging>bundle</packaging>
     <name>WSO2 Carbon - MongoDB Data Source Implementation</name>
     <url>http://wso2.org</url>
-    
-    <properties>
-    	<mongo-java-driver.imp.pkg.version>[3.4.0,)</mongo-java-driver.imp.pkg.version>
-    </properties>
-
 
     <dependencies>
         <dependency>
@@ -31,7 +26,6 @@
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>
-            <version>3.4.1</version>
         </dependency>
     </dependencies>
 
@@ -52,7 +46,7 @@
                         <Export-Package>org.wso2.carbon.datasource.reader.mongo;version="${project.version}"</Export-Package>
                         <Import-Package>
                             !org.wso2.carbon.datasource.reader.mongo,
-                            com.mongodb;version="${mongo-java-driver.imp.pkg.version}",
+                            com.mongodb;version="${mongo-java-driver.orbit.imp.pkg.version}",
                             org.wso2.carbon.ndatasource.common;version="${carbon.kernel.imp.pkg.version}",
                             org.wso2.carbon.ndatasource.common.spi;version="${carbon.kernel.imp.pkg.version}",
                             org.wso2.carbon.utils;version="${carbon.kernel.imp.pkg.version}"

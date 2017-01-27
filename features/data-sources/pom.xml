@@ -33,6 +33,7 @@
     <modules>
         <module>org.wso2.carbon.datasource.reader.hadoop.server.feature</module>
         <module>org.wso2.carbon.datasource.reader.cassandra.server.feature</module>
+        <module>org.wso2.carbon.datasource.reader.mongo.server.feature</module>
     </modules>
 </project>
 

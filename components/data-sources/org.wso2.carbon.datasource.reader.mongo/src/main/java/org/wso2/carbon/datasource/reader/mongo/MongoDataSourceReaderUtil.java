@@ -78,9 +78,8 @@ public class MongoDataSourceReaderUtil {
                 if (fileConfig.getWithSSL() != null) {
                     builder.sslEnabled(fileConfig.getWithSSL());
                 }
-                if (fileConfig.getUsername() != null && fileConfig.getPassword() != null && fileConfig.getDatabase() != null) {
-                    credential = MongoCredential.createCredential(fileConfig.getUsername(), fileConfig.getDatabase(),
-                            fileConfig.getPassword().toCharArray());
+                if (fileConfig.getAuthenticationMethodEnum() != null && fileConfig.getUsername() != null) {
+                    credential = createCredentials(fileConfig);
                 }
                 if (credential != null) {
                     result = new MongoClient(addressList, Arrays.asList(new MongoCredential[] { credential }), builder.build());
@@ -100,6 +99,31 @@ public class MongoDataSourceReaderUtil {
                 }
             }
         }
+    }
+
+    private static MongoCredential createCredentials(MongoDataSourceConfiguration fileConfig) {
+        MongoCredential credential;
+        switch (fileConfig.getAuthenticationMethodEnum()) {
+        case SCRAM_SHA_1:
+            credential = MongoCredential.createScramSha1Credential(fileConfig.getUsername(), fileConfig.getDatabase(),
+                    fileConfig.getPassword().toCharArray());
+            break;
+        case MONGODB_CR:
+            credential = MongoCredential.createMongoCRCredential(fileConfig.getUsername(), fileConfig.getDatabase(),
+                    fileConfig.getPassword().toCharArray());
+        case LDAP_PLAIN:
+            credential = MongoCredential.createPlainCredential(fileConfig.getUsername(), fileConfig.getAuthSource(),
+                    fileConfig.getPassword().toCharArray());
+        case X_509:
+            credential = MongoCredential.createMongoX509Credential(fileConfig.getUsername());
+        case GSSAPI:
+            credential = MongoCredential.createGSSAPICredential(fileConfig.getUsername());
+        case DEFAULT:
+        default:
+            credential = MongoCredential.createCredential(fileConfig.getUsername(), fileConfig.getDatabase(),
+                    fileConfig.getPassword().toCharArray());
+        }
+        return credential;
     }
 
 }

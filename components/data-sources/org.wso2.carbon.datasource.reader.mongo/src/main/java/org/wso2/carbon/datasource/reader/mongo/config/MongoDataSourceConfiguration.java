@@ -28,6 +28,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "configuration")
 public class MongoDataSourceConfiguration {
 
+    public enum AuthenticationMethod {
+        DEFAULT, SCRAM_SHA_1, MONGODB_CR, X_509, GSSAPI, LDAP_PLAIN
+    }
+
     private String url;
 
     private String host;
@@ -43,6 +47,10 @@ public class MongoDataSourceConfiguration {
     private String password;
 
     private String database;
+
+    private String authenticationMethod;
+
+    private String authSource;
 
     @XmlElement(name = "host")
     public String getHost() {
@@ -114,6 +122,32 @@ public class MongoDataSourceConfiguration {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    @XmlElement(name = "authenticationMethod")
+    public String getAuthenticationMethod() {
+        return authenticationMethod;
+    }
+
+    public void setAuthenticationMethod(String authenticationMethod) {
+        this.authenticationMethod = authenticationMethod;
+    }
+
+    @XmlElement(name = "authSource")
+    public String getAuthSource() {
+        return authSource;
+    }
+
+    public void setAuthSource(String authSource) {
+        this.authSource = authSource;
+    }
+
+    public AuthenticationMethod getAuthenticationMethodEnum() {
+        if (authenticationMethod != null) {
+            return AuthenticationMethod.valueOf(authenticationMethod);
+        } else {
+            return null;
+        }
     }
 
 }

@@ -701,6 +701,11 @@
                 <version>${cassandra-driver-core.orbit.version}</version>
             </dependency>
             <dependency>
+            	<groupId>org.mongodb</groupId>
+            	<artifactId>mongo-java-driver</artifactId>
+            	<version>${mongo.driver.version}</version>
+        	</dependency>
+            <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-handler</artifactId>
                 <version>${netty.version}</version>
@@ -1229,7 +1234,8 @@
         <slf4j.version>1.7.2</slf4j.version>
         <cassandra-driver-core.orbit.version>3.0.2</cassandra-driver-core.orbit.version>
         <cassandra-driver-core.orbit.imp.pkg.version>[3.0.2,3.1.0)</cassandra-driver-core.orbit.imp.pkg.version>
-
+        <mongo-java-driver.imp.pkg.version>[3.4.0,)</mongo-java-driver.imp.pkg.version>
+		<mongo.driver.version>3.4.1</mongo.driver.version>
         <cassandra-driver-core.version>3.0.2</cassandra-driver-core.version>
         <cassandra-driver-core.imp.pkg.version>[3.0.2,3.1.0)</cassandra-driver-core.imp.pkg.version>
         <netty.version>4.0.33.Final</netty.version>

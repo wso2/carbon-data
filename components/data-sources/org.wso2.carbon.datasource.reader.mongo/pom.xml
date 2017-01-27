@@ -46,7 +46,7 @@
                         <Export-Package>org.wso2.carbon.datasource.reader.mongo;version="${project.version}"</Export-Package>
                         <Import-Package>
                             !org.wso2.carbon.datasource.reader.mongo,
-                            com.mongodb;version="${mongo-java-driver.imp.pkg.version}",
+                            com.mongodb;version="${mongo-java-driver.orbit.imp.pkg.version}",
                             org.wso2.carbon.ndatasource.common;version="${carbon.kernel.imp.pkg.version}",
                             org.wso2.carbon.ndatasource.common.spi;version="${carbon.kernel.imp.pkg.version}",
                             org.wso2.carbon.utils;version="${carbon.kernel.imp.pkg.version}"

@@ -445,8 +445,8 @@
                                     </table>
                                 </td>
                             </tr>
-                            <label type="hidden" id="paramNameLabel" name="paramNameLabel"><fmt:message key="authorization.provider.config.parameter.name"/></label>
-                            <label type="hidden" id="paramValueLabel" name="paramValueLabel"><fmt:message key="authorization.provider.config.parameter.value"/></label>
+                            <label hidden id="paramNameLabel" name="paramNameLabel"><fmt:message key="authorization.provider.config.parameter.name"/></label>
+                            <label hidden id="paramValueLabel" name="paramValueLabel"><fmt:message key="authorization.provider.config.parameter.value"/></label>
                             <input type="hidden" id="authorizationProviderParamCount" name="authorizationProviderParamCount" value="<%= authProvider != null ? authProvider.getProperties().size() : "0"%>"/>
                         </table>
                     </td>

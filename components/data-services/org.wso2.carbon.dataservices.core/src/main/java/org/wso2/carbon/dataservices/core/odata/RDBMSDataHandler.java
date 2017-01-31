@@ -1012,7 +1012,11 @@ public class RDBMSDataHandler implements ODataDataHandler {
         ResultSet resultSet = null;
         Map<String, DataColumn> columnMap = new HashMap<>();
         try {
-            resultSet = meta.getColumns(null, null, tableName, null);
+            if (meta.getDatabaseProductName().toLowerCase().contains(ORACLE_SERVER)) {
+                resultSet = meta.getColumns(null, meta.getUserName(), tableName, null);
+            } else {
+                resultSet = meta.getColumns(null, null, tableName, null);
+            }
             int i = 1;
             while (resultSet.next()) {
                 String columnName = resultSet.getString("COLUMN_NAME");

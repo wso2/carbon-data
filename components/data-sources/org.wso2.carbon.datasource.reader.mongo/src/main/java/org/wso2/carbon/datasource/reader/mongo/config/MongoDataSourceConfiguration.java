@@ -52,6 +52,17 @@ public class MongoDataSourceConfiguration {
 
     private String authSource;
 
+    private Boolean sslInvalidHostNameAllowed;
+
+    @XmlElement(name = "sslInvalidHostNameAllowed")
+    public Boolean getSslInvalidHostNameAllowed() {
+        return sslInvalidHostNameAllowed;
+    }
+
+    public void setSslInvalidHostNameAllowed(Boolean sslInvalidHostNameAllowed) {
+        this.sslInvalidHostNameAllowed = sslInvalidHostNameAllowed;
+    }
+
     @XmlElement(name = "host")
     public String getHost() {
         return host;

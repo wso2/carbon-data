@@ -50,8 +50,12 @@ public class MongoDataSourceReaderUtil {
             baos = new ByteArrayInputStream(xmlConfiguration.getBytes());
             MongoDataSourceConfiguration fileConfig = (MongoDataSourceConfiguration) ctx.createUnmarshaller().unmarshal(baos);
             MongoClient result = null;
+            MongoClientOptions.Builder builder = MongoClientOptions.builder();
             if (fileConfig.getUrl() != null) {
-                MongoClientURI uri = new MongoClientURI(fileConfig.getUrl());
+                if (fileConfig.getSslInvalidHostNameAllowed() != null) {
+                    builder.sslInvalidHostNameAllowed(fileConfig.getSslInvalidHostNameAllowed());
+                }
+                MongoClientURI uri = new MongoClientURI(fileConfig.getUrl(), builder);
                 result = new MongoClient(uri);
             } else {
                 List<ServerAddress> addressList = new ArrayList<ServerAddress>();
@@ -73,10 +77,12 @@ public class MongoDataSourceReaderUtil {
                     ServerAddress address = new ServerAddress(fileConfig.getHost(), Integer.parseInt(fileConfig.getPort()));
                     addressList.add(address);
                 }
-                MongoClientOptions.Builder builder = MongoClientOptions.builder();
                 MongoCredential credential = null;
                 if (fileConfig.getWithSSL() != null) {
                     builder.sslEnabled(fileConfig.getWithSSL());
+                }
+                if (fileConfig.getSslInvalidHostNameAllowed() != null) {
+                    builder.sslInvalidHostNameAllowed(fileConfig.getSslInvalidHostNameAllowed());
                 }
                 if (fileConfig.getAuthenticationMethodEnum() != null && fileConfig.getUsername() != null) {
                     credential = createCredentials(fileConfig);

@@ -90,6 +90,7 @@ public class RDBMSDataHandler implements ODataDataHandler {
     public static final String TABLE_NAME = "TABLE_NAME";
     public static final String TABLE = "TABLE";
     public static final String ORACLE_SERVER = "oracle";
+    public static final String MSSQL_SERVER = "microsoft sql server";
 
     private ThreadLocal<Connection> transactionalConnection = new ThreadLocal<Connection>() {
         protected synchronized Connection initialValue() {
@@ -1100,6 +1101,8 @@ public class RDBMSDataHandler implements ODataDataHandler {
             DatabaseMetaData meta = connection.getMetaData();
             if (meta.getDatabaseProductName().toLowerCase().contains(ORACLE_SERVER)) {
                 rs = meta.getTables(null, meta.getUserName(), null, new String[] { TABLE });
+            } else if (meta.getDatabaseProductName().toLowerCase().contains(MSSQL_SERVER)) {
+                rs = meta.getTables(null, "dbo", null, new String[] { TABLE });
             } else {
                 rs = meta.getTables(null, null, null, new String[] { TABLE });
             }

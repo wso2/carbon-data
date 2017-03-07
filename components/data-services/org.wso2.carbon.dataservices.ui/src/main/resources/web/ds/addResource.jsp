@@ -203,7 +203,7 @@
                                     <td><fmt:message key="query.id"/><font color="red">*</font></td>
                                     <td>
                                         <select name="queryId" id="queryId"
-                                                onchange="javascript:location.href = 'addResource.jsp?selectedQueryId='+this.options[this.selectedIndex].value+'&resourcePath='+document.getElementById('resourcePath').value+'&resourceMethod='+document.getElementById('resourceMethod').value+'&resourceDesc='+document.getElementById('resourceDesc').value+'&flag=true';">
+                                                onchange="javascript:location.href = encodeURI('addResource.jsp?selectedQueryId='+this.options[this.selectedIndex].value+'&resourcePath='+document.getElementById('resourcePath').value+'&resourceMethod='+document.getElementById('resourceMethod').value+'&resourceDesc='+document.getElementById('resourceDesc').value+'&flag=true');">
 
 
                                             <% if (selectedQueryId != null && selectedQueryId.trim().equals("")) {%>

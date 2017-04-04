@@ -4,7 +4,7 @@
 
 |  Branch | Build Status |
 | :------------ |:-------------
-| master      | [![Build Status](https://wso2.org/jenkins/job/carbon-data/badge/icon)](https://wso2.org/jenkins/job/platform-builds/job/carbon-data/) |
+| master      | [![Build Status](https://wso2.org/jenkins/job/platform-builds/job/carbon-data/badge/icon)](https://wso2.org/jenkins/job/platform-builds/job/carbon-data/) |
 
 
 ---

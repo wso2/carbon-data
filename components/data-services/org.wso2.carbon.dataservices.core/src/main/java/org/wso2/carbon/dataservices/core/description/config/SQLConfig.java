@@ -91,9 +91,10 @@ public abstract class SQLConfig extends Config {
 			OMElement dynUserAuthConfEl = dynUserAuthPropEl.getFirstElement();
 			if (dynUserAuthConfEl == null) {
 				throw new DataServiceFault("Invalid dynamic user auth mapping configuration");
-			}
-			this.primaryDynAuth = new ConfigurationBasedAuthenticator(dynUserAuthConfEl.toString());
-		}
+            } else if (null != dynUserAuthConfEl.getFirstElement()) {
+                this.primaryDynAuth = new ConfigurationBasedAuthenticator(dynUserAuthConfEl.toString());
+            }
+        }
 		String dynAuthClass = this.getProperty(RDBMS.DYNAMIC_USER_AUTH_CLASS);
 		if (!DBUtils.isEmptyString(dynAuthClass)) {
 			try {

@@ -401,8 +401,8 @@ public class ODataAdapter implements ServiceHandler {
         String baseURL = request.getODataRequest().getRawBaseUri();
         try {
             Entity created = createEntityInTable(edmEntitySet.getEntityType(), entity);
-            entity.setId(new URI(EntityResponse.buildLocation(baseURL, created, edmEntitySet.getName(),
-                                                              edmEntitySet.getEntityType())));
+            entity.setId(new URI(ODataUtils.buildLocation(baseURL, created, edmEntitySet.getName(),
+                                                          edmEntitySet.getEntityType())));
             response.writeCreatedEntity(edmEntitySet, created);
         } catch (ODataServiceFault | SerializerException | URISyntaxException | EdmPrimitiveTypeException e) {
             response.writeNotModified();
@@ -1057,7 +1057,7 @@ public class ODataAdapter implements ServiceHandler {
                 EdmEntityType entityType = this.serviceMetadata.getEdm()
                                                                .getEntityType(new FullQualifiedName(this.namespace,
                                                                                                     tableName));
-                entity.setId(new URI(EntityResponse.buildLocation(baseURL, entity, entityType.getName(), entityType)));
+                entity.setId(new URI(ODataUtils.buildLocation(baseURL, entity, entityType.getName(), entityType)));
                 entity.setETag(entry.getValue("ETag"));
                 entity.setType(new FullQualifiedName(this.namespace, tableName).getFullQualifiedNameAsString());
                 entitySet.getEntities().add(entity);

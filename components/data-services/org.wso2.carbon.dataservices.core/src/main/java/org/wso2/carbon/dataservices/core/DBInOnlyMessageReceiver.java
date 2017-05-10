@@ -30,13 +30,13 @@ import org.wso2.carbon.dataservices.common.DBConstants;
  * This class represents the Axis2 message receiver used to dispatch in-only service calls.
  */
 public class DBInOnlyMessageReceiver extends RawXMLINOnlyMessageReceiver {
-	
+
 	private static final Log log = LogFactory.getLog(DBInOnlyMessageReceiver.class);
-	
+
 	/**
 	 * Invokes the business logic invocation on the service implementation
 	 * class
-	 * 
+	 *
 	 * @param msgContext
 	 *            the incoming message context
 	 * @throws AxisFault
@@ -50,8 +50,9 @@ public class DBInOnlyMessageReceiver extends RawXMLINOnlyMessageReceiver {
 				          ", Operation - " + msgContext.getSoapAction() + ", Request body - " +
 				          msgContext.getEnvelope().getText() + ", ThreadID - " + Thread.currentThread().getId());
 			}
-			DataServiceProcessor.dispatch(msgContext);
-		} catch (Exception e) {
+                        DataServiceProcessor.dispatch(msgContext);
+                        msgContext.setProperty(DBConstants.TENANT_IN_ONLY_MESSAGE, Boolean.TRUE);
+                } catch (Exception e) {
 			log.error("Error in in-only message receiver", e);
 			msgContext.setProperty(Constants.FAULT_NAME, DBConstants.DS_FAULT_NAME);
 			throw DBUtils.createAxisFault(e);

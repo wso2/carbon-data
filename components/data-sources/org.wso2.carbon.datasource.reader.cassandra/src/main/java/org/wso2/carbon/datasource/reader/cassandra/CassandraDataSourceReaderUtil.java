@@ -72,6 +72,9 @@ public class CassandraDataSourceReaderUtil {
             if (fileConfig.getPoolingOptionsConfig() != null) {
                 builder.withPoolingOptions(fileConfig.getPoolingOptionsConfig().getPoolingOptions());
             }
+            if (fileConfig.isWithSSL()) {
+                builder.withSSL();
+            }
             return builder.build();
 
         } catch (Exception e) {

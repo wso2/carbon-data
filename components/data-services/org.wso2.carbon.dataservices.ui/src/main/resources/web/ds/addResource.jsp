@@ -1,4 +1,4 @@
-<!--
+<%--
 ~ Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 ~
 ~ WSO2 Inc. licenses this file to you under the Apache License,
@@ -14,7 +14,7 @@
 ~ KIND, either express or implied. See the License for the
 ~ specific language governing permissions and limitations
 ~ under the License.
--->
+--%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar" prefix="carbon" %>
 <%@ page import="org.wso2.carbon.utils.ServerConstants" %>
@@ -203,7 +203,7 @@
                                     <td><fmt:message key="query.id"/><font color="red">*</font></td>
                                     <td>
                                         <select name="queryId" id="queryId"
-                                                onchange="javascript:location.href = 'addResource.jsp?selectedQueryId='+this.options[this.selectedIndex].value+'&resourcePath='+document.getElementById('resourcePath').value+'&resourceMethod='+document.getElementById('resourceMethod').value+'&resourceDesc='+document.getElementById('resourceDesc').value+'&flag=true';">
+                                                onchange="javascript:location.href = encodeURI('addResource.jsp?selectedQueryId='+this.options[this.selectedIndex].value+'&resourcePath='+document.getElementById('resourcePath').value+'&resourceMethod='+document.getElementById('resourceMethod').value+'&resourceDesc='+document.getElementById('resourceDesc').value+'&flag=true');">
 
 
                                             <% if (selectedQueryId != null && selectedQueryId.trim().equals("")) {%>

@@ -90,6 +90,7 @@ public class RDBMSDataHandler implements ODataDataHandler {
     public static final String TABLE_NAME = "TABLE_NAME";
     public static final String TABLE = "TABLE";
     public static final String ORACLE_SERVER = "oracle";
+    public static final String MSSQL_SERVER = "microsoft sql server";
 
     private ThreadLocal<Connection> transactionalConnection = new ThreadLocal<Connection>() {
         protected synchronized Connection initialValue() {
@@ -1012,7 +1013,11 @@ public class RDBMSDataHandler implements ODataDataHandler {
         ResultSet resultSet = null;
         Map<String, DataColumn> columnMap = new HashMap<>();
         try {
-            resultSet = meta.getColumns(null, null, tableName, null);
+            if (meta.getDatabaseProductName().toLowerCase().contains(ORACLE_SERVER)) {
+                resultSet = meta.getColumns(null, meta.getUserName(), tableName, null);
+            } else {
+                resultSet = meta.getColumns(null, null, tableName, null);
+            }
             int i = 1;
             while (resultSet.next()) {
                 String columnName = resultSet.getString("COLUMN_NAME");
@@ -1096,6 +1101,8 @@ public class RDBMSDataHandler implements ODataDataHandler {
             DatabaseMetaData meta = connection.getMetaData();
             if (meta.getDatabaseProductName().toLowerCase().contains(ORACLE_SERVER)) {
                 rs = meta.getTables(null, meta.getUserName(), null, new String[] { TABLE });
+            } else if (meta.getDatabaseProductName().toLowerCase().contains(MSSQL_SERVER)) {
+                rs = meta.getTables(null, "dbo", null, new String[] { TABLE });
             } else {
                 rs = meta.getTables(null, null, null, new String[] { TABLE });
             }

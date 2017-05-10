@@ -1,4 +1,4 @@
-<!--
+<%--
  ~ Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  ~
  ~ WSO2 Inc. licenses this file to you under the Apache License,
@@ -14,12 +14,13 @@
  ~ KIND, either express or implied.  See the License for the
  ~ specific language governing permissions and limitations
  ~ under the License.
- -->
+ --%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar" prefix="carbon" %>
 <%@ page import="org.wso2.carbon.dataservices.ui.beans.Resource" %>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.Iterator" %>
+<%@ page import="java.net.URLEncoder" %>
 <jsp:include page="../dialog/display_messages.jsp"/>
 
 <fmt:bundle basename="org.wso2.carbon.dataservices.ui.i18n.Resources">
@@ -74,7 +75,7 @@
                 <input type="hidden" value="<%=path%>" id="<%=path%>" name="<%=path%>" />
                 <td>
                     <%
-                        String editURI = "addResource.jsp?action=edit&resourcePath="+resource.getPath()+"&resourceMethod="+resource.getMethod()+"&disableStreaming="+disableStreaming;
+                        String editURI = "addResource.jsp?action=edit&resourcePath="+ URLEncoder.encode(resource.getPath(),"UTF-8")+"&resourceMethod="+resource.getMethod()+"&disableStreaming="+disableStreaming;
                     %>                    
                     <a class="icon-link" style="background-image:url(../admin/images/edit.gif);" href="<%=editURI%>"><fmt:message key="edit.resource" /></a>
 					<a class="icon-link" style="background-image:url(../admin/images/delete.gif);" onclick="deleteResources(document.getElementById('<%=path%>').value, document.getElementById('<%=resourceMethod%>').value);" href="#"><fmt:message key="delete.resource" /></a>

@@ -1,4 +1,4 @@
-<!--
+<%--
 ~ Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 ~
 ~ WSO2 Inc. licenses this file to you under the Apache License,
@@ -14,7 +14,7 @@
 ~ KIND, either express or implied. See the License for the
 ~ specific language governing permissions and limitations
 ~ under the License.
--->
+--%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar" prefix="carbon" %>
 <%@ page import="org.wso2.carbon.utils.ServerConstants" %>
@@ -445,8 +445,8 @@
                                     </table>
                                 </td>
                             </tr>
-                            <label type="hidden" id="paramNameLabel" name="paramNameLabel"><fmt:message key="authorization.provider.config.parameter.name"/></label>
-                            <label type="hidden" id="paramValueLabel" name="paramValueLabel"><fmt:message key="authorization.provider.config.parameter.value"/></label>
+                            <label hidden id="paramNameLabel" name="paramNameLabel"><fmt:message key="authorization.provider.config.parameter.name"/></label>
+                            <label hidden id="paramValueLabel" name="paramValueLabel"><fmt:message key="authorization.provider.config.parameter.value"/></label>
                             <input type="hidden" id="authorizationProviderParamCount" name="authorizationProviderParamCount" value="<%= authProvider != null ? authProvider.getProperties().size() : "0"%>"/>
                         </table>
                     </td>

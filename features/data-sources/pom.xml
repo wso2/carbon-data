@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.wso2.carbon.data</groupId>
         <artifactId>carbon-data</artifactId>
-        <version>4.4.1-SNAPSHOT</version>
+        <version>4.4.10</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -33,6 +33,7 @@
     <modules>
         <module>org.wso2.carbon.datasource.reader.hadoop.server.feature</module>
         <module>org.wso2.carbon.datasource.reader.cassandra.server.feature</module>
+        <module>org.wso2.carbon.datasource.reader.mongo.server.feature</module>
     </modules>
 </project>
 

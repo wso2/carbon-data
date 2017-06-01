@@ -380,9 +380,11 @@ public class StaticOutputElement extends OutputElement {
                 } catch (SQLException e) {
                     throw new DataServiceFault(e, "Unable to process the SQL Array");
                 }
-            } else {
-                value = new ParamValue(String.valueOf(tmpVal));
-            }
+       	} else if (null != tmpVal)
+				value = new ParamValue(String.valueOf(tmpVal));
+			else {
+				value = null;
+			}
         } else if (DBUtils.isSQLArray(value)) {
             ParamValue processedParamValue = new ParamValue(ParamValue.PARAM_VALUE_ARRAY);
             for (ParamValue paramVal : value.getArrayValue()) {

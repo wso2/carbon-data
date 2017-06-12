@@ -23,7 +23,6 @@ import org.apache.axis2.description.AxisOperation;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.description.java2wsdl.Java2WSDLConstants;
 import org.apache.axis2.description.java2wsdl.TypeTable;
-import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.axis2.wsdl.WSDLConstants;
 import org.apache.ws.commons.schema.*;
 import org.apache.ws.commons.schema.constants.Constants;
@@ -94,12 +93,14 @@ public class DataServiceDocLitWrappedSchemaGenerator {
         if (dataservice.isBoxcarringEnabled()) {
             Operation requestBoxOperation = dataservice.getOperation(DBConstants.REQUEST_BOX_ELEMENT);
             if (requestBoxOperation != null) {
-                processRequestBox(cparams, requestBoxOperation, (List<List<CallableRequest>>)(List<?>)allOps);
-            }
-            ResourceID requestBoxResourceId = new ResourceID(DBConstants.REQUEST_BOX_ELEMENT, HTTPConstants.HTTP_METHOD_POST);
-            Resource requestBoxResource = dataservice.getResource(requestBoxResourceId);
-            if (requestBoxResource != null) {
-                processRequestBox(cparams, requestBoxResource, (List<List<CallableRequest>>)(List<?>)allResources);
+	            List<List<CallableRequest>> callableRequests = new ArrayList<>();
+	            for(List<CallableRequest> calls : (List<List<CallableRequest>>)(List<?>) allOps) {
+		            callableRequests.add(calls);
+	            }
+	            for(List<CallableRequest> calls : (List<List<CallableRequest>>)(List<?>)allResources) {
+		            callableRequests.add(calls);
+	            }
+                processRequestBox(cparams, requestBoxOperation, callableRequests);
             }
         }
 				
@@ -130,7 +131,7 @@ public class DataServiceDocLitWrappedSchemaGenerator {
 		/* process input parameters */
         processRequestBoxInput(cparams, request, allOps);
 		/* process output types */
-        processRequestOutput(cparams, request);
+        processRequestBoxOutput(cparams, request, allOps);
     }
 
 
@@ -344,6 +345,52 @@ public class DataServiceDocLitWrappedSchemaGenerator {
 		XmlSchemaElement resultEl = (XmlSchemaElement) ((XmlSchemaSequence) dummyType.getParticle())
 				.getItems().getItem(0);
 		outMessage.setElementQName(resultEl.getRefName());
+	}
+
+	/**
+	 * Process the given request's output types.
+	 * @param cparams The common parameters used in the schema generator
+	 * @param request The request used to process the output
+	 */
+	private static void processRequestBoxOutput(CommonParams cparams, CallableRequest request,
+			List<List<CallableRequest>> allOps) throws DataServiceFault {
+		AxisOperation axisOp = cparams.getAxisService().getOperation(new QName(request.getRequestName()));
+		AxisMessage outMessage = axisOp.getMessage(WSDLConstants.MESSAGE_LABEL_OUT_VALUE);
+		outMessage.setName(request.getRequestName() + Java2WSDLConstants.RESPONSE);
+
+		XmlSchemaElement parentElement = createElement(cparams, request.getCallQuery().getNamespace() , DBConstants.DATA_SERVICE_REQUEST_BOX_RESPONSE_WRAPPER_ELEMENT,true);
+		XmlSchemaComplexType outputComplexType = createComplexType(cparams,
+				request.getCallQuery().getQuery().getInputNamespace(), request.getRequestName(), false);
+		parentElement.setType(outputComplexType);
+		for (List<CallableRequest> callableRequests : allOps) {
+			for (CallableRequest callableRequest : callableRequests) {
+				if (callableRequest != null) {
+					CallQuery callQuery = callableRequest.getCallQuery();
+                    Result result = callQuery.getQuery().getResult();
+                    if (!isBoxcarringOp(callableRequest.getRequestName()) && result != null) {
+						Query query = callQuery.getQuery();
+						XmlSchemaElement dummyParentElement = new XmlSchemaElement();
+						dummyParentElement.setQName(new QName(result.getNamespace(), DUMMY_NAME));
+						XmlSchema dummySchema = retrieveSchema(cparams, result.getNamespace());
+						XmlSchemaComplexType dummyType = new XmlSchemaComplexType(dummySchema);
+						dummyType.setName(DUMMY_NAME);
+						dummyParentElement.setType(dummyType);
+						/* lets do it */
+						processCallQuery(cparams, dummyParentElement, callQuery);
+	                    /* extract the element and set it to the message */
+						XmlSchemaElement resultEl = (XmlSchemaElement) ((XmlSchemaSequence) dummyType.getParticle())
+								.getItems().getItem(0);
+						addElementToComplexTypeAll(cparams, outputComplexType, query.getInputNamespace(), resultEl,
+								false, false, true);
+					}
+				} else {
+					throw new DataServiceFault("No parent operation for batch request: " + request.getRequestName());
+				}
+			}
+		}
+
+		/* create dummy element to contain the result element */
+		outMessage.setElementQName(parentElement.getQName());
 	}
 	
 	/**

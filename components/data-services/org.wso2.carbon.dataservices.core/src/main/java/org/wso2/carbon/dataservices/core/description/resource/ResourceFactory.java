@@ -82,12 +82,4 @@ public class ResourceFactory {
 		return resource;
 	}
 
-    public static Resource createRequestBoxResource(DataService dataService) {
-        CallQuery callQueries = QueryFactory.createEmptyBoxcarCallQuery(dataService);
-        ResourceID requestBoxResourceId = new ResourceID(DBConstants.REQUEST_BOX_ELEMENT, HTTPConstants.HTTP_METHOD_POST);
-        return new Resource(dataService, requestBoxResourceId,
-                             "Control resource for sending multiple requests at once",
-                             callQueries, false, null, false, false);
-    }
-	
 }

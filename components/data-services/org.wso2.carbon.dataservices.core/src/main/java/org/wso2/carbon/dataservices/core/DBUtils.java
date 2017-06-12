@@ -1097,7 +1097,7 @@ public class DBUtils {
 	public static OMElement wrapBoxCarringResponse(OMElement result) {
 		OMFactory fac = OMAbstractFactory.getOMFactory();
 		OMElement wrapperElement = fac.createOMElement(new QName(DBConstants.WSO2_DS_NAMESPACE,
-                DBConstants.DATA_SERVICE_RESPONSE_WRAPPER_ELEMENT));
+                DBConstants.DATA_SERVICE_REQUEST_BOX_RESPONSE_WRAPPER_ELEMENT));
 		if (result != null) {
 			wrapperElement.addChild(result);
 		}

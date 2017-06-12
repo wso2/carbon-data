@@ -261,7 +261,6 @@ public class DataService {
      */
     public void initRequestBox() throws DataServiceFault {
         initRequestBoxForOperation();
-        initRequestBoxForResource();
     }
 
     /**
@@ -271,7 +270,7 @@ public class DataService {
      * @throws DataServiceFault
      */
     private void initRequestBoxForOperation() throws DataServiceFault {
-        if (this.getOperationNames().isEmpty()) {
+        if (this.getOperationNames().isEmpty() && this.getResourceIds().isEmpty()) {
             if (log.isDebugEnabled()) {
                 log.debug("There are no Operations available in data service, So request box won't be generated for Operations");
             }
@@ -280,24 +279,6 @@ public class DataService {
         addEmptyQueryForRequestBox();
         /* operation */
         this.addOperation(OperationFactory.createRequestBoxOperation(this));
-    }
-
-    /**
-     * Helper method to initialise request box resource, (if there are no resources already, then it will return
-     * without doing anything)
-     *
-     * @throws DataServiceFault
-     */
-    private void initRequestBoxForResource() throws DataServiceFault {
-        if (this.getResourceIds().isEmpty()) {
-            if (log.isDebugEnabled()) {
-                log.debug("There are no Resources available in data service, So request box won't be generated for Resources");
-            }
-            return;
-        }
-        addEmptyQueryForRequestBox();
-        /* resource */
-        this.addResource(ResourceFactory.createRequestBoxResource(this));
     }
 
     /**

@@ -93,7 +93,7 @@ public class DataServiceDocLitWrappedSchemaGenerator {
         if (dataservice.isBoxcarringEnabled()) {
             Operation requestBoxOperation = dataservice.getOperation(DBConstants.REQUEST_BOX_ELEMENT);
             if (requestBoxOperation != null) {
-	          List< List<CallableRequest> >callableRequests = new ArrayList<>();
+	            List<List<CallableRequest>> callableRequests = new ArrayList<>();
 	            for(List<CallableRequest> calls : (List<List<CallableRequest>>)(List<?>) allOps) {
 		            callableRequests.add(calls);
 	            }

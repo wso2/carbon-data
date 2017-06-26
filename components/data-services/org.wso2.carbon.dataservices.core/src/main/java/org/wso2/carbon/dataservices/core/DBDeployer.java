@@ -97,14 +97,7 @@ import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -202,8 +195,13 @@ public class DBDeployer extends AbstractDeployer {
             service.setName(serviceHierarchy + service.getName());
             /* save original value */
             serviceActive = service.isActive();
+            /* set transports */
+			List<String> transports = new ArrayList<String>();
+			transports.add(Constants.TRANSPORT_HTTP);
+			transports.add(Constants.TRANSPORT_HTTPS);
+			service.setExposedTransports(transports);
 
-            ArrayList<AxisService> services = new ArrayList<AxisService>();
+			ArrayList<AxisService> services = new ArrayList<AxisService>();
             services.add(service);
 
             boolean secEnabled = this.handleSecurityProxy(deploymentFileData, service);
@@ -834,6 +832,12 @@ public class DBDeployer extends AbstractDeployer {
 
 			/* set service description */
 			axisService.setDocumentation(dataService.getDescription());
+
+			/* set transports */
+			List<String> transports = new ArrayList<String>();
+			transports.add(Constants.TRANSPORT_HTTP);
+			transports.add(Constants.TRANSPORT_HTTPS);
+			axisService.setExposedTransports(transports);
 
 			this.httpLocationTable = new TreeMap<String, AxisOperation>(
 					new Comparator<String>() {

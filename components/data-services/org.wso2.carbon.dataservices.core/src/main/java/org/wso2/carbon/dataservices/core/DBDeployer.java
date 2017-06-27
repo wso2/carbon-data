@@ -105,7 +105,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -203,11 +202,6 @@ public class DBDeployer extends AbstractDeployer {
             service.setName(serviceHierarchy + service.getName());
             /* save original value */
             serviceActive = service.isActive();
-            /* set transports */
-			List<String> transports = new ArrayList<String>();
-			transports.add(Constants.TRANSPORT_HTTP);
-			transports.add(Constants.TRANSPORT_HTTPS);
-			service.setExposedTransports(transports);
 
 			ArrayList<AxisService> services = new ArrayList<AxisService>();
             services.add(service);
@@ -842,10 +836,7 @@ public class DBDeployer extends AbstractDeployer {
 			axisService.setDocumentation(dataService.getDescription());
 
 			/* set transports */
-			List<String> transports = new ArrayList<String>();
-			transports.add(Constants.TRANSPORT_HTTP);
-			transports.add(Constants.TRANSPORT_HTTPS);
-			axisService.setExposedTransports(transports);
+			axisService.setExposedTransports(dataService.getTransports());
 
 			this.httpLocationTable = new TreeMap<String, AxisOperation>(
 					new Comparator<String>() {

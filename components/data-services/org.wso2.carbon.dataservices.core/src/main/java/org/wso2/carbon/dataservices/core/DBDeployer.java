@@ -203,7 +203,7 @@ public class DBDeployer extends AbstractDeployer {
             /* save original value */
             serviceActive = service.isActive();
 
-            ArrayList<AxisService> services = new ArrayList<AxisService>();
+			ArrayList<AxisService> services = new ArrayList<AxisService>();
             services.add(service);
 
             boolean secEnabled = this.handleSecurityProxy(deploymentFileData, service);
@@ -834,6 +834,9 @@ public class DBDeployer extends AbstractDeployer {
 
 			/* set service description */
 			axisService.setDocumentation(dataService.getDescription());
+
+			/* set transports */
+			axisService.setExposedTransports(dataService.getTransports());
 
 			this.httpLocationTable = new TreeMap<String, AxisOperation>(
 					new Comparator<String>() {

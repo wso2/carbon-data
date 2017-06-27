@@ -51,6 +51,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.List;
 
 /**
  * This class is the logical representation of a data service, and is the
@@ -183,6 +184,11 @@ public class DataService {
      */
     private AuthorizationProvider authorizationProvider;
 
+    /**
+     * transport settings
+     */
+    private List<String> transports;
+
 	public DataService(String name, String description,
                        String defaultNamespace, String dsLocation, String serviceStatus,
                        boolean batchRequestsEnabled, boolean boxcarringEnabled,
@@ -194,6 +200,7 @@ public class DataService {
         this.configs = new HashMap<String, Config>();
         this.eventTriggers = new HashMap<String, EventTrigger>();
         this.queries = new HashMap<String, Query>();
+        this.transports = new ArrayList<String>();
         this.description = description;
         this.defaultNamespace = defaultNamespace;
         this.dsLocation = dsLocation;
@@ -562,6 +569,22 @@ public class DataService {
      */
     public void setAuthorizationProvider(AuthorizationProvider authorizationProvider) {
         this.authorizationProvider = authorizationProvider;
+    }
+
+    /**
+     * Getter method for Transports
+     * @return a list of transports
+     */
+    public List<String> getTransports() {
+        return transports;
+    }
+
+    /**
+     * Setter method for Transports
+     * @param transports List of transports
+     */
+    public void setTransports(List<String> transports) {
+        this.transports = transports;
     }
 
     /**

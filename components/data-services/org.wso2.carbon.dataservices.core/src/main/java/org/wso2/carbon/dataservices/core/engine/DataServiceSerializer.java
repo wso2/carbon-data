@@ -71,6 +71,12 @@ public class DataServiceSerializer {
         /* set 'disableLegacyBoxcarringMode' attribute */
         dataEl.addAttribute(DBSFields.DISABLE_LEGACY_BOXCARRING_MODE,
                             Boolean.toString(dataService.isDisableLegacyBoxcarringMode()), null);
+        /* set 'transports' attribute */
+        StringBuilder stringBuilder = new StringBuilder("");
+		for (String transport : dataService.getTransports()) {
+			stringBuilder.append(" ").append(transport);
+		}
+		dataEl.addAttribute(DBSFields.TRANSPORTS, stringBuilder.toString().trim(), null);
 
         /* add configs */
         for (Config config : dataService.getConfigs().values()) {

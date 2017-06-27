@@ -18,6 +18,7 @@
  */
 package org.wso2.carbon.dataservices.core.script;
 
+import org.apache.axis2.Constants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.dataservices.common.DBConstants;
@@ -236,6 +237,11 @@ public class DSGenerator {
 			} else {
 				dataService.setServiceNamespace(serviceNamespace);
 			}
+			/* set transports */
+			List<String> transports = new ArrayList<>();
+			transports.add(Constants.TRANSPORT_HTTP);
+			transports.add(Constants.TRANSPORT_HTTPS);
+			dataService.setTransports(transports);
 			this.setConfig(dataService, datasourceId);
                         String tablePrimaryKey = "";
                         try {

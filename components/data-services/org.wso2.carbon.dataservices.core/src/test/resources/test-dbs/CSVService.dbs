@@ -1,4 +1,4 @@
-<data name="CSVService">
+<data name="CSVService" transports="http https">
    <config id="customers">
       <property name="csv_datasource">./src/test/resources/csv/customers.csv</property>
       <property name="csv_columnseperator">,</property>

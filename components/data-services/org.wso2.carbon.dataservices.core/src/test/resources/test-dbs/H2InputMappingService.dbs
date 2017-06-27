@@ -1,4 +1,4 @@
-<data name="H2InputMappingService">
+<data name="H2InputMappingService" transports="http https">
    <config>
       <property name="driverClassName">org.h2.Driver</property>
       <property name="url">jdbc:h2:mem:ds-test-db</property>

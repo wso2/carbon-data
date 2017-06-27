@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<data name="ExcelService">
+<data name="ExcelService" transports="http https">
 
     <config id="customers_old_noheader_with_ints">
         <property name="excel_datasource">./src/test/resources/excel/customers_noheader_with_ints.xls</property>

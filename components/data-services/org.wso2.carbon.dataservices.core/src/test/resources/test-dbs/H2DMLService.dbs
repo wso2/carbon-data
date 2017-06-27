@@ -1,4 +1,4 @@
-<data name="H2DMLService">
+<data name="H2DMLService" transports="http https">
    <config>
       <property name="org.wso2.ws.dataservice.driver">org.h2.Driver</property>
       <property name="org.wso2.ws.dataservice.protocol">jdbc:h2:mem:ds-test-db</property>

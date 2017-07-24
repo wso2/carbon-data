@@ -101,6 +101,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -202,6 +203,14 @@ public class DBDeployer extends AbstractDeployer {
             service.setName(serviceHierarchy + service.getName());
             /* save original value */
             serviceActive = service.isActive();
+
+            /* set transports */
+            if(service.getExposedTransports().isEmpty()) {
+                List<String> transports = new ArrayList<String>();
+                transports.add(Constants.TRANSPORT_HTTP);
+                transports.add(Constants.TRANSPORT_HTTPS);
+                service.setExposedTransports(transports);
+            }
 
 			ArrayList<AxisService> services = new ArrayList<AxisService>();
             services.add(service);

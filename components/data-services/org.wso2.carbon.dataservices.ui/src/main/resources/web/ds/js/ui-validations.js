@@ -22,9 +22,9 @@ function validateServiceDetailsForm(){
         CARBON.showWarningDialog("Data Service Name is mandatory");
         return false;
     }
-    var  reWhiteSpace = new RegExp("^[a-zA-Z0-9_]+$?//");
-    // Check for white space
-    if (!reWhiteSpace.test(serviceName)) {
+    var  regex = /[~!@#$%^&*()\\\/+=\:;<>'"?[\]{}|\s,]/;
+    // Check for invalid characters
+    if (regex.test(serviceName)) {
         CARBON.showWarningDialog("Alphanumeric characters and underscores are only allowed in the data service name");
         return false;
     }
@@ -1331,15 +1331,21 @@ function arrayNameVisibilityOnChange(obj, document) {
 function changeDataSourceType (obj, document) {
 	var selectedType =  obj[obj.selectedIndex].value;
 	var selectedDS = document.getElementById('datasourceId').value;
+	var reWhiteSpace = new RegExp("^[a-zA-Z0-9_]+$");
 	if (selectedDS == ''){
         CARBON.showWarningDialog('Insert datasource id');
         obj.selectedIndex = 0;
         return false;
-	} else {
+	}
+	// Validate for alphanumeric characters and underscores
+    if (!reWhiteSpace.test(selectedDS)) {
+       CARBON.showWarningDialog("Alphanumeric characters and underscores are only allowed in the Datasource Id");
+       obj.selectedIndex = 0;
+       return false;
+    }
+	else {
 		location.href = 'addDataSource.jsp?selectedType='+selectedType+'&configId='+selectedDS+'&ds=edit&flag=edit_changed';
 	}
-
-
 }
 
 function changeXADataSourceEngine (obj, document) {

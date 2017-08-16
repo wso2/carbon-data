@@ -24,6 +24,7 @@
 <%@ page import="org.wso2.carbon.utils.ServerConstants" %>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.Iterator" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <script type="text/javascript" src="../admin/js/main.js"></script>
 
 <jsp:include page="../dialog/display_messages.jsp"/>
@@ -208,7 +209,7 @@
             <form method="post" action="operationProcessor.jsp?action=<%=action%>" name="dataForm"
                   onsubmit="return validateAddOperationForm();">
                 <!--hidden fields -->
-                <input type="hidden" name="oldOperationName" value="<%=operationName%>">
+                <input type="hidden" name="oldOperationName" value="<%=Encode.forHtmlAttribute(operationName)%>">
                 <input type="hidden" name="disableStreaming" value="<%=enableStreaming%>">
 
                 <table class="styledLeft">
@@ -219,13 +220,13 @@
                                     <td><fmt:message key="operation.name"/><font
                                             color="red">*</font></td>
                                     <td><input type="text" name="operationName" id="operationName"
-                                               value="<%=operationName%>"/></td>
+                                               value="<%=Encode.forHtmlAttribute(operationName)%>"/></td>
                                 </tr>
                                 <tr>
                                     <td><fmt:message key="opeation.description"/></td>
 
                                     <td><textarea cols="40" rows="5" id="operationDesc"
-                                                  name="operationDesc"><%=operationDesc%>
+                                                  name="operationDesc"><%=Encode.forHtmlContent(operationDesc)%>
                                     </textarea>
                                     </td>
                                 </tr>
@@ -307,7 +308,7 @@
                                                     <% if (!action.equals("")) { %>
                                                     <a class="icon-link"
                                                        style="background-image:url(../admin/images/edit.gif);"
-                                                       href='addOperationParameter.jsp?editparam=editparam&operationName=<%=operationName%>&action=<%=action%>&queryId=<%=selectedQueryId%>&paramNameId=<%=aWithParamsList.getName()%>&operationParamId=<%=(aWithParamsList.getParamValue())%>'>
+                                                       href='addOperationParameter.jsp?editparam=editparam&operationName=<%=Encode.forHtmlAttribute(operationName)%>&action=<%=action%>&queryId=<%=selectedQueryId%>&paramNameId=<%=aWithParamsList.getName()%>&operationParamId=<%=(aWithParamsList.getParamValue())%>'>
                                                        <fmt:message key="edit"/> </a>
                                                     <% } %>
                                                     <a class="icon-link"
@@ -332,7 +333,7 @@
                                     <td colspan="3">
                                         <a class="icon-link"
                                            style="background-image:url(../admin/images/add.gif);"
-                                           href='addOperation.jsp?param=qparam&operationName=<%=operationName%>&operationDesc=<%=operationDesc %>&action=<%=action%>&selectedQueryId=<%=selectedQueryId%>' >Add Query Params as Operation Params</a>
+                                           href='addOperation.jsp?param=qparam&operationName=<%=Encode.forHtmlAttribute(operationName)%>&operationDesc=<%=Encode.forHtmlAttribute(operationDesc) %>&action=<%=action%>&selectedQueryId=<%=selectedQueryId%>' >Add Query Params as Operation Params</a>
                                     </td>
                                 </tr>
                                 <%
@@ -341,7 +342,7 @@
                                     <td colspan="3">
                                         <a class="icon-link"
                                            style="background-image:url(../admin/images/add.gif);"
-                                           href='addOperationParameter.jsp?operationName=<%=operationName%>&action=<%=action%>&queryId=<%=selectedQueryId%>' ><fmt:message
+                                           href='addOperationParameter.jsp?operationName=<%=Encode.forHtmlAttribute(operationName)%>&action=<%=action%>&queryId=<%=selectedQueryId%>' ><fmt:message
                                                 key="add.new.operation.parameter"/></a>
                                     </td>
                                 </tr>

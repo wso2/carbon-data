@@ -27,6 +27,7 @@
 <%@ page import="org.wso2.carbon.dataservices.ui.beans.Param" %>
 <%@ page import="org.wso2.carbon.dataservices.ui.beans.Resource" %>
 <%@ page import="org.wso2.carbon.dataservices.ui.beans.CallQuery" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 
 <fmt:bundle basename="org.wso2.carbon.dataservices.ui.i18n.Resources">
 
@@ -141,7 +142,7 @@
                         <td>
                             <table class="normal">
                                 <input type="hidden" value="<%=serviceName%>" name="serviceName">
-                                <input type="hidden" value="<%=resourcePath%>" id="oldResourcePath"
+                                <input type="hidden" value="<%=Encode.forHtmlAttribute(resourcePath)%>" id="oldResourcePath"
                                        name="oldResourcePath"/>
                                 <input type="hidden" value="<%=resourceMethod%>" id="oldResourceMethod"
                                                                        name="oldResourceMethod"/>
@@ -149,13 +150,13 @@
                                     <td><fmt:message key="datasources.resource.path"/><font
                                             color="red">*</font></td>
                                     <td><input type="text" name="resourcePath" id="resourcePath"
-                                               value="<%=resourcePath%>"/></td>
+                                               value="<%=Encode.forHtmlAttribute(resourcePath)%>"/></td>
                                 </tr>
                                 <tr>
                                     <td><fmt:message key="datasources.resource.description"/></td>
 
                                     <td><textarea cols="40" rows="5" id="resourceDesc"
-                                                  name="resourceDesc"><%=description%>
+                                                  name="resourceDesc"><%=Encode.forHtmlContent(description)%>
                                     </textarea></td>
                                 </tr>
                                 <tr>

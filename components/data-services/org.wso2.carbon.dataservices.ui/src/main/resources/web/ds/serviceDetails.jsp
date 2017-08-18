@@ -30,6 +30,7 @@
 <%@ page import="org.wso2.carbon.CarbonError" %>
 <%@ page import="org.wso2.carbon.dataservices.ui.beans.AuthProvider" %>
 <%@ page import="org.wso2.carbon.dataservices.ui.beans.Property" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <script type="text/javascript" src="js/ui-validations.js"></script>
 <jsp:useBean id="dataService" class="org.wso2.carbon.dataservices.ui.beans.Data"
              scope="session"></jsp:useBean>
@@ -225,12 +226,12 @@
                                     if (!serviceName.equals("")) {
                                 %>
                                     <input type="text" name="serviceName" id="serviceName" size="35"
-                                           value="<%=detailedServiceName%>" readonly="readonly"/>
+                                           value="<%=Encode.forHtmlAttribute(detailedServiceName)%>" readonly="readonly"/>
                                     <%
                                     } else {
                                     %>
                                     <input type="text" name="serviceName" id="serviceName" size="35"
-                                           value="<%=serviceName%>"/>
+                                           value="<%=Encode.forHtmlAttribute(serviceName)%>"/>
                                     <%
                                         }
                                     %>
@@ -243,12 +244,12 @@
                                     if (!serviceNamespace.equals("")) {
                                 %>
                                     <input type="text" name="serviceNamespace" size="35"
-                                           id="serviceNamespace" value="<%=serviceNamespace%>"/>
+                                           id="serviceNamespace" value="<%=Encode.forHtmlAttribute(serviceNamespace)%>"/>
                                     <%
                                     } else {
                                     %>
                                     <input type="text" name="serviceNamespace" size="35"
-                                           id="serviceNamespace" value="<%=serviceNamespace%>"/>
+                                           id="serviceNamespace" value="<%=Encode.forHtmlAttribute(serviceNamespace)%>"/>
                                     <%
                                         }
                                     %>
@@ -257,7 +258,7 @@
                             <tr>
                                 <td><fmt:message key="service.description"/></td>
                                 <td align="left"><textarea cols="40" rows="5"
-                                                           name="description"><%=description%>
+                                           name="description"><%=Encode.forHtmlContent(description)%>
                                 </textarea></td>
                             </tr>
                         </table>

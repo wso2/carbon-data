@@ -24,6 +24,7 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="org.wso2.carbon.dataservices.ui.beans.Query" %>
 <%@ page import="java.util.Iterator" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <jsp:include page="../dialog/display_messages.jsp"/>
 
 <fmt:bundle basename="org.wso2.carbon.dataservices.ui.i18n.Resources">
@@ -78,12 +79,12 @@
                                 if(query != null){
                                     %>
                     <tr>
-                        <td><%=query.getId()%></td>
+                        <td><%=Encode.forHtmlContent(query.getId())%></td>
                         <td><%=query.getConfigToUse()%></td>
-                        <input type="hidden" id="<%=query.getId()%>" name="<%=query.getId()%>" value="<%=query.getId()%>" />
+                        <input type="hidden" id="<%=Encode.forHtmlAttribute(query.getId())%>" name="<%=Encode.forHtmlAttribute(query.getId())%>" value="<%=Encode.forHtmlAttribute(query.getId())%>" />
                         <td>
-                            <a class="icon-link" style="background-image:url(../admin/images/edit.gif);" href="addQuery.jsp?queryId=<%=query.getId()%>"><fmt:message key="edit.query" /></a>
-                            <a class="icon-link" style="background-image:url(../admin/images/delete.gif);" onclick="deleteQuery(document.getElementById('<%=query.getId()%>').value);" href="#"><fmt:message key="delete.query" /></a>
+                            <a class="icon-link" style="background-image:url(../admin/images/edit.gif);" href="addQuery.jsp?queryId=<%=Encode.forHtmlAttribute(query.getId())%>"><fmt:message key="edit.query" /></a>
+                            <a class="icon-link" style="background-image:url(../admin/images/delete.gif);" onclick="deleteQuery(document.getElementById('<%=Encode.forHtmlAttribute(query.getId())%>').value);" href="#"><fmt:message key="delete.query" /></a>
                         </td>
                     </tr>
 

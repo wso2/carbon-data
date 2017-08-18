@@ -21,6 +21,7 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.Iterator" %>
 <%@ page import="java.net.URLEncoder" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <jsp:include page="../dialog/display_messages.jsp"/>
 
 <fmt:bundle basename="org.wso2.carbon.dataservices.ui.i18n.Resources">
@@ -69,16 +70,16 @@
                                 resourceMethod =  resource.getMethod();
                 %>
             <tr>
-                <td><%=path%></td>
-				<td><%=query%></td>
+                <td><%=Encode.forHtmlContent(path)%></td>
+				<td><%=Encode.forHtmlContent(query)%></td>
                 <input type="hidden" value="<%=resourceMethod%>" id="<%=resourceMethod%>" name="<%=resourceMethod%>" />
-                <input type="hidden" value="<%=path%>" id="<%=path%>" name="<%=path%>" />
+                <input type="hidden" value="<%=Encode.forHtmlAttribute(path)%>" id="<%=Encode.forHtmlAttribute(path)%>" name="<%=Encode.forHtmlAttribute(path)%>" />
                 <td>
                     <%
                         String editURI = "addResource.jsp?action=edit&resourcePath="+ URLEncoder.encode(resource.getPath(),"UTF-8")+"&resourceMethod="+resource.getMethod()+"&disableStreaming="+disableStreaming;
                     %>                    
                     <a class="icon-link" style="background-image:url(../admin/images/edit.gif);" href="<%=editURI%>"><fmt:message key="edit.resource" /></a>
-					<a class="icon-link" style="background-image:url(../admin/images/delete.gif);" onclick="deleteResources(document.getElementById('<%=path%>').value, document.getElementById('<%=resourceMethod%>').value);" href="#"><fmt:message key="delete.resource" /></a>
+					<a class="icon-link" style="background-image:url(../admin/images/delete.gif);" onclick="deleteResources(document.getElementById('<%=Encode.forHtmlAttribute(path)%>').value, document.getElementById('<%=resourceMethod%>').value);" href="#"><fmt:message key="delete.resource" /></a>
 				</td>
             </tr>
              <%

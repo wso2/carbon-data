@@ -253,13 +253,13 @@
                                                         Query query = (Query) iterator.next();
                                                         if (selectedQueryId != null && selectedQueryId.trim().equals(query.getId())) {
                                             %>
-                                            <option value="<%=query.getId()%>"
-                                                    selected="selected"><%=query.getId()%>
+                                            <option value="<%=Encode.forHtmlAttribute(query.getId())%>"
+                                                    selected="selected"><%=Encode.forHtmlContent(query.getId())%>
                                             </option>
                                             <%
                                             } else {
                                             %>
-                                            <option value="<%=query.getId()%>"><%=query.getId()%>
+                                            <option value="<%=Encode.forHtmlAttribute(query.getId())%>"><%=Encode.forHtmlContent(query.getId())%>
                                             </option>
                                             <%
                                                         }
@@ -333,7 +333,7 @@
                                     <td colspan="3">
                                         <a class="icon-link"
                                            style="background-image:url(../admin/images/add.gif);"
-                                           href='addOperation.jsp?param=qparam&operationName=<%=Encode.forHtmlAttribute(operationName)%>&operationDesc=<%=Encode.forHtmlAttribute(operationDesc) %>&action=<%=action%>&selectedQueryId=<%=selectedQueryId%>' >Add Query Params as Operation Params</a>
+                                           href='addOperation.jsp?param=qparam&operationName=<%=Encode.forHtmlAttribute(operationName)%>&operationDesc=<%=Encode.forHtmlAttribute(operationDesc) %>&action=<%=action%>&selectedQueryId=<%=Encode.forHtmlAttribute(selectedQueryId)%>' >Add Query Params as Operation Params</a>
                                     </td>
                                 </tr>
                                 <%
@@ -342,7 +342,7 @@
                                     <td colspan="3">
                                         <a class="icon-link"
                                            style="background-image:url(../admin/images/add.gif);"
-                                           href='addOperationParameter.jsp?operationName=<%=Encode.forHtmlAttribute(operationName)%>&action=<%=action%>&queryId=<%=selectedQueryId%>' ><fmt:message
+                                           href='addOperationParameter.jsp?operationName=<%=Encode.forHtmlAttribute(operationName)%>&action=<%=action%>&queryId=<%=Encode.forHtmlAttribute(selectedQueryId)%>' ><fmt:message
                                                 key="add.new.operation.parameter"/></a>
                                     </td>
                                 </tr>

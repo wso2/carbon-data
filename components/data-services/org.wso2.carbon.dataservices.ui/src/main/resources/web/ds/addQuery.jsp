@@ -26,6 +26,8 @@
 <%@page import="org.apache.axis2.context.ConfigurationContext"%>
 <%@ page import="org.wso2.carbon.CarbonConstants" %>
 <%@ page import="org.wso2.carbon.utils.ServerConstants" %>
+<%@ page import="org.wso2.carbon.ui.util.CharacterEncoder" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.wso2.carbon.dataservices.ui.DataServiceAdminClient" %>
 <fmt:bundle basename="org.wso2.carbon.dataservices.ui.i18n.Resources">
 <script type="text/javascript" src="../ajax/js/prototype.js"></script>
@@ -140,7 +142,7 @@ window.onload=function() {
 //        returnGeneratedKeys = Boolean.parseBoolean(enableReturnGeneratedKeys);
 //    }
     try {
-        queryId = request.getParameter("queryId");
+        queryId = CharacterEncoder.getSafeText(request.getParameter("queryId"));
         if (queryId != null) {
             readOnly = true;
             query = dataService.getQuery(queryId);

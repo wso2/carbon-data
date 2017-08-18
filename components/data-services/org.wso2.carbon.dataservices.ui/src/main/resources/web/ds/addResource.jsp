@@ -220,13 +220,13 @@
                                                         Query query = (Query) iterator.next();
                                                         if (selectedQueryId != null && selectedQueryId.trim().equals(query.getId())) {
                                             %>
-                                            <option value="<%=query.getId()%>"
-                                                    selected="selected"><%=query.getId()%>
+                                            <option value="<%=Encode.forHtmlAttribute(query.getId())%>"
+                                                    selected="selected"><%=Encode.forHtmlContent(query.getId())%>
                                             </option>
                                             <%
                                             } else {
                                             %>
-                                            <option value="<%=query.getId()%>"><%=query.getId()%>
+                                            <option value="<%=Encode.forHtmlAttribute(query.getId())%>"><%=Encode.forHtmlContent(query.getId())%>
                                             </option>
                                             <%
                                                         }

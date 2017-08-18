@@ -39,6 +39,15 @@
    
     Query query;
     if (queryId != null) {
+        // backend validation for sql query
+        if(sql != null) {
+            // check for </textarea>, ignoring cases
+            if (sql.toLowerCase().contains("</textarea>")) {
+                sql = "";
+                String message = "Invalid Query";
+                CarbonUIMessage.sendCarbonUIMessage(message, CarbonUIMessage.ERROR, request);
+            }
+        }
     	query = dataService.getQuery(queryId);
     	if (query != null) {
            List<SQLDialect> sqlDialects = query.getSqlDialects();

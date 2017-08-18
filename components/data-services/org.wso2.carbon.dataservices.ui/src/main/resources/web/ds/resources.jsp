@@ -71,7 +71,7 @@
                 %>
             <tr>
                 <td><%=Encode.forHtmlContent(path)%></td>
-				<td><%=query%></td>
+				<td><%=Encode.forHtmlContent(query)%></td>
                 <input type="hidden" value="<%=resourceMethod%>" id="<%=resourceMethod%>" name="<%=resourceMethod%>" />
                 <input type="hidden" value="<%=Encode.forHtmlAttribute(path)%>" id="<%=Encode.forHtmlAttribute(path)%>" name="<%=Encode.forHtmlAttribute(path)%>" />
                 <td>

@@ -26,6 +26,7 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.Iterator" %>
 <%@ page import="java.util.List" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <jsp:include page="../dialog/display_messages.jsp"/>
 <fmt:bundle basename="org.wso2.carbon.dataservices.ui.i18n.Resources">
 <carbon:breadcrumb 
@@ -108,9 +109,9 @@
                 <input type="hidden" id="<%=operation.getName()%>" name="<%=operation.getName()%>" value="<%=operation.getName()%>" />
                 <td><%=operation.getName()%></td>
                 <%if(operation.getCallQuery() == null) { %>
-                	<td><%=queryList%></td>
+                	<td><%=Encode.forHtmlContent(queryList)%></td>
                 <%} else { %>
-                	<td><%=operation.getCallQuery().getHref()%></td>
+                	<td><%=Encode.forHtmlContent(operation.getCallQuery().getHref())%></td>
                 <%} %>
                 <td>
                    <%

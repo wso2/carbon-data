@@ -113,6 +113,32 @@
     }*/
     
     if (queryId != null) {
+        // backend validation for queries
+        if(sql != null && sql.toLowerCase().contains("</textarea>")) {
+           sql = "";
+           String message = "Invalid Query";
+           CarbonUIMessage.sendCarbonUIMessage(message, CarbonUIMessage.ERROR, request);
+           forwardTo = "addQuery.jsp";
+           flag = "error";
+        } else if(sparql != null && sparql.toLowerCase().contains("</textarea>")) {
+           sparql = "";
+           String message = "Invalid Query";
+           CarbonUIMessage.sendCarbonUIMessage(message, CarbonUIMessage.ERROR, request);
+           forwardTo = "addQuery.jsp";
+           flag = "error";
+        } else if(cassandraExpression != null && cassandraExpression.toLowerCase().contains("</textarea>")) {
+            cassandraExpression = "";
+            String message = "Invalid Query";
+            CarbonUIMessage.sendCarbonUIMessage(message, CarbonUIMessage.ERROR, request);
+            forwardTo = "addQuery.jsp";
+            flag = "error";
+        } else if(mongoExpression != null && mongoExpression.toLowerCase().contains("</textarea>")) {
+            mongoExpression = "";
+            String message = "Invalid Query";
+            CarbonUIMessage.sendCarbonUIMessage(message, CarbonUIMessage.ERROR, request);
+            forwardTo = "addQuery.jsp";
+            flag = "error";
+        }
         query = dataService.getQuery(queryId);
         //if have existing queries
         if (query != null) {

@@ -22,10 +22,10 @@ function validateServiceDetailsForm(){
         CARBON.showWarningDialog("Data Service Name is mandatory");
         return false;
     }
-    var  regex = /[~!@#$%^&*()\\\/+=\:;<>'"?[\]{}|\s,]/;
+    var  regex = /[~!@#$%^&*()+=\:;<>'"?[\]{}|\s,]/;
     // Check for invalid characters
     if (regex.test(serviceName)) {
-        CARBON.showWarningDialog("Alphanumeric characters and underscores are only allowed in the data service name");
+        CARBON.showWarningDialog("Only alphanumeric characters and underscores are allowed in the data service name");
         return false;
     }
     //Check for available dataservices

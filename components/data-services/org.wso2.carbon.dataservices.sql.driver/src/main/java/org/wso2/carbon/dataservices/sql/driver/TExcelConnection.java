@@ -79,6 +79,8 @@ public class TExcelConnection extends TConnection {
             throw new SQLException("Error occurred while initializing the EXCEL datasource", e);
         } catch (InterruptedException e) {
             throw new SQLException("Error Acquiring the lock for the workbook path - " + filePath, e);
+        } finally {
+            releaseLock();
         }
         return workbook;
     }

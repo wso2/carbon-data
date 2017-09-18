@@ -82,6 +82,9 @@ public class TExcelConnection extends TConnection {
         } catch (InterruptedException e) {
             releaseLock();
             throw new SQLException("Error Acquiring the lock for the workbook path - " + filePath, e);
+        } catch (SQLException e) {
+            releaseLock();
+            throw e;
         }
         return workbook;
     }

@@ -73,12 +73,18 @@ public class TExcelConnection extends TConnection {
             InputStream fin = TDriverUtil.getInputStreamFromPath(filePath);
             workbook = WorkbookFactory.create(fin);
         } catch (FileNotFoundException e) {
+            releaseLock();
             throw new SQLException("Could not locate the EXCEL datasource in the provided " +
                                    "location", e);
         } catch (IOException | InvalidFormatException e) {
+            releaseLock();
             throw new SQLException("Error occurred while initializing the EXCEL datasource", e);
         } catch (InterruptedException e) {
+            releaseLock();
             throw new SQLException("Error Acquiring the lock for the workbook path - " + filePath, e);
+        } catch (SQLException e) {
+            releaseLock();
+            throw e;
         }
         return workbook;
     }

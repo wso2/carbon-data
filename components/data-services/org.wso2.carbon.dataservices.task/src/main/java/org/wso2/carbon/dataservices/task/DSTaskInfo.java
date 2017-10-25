@@ -33,7 +33,7 @@ public class DSTaskInfo {
 	
 	private int taskCount;
 	
-	private int taskInterval;
+	private long taskInterval;
 	
 	private String cronExpression;
 	
@@ -78,11 +78,11 @@ public class DSTaskInfo {
 		this.taskCount = taskCount;
 	}
 
-	public int getTaskInterval() {
+	public long getTaskInterval() {
 		return taskInterval;
 	}
 
-	public void setTaskInterval(int taskInterval) {
+	public void setTaskInterval(long taskInterval) {
 		this.taskInterval = taskInterval;
 	}
 

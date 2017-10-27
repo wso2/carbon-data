@@ -102,6 +102,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Queue;
 import java.util.Set;
 import java.util.UUID;
@@ -197,6 +198,66 @@ public class DBUtils {
     /** pre-fetch the XMLInputFactory */
     static {
         xmlInputFactory = XMLInputFactory.newInstance();
+        Map props = loadFactoryProperties("XMLInputFactory.properties");
+        if (props != null) {
+            for (Object o : props.entrySet()) {
+                Map.Entry entry = (Map.Entry) o;
+                xmlInputFactory.setProperty((String) entry.getKey(), entry.getValue());
+            }
+        }
+    }
+
+    /**
+     * This method load factory properties from the file.
+     * @param name the name of the file.
+     * @return Map of properties.
+     */
+    private static Map loadFactoryProperties(String name) {
+        ClassLoader classLoader = DBUtils.class.getClassLoader();
+        InputStream in = classLoader.getResourceAsStream(name);
+        if (in == null) {
+            return null;
+        } else {
+            try {
+                Properties rawProps = new Properties();
+                Map props = new HashMap();
+                rawProps.load(in);
+                for (Map.Entry<Object, Object> objectObjectEntry : rawProps.entrySet()) {
+                    Map.Entry entry = (Map.Entry) objectObjectEntry;
+                    String strValue = (String) entry.getValue();
+                    Object value;
+                    switch (strValue) {
+                        case "true":
+                            value = Boolean.TRUE;
+                            break;
+                        case "false":
+                            value = Boolean.FALSE;
+                            break;
+                        default:
+                            try {
+                                value = Integer.valueOf(strValue);
+                            } catch (NumberFormatException ex) {
+                                value = strValue;
+                            }
+                            break;
+                    }
+                    props.put(entry.getKey(), value);
+                }
+                if (log.isDebugEnabled()) {
+                    log.debug("Loaded factory properties from " + name + ": " + props);
+                }
+                return props;
+            } catch (IOException e) {
+                log.error("Failed to read from: " + name, e);
+                return null;
+            } finally {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    log.error("Failed to close the input stream of: " + name, e);
+                }
+            }
+        }
     }
 
     private static OMFactory omFactory;

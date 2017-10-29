@@ -30,7 +30,7 @@
 <jsp:include page="../dialog/display_messages.jsp"/>
 <fmt:bundle basename="org.wso2.carbon.dataservices.ui.i18n.Resources">
 <carbon:breadcrumb 
-		label="Operations"
+		label="SOAP Operations"
 		resourceBundle="org.wso2.carbon.dataservices.ui.i18n.Resources"
 		topPage="false" 
 		request="<%=request%>" />

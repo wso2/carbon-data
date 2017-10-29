@@ -26,7 +26,7 @@
 
 <fmt:bundle basename="org.wso2.carbon.dataservices.ui.i18n.Resources">
 <carbon:breadcrumb 
-		label="Resources"
+		label="REST Resources"
 		resourceBundle="org.wso2.carbon.dataservices.ui.i18n.Resources"
 		topPage="false" 
 		request="<%=request%>" />

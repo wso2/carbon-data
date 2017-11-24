@@ -136,8 +136,7 @@ public class Param extends DataServiceConfigurationElement {
 		this(name, paramType, sqlType, type, "0", defaultValue, null, validators);
 	}
 
-
-	public Param(){
+    public Param() {
         this.validators = new ArrayList<Validator>();
     }
 

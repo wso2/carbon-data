@@ -868,15 +868,15 @@ public class DBDeployer extends AbstractDeployer {
 					interfaceName);
 
 			/* REST processing - adding DS resources to AxisService */
-			Set<ResourceID> resourceIds = dataService.getResourceIds();
+            Set<ResourceID> resourceIds = dataService.getResourceIds();
             Set<ResourceID> sortedResourceIds = new TreeSet<>(resourceIds).descendingSet();
-			for (ResourceID resourceId : sortedResourceIds) {
-				Resource resource = dataService.getResource(resourceId);
-				AxisOperation axisOperation = createAxisOperationFromDSResource(
-						resource, soap11Binding, soap12Binding, httpBinding);
-				axisService.addOperation(axisOperation);
-				axisConfig.getPhasesInfo().setOperationPhases(axisOperation);
-			}
+            for (ResourceID resourceId : sortedResourceIds) {
+                Resource resource = dataService.getResource(resourceId);
+                AxisOperation axisOperation = createAxisOperationFromDSResource(resource, soap11Binding, soap12Binding,
+                        httpBinding);
+                axisService.addOperation(axisOperation);
+                axisConfig.getPhasesInfo().setOperationPhases(axisOperation);
+            }
 
 			/* add operations */
 			Iterator<String> opPathItr = dataService.getOperationNames()

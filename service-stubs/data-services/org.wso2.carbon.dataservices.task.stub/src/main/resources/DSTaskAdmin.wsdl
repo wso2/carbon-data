@@ -12,7 +12,7 @@
                     <xs:element minOccurs="0" name="serviceName" nillable="true" type="xs:string" />
                     <xs:element minOccurs="0" name="startTime" nillable="true" type="xs:dateTime" />
                     <xs:element minOccurs="0" name="taskCount" type="xs:int" />
-                    <xs:element minOccurs="0" name="taskInterval" type="xs:int" />
+                    <xs:element minOccurs="0" name="taskInterval" type="xs:long" />
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>

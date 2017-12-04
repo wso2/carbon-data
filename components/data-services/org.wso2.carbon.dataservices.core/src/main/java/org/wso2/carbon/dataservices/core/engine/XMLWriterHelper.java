@@ -117,9 +117,7 @@ public class XMLWriterHelper {
         }
 		if (value.getArrayValue() == null && value.getScalarValue() == null &&
                 value.getUdt() == null) {
-			xmlWriter.writeNamespace(DBConstants.XSI_PREFIX, DBConstants.XSI_NAMESPACE);
-			xmlWriter.writeAttribute(DBConstants.XSI_PREFIX, 
-					DBConstants.XSI_NAMESPACE, "nil", "true");
+			return;
 		} else {
             if (value.getValueType() == ParamValue.PARAM_VALUE_ARRAY) {
                 for (ParamValue val : value.getArrayValue()) {
@@ -129,6 +127,7 @@ public class XMLWriterHelper {
                 xmlWriter.writeCharacters(value.toString());
             }
 		}
+		
 	}
 	
 	public void writeResultElement(XMLStreamWriter xmlWriter, String name, ParamValue value,

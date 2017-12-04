@@ -1046,7 +1046,7 @@ public class QueryFactory {
 			if (el.getQName().equals(elQName) && isElementGroup(el)) {
                 elGroup.addOutputElementGroupEntry(createOutputElementGroup(dataService, el,
                         namespace, parentResult, ++level, targetOptionalOverride, isCaseSensitive));
-			} else if (el.getQName().equals(elQName)) {
+			} else if (el.getQName().equals(elQName) ) {
 				elGroup.addElementEntry(createStaticOutputElement(dataService, el, namespace,
                         resultType, targetOptionalOverride, isCaseSensitive));
 			} else if (el.getQName().equals(attrQName)) {
@@ -1296,11 +1296,19 @@ public class QueryFactory {
 		}
 		
 		optionalOverride |= optional;
+		String printOnceStr = el.getAttributeValue(new QName("printOnce"));
+		boolean printOnce = false;
+		if (printOnceStr != null) {
+			printOnce = Boolean.parseBoolean(printOnceStr);
+		}
 		
 		StaticOutputElement soel = new StaticOutputElement(dataService, name, param, 
 				originalParam, paramType, elementType, namespace, 
-				xsdType, requiredRoles, dataCategory, resultType, export, exportType, arrayName);
+				xsdType, requiredRoles, dataCategory, resultType, export, exportType, arrayName,printOnce);
 		soel.setOptionalOverride(optionalOverride);
+		
+		
+		
 		return soel;
 	}
 	

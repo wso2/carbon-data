@@ -229,6 +229,7 @@
              <xs:attribute name="xsdType" type="xs:string" use="optional"/>
              <xs:attribute name="requiredRoles" type="xs:string" use="optional"/>
              <xs:attribute name="export" type="xs:string" use="optional"/>
+             <xs:attribute name="printOnce" type="xs:boolean" use="optional"/>
           </xs:complexType>
      </xs:element>
 

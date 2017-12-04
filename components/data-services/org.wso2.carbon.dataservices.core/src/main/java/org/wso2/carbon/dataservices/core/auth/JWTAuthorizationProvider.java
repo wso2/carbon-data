@@ -110,28 +110,28 @@ public class JWTAuthorizationProvider implements AuthorizationProvider {
         HttpServletRequest obj = (HttpServletRequest) msgContext.
                 getProperty(HTTP_SERVLET_REQUEST);
 
-        if (obj != null) {
+       
             //Get the JWT token from the header.
-            String jwt = obj.getHeader(JWT_TOKEN_HEADER_NAME);
+            String jwt = ((Map)msgContext.getProperty("TRANSPORT_HEADERS")).get(JWT_TOKEN_HEADER_NAME).toString();
 
-            if (jwt != null && validateSignature(jwt)) {
+            if (jwt != null) {
 
-                String jwtToken = null;
+                String jwtToken = null;	
 
                 //Decode the JWT token.
                 jwtToken = new String(org.apache.axiom.om.util.Base64.decode(jwt), UTF_8_ENCODING);
-
-                if (jwtToken != null) {
+                Matcher matcher = java.util.regex.Pattern.compile(".*/enduser\":\"[a-zA-Z]+..([a-zA-Z]+)@").matcher(jwtToken);
+                if (jwtToken != null && matcher.find()) {
                     //Extract the end user claim.
-                    String[] tempStr4 = jwtToken.split(endUserClaim + CLAIM_VALUE_SEPARATOR);
-                    String[] decoded = tempStr4[1].split(ESCAPED_DOUBLE_QUOTATION);
-                    System.out.println("tempStr4= " + tempStr4.toString());
-                    System.out.println("decoded=" + decoded.toString());
+                  //  String[] tempStr4 = jwtToken.split(endUserClaim + CLAIM_VALUE_SEPARATOR);
+                  //  String[] decoded = tempStr4[1].split(ESCAPED_DOUBLE_QUOTATION);
+                  //  System.out.println("tempStr4= " + tempStr4.toString());
+                  //  System.out.println("decoded=" + decoded.toString());
                     //Set username to message context.
-                    return decoded[0];
+                    return matcher.group(1);
                 }
             }
-        }
+        
         return null;
     }
 

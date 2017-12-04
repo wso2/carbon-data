@@ -18,11 +18,19 @@
  */
 package org.wso2.carbon.dataservices.core.engine;
 
-import org.wso2.carbon.dataservices.core.DataServiceFault;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.WeakHashMap;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-import java.util.*;
+
+import org.wso2.carbon.dataservices.core.DataServiceFault;
 
 /**
  * Represents a multilevel <element/> element.
@@ -53,6 +61,9 @@ public class OutputElementGroup extends OutputElement {
 
     private ThreadLocal<List<OutputElement>> roleAllElements =
             new ThreadLocal<List<OutputElement>>();
+    
+    private ThreadLocal<WeakValueHashMap<OutputElement,XMLStreamWriter>> writenMap =
+            new ThreadLocal<WeakValueHashMap<OutputElement,XMLStreamWriter>>();
 
     public OutputElementGroup(String name, String namespace, Set<String> requiredRoles, 
     		String arrayName) {
@@ -62,6 +73,7 @@ public class OutputElementGroup extends OutputElement {
         this.callQueryEntries = new ArrayList<CallQuery>();
         this.elementGroupEntries = new ArrayList<OutputElementGroup>();
         this.attributeEntries = new ArrayList<StaticOutputElement>();
+        
     }
 
     public void init() throws DataServiceFault {
@@ -71,6 +83,7 @@ public class OutputElementGroup extends OutputElement {
         for (OutputElementGroup groups : this.getOutputElementGroupEntries()) {
             groups.init();
         }
+        
     }
 
     public Result getParentResult() {
@@ -85,7 +98,12 @@ public class OutputElementGroup extends OutputElement {
     public void executeElement(XMLStreamWriter xmlWriter, ExternalParamCollection params,
                                   int queryLevel, boolean escapeNonPrintableChar) throws DataServiceFault {
         try {
-            /* increment query level */
+            
+        	if (writenMap.get()==null){
+        		writenMap.set(new WeakValueHashMap<OutputElement,XMLStreamWriter>());
+        	}
+        	
+        	/* increment query level */
             queryLevel++;
             /* start writing element group */
             if (this.getName() != null) {
@@ -103,7 +121,14 @@ public class OutputElementGroup extends OutputElement {
                 if (oe instanceof OutputElementGroup) {
                     ((OutputElementGroup) oe).applyUserRoles(oe.getRequiredRoles());
                 }
-                oe.execute(xmlWriter, params, queryLevel, this.getParentResult().isEscapeNonPrintableChar());
+                if (writenMap.get().get(oe)!=xmlWriter){
+                	oe.execute(xmlWriter, params, queryLevel, this.getParentResult().isEscapeNonPrintableChar());
+                }
+                if (oe instanceof StaticOutputElement) {
+                    if (((StaticOutputElement) oe).isPrintOnce()){
+                    	writenMap.get().put(oe,xmlWriter);
+                    }
+                }
             }
             /* end element-group element */
             if (this.getName() != null) {
@@ -113,6 +138,8 @@ public class OutputElementGroup extends OutputElement {
             throw new DataServiceFault(e, "Error in XML generation at OutputElementGroup.execute");
         }
     }
+    
+  
 
     /**
      * This populated the thread local variables that, track the allowed
@@ -210,6 +237,30 @@ public class OutputElementGroup extends OutputElement {
 
     public List<OutputElement> getAllElementsForCurrentRole() {
         return roleAllElements.get();
+    }
+    
+    
+    private class WeakValueHashMap<K,V> {
+        private HashMap<K,WeakReference<V>> mDatabase=new HashMap<K, WeakReference<V>>();
+        public V get(K key) {
+            WeakReference<V> weakRef=mDatabase.get(key);
+            if (weakRef==null) return null;
+            V result=weakRef.get();
+            if (result==null) {
+                // edge case where the key exists but the object has been garbage collected
+                // we remove the key from the table, because tables are slower the more
+                // keys they have (@kisp's comment)
+                mDatabase.remove(key);
+            }
+            return result;
+        }
+        public void put(K key, V value) {
+            mDatabase.put(key, new WeakReference<V>(value));
+        }
+        
+        public Boolean constainsKey(K key){
+        	return mDatabase.containsKey(key);
+        }
     }
 
 }

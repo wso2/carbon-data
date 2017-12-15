@@ -790,6 +790,10 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
                 rs = stmt.executeQuery();
             }
             return new QueryResultInfo(stmt, rs);
+        } catch (NumberFormatException e) {
+            isError = true;
+            throw new DataServiceFault(e, FaultCodes.INCOMPATIBLE_PARAMETERS_ERROR,
+                    "Error in 'SQLQuery.processPreNormalQuery': " + e.getMessage());
         } catch (Throwable e) {
             isError = true;
             throw new DataServiceFault(e, FaultCodes.DATABASE_ERROR,
@@ -945,6 +949,10 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
                 }
             }
             return new QueryResultInfo(stmt, rs);
+        } catch (NumberFormatException e) {
+            isError = true;
+            throw new DataServiceFault(e, FaultCodes.INCOMPATIBLE_PARAMETERS_ERROR,
+                    "Error in 'SQLQuery.processStoredProcQuery': " + e.getMessage());
         } catch (Exception e) {
             isError = true;
             throw new DataServiceFault(e, FaultCodes.DATABASE_ERROR,

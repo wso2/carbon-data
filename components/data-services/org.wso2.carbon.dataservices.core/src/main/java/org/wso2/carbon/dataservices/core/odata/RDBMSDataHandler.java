@@ -89,6 +89,7 @@ public class RDBMSDataHandler implements ODataDataHandler {
 
     public static final String TABLE_NAME = "TABLE_NAME";
     public static final String TABLE = "TABLE";
+    public static final String VIEW = "VIEW";
     public static final String ORACLE_SERVER = "oracle";
     public static final String MSSQL_SERVER = "microsoft sql server";
 
@@ -1100,11 +1101,11 @@ public class RDBMSDataHandler implements ODataDataHandler {
             connection = initializeConnection();
             DatabaseMetaData meta = connection.getMetaData();
             if (meta.getDatabaseProductName().toLowerCase().contains(ORACLE_SERVER)) {
-                rs = meta.getTables(null, meta.getUserName(), null, new String[] { TABLE });
+                rs = meta.getTables(null, meta.getUserName(), null, new String[] { TABLE, VIEW });
             } else if (meta.getDatabaseProductName().toLowerCase().contains(MSSQL_SERVER)) {
-                rs = meta.getTables(null, "dbo", null, new String[] { TABLE });
+                rs = meta.getTables(null, "dbo", null, new String[] { TABLE, VIEW });
             } else {
-                rs = meta.getTables(null, null, null, new String[] { TABLE });
+                rs = meta.getTables(null, null, null, new String[] { TABLE, VIEW });
             }
             while (rs.next()) {
                 String tableName = rs.getString(TABLE_NAME);

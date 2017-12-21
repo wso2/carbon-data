@@ -393,7 +393,7 @@ public final class DBConstants {
         public static final String DYNAMIC_USER_AUTH_CLASS = "dynamicUserAuthClass";
         public static final String DYNAMIC_USER_AUTH_MAPPING = "dynamicUserAuthMapping";
         public static final String USERNAME_WILDCARD = "*";
-        public static final String DSS_TIMERZONE= "dss.timezone";
+        public static final String DSS_TIMERZONE = "dss.timezone";
         public static final String DSS_LEGACY_TIMEZONE_MODE = "dss.legacy.timezone.mode";
         public static final String TIMEZONE_UTC = "UTC";
     }

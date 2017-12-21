@@ -1647,6 +1647,8 @@ public class ODataAdapter implements ServiceHandler {
                     property.setType(EdmPrimitiveTypeKind.DateTimeOffset.getFullQualifiedName());
                     property.setNullable(column.isNullable());
                     property.setMaxLength(column.getMaxLength());
+		    // Setting as 9 to support nano second representations from certain databases.
+                    property.setPrecision(9);
                     break;
                 case GUID:
                     property.setType(EdmPrimitiveTypeKind.Guid.getFullQualifiedName());

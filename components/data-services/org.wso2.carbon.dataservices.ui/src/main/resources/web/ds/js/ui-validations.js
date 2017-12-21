@@ -22,10 +22,10 @@ function validateServiceDetailsForm(){
         CARBON.showWarningDialog("Data Service Name is mandatory");
         return false;
     }
-    var  reWhiteSpace = new RegExp("^[a-zA-Z0-9_]+$?//");
-    // Check for white space
-    if (!reWhiteSpace.test(serviceName)) {
-        CARBON.showWarningDialog("Alphanumeric characters and underscores are only allowed in the data service name");
+    var  regex = /[~!@#$%^&*()+=\:;<>'"?[\]{}|\s,]/;
+    // Check for invalid characters
+    if (regex.test(serviceName)) {
+        CARBON.showWarningDialog("Only alphanumeric characters and underscores are allowed in the data service name");
         return false;
     }
     //Check for available dataservices
@@ -112,13 +112,14 @@ function validateSQLDialectForm(){
 	var sqlDialect = document.getElementById('txSQLDialect').value;
 	var sql = document.getElementById('txtSQL').value;
 	if (sqlDialect == '') {
-		  CARBON.showWarningDialog("Specify Supported Driver names");
-	      return false;
-	}
-	if (sql == '' || trim(sql) == '') {
-		  CARBON.showWarningDialog("Specify SQL query");
-	      return false;
-	}
+	    CARBON.showWarningDialog("Specify Supported Driver names");
+	    return false;
+	} if (sql == '' || trim(sql) == '') {
+	    CARBON.showWarningDialog("Specify SQL query");
+	    return false;
+	} else {
+        return validateQuery(sql);
+    }
 	return true;
 }
 
@@ -367,30 +368,42 @@ function validateAddQueryFormSave(obj) {
     }
 
     if(document.getElementById('RDFRow').style.display == '') {
-        if(document.getElementById('sparql').value == '') {
+        var value = document.getElementById('sparql').value;
+        if(value == '') {
             CARBON.showWarningDialog('Sparql is mandatory');
             return false;
+        } else {
+            return validateQuery(value);
         }
     }
 
     if(document.getElementById('RDBMSnJNDIRow').style.display == ''){
-        if(document.getElementById('sql').value == ''){
-        CARBON.showWarningDialog('SQL is mandatory');
-        return false;
+        var value = document.getElementById('sql').value;
+        if(value == '') {
+            CARBON.showWarningDialog('SQL is mandatory');
+            return false;
+        } else {
+            return validateQuery(value);
         }
     }
 
     if (document.getElementById('CASSANDRARow').style.display == '') {
-        if (document.getElementById('cassandraExpression').value == '') {
+        var value = document.getElementById('cassandraExpression').value;
+        if (value == '') {
             CARBON.showWarningDialog('Expression is mandatory');
             return false;
+        } else {
+            return validateQuery(value);
         }
     }
 
     if (document.getElementById('MongoDBQueryRow').style.display == '') {
-        if (document.getElementById('mongoExpression').value == '') {
+        var value = document.getElementById('mongoExpression').value;
+        if (value == '') {
             CARBON.showWarningDialog('Expression is mandatory');
             return false;
+        } else {
+            return validateQuery(value);
         }
     }
 
@@ -1331,15 +1344,21 @@ function arrayNameVisibilityOnChange(obj, document) {
 function changeDataSourceType (obj, document) {
 	var selectedType =  obj[obj.selectedIndex].value;
 	var selectedDS = document.getElementById('datasourceId').value;
+	var reWhiteSpace = new RegExp("^[a-zA-Z0-9_]+$");
 	if (selectedDS == ''){
         CARBON.showWarningDialog('Insert datasource id');
         obj.selectedIndex = 0;
         return false;
-	} else {
+	}
+	// Validate for alphanumeric characters and underscores
+    if (!reWhiteSpace.test(selectedDS)) {
+       CARBON.showWarningDialog("Alphanumeric characters and underscores are only allowed in the Datasource Id");
+       obj.selectedIndex = 0;
+       return false;
+    }
+	else {
 		location.href = 'addDataSource.jsp?selectedType='+selectedType+'&configId='+selectedDS+'&ds=edit&flag=edit_changed';
 	}
-
-
 }
 
 function changeXADataSourceEngine (obj, document) {
@@ -2290,4 +2309,13 @@ function addValidatorsForSparqlInput() {
     extractDataSourceProps(document);
     var str = document.getElementById('dsValidatorProperties').value;
     document.getElementById('sparqlInputMappings').action = 'sparqlInputMappingProcessor.jsp?flag=validate&dsValidatorProperties=' + str;
+}
+
+function validateQuery(value) {
+    var regex = /<\/textarea>/i;
+    if (regex.test(value)) {
+        CARBON.showWarningDialog("Invalid Query");
+        return false;
+    }
+    return true;
 }

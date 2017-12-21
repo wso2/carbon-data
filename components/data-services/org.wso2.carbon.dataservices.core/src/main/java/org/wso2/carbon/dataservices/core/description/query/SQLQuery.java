@@ -209,16 +209,14 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
          * This default time zone can be set via -Ddss.timezone=
          */
         String userTimeZone = System.getProperty(RDBMS.DSS_TIMERZONE);
-        if(userTimeZone == null || userTimeZone.isEmpty()) {
+        if (userTimeZone == null || userTimeZone.isEmpty()) {
             userTimeZone = RDBMS.TIMEZONE_UTC;
         }
         calendar = Calendar.getInstance(TimeZone.getTimeZone(userTimeZone));
-
         String legacyTimezoneMode = System.getProperty(RDBMS.DSS_LEGACY_TIMEZONE_MODE);
-        if("true".equalsIgnoreCase(legacyTimezoneMode)) {
+        if ("true".equalsIgnoreCase(legacyTimezoneMode)) {
             this.timeConvertEnabled = false;
         }
-
         /*
          * first a result should be available and then check the other necessary
          * conditions
@@ -792,6 +790,10 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
                 rs = stmt.executeQuery();
             }
             return new QueryResultInfo(stmt, rs);
+        } catch (NumberFormatException e) {
+            isError = true;
+            throw new DataServiceFault(e, FaultCodes.INCOMPATIBLE_PARAMETERS_ERROR,
+                    "Error in 'SQLQuery.processPreNormalQuery': " + e.getMessage());
         } catch (Throwable e) {
             isError = true;
             throw new DataServiceFault(e, FaultCodes.DATABASE_ERROR,
@@ -947,6 +949,10 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
                 }
             }
             return new QueryResultInfo(stmt, rs);
+        } catch (NumberFormatException e) {
+            isError = true;
+            throw new DataServiceFault(e, FaultCodes.INCOMPATIBLE_PARAMETERS_ERROR,
+                    "Error in 'SQLQuery.processStoredProcQuery': " + e.getMessage());
         } catch (Exception e) {
             isError = true;
             throw new DataServiceFault(e, FaultCodes.DATABASE_ERROR,
@@ -1210,7 +1216,7 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
                 paramValue = new ParamValue(value);
                 break;
             case Types.TIMESTAMP:
-                if(timeConvertEnabled) {
+                if (timeConvertEnabled) {
                     sqlTimestamp = rs.getTimestamp(i, calendar);
                 } else {
                     sqlTimestamp = rs.getTimestamp(i);
@@ -1735,7 +1741,7 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
                 if (value == null) {
                     sqlQuery.setNull(i + 1, java.sql.Types.TIMESTAMP);
                 } else {
-                    if(timeConvertEnabled) {
+                    if (timeConvertEnabled) {
                         sqlQuery.setTimestamp(i + 1, timestamp, calendar);
                     } else {
                         sqlQuery.setTimestamp(i + 1, timestamp);
@@ -1745,7 +1751,7 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
                 if (value == null) {
                     ((CallableStatement) sqlQuery).setNull(i + 1, java.sql.Types.TIMESTAMP);
                 } else {
-                    if(timeConvertEnabled) {
+                    if (timeConvertEnabled) {
                         ((CallableStatement) sqlQuery).setTimestamp(i + 1, timestamp, calendar);
                     } else {
                         ((CallableStatement) sqlQuery).setTimestamp(i + 1, timestamp);
@@ -1756,7 +1762,7 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
             if (value == null) {
                 ((CallableStatement) sqlQuery).setNull(i + 1, java.sql.Types.TIMESTAMP);
             } else {
-                if(timeConvertEnabled) {
+                if (timeConvertEnabled) {
                     ((CallableStatement) sqlQuery).setTimestamp(i + 1, timestamp, calendar);
                 } else {
                     ((CallableStatement) sqlQuery).setTimestamp(i + 1, timestamp);
@@ -2117,7 +2123,7 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
                 return new ParamValue(elementValue == null ? null
                         : ConverterUtil.convertToString((Date) elementValue));
             } else if (type.equals(DBConstants.DataTypes.TIMESTAMP)) {
-                if(timeConvertEnabled) {
+                if (timeConvertEnabled) {
                     elementValue = cs.getTimestamp(ordinal, calendar);
                 } else {
                     elementValue = cs.getTimestamp(ordinal);

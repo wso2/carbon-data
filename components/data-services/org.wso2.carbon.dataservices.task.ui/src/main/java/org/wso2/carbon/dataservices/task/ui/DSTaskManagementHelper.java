@@ -68,7 +68,7 @@ public class DSTaskManagementHelper {
 		String interval = request.getParameter("triggerInterval");
 		if (interval != null && !"".equals(interval)) {
 			try {
-				dsTaskInfo.setTaskInterval(Integer.parseInt(interval.trim()));
+				dsTaskInfo.setTaskInterval(Long.parseLong(interval.trim()));
 			} catch (NumberFormatException e) {
 				handleException("Invalid value for interval (Expected type is integer) : "
 						+ interval);

@@ -10,7 +10,7 @@
     <groupId>org.wso2.carbon.data</groupId>
     <artifactId>carbon-data</artifactId>
     <packaging>pom</packaging>
-    <version>4.4.15-SNAPSHOT</version>
+    <version>4.4.31-SNAPSHOT</version>
     <name>WSO2 Carbon - Data repo Aggregator Pom</name>
     <url>http://wso2.org</url>
 
@@ -1157,11 +1157,11 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <dataservices.version>4.4.15-SNAPSHOT</dataservices.version>
+        <dataservices.version>4.4.31-SNAPSHOT</dataservices.version>
         <dataservices.imp.pkg.version>[4.3.0,5.0.0)</dataservices.imp.pkg.version>
         <dataservices.package.export.version>4.3.1</dataservices.package.export.version>
 
-        <carbon.kernel.version>4.4.9</carbon.kernel.version>
+        <carbon.kernel.version>4.4.18</carbon.kernel.version>
         <carbon.kernel.feature.imp.version>4.4.0</carbon.kernel.feature.imp.version>
         <carbon.kernel.imp.pkg.version>[4.4.0,5.0.0)</carbon.kernel.imp.pkg.version>
 
@@ -1275,8 +1275,8 @@
 
         <carbon.p2.plugin.version>1.5.5</carbon.p2.plugin.version>
 
-        <carbon-commons.version>4.5.4</carbon-commons.version>
-        <carbon-commons.feature.imp.version>4.5.0</carbon-commons.feature.imp.version>
+        <carbon-commons.version>4.6.8</carbon-commons.version>
+        <carbon-commons.feature.imp.version>4.6.0</carbon-commons.feature.imp.version>
         <carbon-commons.imp.pkg.version>[4.5.0,5.0.0)</carbon-commons.imp.pkg.version>
         <carbon-commons.user.mgt.imp.pkg.version>0.0.0</carbon-commons.user.mgt.imp.pkg.version> <!-- todo remove this and use identity.imp.pkg.version - rajith (temparory done)-->
 

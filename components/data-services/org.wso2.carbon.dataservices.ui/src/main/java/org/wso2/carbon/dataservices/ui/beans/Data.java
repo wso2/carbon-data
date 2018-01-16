@@ -488,7 +488,8 @@ public class Data extends DataServiceConfigurationElement{
                 } else {
                 	property.setName(name.getAttributeValue());
                 	if (name.getAttributeValue().equals(DBConstants.RDBMS.PASSWORD) || 
-                			name.getAttributeValue().equals(DBConstants.JNDI.PASSWORD) || 
+                			name.getAttributeValue().equals(DBConstants.JNDI.PASSWORD) ||
+                			name.getAttributeValue().equals(DBConstants.RDBMS_OLD.PASSWORD) ||
                 			name.getAttributeValue().equals(DBConstants.GSpread.PASSWORD)) {
                 		OMAttribute secretAlias = propertyEle.getAttribute(new QName(DBConstants.SECUREVAULT_NAMESPACE,"secretAlias"));
                     	if(secretAlias != null) {

@@ -1132,7 +1132,11 @@ public class RDBMSDataHandler implements ODataDataHandler {
         ResultSet resultSet = null;
         List<String> keys = new ArrayList<>();
         try {
-            resultSet = metaData.getPrimaryKeys(catalog, null, tableName);
+            if (metaData.getDatabaseProductName().toLowerCase().contains(ORACLE_SERVER)) {
+                resultSet = metaData.getPrimaryKeys(catalog, metaData.getUserName(), tableName);
+            } else {
+                resultSet = metaData.getPrimaryKeys(catalog, null, tableName);
+            }
             while (resultSet.next()) {
                 String primaryKey = resultSet.getString("COLUMN_NAME");
                 keys.add(primaryKey);

@@ -362,7 +362,16 @@ public class CassandraConfig extends Config {
 
     @Override
     public ODataDataHandler createODataHandler() throws ODataServiceFault {
-        return new CassandraDataHandler(getConfigId(), getSession(), getProperty(DBConstants.Cassandra.KEYSPACE));
+        /*
+        In OData Cassandra Data handler we need the Keyspace to determine the Meta data of column families (tables),
+        Therefore Keyspace is essential for creating OData Cassandra services.
+        */
+        String keySpace = getProperty(DBConstants.Cassandra.KEYSPACE);
+        if (keySpace != null) {
+            return new CassandraDataHandler(getConfigId(), getSession(), keySpace);
+        } else {
+            throw new ODataServiceFault("Please specify the Cassandra keyspace.");
+        }
     }
 
     @Override

@@ -19,11 +19,14 @@
 package org.wso2.carbon.dataservices.core.auth;
 
 import java.io.ByteArrayInputStream;
+import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
 
 import org.wso2.carbon.dataservices.common.conf.DynamicAuthConfiguration;
 import org.wso2.carbon.dataservices.common.conf.DynamicAuthConfiguration.Entry;
@@ -39,9 +42,12 @@ public class ConfigurationBasedAuthenticator implements DynamicUserAuthenticator
 	public ConfigurationBasedAuthenticator(String xmlConfig) throws DataServiceFault {
 		try {
 			JAXBContext ctx = JAXBContext.newInstance(DynamicAuthConfiguration.class);
+			XMLInputFactory inputFactory = XMLInputFactory.newInstance();
+			inputFactory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+			inputFactory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+			XMLStreamReader xmlReader = inputFactory.createXMLStreamReader(new StringReader(xmlConfig));
 			Unmarshaller unmarshaller = ctx.createUnmarshaller();
-			DynamicAuthConfiguration conf = (DynamicAuthConfiguration) unmarshaller.unmarshal(
-					new ByteArrayInputStream(xmlConfig.getBytes()));
+			DynamicAuthConfiguration conf = (DynamicAuthConfiguration) unmarshaller.unmarshal(xmlReader);
 			if (conf == null) {
 				throw new DataServiceFault("Invalid configuration section " +
 						"for dynamic auth configuration:- \n" + xmlConfig);

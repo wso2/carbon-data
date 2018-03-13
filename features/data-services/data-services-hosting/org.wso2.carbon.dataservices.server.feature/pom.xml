@@ -70,19 +70,19 @@
             <artifactId>mongo-java-driver</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.orbit.org.jongo.wso2</groupId>
+            <groupId>org.jongo</groupId>
             <artifactId>jongo</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.orbit.com.fasterxml.jackson.core</groupId>
+            <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.orbit.com.fasterxml.jackson.core</groupId>
+            <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.orbit.com.fasterxml.jackson.core</groupId>
+            <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>
         <dependency>
@@ -312,10 +312,10 @@
                                 <bundleDef>com.google.gdata.wso2:gdata-spreadsheet</bundleDef>
                                 <bundleDef>com.google.guava:guava</bundleDef>
                                 <bundleDef>org.mongodb:mongo-java-driver</bundleDef>
-                                <bundleDef>org.wso2.orbit.org.jongo.wso2:jongo</bundleDef>
-                                <bundleDef>org.wso2.orbit.com.fasterxml.jackson.core:jackson-core</bundleDef>
-                                <bundleDef>org.wso2.orbit.com.fasterxml.jackson.core:jackson-databind</bundleDef>
-                                <bundleDef>org.wso2.orbit.com.fasterxml.jackson.core:jackson-annotations</bundleDef>
+                                <bundleDef>org.jongo:jongo</bundleDef>
+                                <bundleDef>com.fasterxml.jackson.core:jackson-core</bundleDef>
+                                <bundleDef>com.fasterxml.jackson.core:jackson-databind</bundleDef>
+                                <bundleDef>com.fasterxml.jackson.core:jackson-annotations</bundleDef>
                                 <bundleDef>de.undercouch:bson4jackson</bundleDef>
                                 <bundleDef>com.datastax.cassandra:cassandra-driver-core</bundleDef>
                                 <bundleDef>org.apache.poi.wso2:poi</bundleDef>

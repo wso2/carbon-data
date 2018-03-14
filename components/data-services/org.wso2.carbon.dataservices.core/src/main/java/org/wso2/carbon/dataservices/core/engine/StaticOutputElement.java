@@ -19,6 +19,7 @@
 package org.wso2.carbon.dataservices.core.engine;
 
 import org.apache.axis2.databinding.types.NCName;
+import org.apache.axis2.databinding.utils.ConverterUtil;
 import org.wso2.carbon.dataservices.common.DBConstants;
 import org.wso2.carbon.dataservices.common.DBConstants.DBSFields;
 import org.wso2.carbon.dataservices.common.DBConstants.FaultCodes;
@@ -26,14 +27,20 @@ import org.wso2.carbon.dataservices.core.DBUtils;
 import org.wso2.carbon.dataservices.core.DSSessionManager;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
 import org.wso2.carbon.dataservices.core.boxcarring.TLParamStore;
+import org.wso2.carbon.dataservices.core.description.query.SQLQuery;
 import org.wso2.carbon.dataservices.core.dispatch.DispatchStatus;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+import java.io.InputStream;
 import java.sql.Array;
+import java.sql.Blob;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Struct;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Set;
 
@@ -356,7 +363,29 @@ public class StaticOutputElement extends OutputElement {
                     throw new DataServiceFault(e, "Unable to process the SQL Array");
                 }
             } else {
-                value = new ParamValue(String.valueOf(tmpVal));
+                try {
+                    if (tmpVal == null) {
+                        value = new ParamValue((String) null);
+                    } else if (tmpVal instanceof Timestamp) {
+                        Timestamp timestamp = (Timestamp) tmpVal;
+                        value = new ParamValue(SQLQuery.convertToTimestampString(timestamp));
+                    } else if (tmpVal instanceof Blob) {
+                        value = new ParamValue(SQLQuery.getBase64StringFromInputStream(((Blob) tmpVal).getBinaryStream()));
+                    } else if (tmpVal instanceof Time) {
+                        Time time = (Time) tmpVal;
+                        value = new ParamValue(SQLQuery.convertToTimeString(time));
+                    } else if (tmpVal instanceof Date) {
+                        Date date = (Date) tmpVal;
+                        value = new ParamValue(ConverterUtil.convertToString(date));
+                    } else if (tmpVal instanceof InputStream) {
+                        InputStream inputStream = (InputStream) tmpVal;
+                        value = new ParamValue(SQLQuery.getBase64StringFromInputStream(inputStream));
+                    } else {
+                        value = new ParamValue(String.valueOf(tmpVal));
+                    }
+                } catch (SQLException e) {
+                    throw new DataServiceFault(e, "Unable to process the SQL UDT attribute value");
+                }
             }
         } else if (DBUtils.isSQLArray(value)) {
             ParamValue processedParamValue = new ParamValue(ParamValue.PARAM_VALUE_ARRAY);

@@ -383,7 +383,7 @@
             <dependency>
                 <groupId>io.dropwizard.metrics</groupId>
                 <artifactId>metrics-core</artifactId>
-                <version>3.1.0</version>
+                <version>3.1.2</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.poi.wso2</groupId>
@@ -1161,8 +1161,8 @@
         <dataservices.imp.pkg.version>[4.3.0,5.0.0)</dataservices.imp.pkg.version>
         <dataservices.package.export.version>4.3.1</dataservices.package.export.version>
 
-        <carbon.kernel.version>4.4.24</carbon.kernel.version>
-        <carbon.kernel.feature.imp.version>4.4.24</carbon.kernel.feature.imp.version>
+        <carbon.kernel.version>4.4.26</carbon.kernel.version>
+        <carbon.kernel.feature.imp.version>4.4.26</carbon.kernel.feature.imp.version>
         <carbon.kernel.imp.pkg.version>[4.4.0,5.0.0)</carbon.kernel.imp.pkg.version>
 
         <carbon.registry.imp.pkg.version>0.0.0</carbon.registry.imp.pkg.version> <!-- todo remove this and use {carbon.kernel.imp.pkg.version} after registry bundles are corrected to export correct versions-->
@@ -1237,14 +1237,14 @@
         <fasterxml.jackson.databind.version>2.6.1.wso2v3</fasterxml.jackson.databind.version>
         <bson4jackson.orbit.version>2.5.0</bson4jackson.orbit.version>
 
-        <slf4j.version>1.7.2</slf4j.version>
+        <slf4j.version>1.7.21</slf4j.version>
         <cassandra-driver-core.orbit.version>3.0.2</cassandra-driver-core.orbit.version>
         <cassandra-driver-core.orbit.imp.pkg.version>[3.0.2,3.1.0)</cassandra-driver-core.orbit.imp.pkg.version>
         <mongo-java-driver.imp.pkg.version>[3.4.0,)</mongo-java-driver.imp.pkg.version>
 		<mongo.driver.version>3.4.1</mongo.driver.version>
         <cassandra-driver-core.version>3.0.2</cassandra-driver-core.version>
         <cassandra-driver-core.imp.pkg.version>[3.0.2,3.1.0)</cassandra-driver-core.imp.pkg.version>
-        <netty.version>4.0.33.Final</netty.version>
+        <netty.version>4.0.39.Final</netty.version>
         <netty.imp.pkg.version>[4.0.33.Final,4.1.0)</netty.imp.pkg.version>
 
         <snappy-java.orbit.version>1.1.1.6.wso2v1</snappy-java.orbit.version>
@@ -1260,13 +1260,13 @@
         <zookeeper.orbit.version>3.4.5.wso2v1</zookeeper.orbit.version>
         <htrace.version>3.0.4.wso2v1</htrace.version>
         <apache.htrace.version>3.1.0-incubating.wso2v1</apache.htrace.version>
-        <google.protobuf.version>2.5.0</google.protobuf.version>
+        <google.protobuf.version>2.6.1</google.protobuf.version>
         <protobuf.fragment.version>2.5.0.wso2v1</protobuf.fragment.version>
         <xerces.version>2.11.0</xerces.version>
         <commons.codec.import.version>[1.4, 1.5)</commons.codec.import.version>
         <org.htrace.import.version>[3.0.4, 3.1.0)</org.htrace.import.version>
         <htrace.import.version>[3.1.0-incubating, 3.2.0)</htrace.import.version>
-        <protobuf.import.version>[2.5.0, 2.6.0)</protobuf.import.version>
+        <protobuf.import.version>[2.5.0, 2.7.0)</protobuf.import.version>
         <guava.import.version>[19.0, 20.0)</guava.import.version>
         <zookeeper.import.version>[3.4.5, 3.5.0)</zookeeper.import.version>
 
@@ -1275,12 +1275,12 @@
 
         <carbon.p2.plugin.version>1.5.5</carbon.p2.plugin.version>
 
-        <carbon-commons.version>4.6.19</carbon-commons.version>
+        <carbon-commons.version>4.6.21</carbon-commons.version>
         <carbon-commons.feature.imp.version>4.6.19</carbon-commons.feature.imp.version>
         <carbon-commons.imp.pkg.version>[4.5.0,5.0.0)</carbon-commons.imp.pkg.version>
         <carbon-commons.user.mgt.imp.pkg.version>0.0.0</carbon-commons.user.mgt.imp.pkg.version> <!-- todo remove this and use identity.imp.pkg.version - rajith (temparory done)-->
 
-        <json.orbit.version>1.0.0.wso2v1</json.orbit.version>
+        <json.orbit.version>3.0.0.wso2v1</json.orbit.version>
         <json.orbit.imp.pkg.version>0.0.0</json.orbit.imp.pkg.version> <!-- This comes from carbon-multitenancy, tenant.common.server feature -->
 
         <carbon-identity.framework.version>5.11.112</carbon-identity.framework.version>

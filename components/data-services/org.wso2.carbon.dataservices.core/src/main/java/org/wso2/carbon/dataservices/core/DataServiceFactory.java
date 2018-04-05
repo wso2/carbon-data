@@ -29,6 +29,7 @@ import org.wso2.carbon.dataservices.core.description.event.EventTriggerFactory;
 import org.wso2.carbon.dataservices.core.description.operation.Operation;
 import org.wso2.carbon.dataservices.core.description.operation.OperationFactory;
 import org.wso2.carbon.dataservices.core.description.query.QueryFactory;
+import org.wso2.carbon.dataservices.core.description.query.SQLQuery;
 import org.wso2.carbon.dataservices.core.description.resource.Resource;
 import org.wso2.carbon.dataservices.core.description.resource.Resource.ResourceID;
 import org.wso2.carbon.dataservices.core.description.resource.ResourceFactory;
@@ -287,7 +288,11 @@ public class DataServiceFactory {
         if (request.getCallQuery().getWithParams().size() == 0) {
             return false;
         }
-        return !request.getCallQuery().getQuery().hasResult();
+        boolean isReturnGeneratedKeys = false;
+        if (request.getCallQuery().getQuery() instanceof SQLQuery) {
+            isReturnGeneratedKeys = ((SQLQuery) request.getCallQuery().getQuery()).isReturnGeneratedKeys();
+        }
+        return !request.getCallQuery().getQuery().hasResult() || isReturnGeneratedKeys;
     }
 
 }

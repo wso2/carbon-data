@@ -95,16 +95,20 @@ public class BatchDataServiceRequest extends DataServiceRequest {
 			/* set the batch request count in TL */
 			DispatchStatus.setBatchRequestCount(count);
 			/* dispatch individual requests */
+			OMElement result = null;
 			for (int i = 0; i < count; i++) {
 				/* set the current batch request number in TL */
 			    DispatchStatus.setBatchRequestNumber(i);
 				/* execute/enqueue request */
-				requests.get(i).dispatch();
+				OMElement element = requests.get(i).dispatch();
+				if (element != null && element.getFirstOMChild() != null) {
+					result = element;
+				}
 			}
 			/* signal that there aren't any errors */
 			error = false;
 			/* no result in batch requests */
-			return null;
+			return result;
 		} finally {
 		    /* finalize transactions */
             this.finalizeTx(error);

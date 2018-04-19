@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
  ~ Copyright (c) 2009-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  ~
  ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,16 +12,13 @@
  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  ~ See the License for the specific language governing permissions and
  ~ limitations under the License.
--->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
+--><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>org.wso2.carbon.data</groupId>
         <artifactId>data-services</artifactId>
         <version>4.4.49-SNAPSHOT</version>
-	    <relativePath>../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
-
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.dataservices.core</artifactId>
     <!--<version>4.3.0-SNAPSHOT</version>-->
@@ -30,7 +26,6 @@
     <name>WSO2 Carbon - Data Services Core</name>
     <url>http://wso2.org</url>
     <description>WSO2 Data Services Core Bundle</description>
-
     <dependencies>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
@@ -39,7 +34,7 @@
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.core.services</artifactId>
-       </dependency>
+        </dependency>
         <dependency>
             <groupId>org.wso2.orbit.org.jongo.wso2</groupId>
             <artifactId>jongo</artifactId>
@@ -68,9 +63,10 @@
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.ndatasource.rdbms</artifactId>
         </dependency>
-        <!--<dependency>--><!--todo test and remove later - rajith-->
-            <!--<groupId>au.com.bytecode.opencsv</groupId>-->
-            <!--<artifactId>opencsv</artifactId>-->
+        <!--<dependency>-->
+        <!--todo test and remove later - rajith-->
+        <!--<groupId>au.com.bytecode.opencsv</groupId>-->
+        <!--<artifactId>opencsv</artifactId>-->
         <!--</dependency>-->
         <dependency>
             <groupId>au.com.bytecode.opencsv.wso2</groupId>
@@ -157,14 +153,14 @@
             <artifactId>jboss-transaction-api_1.1_spec</artifactId>
         </dependency>
         <!--<dependency>-->
-            <!--<groupId>ojdbc</groupId>-->
-            <!--<artifactId>ojdbc6</artifactId>-->
-            <!--<scope>test</scope>-->
-            <!--<systemPath>${basedir}/src/test/resources/lib/ojdbc6.jar</systemPath>-->
+        <!--<groupId>ojdbc</groupId>-->
+        <!--<artifactId>ojdbc6</artifactId>-->
+        <!--<scope>test</scope>-->
+        <!--<systemPath>${basedir}/src/test/resources/lib/ojdbc6.jar</systemPath>-->
         <!--</dependency>-->
         <!--<dependency>-->
-            <!--<groupId>org.apache.poi.wso2</groupId>-->
-            <!--<artifactId>poi-scratchpad</artifactId>-->
+        <!--<groupId>org.apache.poi.wso2</groupId>-->
+        <!--<artifactId>poi-scratchpad</artifactId>-->
         <!--</dependency>-->
         <dependency>
             <groupId>org.mongodb</groupId>
@@ -207,10 +203,10 @@
             <artifactId>junit</artifactId>
         </dependency>
         <!--<dependency>-->
-            <!--<groupId>com.google.api-client</groupId>-->
-            <!--<artifactId>google-api-client</artifactId>-->
-            <!--&lt;!&ndash;<version>1.18.0-rc</version>&ndash;&gt;-->
-            <!--<version>1.20.0</version>-->
+        <!--<groupId>com.google.api-client</groupId>-->
+        <!--<artifactId>google-api-client</artifactId>-->
+        <!--&lt;!&ndash;<version>1.18.0-rc</version>&ndash;&gt;-->
+        <!--<version>1.20.0</version>-->
         <!--</dependency>-->
         <dependency>
             <groupId>org.wso2.orbit.com.google.api-client</groupId>
@@ -225,14 +221,12 @@
             <artifactId>json</artifactId>
         </dependency>
     </dependencies>
-
     <build>
         <plugins>
-           <!-- <plugin>
+            <!-- <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-scr-plugin</artifactId>
             </plugin> -->
-
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <!--<version>2.2</version>-->
@@ -249,6 +243,7 @@
                         <exclude>**/MySQLTestSuite.java</exclude>
                         <exclude>**/OracleTestSuite.java</exclude>
                     </excludes>
+                    <argLine>${argLine}</argLine>
                 </configuration>
             </plugin>
             <plugin>
@@ -371,9 +366,7 @@
                             org.apache.olingo.server.core.requests;version="${olingo.orbit.imp.pkg.version}",
                             org.apache.olingo.server.core.responses;version="${olingo.orbit.imp.pkg.version}",
                             org.apache.olingo.server.core.uri.parser;version="${olingo.orbit.imp.pkg.version}"
-                            <!--javax.transaction todo need to check this and add if needed. this needs jboss transactions, but for now it's not included in the server-->
-                            <!--org.apache.axis2.*; version="${apache.axis2.orbit.imp.pkg.version}"-->
-                        </Import-Package>
+                            <!--javax.transaction todo need to check this and add if needed. this needs jboss transactions, but for now it's not included in the server--><!--org.apache.axis2.*; version="${apache.axis2.orbit.imp.pkg.version}"--></Import-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>
                         <Axis2Deployer>DataServicesDeployer</Axis2Deployer>
                         <Axis2RequiredServices>
@@ -383,12 +376,10 @@
                     </instructions>
                 </configuration>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-scr-plugin</artifactId>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
@@ -401,15 +392,15 @@
                                 <echo>######################################</echo>
                                 <echo>Creating Repository for Data Services</echo>
                                 <echo>######################################</echo>
-                                <mkdir dir="${basedir}/target/repository" />
-                                <mkdir dir="${basedir}/target/repository/dataservices" />
-                                <mkdir dir="${basedir}/target/repository/services" />
-                                <mkdir dir="${basedir}/target/repository/modules" />
-                                <mkdir dir="${basedir}/target/repository/database" />
-                                <property name="test_dbs_files_dir" value="${basedir}/src/test/resources/test-dbs" />
+                                <mkdir dir="${basedir}/target/repository"/>
+                                <mkdir dir="${basedir}/target/repository/dataservices"/>
+                                <mkdir dir="${basedir}/target/repository/services"/>
+                                <mkdir dir="${basedir}/target/repository/modules"/>
+                                <mkdir dir="${basedir}/target/repository/database"/>
+                                <property name="test_dbs_files_dir" value="${basedir}/src/test/resources/test-dbs"/>
                                 <copy todir="${basedir}/target/repository/dataservices">
                                     <fileset dir="${test_dbs_files_dir}">
-                                        <include name="**/*.dbs" />
+                                        <include name="**/*.dbs"/>
                                     </fileset>
                                 </copy>
                             </tasks>
@@ -426,11 +417,11 @@
                                 <echo>######################################</echo>
                                 <echo>Coping carbon.xml</echo>
                                 <echo>######################################</echo>
-                                <mkdir dir="${basedir}/target/carbonHome" />
-                                <mkdir dir="${basedir}/target/carbonHome/repository" />
-                                <mkdir dir="${basedir}/target/carbonHome/repository/conf" />
-                                <copy file="${basedir}/src/test/resources/carbon.xml" tofile="${basedir}/target/carbonHome/repository/conf/carbon.xml" />
-                                <copy file="${basedir}/src/test/resources/dataServices.xml" tofile="${basedir}/target/carbonHome/repository/conf/dataServices.xml" />
+                                <mkdir dir="${basedir}/target/carbonHome"/>
+                                <mkdir dir="${basedir}/target/carbonHome/repository"/>
+                                <mkdir dir="${basedir}/target/carbonHome/repository/conf"/>
+                                <copy file="${basedir}/src/test/resources/carbon.xml" tofile="${basedir}/target/carbonHome/repository/conf/carbon.xml"/>
+                                <copy file="${basedir}/src/test/resources/dataServices.xml" tofile="${basedir}/target/carbonHome/repository/conf/dataServices.xml"/>
                             </tasks>
                         </configuration>
                         <goals>
@@ -439,7 +430,10 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+            </plugin>
         </plugins>
     </build>
-
 </project>

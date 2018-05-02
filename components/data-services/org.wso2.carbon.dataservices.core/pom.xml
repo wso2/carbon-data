@@ -239,7 +239,7 @@
                 <inherited>true</inherited>
                 <configuration>
                     <forkMode>pertest</forkMode>
-                    <argLine>-enableassertions</argLine>
+                    <argLine>@{argLine} -enableassertions</argLine>
                     <testFailureIgnore>false</testFailureIgnore>
                     <skip>false</skip>
                     <includes>
@@ -250,6 +250,10 @@
                         <exclude>**/OracleTestSuite.java</exclude>
                     </excludes>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
             </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>

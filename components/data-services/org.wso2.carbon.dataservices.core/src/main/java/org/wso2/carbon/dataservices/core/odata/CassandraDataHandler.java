@@ -133,8 +133,8 @@ public class CassandraDataHandler implements ODataDataHandler {
         List<String> pKeys = this.primaryKeys.get(tableName);
         String query = createReadSqlWithKeys(tableName, keys);
         List<Object> values = new ArrayList<>();
-        for (String column : keys.getNames()) {
-            if (this.tableMetaData.get(tableName).keySet().contains(column) && pKeys.contains(column)) {
+        for (String column : this.tableMetaData.get(tableName).keySet()) {
+            if (keys.getNames().contains(column) && pKeys.contains(column)) {
                 bindParams(column, keys.getValue(column), values, cassandraTableMetaData);
             }
         }
@@ -198,8 +198,8 @@ public class CassandraDataHandler implements ODataDataHandler {
         List<String> pKeys = this.primaryKeys.get(tableName);
         String query = createDeleteCQL(tableName);
         List<Object> values = new ArrayList<>();
-        for (String column : entity.getNames()) {
-            if (pKeys.contains(column)) {
+        for (String column : pKeys) {
+            if (entity.getNames().contains(column)) {
                 bindParams(column, entity.getValue(column), values, cassandraTableMetaData);
             }
         }

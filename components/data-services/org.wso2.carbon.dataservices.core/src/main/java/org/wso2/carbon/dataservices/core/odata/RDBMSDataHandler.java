@@ -785,8 +785,8 @@ public class RDBMSDataHandler implements ODataDataHandler {
             String query = createDeleteSQL(tableName);
             statement = connection.prepareStatement(query);
             int index = 1;
-            for (String column : this.rdbmsDataTypes.get(tableName).keySet()) {
-                if (pKeys.contains(column)) {
+            for (String column : pKeys) {
+                if (this.rdbmsDataTypes.get(tableName).keySet().contains(column)) {
                     value = entry.getValue(column);
                     bindValuesToPreparedStatement(this.rdbmsDataTypes.get(tableName).get(column), value, index,
                                                   statement);

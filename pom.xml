@@ -978,6 +978,32 @@
         </plugins>
         <pluginManagement>
             <plugins>
+	        <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${jacoco.maven.plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>default-prepare-agent-by-coverage-enforcer</id>
+                            <goals>
+                                <goal>prepare-agent</goal>
+                            </goals>
+                            <configuration>
+                                <propertyName>argLine</propertyName>
+                                <destFile>${project.build.directory}/jacoco.exec</destFile>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>default-report-by-coverage-enforcer</id>
+                            <goals>
+                                <goal>report</goal>
+                            </goals>
+                            <configuration>
+                                <dataFile>${project.build.directory}/jacoco.exec</dataFile>
+                            </configuration>
+                        </execution>
+                     </executions>
+                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
@@ -1276,6 +1302,7 @@
         <protobuf.import.version>[2.5.0, 2.7.0)</protobuf.import.version>
         <guava.import.version>[19.0, 20.0)</guava.import.version>
         <zookeeper.import.version>[3.4.5, 3.5.0)</zookeeper.import.version>
+        <jacoco.maven.plugin.version>0.8.0</jacoco.maven.plugin.version>
 
         <hbase.shaded.client.version>1.2.1.wso2v2</hbase.shaded.client.version>
         <hbase-client.orbit.imp.pkg.version>[1.2.1, 2.0)</hbase-client.orbit.imp.pkg.version>

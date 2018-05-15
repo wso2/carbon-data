@@ -1103,7 +1103,7 @@ public class RDBMSDataHandler implements ODataDataHandler {
             if (meta.getDatabaseProductName().toLowerCase().contains(ORACLE_SERVER)) {
                 rs = meta.getTables(null, meta.getUserName(), null, new String[] { TABLE, VIEW });
             } else if (meta.getDatabaseProductName().toLowerCase().contains(MSSQL_SERVER)) {
-                rs = meta.getTables(null, "dbo", null, new String[] { TABLE, VIEW });
+                rs = meta.getTables(null, connection.getSchema(), null, new String[] { TABLE, VIEW });
             } else {
                 rs = meta.getTables(null, null, null, new String[] { TABLE, VIEW });
             }

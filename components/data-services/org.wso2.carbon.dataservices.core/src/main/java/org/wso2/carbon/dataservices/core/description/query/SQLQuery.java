@@ -1326,19 +1326,19 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
         }
     }
 
-    private String convertToTimeString(Time sqlTime) {
+    public static String convertToTimeString(Time sqlTime) {
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(sqlTime.getTime());
         return new org.apache.axis2.databinding.types.Time(cal).toString();
     }
 
-    private String convertToTimestampString(Timestamp sqlTimestamp) {
+    public static String convertToTimestampString(Timestamp sqlTimestamp) {
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(sqlTimestamp.getTime());
         return ConverterUtil.convertToString(cal);
     }
 
-    private String getBase64StringFromInputStream(InputStream in) throws SQLException {
+    public static String getBase64StringFromInputStream(InputStream in) throws SQLException {
         ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
         String strData;
         try {

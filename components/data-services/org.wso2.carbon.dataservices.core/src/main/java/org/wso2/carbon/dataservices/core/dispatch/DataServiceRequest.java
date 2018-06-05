@@ -92,8 +92,10 @@ public abstract class DataServiceRequest {
 		OMElement inputMessage = msgContext.getEnvelope().getBody().getFirstElement();
 		/* get operation/request name */
 		String requestName = axisOp.getName().getLocalPart();
-		if (inputMessage != null && !requestName.equals(inputMessage.getLocalName())) {
-			throw new DataServiceFault("Input Message and " + requestName + " Axis Operation didn't match.");
+		if (Boolean.parseBoolean(System.getProperty("dss.force.xml.validation"))) {
+			if (inputMessage != null && !requestName.equals(inputMessage.getLocalName())) {
+				throw new DataServiceFault("Input Message and " + requestName + " Axis Operation didn't match.");
+			}
 		}
 		/* retrieve the DataService object representing the current data service */
 		DataService dataService = (DataService) axisService.getParameter(

@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.wso2.carbon.data</groupId>
         <artifactId>data-services</artifactId>
-        <version>4.4.43-SNAPSHOT</version>
+        <version>4.4.56-SNAPSHOT</version>
 	    <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -113,12 +113,16 @@
             <artifactId>guava</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.poi.wso2</groupId>
+            <groupId>org.wso2.orbit.org.apache.poi</groupId>
             <artifactId>poi</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.poi.wso2</groupId>
+            <groupId>org.wso2.orbit.org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.data</groupId>
@@ -235,7 +239,7 @@
                 <inherited>true</inherited>
                 <configuration>
                     <forkMode>pertest</forkMode>
-                    <argLine>-enableassertions</argLine>
+                    <argLine>@{argLine} -enableassertions</argLine>
                     <testFailureIgnore>false</testFailureIgnore>
                     <skip>false</skip>
                     <includes>
@@ -246,6 +250,10 @@
                         <exclude>**/OracleTestSuite.java</exclude>
                     </excludes>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
             </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
@@ -317,6 +325,7 @@
                             org.apache.poi.hssf.usermodel;version="${poi.orbit.imp.pkg.version}",
                             org.apache.poi.openxml4j.exceptions;version="${poi-ooxml.orbit.imp.pkg.version}",
                             org.apache.poi.ss.usermodel;version="${poi.orbit.imp.pkg.version}",
+                            org.apache.commons.collections4;version="${commons-collections4.orbit.imp.pkg.version}",
                             org.wso2.carbon.registry.core;version="${carbon.registry.imp.pkg.version}",
                             org.wso2.carbon.registry.core.service;version="${carbon.registry.imp.pkg.version}",
                             org.wso2.carbon.registry.core.exceptions;version="${carbon.registry.imp.pkg.version}",

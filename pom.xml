@@ -1047,7 +1047,7 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
-                    <version>2.5.3</version>  <!-- downgraded to 2.5.3 since 2.5.4 throws exception for SNAPSHOT versions in export packages - rajith -->
+                    <version>2.4.0</version>  <!-- downgraded to 2.5.3 since 2.5.4 throws exception for SNAPSHOT versions in export packages - rajith -->
                     <extensions>true</extensions>
                     <configuration>
                         <obrRepository>NONE</obrRepository>
@@ -1192,8 +1192,8 @@
         <dataservices.imp.pkg.version>[4.3.0,5.0.0)</dataservices.imp.pkg.version>
         <dataservices.package.export.version>4.3.1</dataservices.package.export.version>
 
-        <carbon.kernel.version>4.4.29</carbon.kernel.version>
-        <carbon.kernel.feature.imp.version>4.4.29</carbon.kernel.feature.imp.version>
+        <carbon.kernel.version>4.4.31</carbon.kernel.version>
+        <carbon.kernel.feature.imp.version>4.4.31</carbon.kernel.feature.imp.version>
         <carbon.kernel.imp.pkg.version>[4.4.0,5.0.0)</carbon.kernel.imp.pkg.version>
 
         <carbon.registry.imp.pkg.version>0.0.0</carbon.registry.imp.pkg.version> <!-- todo remove this and use {carbon.kernel.imp.pkg.version} after registry bundles are corrected to export correct versions-->

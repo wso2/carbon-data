@@ -1047,7 +1047,7 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
-                    <version>2.5.3</version>  <!-- downgraded to 2.5.3 since 2.5.4 throws exception for SNAPSHOT versions in export packages - rajith -->
+                    <version>2.4.0</version>  <!-- downgraded to 2.5.3 since 2.5.4 throws exception for SNAPSHOT versions in export packages - rajith -->
                     <extensions>true</extensions>
                     <configuration>
                         <obrRepository>NONE</obrRepository>

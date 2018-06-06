@@ -60,7 +60,7 @@
                         <artifactId>commons-codec</artifactId>
                     </exclusion>
                     <exclusion>
-                        <groupId>commons-codec.wso2</groupId>
+                        <groupId>commons-codec</groupId>
                         <artifactId>commons-codec</artifactId>
                     </exclusion>
                     <exclusion>
@@ -169,7 +169,7 @@
                         <artifactId>commons-codec</artifactId>
                     </exclusion>
                     <exclusion>
-                        <groupId>commons-codec.wso2</groupId>
+                        <groupId>commons-codec</groupId>
                         <artifactId>commons-codec</artifactId>
                     </exclusion>
                     <exclusion>
@@ -201,7 +201,7 @@
                 <version>${carbon-commons.version}</version>
                 <exclusions>
                     <exclusion>
-                        <groupId>commons-codec.wso2</groupId>
+                        <groupId>commons-codec</groupId>
                         <artifactId>commons-codec</artifactId>
                     </exclusion>
                 </exclusions>
@@ -490,7 +490,7 @@
                         <artifactId>geronimo-jta_1.1_spec</artifactId>
                     </exclusion>
                     <exclusion>
-                        <groupId>commons-codec.wso2</groupId>
+                        <groupId>commons-codec</groupId>
                         <artifactId>commons-codec</artifactId>
                     </exclusion>
                 </exclusions>
@@ -813,7 +813,7 @@
                 <version>${commons-io.orbit.version}</version>
             </dependency>
             <dependency>
-                <groupId>commons-codec.wso2</groupId>
+                <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
                 <version>${commons-codec.orbit.version}</version>
             </dependency>
@@ -1333,7 +1333,7 @@
         <commons-io.orbit.version>2.4.0.wso2v1</commons-io.orbit.version>
         <commons-io.orbit.imp.pkg.version>0.0.0</commons-io.orbit.imp.pkg.version> <!-- todo change this once commons-io is corrected to use correct version exports - rajith -->
 
-        <commons-codec.orbit.version>1.4.0.wso2v1</commons-codec.orbit.version>
+        <commons-codec.orbit.version>1.10</commons-codec.orbit.version>
         <commons-codec.orbit.imp.pkg.version>0.0.0</commons-codec.orbit.imp.pkg.version> <!--todo change this to appropriate version range ([1.4.0.wso2v1,1.5.0)) after osgi bundle is corrected - rajith-->
 
 

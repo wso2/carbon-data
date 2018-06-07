@@ -260,12 +260,16 @@ public class ODataAdapter implements ServiceHandler {
                                                                                                 edmNavigationProperty,
                                                                                                 baseURL);
                                 link.setInlineEntitySet(expandEntityCollection);
-                                link.setHref(expandEntityCollection.getId().toASCIIString());
+                                if (expandEntityCollection != null) {
+                                    link.setHref(expandEntityCollection.getId().toASCIIString());
+                                }
                             } else {
                                 Entity expandEntity = getNavigableEntity(serviceMetadata, entityObject,
                                                                          edmNavigationProperty, baseURL);
                                 link.setInlineEntity(expandEntity);
-                                link.setHref(expandEntity.getId().toASCIIString());
+                                if (expandEntity != null) {
+                                    link.setHref(expandEntity.getId().toASCIIString());
+                                }
                             }
                             // set the link containing the expanded data to the current entity.
                             entityObject.getNavigationLinks().add(link);
@@ -1546,22 +1550,22 @@ public class ODataAdapter implements ServiceHandler {
             throws ODataServiceFault, ODataApplicationException {
         EdmEntityType type = metadata.getEdm().getEntityType(new FullQualifiedName(parentEntity.getType()));
         String linkName = navigation.getName();
-        EntityCollection results;
         List<Property> properties = new ArrayList<>();
         Map<String, EdmProperty> propertyMap = new HashMap<>();
         for (NavigationKeys keys : this.dataHandler.getNavigationProperties().get(type.getName())
                                                    .getNavigationKeys(linkName)) {
-            if (parentEntity.getProperty(keys.getPrimaryKey()) != null) {
-                Property property = parentEntity.getProperty(keys.getPrimaryKey());
+            Property property = parentEntity.getProperty(keys.getPrimaryKey());
+            if (property != null && !property.isNull()) {
                 propertyMap.put(keys.getForeignKey(), (EdmProperty) type.getProperty(property.getName()));
                 property.setName(keys.getForeignKey());
                 properties.add(property);
             }
         }
-        results = createEntityCollectionFromDataEntryList(linkName, dataHandler
-                .readTableWithKeys(linkName, wrapPropertiesToDataEntry(type, properties, propertyMap)), url);
-        return results;
-
+        if(!properties.isEmpty()) {
+            return createEntityCollectionFromDataEntryList(linkName, dataHandler
+                    .readTableWithKeys(linkName, wrapPropertiesToDataEntry(type, properties, propertyMap)), url);
+        }
+        return null;
     }
 
     /**
@@ -1586,17 +1590,19 @@ public class ODataAdapter implements ServiceHandler {
         Map<String, EdmProperty> propertyMap = new HashMap<>();
         for (NavigationKeys keys : this.dataHandler.getNavigationProperties().get(linkName)
                                                    .getNavigationKeys(type.getName())) {
-            if (parentEntity.getProperty(keys.getForeignKey()) != null) {
-                Property property = parentEntity.getProperty(keys.getForeignKey());
+            Property property = parentEntity.getProperty(keys.getForeignKey());
+            if (property != null && !property.isNull()) {
                 propertyMap.put(keys.getPrimaryKey(), (EdmProperty) type.getProperty(property.getName()));
                 property.setName(keys.getPrimaryKey());
                 properties.add(property);
             }
         }
-        EntityCollection results;
-        results = createEntityCollectionFromDataEntryList(linkName, dataHandler
-                .readTableWithKeys(linkName, wrapPropertiesToDataEntry(type, properties, propertyMap)), baseUrl);
-        if (!results.getEntities().isEmpty()) {
+        EntityCollection results = null;
+        if (!properties.isEmpty()) {
+            results = createEntityCollectionFromDataEntryList(linkName, dataHandler
+                    .readTableWithKeys(linkName, wrapPropertiesToDataEntry(type, properties, propertyMap)), baseUrl);
+        }
+        if (results != null && !results.getEntities().isEmpty()) {
             return results.getEntities().get(0);
         } else {
             if (log.isDebugEnabled()) {
@@ -1710,7 +1716,7 @@ public class ODataAdapter implements ServiceHandler {
                     property.setType(EdmPrimitiveTypeKind.DateTimeOffset.getFullQualifiedName());
                     property.setNullable(column.isNullable());
                     property.setMaxLength(column.getMaxLength());
-		    // Setting as 9 to support nano second representations from certain databases.
+                    // Setting as 9 to support nano second representations from certain databases.
                     property.setPrecision(9);
                     break;
                 case GUID:

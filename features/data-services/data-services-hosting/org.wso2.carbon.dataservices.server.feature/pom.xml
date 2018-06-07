@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.wso2.carbon.data</groupId>
         <artifactId>data-services-hosting-feature</artifactId>
-        <version>4.4.51-SNAPSHOT</version>
+        <version>4.4.59-SNAPSHOT</version>
 	    <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -349,7 +349,7 @@
                                 <bundleDef>io.netty:netty-common</bundleDef>
                             </bundles>
                             <importFeatures>
-                                <importFeatureDef>org.wso2.carbon.service.mgt.server:${carbon-deployment.feature.imp.version}</importFeatureDef>
+                                <!--<importFeatureDef>org.wso2.carbon.service.mgt.server:${carbon-deployment.feature.imp.version}</importFeatureDef>-->
                                 <importFeatureDef>org.wso2.carbon.event.server:${carbon-commons.feature.imp.version}</importFeatureDef>
                                 <importFeatureDef>org.wso2.carbon.transaction.manager:${carbon-commons.feature.imp.version}</importFeatureDef>
                             </importFeatures>

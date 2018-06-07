@@ -25,6 +25,7 @@
 <%@ page import="org.wso2.carbon.utils.ServerConstants"%>
 <%@ page import="org.apache.axis2.AxisFault"%>
 <%@ page import="org.wso2.carbon.dataservices.ui.DataServiceAdminClient" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <carbon:breadcrumb
         label="datasource.details"
         resourceBundle="org.wso2.carbon.dataservices.ui.i18n.Resources"
@@ -98,9 +99,9 @@
                                     <td><fmt:message key="name.database"/><font color="red">*</font>
                                     </td>
                                     <td><% if(!dbName.equals("")){ %>
-				                        <input type="text" size="35" name="dbName" id="dbName" value="<%=dbName%>" />
+				                        <input type="text" size="35" name="dbName" id="dbName" value="<%=Encode.forHtmlAttribute(dbName)%>" />
 				                        <% }else{ %>
-				                        <input type="text" size="35" name="dbName" id="dbName" value="<%=dbName%>"/>
+				                        <input type="text" size="35" name="dbName" id="dbName" value="<%=Encode.forHtmlAttribute(dbName)%>"/>
 				                        <% } %>
 				        			</td>
                                 </tr>

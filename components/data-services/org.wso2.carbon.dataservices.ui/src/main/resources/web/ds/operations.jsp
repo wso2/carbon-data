@@ -84,7 +84,7 @@
         <%}%>
 		<tbody>
             <tr style="display:none">
-                <td><input type="text" name="serviceName" value="<%=serviceName%>" /> </td>
+                <td><input type="text" name="serviceName" value="<%=Encode.forHtmlAttribute(serviceName)%>" /> </td>
             </tr>
             <%
                 if(hasRecords){

@@ -206,7 +206,8 @@
                 <th colspan="2"><fmt:message key="service.operations"/></th>
             </tr>
             </thead>
-            <form method="post" action="operationProcessor.jsp?action=<%=action%>" name="dataForm"
+            <form method="post" action="operationProcessor.jsp?action=<%=Encode.forHtmlAttribute(action)%>"
+                  name="dataForm"
                   onsubmit="return validateAddOperationForm();">
                 <!--hidden fields -->
                 <input type="hidden" name="oldOperationName" value="<%=Encode.forHtmlAttribute(operationName)%>">

@@ -28,6 +28,7 @@
 <%@ page import="org.wso2.carbon.dataservices.ui.UIutils"%>
 <%@ page import="org.wso2.carbon.dataservices.ui.stub.admin.core.xsd.PaginatedTableInfo" %>
 <%@ page import="org.wso2.carbon.ui.CarbonUIUtil" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <carbon:breadcrumb
         label="schema-list"
         resourceBundle="org.wso2.carbon.dataservices.ui.i18n.Resources"
@@ -221,7 +222,8 @@
 
                     <tr>
                         <td class="buttonRow" colspan="2">
-                            <input class="button" type="button" value="< <fmt:message key="back"/>" onclick="location.href = 'scriptAddSource.jsp?ordinal=0&flag=back&datasource=<%=sourceId%>&dbName=<%=dbName%>' "/>
+                            <input class="button" type="button" value="< <fmt:message key="back"/>"
+                                   onclick="location.href = 'scriptAddSource.jsp?ordinal=0&flag=back&datasource=<%=Encode.forHtmlAttribute(sourceId)%>&dbName=<%=Encode.forHtmlAttribute(dbName)%>' "/>
                             
                          <% if (isBack ){%>
                             <input class="button" type="submit" value="<fmt:message key="next"/> > " onclick = "document.dataForm.action='scriptViewTabList.jsp?ordinal=2&flag=fwd';return validateSchemaTextField('<%=schemaNames%>');" />

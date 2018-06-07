@@ -1220,8 +1220,8 @@
         <derby.orbit.version>10.3.2.1wso2v1</derby.orbit.version>
 
 
-        <olingo.orbit.version>4.3.0.wso2v1</olingo.orbit.version>
-        <olingo.orbit.imp.pkg.version>[4.3,4.4)</olingo.orbit.imp.pkg.version>
+        <olingo.orbit.version>4.4.0.wso2v1</olingo.orbit.version>
+        <olingo.orbit.imp.pkg.version>[4.4,4.5)</olingo.orbit.imp.pkg.version>
 
         <commons.lang3.version>3.4.0.wso2v1</commons.lang3.version>
 

@@ -346,20 +346,23 @@ public class DBDeployer extends AbstractDeployer {
 
 		/* transaction manager looked up and cached for later use, rather than always doing the JNDI lookup */
         this.doExtractTransactionManager();
-        
-        /* data sources component tenant initialized, this is done here as a precaution to
-         * make sure that the tenant's data sources are initialized before the data services
-         * are deployed, this uncertainty comes because we cannot predict the order which
-         * the Axis2ConfigurationContext observers will be called */
-        try {
-			DataSourceManager.getInstance().initTenant(tid);
-		} catch (DataSourceException e) {
-			log.error("Error in intializing Carbon data sources for tenant: " + 
-					tid + " from data services");
-		} catch (NoClassDefFoundError e) {
-			//workaround for unit test failures
-		} catch (NoSuchMethodError e) {
-			//workaround for unit test failures
+
+		// Avoid initializing DataSourceManager if the server is in NonRegistryMode
+		if (!Boolean.parseBoolean(System.getProperty("NonRegistryMode"))) {
+			/* data sources component tenant initialized, this is done here as a precaution to
+			 * make sure that the tenant's data sources are initialized before the data services
+			 * are deployed, this uncertainty comes because we cannot predict the order which
+			 * the Axis2ConfigurationContext observers will be called */
+			try {
+				DataSourceManager.getInstance().initTenant(tid);
+			} catch (DataSourceException e) {
+				log.error("Error in intializing Carbon data sources for tenant: " +
+						tid + " from data services");
+			} catch (NoClassDefFoundError e) {
+				//workaround for unit test failures
+			} catch (NoSuchMethodError e) {
+				//workaround for unit test failures
+			}
 		}
 	}
 

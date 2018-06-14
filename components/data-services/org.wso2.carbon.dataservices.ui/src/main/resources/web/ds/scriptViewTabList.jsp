@@ -28,6 +28,7 @@
 <%@ page import="org.wso2.carbon.dataservices.ui.UIutils"%>
 <%@ page import="org.wso2.carbon.dataservices.ui.stub.admin.core.xsd.PaginatedTableInfo" %>
 <%@ page import="org.wso2.carbon.ui.CarbonUIUtil" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <carbon:breadcrumb
         label="Select the tables"
         resourceBundle="org.wso2.carbon.dataservices.ui.i18n.Resources"
@@ -305,7 +306,7 @@
                              <% if (schemaList!= null){%>
                              <input class="button" type="button" value="< <fmt:message key="back"/>"  onclick="javascript:location.href = 'scriptViewSchemas.jsp?ordinal=1&tableList='+get_check_tableList()+'&flag=back';" />
            					 <% } else { %>
-           					 <input class="button" type="button" value="< <fmt:message key="back"/>" onclick="location.href = 'scriptAddSource.jsp?ordinal=1&flag=back&datasource=<%=sourceId%>&dbName=<%=dbName%>' "/>
+           					 <input class="button" type="button" value="< <fmt:message key="back"/>" onclick="location.href = 'scriptAddSource.jsp?ordinal=1&flag=back&datasource=<%=Encode.forHtmlAttribute(sourceId)%>&dbName=<%=Encode.forHtmlAttribute(dbName)%>' "/>
                              <% } %>
                               <% if (totalSchemaList!= null){
                               %>

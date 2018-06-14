@@ -223,7 +223,7 @@
                     <tr>
                         <td class="buttonRow" colspan="2">
                             <input class="button" type="button" value="< <fmt:message key="back"/>"
-                                   onclick="location.href = 'scriptAddSource.jsp?ordinal=0&flag=back&datasource=<%=Encode.forHtmlAttribute(sourceId)%>&dbName=<%=Encode.forHtmlAttribute(dbName)%>' "/>
+                                   onclick="location.href = 'scriptAddSource.jsp?ordinal=0&flag=back&datasource=<%=Encode.forJavaScript(sourceId)%>&dbName=<%=Encode.forJavaScript(dbName)%>' "/>
                             
                          <% if (isBack ){%>
                             <input class="button" type="submit" value="<fmt:message key="next"/> > " onclick = "document.dataForm.action='scriptViewTabList.jsp?ordinal=2&flag=fwd';return validateSchemaTextField('<%=schemaNames%>');" />

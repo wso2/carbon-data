@@ -206,7 +206,7 @@
                 <th colspan="2"><fmt:message key="service.operations"/></th>
             </tr>
             </thead>
-            <form method="post" action="operationProcessor.jsp?action=<%=Encode.forHtmlAttribute(action)%>"
+            <form method="post" action="operationProcessor.jsp?action=<%=Encode.forHtml(action)%>"
                   name="dataForm"
                   onsubmit="return validateAddOperationForm();">
                 <!--hidden fields -->
@@ -239,7 +239,8 @@
                                     <td><fmt:message key="query.id"/><font color="red">*</font></td>
                                     <td>
                                         <select name="queryId" id="queryId"
-                                                onchange="javascript:location.href = 'addOperation.jsp?selectedQueryId='+this.options[this.selectedIndex].value+'&operationName='+document.getElementById('operationName').value+'&operationDesc='+document.getElementById('operationDesc').value+'&enableStreaming='+document.getElementById('enableStreaming').value+'&returnRequestStatus='+document.getElementById('returnRequestStatus').value+'&flag=true&action=<%=action%>';">
+                                                onchange="javascript:location.href =
+                                                        'addOperation.jsp?selectedQueryId='+this.options[this.selectedIndex].value+'&operationName='+document.getElementById('operationName').value+'&operationDesc='+document.getElementById('operationDesc').value+'&enableStreaming='+document.getElementById('enableStreaming').value+'&returnRequestStatus='+document.getElementById('returnRequestStatus').value+'&flag=true&action=<%=Encode.forHtml(action)%>';">
                                                 <%--onchange="javascript:location.href = 'addOperation.jsp?selectedQueryId='+this.options[this.selectedIndex].value+'&operationName='+document.getElementById('operationName').value+'&operationDesc='+document.getElementById('operationDesc').value+'enableStreaming'+document.getElementById('enableStreaming').value+'&flag=true&action=<%=action%>';">--%>
                                             <% if (selectedQueryId != null && selectedQueryId.trim().equals("")) {%>
                                             <option value="" selected="selected"></option>
@@ -309,7 +310,7 @@
                                                     <% if (!action.equals("")) { %>
                                                     <a class="icon-link"
                                                        style="background-image:url(../admin/images/edit.gif);"
-                                                       href='addOperationParameter.jsp?editparam=editparam&operationName=<%=Encode.forHtmlAttribute(operationName)%>&action=<%=action%>&queryId=<%=selectedQueryId%>&paramNameId=<%=aWithParamsList.getName()%>&operationParamId=<%=(aWithParamsList.getParamValue())%>'>
+                                                       href='addOperationParameter.jsp?editparam=editparam&operationName=<%=Encode.forHtmlAttribute(operationName)%>&action=<%=Encode.forHtml(action)%>&queryId=<%=selectedQueryId%>&paramNameId=<%=aWithParamsList.getName()%>&operationParamId=<%=(aWithParamsList.getParamValue())%>'>
                                                        <fmt:message key="edit"/> </a>
                                                     <% } %>
                                                     <a class="icon-link"
@@ -334,7 +335,7 @@
                                     <td colspan="3">
                                         <a class="icon-link"
                                            style="background-image:url(../admin/images/add.gif);"
-                                           href='addOperation.jsp?param=qparam&operationName=<%=Encode.forHtmlAttribute(operationName)%>&operationDesc=<%=Encode.forHtmlAttribute(operationDesc) %>&action=<%=action%>&selectedQueryId=<%=Encode.forHtmlAttribute(selectedQueryId)%>' >Add Query Params as Operation Params</a>
+                                           href='addOperation.jsp?param=qparam&operationName=<%=Encode.forHtmlAttribute(operationName)%>&operationDesc=<%=Encode.forHtmlAttribute(operationDesc) %>&action=<%=Encode.forHtml(action)%>&selectedQueryId=<%=Encode.forHtmlAttribute(selectedQueryId)%>' >Add Query Params as Operation Params</a>
                                     </td>
                                 </tr>
                                 <%
@@ -343,7 +344,7 @@
                                     <td colspan="3">
                                         <a class="icon-link"
                                            style="background-image:url(../admin/images/add.gif);"
-                                           href='addOperationParameter.jsp?operationName=<%=Encode.forHtmlAttribute(operationName)%>&action=<%=action%>&queryId=<%=Encode.forHtmlAttribute(selectedQueryId)%>' ><fmt:message
+                                           href='addOperationParameter.jsp?operationName=<%=Encode.forHtmlAttribute(operationName)%>&action=<%=Encode.forHtml(action)%>&queryId=<%=Encode.forHtmlAttribute(selectedQueryId)%>' ><fmt:message
                                                 key="add.new.operation.parameter"/></a>
                                     </td>
                                 </tr>

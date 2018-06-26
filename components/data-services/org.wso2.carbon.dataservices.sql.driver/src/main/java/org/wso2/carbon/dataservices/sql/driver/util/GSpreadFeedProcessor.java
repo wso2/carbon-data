@@ -177,7 +177,7 @@ public class GSpreadFeedProcessor {
                         log.warn("GSpreadConfig.getFeed(): Failed to retrieve Feeds with current AccessToken ", e);
                     }
                     String accessTokenFromRegistry = this.getAccessTokenFromRegistry();
-                    if (accessTokenFromRegistry != null && this.accessToken != accessTokenFromRegistry) {
+                    if (accessTokenFromRegistry != null && !this.accessToken.equals(accessTokenFromRegistry)) {
                         this.accessToken = accessTokenFromRegistry;
                         this.authenticateWithAccessToken();
                         try {
@@ -219,7 +219,7 @@ public class GSpreadFeedProcessor {
                         log.warn("GSpreadConfig.getFeed(): Failed to retrieve Feeds with current AccessToken ", e);
                     }
                     String accessTokenFromRegistry = this.getAccessTokenFromRegistry();
-                    if (accessTokenFromRegistry != null && this.accessToken != accessTokenFromRegistry) {
+                    if (accessTokenFromRegistry != null && !this.accessToken.equals(accessTokenFromRegistry)) {
                         this.accessToken = accessTokenFromRegistry;
                         this.authenticateWithAccessToken();
                         try {

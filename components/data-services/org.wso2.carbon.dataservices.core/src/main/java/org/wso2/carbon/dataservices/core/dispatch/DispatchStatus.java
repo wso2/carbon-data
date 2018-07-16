@@ -61,7 +61,13 @@ public class DispatchStatus {
         batchRequestCount.set(0);
         batchRequestNumber.set(0);
     }
-    
+
+    public static void clearBatchRequestStatus() {
+        batchRequest.set(false);
+        batchRequestCount.set(0);
+        batchRequestNumber.set(0);
+    }
+
     public static void setBatchRequest() {
         batchRequest.set(true);
     }

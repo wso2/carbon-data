@@ -76,11 +76,15 @@ public class BatchDataServiceRequest extends DataServiceRequest {
 	private static void clearParticipants() {
 		getParticipants().clear();
 	}
-	
+
+	private static void clearStatus() {
+		DispatchStatus.clearBatchRequestStatus();
+	}
+
 	public List<SingleDataServiceRequest> getDSRequests() {
 		return dsRequests;
 	}
-	
+
 	/**
 	 * @see DataServiceRequest#processRequest()
 	 */
@@ -115,6 +119,7 @@ public class BatchDataServiceRequest extends DataServiceRequest {
 			/* release participants */
 			releaseParticipantResources();
 			clearParticipants();
+			clearStatus();
 		}
 	}
 	

@@ -294,8 +294,8 @@ public class DBDeployer extends AbstractDeployer {
     }
 
     private String getServiceNameFromDSContents(File file) throws Exception {
-		try (FileInputStream fis = new FileInputStream(file.getAbsoluteFile())) {
-			StAXOMBuilder builder = new StAXOMBuilder(fis);
+        try (FileInputStream fis = new FileInputStream(file.getAbsoluteFile())) {
+            StAXOMBuilder builder = new StAXOMBuilder(fis);
 			OMElement serviceEl = builder.getDocumentElement();
 			String serviceName = serviceEl.getAttributeValue(new QName(DBSFields.NAME));
 			builder.close();
@@ -1182,8 +1182,8 @@ public class DBDeployer extends AbstractDeployer {
      * @return true if security is enabled, false otherwise.
      * @throws DataServiceFault
      */
-    private boolean handleSecurityProxy(DeploymentFileData file, AxisService axisService) throws DataServiceFault{
-		try (FileInputStream fis = new FileInputStream(file.getFile().getAbsoluteFile())) {
+    private boolean handleSecurityProxy(DeploymentFileData file, AxisService axisService) throws DataServiceFault {
+        try (FileInputStream fis = new FileInputStream(file.getFile().getAbsoluteFile())) {
             boolean secEnabled = false;
 			StAXOMBuilder builder = new StAXOMBuilder(fis);
             OMElement documentElement =  builder.getDocumentElement();

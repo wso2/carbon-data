@@ -294,15 +294,17 @@ public class DBDeployer extends AbstractDeployer {
     }
 
     private String getServiceNameFromDSContents(File file) throws Exception {
-        StAXOMBuilder builder = new StAXOMBuilder(new FileInputStream(file.getAbsoluteFile()));
-        OMElement serviceEl = builder.getDocumentElement();
-        String serviceName = serviceEl.getAttributeValue(new QName(DBSFields.NAME));
-        builder.close();
-        if (DBUtils.isEmptyString(serviceName)) {
-            throw new DataServiceFault("Service group cannot be determined for the data service at '"
-                            + file.getAbsolutePath() + "'");
+        try (FileInputStream fis = new FileInputStream(file.getAbsoluteFile())) {
+            StAXOMBuilder builder = new StAXOMBuilder(fis);
+            OMElement serviceEl = builder.getDocumentElement();
+            String serviceName = serviceEl.getAttributeValue(new QName(DBSFields.NAME));
+            builder.close();
+            if (DBUtils.isEmptyString(serviceName)) {
+                throw new DataServiceFault("Service group cannot be determined for the data service at '"
+                        + file.getAbsolutePath() + "'");
+            }
+            return serviceName;
         }
-        return serviceName;
     }
 
 	/**
@@ -1140,8 +1142,8 @@ public class DBDeployer extends AbstractDeployer {
 	 * "services.xml".
 	 */
 	private AxisService handleTransports(DeploymentFileData file, AxisService axisService) throws DataServiceFault {
-		try {
-            StAXOMBuilder builder = new StAXOMBuilder(new FileInputStream(file.getFile().getAbsoluteFile()));
+		try (FileInputStream fis = new FileInputStream(file.getFile().getAbsoluteFile())) {
+			StAXOMBuilder builder = new StAXOMBuilder(fis);
             OMElement documentElement =  builder.getDocumentElement();
             OMAttribute transports = documentElement.getAttribute(new QName(DBSFields.TRANSPORTS));
             if (transports != null) {
@@ -1180,10 +1182,10 @@ public class DBDeployer extends AbstractDeployer {
      * @return true if security is enabled, false otherwise.
      * @throws DataServiceFault
      */
-    private boolean handleSecurityProxy(DeploymentFileData file, AxisService axisService) throws DataServiceFault{
-        try {
+    private boolean handleSecurityProxy(DeploymentFileData file, AxisService axisService) throws DataServiceFault {
+        try (FileInputStream fis = new FileInputStream(file.getFile().getAbsoluteFile())) {
             boolean secEnabled = false;
-            StAXOMBuilder builder = new StAXOMBuilder(new FileInputStream(file.getFile().getAbsoluteFile()));
+            StAXOMBuilder builder = new StAXOMBuilder(fis);
             OMElement documentElement =  builder.getDocumentElement();
             OMElement enableSecElement= documentElement.getFirstChildWithName(new QName(DBSFields.ENABLESEC));
             if (enableSecElement != null) {
@@ -1193,7 +1195,8 @@ public class DBDeployer extends AbstractDeployer {
             if (policyElement != null) {
                 String policyKey = policyElement.getAttributeValue(new QName(DBSFields.POLICY_KEY));
                 if (null == policyKey) {
-                    throw new DataServiceFault("Policy key element should contain a policy key in " + file.getFile().getName());
+                    throw new DataServiceFault("Policy key element should contain a policy key in "
+                            + file.getFile().getName());
                 }
                 Policy policy = PolicyEngine.getPolicy(DBUtils.getInputStreamFromPath(policyKey));
                 axisService.getPolicySubject().attachPolicy(policy);

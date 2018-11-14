@@ -303,39 +303,45 @@ public class CallQuery extends OutputElement {
 	 */
 	private Map<String, ParamValue> extractParams(ExternalParamCollection params)
 			throws DataServiceFault {
-		Map<String, ParamValue> qparams = new HashMap<String, ParamValue>();
-		ExternalParam paramObj;
-		String paramType, paramName;
-		for (WithParam withParam : this.getWithParams().values()) {
-			paramName = withParam.getParam();
-			paramType = withParam.getParamType();
-			paramObj = params.getParam(paramType, paramName);
-			/* workaround for users using 'column' and 'query-param' as the same */
-			if (paramObj == null) {
-				paramObj = params.getParam(paramName);
-			}
-			if (paramObj != null) {
-			    qparams.put(withParam.getName(), paramObj.getValue());
-			} else if (params.getTempEntries().containsKey(withParam.getName())) {
-				/* this means the query param will be added later by the default values */
-				continue;
-			} else {
-				throw new DataServiceFault(FaultCodes.INCOMPATIBLE_PARAMETERS_ERROR,
-						"Error in 'CallQuery.extractParams', cannot find parameter with type:" +
-						paramType + " name:" + withParam.getOriginalName());
-			}
-		}
-		/* add the tmp params, required for default values etc.. */
-		String key;
-		for (Entry<String, ParamValue> entry: params.getTempEntries().entrySet()) {
-			key = entry.getKey();
-			/* only put it, if it is not already there */
-			if (!qparams.containsKey(key)) {
-			    qparams.put(key, entry.getValue());
-			}
-		}
-		return qparams;
-	}
+
+        Map<String, ParamValue> qparams = new HashMap<String, ParamValue>();
+        ExternalParam paramObj;
+        String paramType, paramName;
+        for (WithParam withParam : this.getWithParams().values()) {
+            paramName = withParam.getParam();
+            paramType = withParam.getParamType();
+            paramObj = params.getParam(paramType, paramName);
+            /* workaround for users using 'column' and 'query-param' as the same */
+            if (paramObj == null) {
+                 paramObj = params.getParam(paramName);
+            }
+            if (paramObj != null) {
+                if (paramObj.getValue().getScalarValue() == null || (paramObj.getValue().getScalarValue().equals("")
+                && params.getTempEntries().containsKey(withParam.getName()))) {
+                    continue;
+                } else {
+                    qparams.put(withParam.getName(), paramObj.getValue());
+                }
+            } else if (params.getTempEntries().containsKey(withParam.getName())) {
+            /* this means the query param will be added later by the default values */
+                continue;
+            } else {
+                throw new DataServiceFault(FaultCodes.INCOMPATIBLE_PARAMETERS_ERROR,
+            "Error in 'CallQuery.extractParams', cannot find parameter with type:" +
+                          paramType + " name:" + withParam.getOriginalName());
+            }
+        }
+        /* add the tmp params, required for default values etc.. */
+        String key;
+        for (Entry<String, ParamValue> entry : params.getTempEntries().entrySet()) {
+            key = entry.getKey();
+            /* only put it, if it is not already there */
+            if (!qparams.containsKey(key)) {
+                qparams.put(key, entry.getValue());
+            }
+        }
+        return qparams;
+    }
 
 	/**
 	 * This class represents a "with-param" element in a call-query.

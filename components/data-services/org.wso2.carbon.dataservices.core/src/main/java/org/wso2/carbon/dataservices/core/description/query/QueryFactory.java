@@ -1097,8 +1097,8 @@ public class QueryFactory {
 			if (paramType == null || paramType.trim().length() == 0) {
 				paramType = QueryParamTypes.SCALAR;
 			}
-			if (paramEl.getAttributeValue(new QName(DBSFields.FORCEDEFAULT)) != null) {
-			    forceDefault = Boolean.parseBoolean(paramEl.getAttributeValue(new QName(DBSFields.FORCEDEFAULT)));
+			if (paramEl.getAttributeValue(new QName(DBSFields.FORCED_DEFAULT)) != null) {
+			    forceDefault = Boolean.parseBoolean(paramEl.getAttributeValue(new QName(DBSFields.FORCED_DEFAULT)));
 			}
 			/* retrieve validators */
 			List<Validator> validators = getValidators(paramType, paramEl);
@@ -1106,7 +1106,7 @@ public class QueryFactory {
             structType = paramEl.getAttributeValue(new QName(DBSFields.STRUCT_TYPE));
 			queryParams.add(new QueryParam(name, sqlType, type, paramType, ordinal,
                     defaultValue == null ? null : new ParamValue(defaultValue), structType,
-                    validators,forceDefault));
+                    validators, forceDefault));
 		}
 		
 		return queryParams;

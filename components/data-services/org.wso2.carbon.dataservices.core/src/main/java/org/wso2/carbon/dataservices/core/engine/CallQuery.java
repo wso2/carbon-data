@@ -318,6 +318,9 @@ public class CallQuery extends OutputElement {
 				if (paramObj.getValue().getScalarValue() == null
 					&& params.getTempEntries().containsKey(withParam.getName())
 					&& queryParamMap.get(paramName).isForceDefault()) {
+					/*workaround for users to set default values to parameters
+					when invoking a REST resource using GET method the loop is
+					cotinued so that the default value will be added later*/
 					continue;
 				} else {
 					qparams.put(withParam.getName(), paramObj.getValue());

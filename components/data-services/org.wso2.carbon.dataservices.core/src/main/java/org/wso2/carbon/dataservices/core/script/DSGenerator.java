@@ -851,7 +851,7 @@ public class DSGenerator {
 			}
 			List<Validator> validator = new ArrayList<Validator>();
 			QueryParam queryParam = new QueryParam(pName, sqlType, DBConstants.DataServiceGenerator.IN,
-					DBConstants.DataServiceGenerator.SCALAR, ordinal, null, null, validator);
+					DBConstants.DataServiceGenerator.SCALAR, ordinal, null, null, validator,false);
 			paramList.add(queryParam);
 			ordinal++; // increase the ordinal value one by one
 		}

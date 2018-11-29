@@ -59,10 +59,12 @@ public class QueryParam {
     private List<Validator> validators;
 
     private String structType;
+
+    private boolean forceDefault;
 	
 	public QueryParam(String name, String sqlType, String type, String paramType, 
 			int ordinal, ParamValue defaultValue, String structType,
-			List<Validator> validators) throws DataServiceFault {
+			List<Validator> validators,boolean forceDefault) throws DataServiceFault {
 		this.name = name;
 		this.sqlType = sqlType;
 		this.type = type;
@@ -72,6 +74,7 @@ public class QueryParam {
         this.defaultValue = defaultValue;
         this.structType = structType;
         this.validators = validators;
+        this.forceDefault = forceDefault;
         /* validate the current query param */
         this.validateQueryParam();
 	}
@@ -159,8 +162,12 @@ public class QueryParam {
     public String getStructType() {
         return structType;
     }
-    
-    public boolean hasDefaultValue() {
+
+	public boolean isForceDefault() {
+		return forceDefault;
+	}
+
+	public boolean hasDefaultValue() {
     	return this.getDefaultValue() != null;
     }
 

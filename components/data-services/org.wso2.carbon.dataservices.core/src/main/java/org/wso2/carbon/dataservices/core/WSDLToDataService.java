@@ -360,7 +360,7 @@ public class WSDLToDataService {
 					prop.isArray() ? DBConstants.QueryParamTypes.ARRAY : 
 						DBConstants.QueryParamTypes.SCALAR, 
 					i + 1, // ordinal
-					null, null, new ArrayList<Validator>()));
+					null, null, new ArrayList<Validator>(),false));
 		}
 
 		return queryParams;

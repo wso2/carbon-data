@@ -857,6 +857,7 @@ public final class DBConstants {
         public static final String KEY_COLUMNS = "keyColumns";
         public static final String EXPORT = "export";
         public static final String OPTIONAL = "optional";
+        public static final String FORCED_DEFAULT = "forceDefault";
         public static final String EXPORT_TYPE = "exportType";
         public static final String INPUT_NAMESPACE = "inputNamespace";
         public static final String NAMESPACE = "namespace";

@@ -505,6 +505,7 @@
                     updateConfiguration(dsConfig, DBConstants.MongoDB.SOCKET_TIMEOUT, mongoDBSocketTimeout);
                     updateConfiguration(dsConfig, DBConstants.MongoDB.CONNECTIONS_PER_HOST, mongoDBConnectionsPerHost);
                     updateConfiguration(dsConfig, DBConstants.MongoDB.THREADS_ALLOWED_TO_BLOCK_CONN_MULTIPLIER, mongoDBThreadsAllowed);
+                    dsConfig.setExposeAsOData(isOData);
                 } else if (DBConstants.DataSourceTypes.GDATA_SPREADSHEET.equals(datasourceType)) {
                 	if (useSecretAliasForPassword) {
 //                    	gspreadPassword = passwordAlias;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -18,243 +18,101 @@
 
 package org.wso2.carbon.dataservices.core.odata;
 
-import org.wso2.carbon.dataservices.core.description.query.MongoQuery;
-import org.wso2.carbon.dataservices.core.engine.DataEntry;
-
-import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
+import com.mongodb.WriteResult;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.jongo.Jongo;
 import org.json.JSONObject;
-
-import java.util.*;
+import org.wso2.carbon.dataservices.core.description.query.MongoQuery;
+import org.wso2.carbon.dataservices.core.engine.DataEntry;
 
 /**
  * This class implements MongoDB datasource related operations for ODataDataHandler.
- *
- * @see ODataDataHandler
  */
 public class MongoDataHandler implements ODataDataHandler {
+
     /**
-     * Config ID.
+     * configuration ID is the ID given for the data service, at the time
+     * when the particular service is created.
      */
 
-    private final String configID;
+    private final String configId;
 
     /**
-     * ObjectID s of the Collections (Map<Table Name, List>).
+     * ObjectId s of the Collections
      */
     private Map<String, List<String>> primaryKeys;
 
     /**
-     * List of Tables in the Database.
+     * List of Collections in the Database.
      */
     private List<String> tableList;
 
     /**
-     * Table metadata.
+     * Metadata of the Collections
      */
     private Map<String, Map<String, DataColumn>> tableMetaData;
 
-
     private Jongo jongo;
+    private static final String ETAG = "ETag";
+    private static final String DOCUMENT_ID = "_id";
+    private static final String SET = "{$set: {";
 
-    public Jongo getJongo() {
-        return jongo;
-    }
+    private ThreadLocal<Boolean> transactionAvailable = new ThreadLocal<Boolean>() {
+        protected synchronized Boolean initialValue() {
 
-    public MongoDataHandler(String configID, Jongo jongo) {
-        this.configID = configID;
+            return false;
+        }
+    };
+
+    public MongoDataHandler(String configId, Jongo jongo) {
+
+        this.configId = configId;
         this.jongo = jongo;
         this.tableList = generateTableList();
         this.tableMetaData = generateTableMetaData();
-        this.primaryKeys = getPrimaryKeys();
+        this.primaryKeys = generatePrimaryKeys();
     }
 
     /**
-     * This method read the table data and return.
-     * Return a list of DataEntry object which has been wrapped the entity.
-     *
-     * @param tableName Name of the table
-     * @return EntityCollection
-     * @throws ODataServiceFault
-     * @see DataEntry
-     */
-    @Override
-    public List<ODataEntry> readTable(String tableName) throws ODataServiceFault {
-        List<ODataEntry> entryList = new ArrayList<>();
-        DBCollection result = getJongo().getDatabase().getCollection(tableName);
-        Iterator<DBObject> cursor = result.find();
-        DBObject current;
-        String tempValue;
-        while (cursor.hasNext()) {
-            ODataEntry dataEntry = new ODataEntry();
-            current = cursor.next();
-            tempValue = current.toString();
-            Iterator<?> keys = new JSONObject(tempValue).keys();
-            while (keys.hasNext()) {
-                String columnName = (String) keys.next();
-                String columnValue = new JSONObject(tempValue).get(columnName).toString();
-                if (columnName.equals("_id")) {
-                    JSONObject jsonObject = new JSONObject(columnValue);
-                    Iterator<?> field = jsonObject.keys();
-                    while (field.hasNext()) {
-                        String fieldName = field.next().toString();
-                        Object fieldValue = jsonObject.get(fieldName);
-                        String value = fieldValue.toString();
-                        dataEntry.addValue(columnName, value);
-                    }
-                } else {
-                    dataEntry.addValue(columnName, columnValue);
-                }
-            }
-            //Set Etag to the entity
-            dataEntry.addValue("ETag", ODataUtils.generateETag(this.configID, tableName, dataEntry));
-            entryList.add(dataEntry);
-        }
-        return entryList;
-    }
-
-    /**
-     * This method read the table with Keys and return.
-     * Return a list of DataEntry object which has been wrapped the entity.
-     *
-     * @param tableName Name of the table
-     * @param keys      Keys to check
-     * @return EntityCollection
-     * @throws ODataServiceFault
-     * @see DataEntry
-     */
-    @Override
-    public List<ODataEntry> readTableWithKeys(String tableName, ODataEntry keys) throws ODataServiceFault {
-        List<ODataEntry> entryList = new ArrayList<>();
-        ODataEntry dataEntry = new ODataEntry();
-        for (String keyName : keys.getData().keySet()) {
-            String keyValue = keys.getValue(keyName);
-            String result = getJongo().getCollection(tableName).findOne(new ObjectId(keyValue)).map(MongoQuery.MongoResultMapper.getInstance());
-            JSONObject object = new JSONObject(result);
-            Iterator<?> key = object.keys();
-            while (key.hasNext()) {
-                String columnName = (String) key.next();
-                String columnValue = object.get(columnName).toString();
-                if (columnName.equals("_id")) {
-                    JSONObject jsonObject = new JSONObject(columnValue);
-                    Iterator<?> field = jsonObject.keys();
-                    while (field.hasNext()) {
-                        String fieldName = field.next().toString();
-                        Object fieldValue = jsonObject.get(fieldName);
-                        String value = fieldValue.toString();
-                        dataEntry.addValue(columnName, value);
-                    }
-                } else {
-                    dataEntry.addValue(columnName, columnValue);
-                }
-            }
-            //Set Etag to the entity
-            dataEntry.addValue("ETag", ODataUtils.generateETag(this.configID, tableName, dataEntry));
-            entryList.add(dataEntry);
-        }
-        return entryList;
-    }
-
-    /**
-     * This method inserts entity to table.
-     *
-     * @param tableName Name of the table
-     * @param entity    Entity
-     * @throws ODataServiceFault
-     */
-    public ODataEntry insertEntityToTable(String tableName, ODataEntry entity) throws ODataServiceFault {
-        ODataEntry entry = new ODataEntry();
-        BasicDBObject document = new BasicDBObject();
-        for (String columnName : entity.getData().keySet()) {
-            String columnValue = entity.getValue(columnName);
-            document.put(columnName, columnValue);
-            entry.addValue(columnName, columnValue);
-        }
-        getJongo().getCollection(tableName).insert(document);
-
-        //Set Etag to the entity
-        entry.addValue("ETag", ODataUtils.generateETag(this.configID, tableName, entry));
-        return entry;
-
-    }
-
-    /**
-     * This method deletes entity from table.
-     *
-     * @param tableName Name of the table
-     * @param entity    Entity
-     * @throws ODataServiceFault
-     */
-    public boolean deleteEntityInTable(String tableName, ODataEntry entity) throws ODataServiceFault {
-        for (String keyName : entity.getData().keySet()) {
-            String keyValue = entity.getValue(keyName);
-            getJongo().getCollection(tableName).remove(new ObjectId(keyValue));
-        }
-        return true;
-    }
-
-    /**
-     * This method updates entity in table.
-     *
-     * @param tableName     Name of the table
-     * @param newProperties New Properties
-     * @throws ODataServiceFault
-     */
-    public boolean updateEntityInTable(String tableName, ODataEntry newProperties) throws ODataServiceFault {
-        /**
-         * To be implemented
-         */
-        return true;
-    }
-
-
-    /**
-     * This method updates the entity in table when transactional update is necessary.
-     *
-     * @param tableName     Table Name
-     * @param oldProperties Old Properties
-     * @param newProperties New Properties
-     * @throws ODataServiceFault
-     */
-    public boolean updateEntityInTableTransactional(String tableName, ODataEntry oldProperties, ODataEntry newProperties)
-            throws ODataServiceFault {
-        /**
-         * To be implemented
-         */
-        return true;
-    }
-
-    /**
-     * This method return database table metadata.
-     * Return a map with table name as the key, and the values contains maps with column name as the map key,
-     * and the values of the column name map will DataColumn object, which represents the column.
+     * This method returns database collection metadata.
+     * Returns a map with collection name as the key, and the values containing
+     * maps with column name as the map key, and the values of the column name
+     * map will be a DataColumn object, which represents the column.
      *
      * @return Database Metadata
      * @see org.wso2.carbon.dataservices.core.odata.DataColumn
      */
     @Override
     public Map<String, Map<String, DataColumn>> getTableMetadata() {
+
         return this.tableMetaData;
     }
 
     private Map<String, Map<String, DataColumn>> generateTableMetaData() {
+
         int i = 1;
         Map<String, Map<String, DataColumn>> metaData = new HashMap<>();
-        HashMap<String, DataColumn> column = new HashMap();
+        HashMap<String, DataColumn> column = new HashMap<>();
         for (String tableName : this.tableList) {
-            DBCollection result = getJongo().getDatabase().getCollection(tableName);
-            Iterator<DBObject> cursor = result.find();
+            DBCollection readResult = jongo.getDatabase().getCollection(tableName);
+            Iterator<DBObject> cursor = readResult.find();
             while (cursor.hasNext()) {
                 final DBObject current = cursor.next();
-                String tmpValue = current.toString();
-                JSONObject object = new JSONObject(tmpValue);
-                Iterator<?> keys = object.keys();
+                String tempValue = current.toString();
+                Iterator<?> keys = new JSONObject(tempValue).keys();
                 while (keys.hasNext()) {
                     String columnName = (String) keys.next();
-                    DataColumn dataColumn = new DataColumn(columnName, DataColumn.ODataDataType.STRING, i, true, 100, columnName.equals("_id") ? true : false);
+                    DataColumn dataColumn = new DataColumn(columnName, DataColumn.ODataDataType.STRING, i, true, 100, columnName.equals(DOCUMENT_ID));
                     column.put(columnName, dataColumn);
                     i++;
                 }
@@ -265,77 +123,277 @@ public class MongoDataHandler implements ODataDataHandler {
     }
 
     /**
-     * This method creates a list of tables available in the DB.
+     * This method creates a list of collections available in the DB.
      *
-     * @return Table List of the DB
-     * @throws ODataServiceFault
+     * @returns the collection list of the DB
      */
     @Override
     public List<String> getTableList() {
+
         return this.tableList;
     }
 
     private List<String> generateTableList() {
-        List<String> list = new ArrayList<>();
-        list.addAll(getJongo().getDatabase().getCollectionNames());
-        return list;
 
+        List<String> list = new ArrayList<>();
+        list.addAll(jongo.getDatabase().getCollectionNames());
+        return list;
     }
 
     /**
-     * This method returns the all the primary keys in the database tables.
-     * Return a map with table name as the keys, and the values contains a list of column names which are act as primary keys in the table.
+     * This method returns the primary keys of all the collections in the database.
+     * Return a map with table name as the key, and the values contains a list of column
+     * names which act as primary keys in each collection.
      *
      * @return Primary Key Map
      */
     @Override
     public Map<String, List<String>> getPrimaryKeys() {
+
+        return this.primaryKeys;
+    }
+
+    private Map<String, List<String>> generatePrimaryKeys() {
+
         Map<String, List<String>> primaryKeyList = new HashMap<>();
         List<String> tableNames = this.tableList;
         List<String> primaryKey = new ArrayList<>();
-        primaryKey.add("_id");
+        primaryKey.add(DOCUMENT_ID);
         for (String tname : tableNames) {
             primaryKeyList.put(tname, primaryKey);
         }
         return primaryKeyList;
     }
 
+    /**
+     * This method reads the data for a given collection.
+     * Returns a list of DataEntry objects.
+     *
+     * @param tableName Name of the table
+     * @return EntityCollection
+     * @see DataEntry
+     */
+    @Override
+    public List<ODataEntry> readTable(String tableName) {
+
+        List<ODataEntry> entryList = new ArrayList<>();
+        DBCollection result = jongo.getDatabase().getCollection(tableName);
+        Iterator<DBObject> cursor = result.find();
+        DBObject current;
+        String tempValue;
+        while (cursor.hasNext()) {
+            ODataEntry dataEntry;
+            current = cursor.next();
+            tempValue = current.toString();
+            Iterator<?> keys = new JSONObject(tempValue).keys();
+            dataEntry = createDataEntryFromResult(tempValue, keys);
+
+            //Set Etag to the entity
+            dataEntry.addValue(ETAG, ODataUtils.generateETag(this.configId, tableName, dataEntry));
+            entryList.add(dataEntry);
+        }
+        return entryList;
+    }
+
+    /**
+     * This method reads the collection data for a given key(i.e. _id).
+     * Return a list of DataEntry object which has been wrapped the entity.
+     *
+     * @param tableName Name of the table
+     * @param keys      Keys to check
+     * @return EntityCollection
+     * @throws ODataServiceFault
+     * @see DataEntry
+     */
+    @Override
+    public List<ODataEntry> readTableWithKeys(String tableName, ODataEntry keys) throws ODataServiceFault {
+
+        List<ODataEntry> entryList = new ArrayList<>();
+        ODataEntry dataEntry;
+        for (String keyName : keys.getData().keySet()) {
+            String keyValue = keys.getValue(keyName);
+            String projectionResult = jongo.getCollection(tableName).findOne(new ObjectId(keyValue)).map(MongoQuery.MongoResultMapper.getInstance());
+            if (projectionResult == null) {
+                throw new ODataServiceFault("Document ID: " + keyValue + " does not exist in " + "collection: " + tableName + " .");
+            }
+            Iterator<?> key = new JSONObject(projectionResult).keys();
+            dataEntry = createDataEntryFromResult(projectionResult, key);
+
+            //Set Etag to the entity
+            dataEntry.addValue(ETAG, ODataUtils.generateETag(this.configId, tableName, dataEntry));
+            entryList.add(dataEntry);
+        }
+        return entryList;
+    }
+
+    /**
+     * This method creates an OData DataEntry for a given individual database record.
+     * Returns a DataEntry object which has been wrapped in the entity.
+     *
+     * @param readResult DB result
+     * @param keys       Keys set of the DB result
+     * @return EntityCollection
+     * @see DataEntry
+     */
+    private ODataEntry createDataEntryFromResult(String readResult, Iterator<?> keys) {
+
+        ODataEntry dataEntry = new ODataEntry();
+        while (keys.hasNext()) {
+            String columnName = (String) keys.next();
+            String columnValue = new JSONObject(readResult).get(columnName).toString();
+            if (columnName.equals(DOCUMENT_ID)) {
+                Iterator<?> idField = new JSONObject(columnValue).keys();
+                while (idField.hasNext()) {
+                    String idName = idField.next().toString();
+                    String idValue = new JSONObject(columnValue).get(idName).toString();
+                    dataEntry.addValue(columnName, idValue);
+                }
+            } else {
+                dataEntry.addValue(columnName, columnValue);
+            }
+        }
+        return dataEntry;
+    }
+
+    /**
+     * This method inserts a given entity to the given collection.
+     *
+     * @param tableName Name of the table
+     * @param entity    Entity
+     * @throws ODataServiceFault
+     */
+    public ODataEntry insertEntityToTable(String tableName, ODataEntry entity) {
+
+        ODataEntry createdEntry = new ODataEntry();
+        final Document document = new Document();
+        for (String columnName : entity.getData().keySet()) {
+            String columnValue = entity.getValue(columnName);
+            document.put(columnName, columnValue);
+            entity.addValue(columnName, columnValue);
+        }
+        document.put("_id", new ObjectId());
+        jongo.getCollection(tableName).insert(document);
+        String documentIdValue = document.get("_id").toString();
+        entity.addValue(DOCUMENT_ID, documentIdValue);
+        createdEntry.addValue(DOCUMENT_ID, documentIdValue);
+
+        //Set Etag to the entity
+        createdEntry.addValue(ODataConstants.E_TAG, ODataUtils.generateETag(this.configId, tableName, entity));
+        return createdEntry;
+    }
+
+    /**
+     * This method deletes the entity from the collection for a given key.
+     *
+     * @param tableName Name of the table
+     * @param entity    Entity
+     * @throws ODataServiceFault
+     */
+    public boolean deleteEntityInTable(String tableName, ODataEntry entity) {
+
+        String keyValue = entity.getValue(DOCUMENT_ID);
+        WriteResult delete = jongo.getCollection(tableName).remove(new ObjectId(keyValue));
+        return delete.wasAcknowledged();
+    }
+
+    /**
+     * This method updates the given entity in the given collection.
+     *
+     * @param tableName     Name of the table
+     * @param newProperties New Properties
+     * @throws ODataServiceFault
+     */
+    public boolean updateEntityInTable(String tableName, ODataEntry newProperties) {
+
+        List<String> pKeys = this.primaryKeys.get(tableName);
+        String newPropertyObjectKeyValue = null;
+        for (String newPropertyObjectKeyName : newProperties.getData().keySet()) {
+            if (newPropertyObjectKeyName.equals(DOCUMENT_ID)) {
+                newPropertyObjectKeyValue = newProperties.getValue(newPropertyObjectKeyName);
+            }
+        }
+        for (String column : newProperties.getData().keySet()) {
+            if (!pKeys.contains(column)) {
+                String propertyValue = newProperties.getValue(column);
+                assert newPropertyObjectKeyValue != null;
+                jongo.getCollection(tableName).update(new ObjectId(newPropertyObjectKeyValue)).
+                    with(SET + column + ": '" + propertyValue + "'}}");
+            }
+        }
+        return true;
+    }
+
+    /**
+     * This method updates the entity in table when transactional update is necessary.
+     *
+     * @param tableName     Table Name
+     * @param oldProperties Old Properties
+     * @param newProperties New Properties
+     * @throws ODataServiceFault
+     */
+    public boolean updateEntityInTableTransactional(String tableName, ODataEntry oldProperties, ODataEntry newProperties) {
+
+        List<String> pKeys = this.primaryKeys.get(tableName);
+        String newPropertyObjectKeyValue = null;
+        String oldPropertyObjectKeyValue = null;
+        for (String newPropertyObjectKeyName : newProperties.getData().keySet()) {
+            if (newPropertyObjectKeyName.equals(DOCUMENT_ID)) {
+                newPropertyObjectKeyValue = newProperties.getValue(newPropertyObjectKeyName);
+            }
+        }
+        for (String oldPropertyObjectKeyName : oldProperties.getData().keySet()) {
+            if (oldPropertyObjectKeyName.equals(DOCUMENT_ID)) {
+                oldPropertyObjectKeyValue = oldProperties.getValue(oldPropertyObjectKeyName);
+            }
+        }
+        for (String column : newProperties.getData().keySet()) {
+            if (!pKeys.contains(column)) {
+                String propertyValue = newProperties.getValue(column);
+                assert newPropertyObjectKeyValue != null;
+                jongo.getCollection(tableName).update(new ObjectId(newPropertyObjectKeyValue)).upsert().with(SET + column + ": '" + propertyValue + "'}}");
+            }
+        }
+        for (String column : oldProperties.getNames()) {
+            if (!pKeys.contains(column)) {
+                String propertyValue = oldProperties.getValue(column);
+                assert oldPropertyObjectKeyValue != null;
+                jongo.getCollection(tableName).update(new ObjectId(oldPropertyObjectKeyValue)).upsert().with(SET + column + ": '" + propertyValue + "'}}");
+            }
+        }
+        return true;
+    }
+
     @Override
     public Map<String, NavigationTable> getNavigationProperties() {
+
         return null;
     }
 
     /**
      * This method opens the transaction.
-     *
-     * @throws ODataServiceFault
      */
-    public void openTransaction() throws ODataServiceFault {
-        /**
-         * To be implemented
-         */
+    public void openTransaction() {
+
+        this.transactionAvailable.set(true);
+        // doesn't support
     }
 
     /**
      * This method commits the transaction.
-     *
-     * @throws ODataServiceFault
      */
-    public void commitTransaction() throws ODataServiceFault {
-        /**
-         * To be implemented
-         */
+    public void commitTransaction() {
+
+        this.transactionAvailable.set(false);
+        // doesn't support
     }
 
     /**
      * This method rollbacks the transaction.
-     *
-     * @throws ODataServiceFault
      */
-    public void rollbackTransaction() throws ODataServiceFault {
-        /**
-         * To be implemented
-         */
+    public void rollbackTransaction() {
+
+        this.transactionAvailable.set(false);
+        // doesn't support
     }
 
     /**
@@ -347,12 +405,10 @@ public class MongoDataHandler implements ODataDataHandler {
      * @param navigationTableKeys Navigation - Entity Name (Primary Keys)
      * @throws ODataServiceFault
      */
-    public void
-    updateReference(String rootTableName, ODataEntry rootTableKeys, String navigationTable,
-                    ODataEntry navigationTableKeys) throws ODataServiceFault {
-        /**
-         * To be implemented
-         */
+
+    public void updateReference(String rootTableName, ODataEntry rootTableKeys, String navigationTable, ODataEntry navigationTableKeys) throws ODataServiceFault {
+
+        throw new ODataServiceFault("MongoDB datasources do not support references.");
     }
 
     /**
@@ -364,10 +420,8 @@ public class MongoDataHandler implements ODataDataHandler {
      * @param navigationTableKeys Navigation - Entity Name (Primary Keys)
      * @throws ODataServiceFault
      */
-    public void deleteReference(String rootTableName, ODataEntry rootTableKeys, String navigationTable,
-                                ODataEntry navigationTableKeys) throws ODataServiceFault {
-        /**
-         * To be implemented
-         */
+    public void deleteReference(String rootTableName, ODataEntry rootTableKeys, String navigationTable, ODataEntry navigationTableKeys) throws ODataServiceFault {
+
+        throw new ODataServiceFault("MongoDB datasources do not support references.");
     }
 }

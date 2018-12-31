@@ -61,7 +61,6 @@ public class MongoDataHandler implements ODataDataHandler {
      * Metadata of the Collections
      */
     private Map<String, Map<String, DataColumn>> tableMetaData;
-
     private Jongo jongo;
     private static final String ETAG = "ETag";
     private static final String DOCUMENT_ID = "_id";
@@ -100,21 +99,21 @@ public class MongoDataHandler implements ODataDataHandler {
 
     private Map<String, Map<String, DataColumn>> generateTableMetaData() {
 
-        int i = 1;
+        int ordinalPosition = 1;
         Map<String, Map<String, DataColumn>> metaData = new HashMap<>();
         HashMap<String, DataColumn> column = new HashMap<>();
         for (String tableName : this.tableList) {
             DBCollection readResult = jongo.getDatabase().getCollection(tableName);
             Iterator<DBObject> cursor = readResult.find();
             while (cursor.hasNext()) {
-                final DBObject current = cursor.next();
-                String tempValue = current.toString();
+                DBObject doumentData = cursor.next();
+                String tempValue = doumentData.toString();
                 Iterator<?> keys = new JSONObject(tempValue).keys();
                 while (keys.hasNext()) {
                     String columnName = (String) keys.next();
-                    DataColumn dataColumn = new DataColumn(columnName, DataColumn.ODataDataType.STRING, i, true, 100, columnName.equals(DOCUMENT_ID));
+                    DataColumn dataColumn = new DataColumn(columnName, DataColumn.ODataDataType.STRING, ordinalPosition, true, 100, columnName.equals(DOCUMENT_ID));
                     column.put(columnName, dataColumn);
-                    i++;
+                    ordinalPosition++;
                 }
                 metaData.put(tableName, column);
             }
@@ -177,14 +176,14 @@ public class MongoDataHandler implements ODataDataHandler {
     public List<ODataEntry> readTable(String tableName) {
 
         List<ODataEntry> entryList = new ArrayList<>();
-        DBCollection result = jongo.getDatabase().getCollection(tableName);
-        Iterator<DBObject> cursor = result.find();
-        DBObject current;
+        DBCollection readResult = jongo.getDatabase().getCollection(tableName);
+        Iterator<DBObject> cursor = readResult.find();
+        DBObject documentData;
         String tempValue;
         while (cursor.hasNext()) {
             ODataEntry dataEntry;
-            current = cursor.next();
-            tempValue = current.toString();
+            documentData = cursor.next();
+            tempValue = documentData.toString();
             Iterator<?> keys = new JSONObject(tempValue).keys();
             dataEntry = createDataEntryFromResult(tempValue, keys);
 
@@ -197,7 +196,7 @@ public class MongoDataHandler implements ODataDataHandler {
 
     /**
      * This method reads the collection data for a given key(i.e. _id).
-     * Return a list of DataEntry object which has been wrapped the entity.
+     * Returns a list of DataEntry object which has been wrapped the entity.
      *
      * @param tableName Name of the table
      * @param keys      Keys to check
@@ -213,9 +212,6 @@ public class MongoDataHandler implements ODataDataHandler {
         for (String keyName : keys.getData().keySet()) {
             String keyValue = keys.getValue(keyName);
             String projectionResult = jongo.getCollection(tableName).findOne(new ObjectId(keyValue)).map(MongoQuery.MongoResultMapper.getInstance());
-            if (projectionResult == null) {
-                throw new ODataServiceFault("Document ID: " + keyValue + " does not exist in " + "collection: " + tableName + " .");
-            }
             Iterator<?> key = new JSONObject(projectionResult).keys();
             dataEntry = createDataEntryFromResult(projectionResult, key);
 
@@ -271,11 +267,9 @@ public class MongoDataHandler implements ODataDataHandler {
             document.put(columnName, columnValue);
             entity.addValue(columnName, columnValue);
         }
-        document.put("_id", new ObjectId());
         jongo.getCollection(tableName).insert(document);
-        String documentIdValue = document.get("_id").toString();
-        entity.addValue(DOCUMENT_ID, documentIdValue);
-        createdEntry.addValue(DOCUMENT_ID, documentIdValue);
+        entity.addValue(DOCUMENT_ID, DOCUMENT_ID);
+        createdEntry.addValue(DOCUMENT_ID, DOCUMENT_ID);
 
         //Set Etag to the entity
         createdEntry.addValue(ODataConstants.E_TAG, ODataUtils.generateETag(this.configId, tableName, entity));
@@ -291,8 +285,8 @@ public class MongoDataHandler implements ODataDataHandler {
      */
     public boolean deleteEntityInTable(String tableName, ODataEntry entity) {
 
-        String keyValue = entity.getValue(DOCUMENT_ID);
-        WriteResult delete = jongo.getCollection(tableName).remove(new ObjectId(keyValue));
+        String documentId = entity.getValue(DOCUMENT_ID);
+        WriteResult delete = jongo.getCollection(tableName).remove(new ObjectId(documentId));
         return delete.wasAcknowledged();
     }
 
@@ -341,7 +335,7 @@ public class MongoDataHandler implements ODataDataHandler {
                 newPropertyObjectKeyValue = newProperties.getValue(newPropertyObjectKeyName);
             }
         }
-        for (String oldPropertyObjectKeyName : oldProperties.getData().keySet()) {
+        for (String oldPropertyObjectKeyName    : oldProperties.getData().keySet()) {
             if (oldPropertyObjectKeyName.equals(DOCUMENT_ID)) {
                 oldPropertyObjectKeyValue = oldProperties.getValue(oldPropertyObjectKeyName);
             }

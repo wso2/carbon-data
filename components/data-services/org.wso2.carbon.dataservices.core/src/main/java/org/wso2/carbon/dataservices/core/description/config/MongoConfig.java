@@ -121,7 +121,7 @@ public class MongoConfig extends Config {
 
     @Override
     public ODataDataHandler createODataHandler() throws ODataServiceFault {
-        return new MongoDataHandler(getConfigId(),getJongo());
+        return new MongoDataHandler(getConfigId(), getJongo());
     }
 
     private MongoClientOptions extractMongoOptions(Map<String, String> properties) {

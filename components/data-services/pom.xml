@@ -41,6 +41,7 @@
         <module>org.wso2.carbon.dataservices.task</module>
         <module>org.wso2.carbon.dataservices.task.ui</module>
         <module>org.wso2.carbon.dataservices.sql.driver</module>
+        <module>org.wso2.carbon.dataservices.capp.deployer</module>
     </modules>
 
     

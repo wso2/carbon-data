@@ -215,6 +215,10 @@
             <groupId>org.wso2.carbon.data</groupId>
             <artifactId>org.wso2.carbon.dataservices.odata.endpoint</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.data</groupId>
+            <artifactId>org.wso2.carbon.dataservices.capp.deployer</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -312,6 +316,7 @@
                                 <bundleDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.common</bundleDef>
                                 <bundleDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.sql.driver</bundleDef>
                                 <bundleDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.odata.endpoint</bundleDef>
+                                <bundleDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.capp.deployer</bundleDef>
                                 <bundleDef>com.google.gdata.wso2:gdata-core</bundleDef>
                                 <bundleDef>com.google.gdata.wso2:gdata-spreadsheet</bundleDef>
                                 <bundleDef>com.google.guava:guava</bundleDef>

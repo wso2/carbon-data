@@ -925,6 +925,21 @@
                 <artifactId>hbase-shaded-client</artifactId>
                 <version>${hbase.shaded.client.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.commons</groupId>
+                <artifactId>org.wso2.carbon.ndatasource.capp.deployer</artifactId>
+                <version>${carbon-commons.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.application.deployer</artifactId>
+                <version>${carbon.kernel.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.data</groupId>
+                <artifactId>org.wso2.carbon.dataservices.capp.deployer</artifactId>
+                <version>${dataservices.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

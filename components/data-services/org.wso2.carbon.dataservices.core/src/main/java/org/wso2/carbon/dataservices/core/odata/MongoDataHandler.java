@@ -212,8 +212,10 @@ public class MongoDataHandler implements ODataDataHandler {
         ODataEntry dataEntry;
         for (String keyName : keys.getData().keySet()) {
             String keyValue = keys.getValue(keyName);
-            String projectionResult = jongo.getCollection(tableName).findOne(new ObjectId(keyValue)).
-                map(MongoQuery.MongoResultMapper.getInstance());
+            String projectionResult = jongo.getCollection(tableName).findOne(new ObjectId(keyValue)).map(MongoQuery.MongoResultMapper.getInstance());
+            if (projectionResult == null) {
+                throw new ODataServiceFault("Document ID: " + keyValue + " does not exist in " + "collection: " + tableName + " .");
+            }
             Iterator<?> key = new JSONObject(projectionResult).keys();
             dataEntry = createDataEntryFromResult(projectionResult, key);
 

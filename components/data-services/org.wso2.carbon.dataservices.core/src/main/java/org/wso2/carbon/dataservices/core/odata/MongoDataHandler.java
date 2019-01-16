@@ -111,7 +111,8 @@ public class MongoDataHandler implements ODataDataHandler {
                 Iterator<?> keys = new JSONObject(tempValue).keys();
                 while (keys.hasNext()) {
                     String columnName = (String) keys.next();
-                    DataColumn dataColumn = new DataColumn(columnName, DataColumn.ODataDataType.STRING, ordinalPosition, true, 100, columnName.equals(DOCUMENT_ID));
+                    DataColumn dataColumn = new DataColumn(columnName, DataColumn.ODataDataType.STRING,
+                        ordinalPosition, true, 100, columnName.equals(DOCUMENT_ID));
                     column.put(columnName, dataColumn);
                     ordinalPosition++;
                 }
@@ -211,7 +212,8 @@ public class MongoDataHandler implements ODataDataHandler {
         ODataEntry dataEntry;
         for (String keyName : keys.getData().keySet()) {
             String keyValue = keys.getValue(keyName);
-            String projectionResult = jongo.getCollection(tableName).findOne(new ObjectId(keyValue)).map(MongoQuery.MongoResultMapper.getInstance());
+            String projectionResult = jongo.getCollection(tableName).findOne(new ObjectId(keyValue)).
+                map(MongoQuery.MongoResultMapper.getInstance());
             Iterator<?> key = new JSONObject(projectionResult).keys();
             dataEntry = createDataEntryFromResult(projectionResult, key);
 
@@ -267,9 +269,11 @@ public class MongoDataHandler implements ODataDataHandler {
             document.put(columnName, columnValue);
             entity.addValue(columnName, columnValue);
         }
+        ObjectId objectId = new ObjectId();
+        document.put("_id", objectId);
         jongo.getCollection(tableName).insert(document);
-        entity.addValue(DOCUMENT_ID, DOCUMENT_ID);
-        createdEntry.addValue(DOCUMENT_ID, DOCUMENT_ID);
+        String documentIdValue = objectId.toString();
+        createdEntry.addValue(DOCUMENT_ID, documentIdValue);
 
         //Set Etag to the entity
         createdEntry.addValue(ODataConstants.E_TAG, ODataUtils.generateETag(this.configId, tableName, entity));
@@ -299,7 +303,7 @@ public class MongoDataHandler implements ODataDataHandler {
      */
     public boolean updateEntityInTable(String tableName, ODataEntry newProperties) {
 
-        List<String> pKeys = this.primaryKeys.get(tableName);
+        List<String> primaryKeys = this.primaryKeys.get(tableName);
         String newPropertyObjectKeyValue = null;
         for (String newPropertyObjectKeyName : newProperties.getData().keySet()) {
             if (newPropertyObjectKeyName.equals(DOCUMENT_ID)) {
@@ -307,11 +311,10 @@ public class MongoDataHandler implements ODataDataHandler {
             }
         }
         for (String column : newProperties.getData().keySet()) {
-            if (!pKeys.contains(column)) {
+            if (!primaryKeys.contains(column)) {
                 String propertyValue = newProperties.getValue(column);
-                assert newPropertyObjectKeyValue != null;
-                jongo.getCollection(tableName).update(new ObjectId(newPropertyObjectKeyValue)).
-                    with(SET + column + ": '" + propertyValue + "'}}");
+                jongo.getCollection(tableName).update(new ObjectId(newPropertyObjectKeyValue)).upsert().
+                    with("{$set: {" + column + ": '" + propertyValue + "'}}");
             }
         }
         return true;
@@ -325,7 +328,8 @@ public class MongoDataHandler implements ODataDataHandler {
      * @param newProperties New Properties
      * @throws ODataServiceFault
      */
-    public boolean updateEntityInTableTransactional(String tableName, ODataEntry oldProperties, ODataEntry newProperties) {
+    public boolean updateEntityInTableTransactional(String tableName, ODataEntry oldProperties,
+                                                    ODataEntry newProperties) {
 
         List<String> pKeys = this.primaryKeys.get(tableName);
         String newPropertyObjectKeyValue = null;
@@ -335,7 +339,7 @@ public class MongoDataHandler implements ODataDataHandler {
                 newPropertyObjectKeyValue = newProperties.getValue(newPropertyObjectKeyName);
             }
         }
-        for (String oldPropertyObjectKeyName    : oldProperties.getData().keySet()) {
+        for (String oldPropertyObjectKeyName : oldProperties.getData().keySet()) {
             if (oldPropertyObjectKeyName.equals(DOCUMENT_ID)) {
                 oldPropertyObjectKeyValue = oldProperties.getValue(oldPropertyObjectKeyName);
             }
@@ -344,14 +348,16 @@ public class MongoDataHandler implements ODataDataHandler {
             if (!pKeys.contains(column)) {
                 String propertyValue = newProperties.getValue(column);
                 assert newPropertyObjectKeyValue != null;
-                jongo.getCollection(tableName).update(new ObjectId(newPropertyObjectKeyValue)).upsert().with(SET + column + ": '" + propertyValue + "'}}");
+                jongo.getCollection(tableName).update(new ObjectId(newPropertyObjectKeyValue)).upsert().
+                    with(SET + column + ": '" + propertyValue + "'}}");
             }
         }
         for (String column : oldProperties.getNames()) {
             if (!pKeys.contains(column)) {
                 String propertyValue = oldProperties.getValue(column);
                 assert oldPropertyObjectKeyValue != null;
-                jongo.getCollection(tableName).update(new ObjectId(oldPropertyObjectKeyValue)).upsert().with(SET + column + ": '" + propertyValue + "'}}");
+                jongo.getCollection(tableName).update(new ObjectId(oldPropertyObjectKeyValue)).upsert().
+                    with(SET + column + ": '" + propertyValue + "'}}");
             }
         }
         return true;
@@ -400,7 +406,8 @@ public class MongoDataHandler implements ODataDataHandler {
      * @throws ODataServiceFault
      */
 
-    public void updateReference(String rootTableName, ODataEntry rootTableKeys, String navigationTable, ODataEntry navigationTableKeys) throws ODataServiceFault {
+    public void updateReference(String rootTableName, ODataEntry rootTableKeys, String navigationTable,
+                                ODataEntry navigationTableKeys) throws ODataServiceFault {
 
         throw new ODataServiceFault("MongoDB datasources do not support references.");
     }
@@ -414,7 +421,8 @@ public class MongoDataHandler implements ODataDataHandler {
      * @param navigationTableKeys Navigation - Entity Name (Primary Keys)
      * @throws ODataServiceFault
      */
-    public void deleteReference(String rootTableName, ODataEntry rootTableKeys, String navigationTable, ODataEntry navigationTableKeys) throws ODataServiceFault {
+    public void deleteReference(String rootTableName, ODataEntry rootTableKeys, String navigationTable,
+                                ODataEntry navigationTableKeys) throws ODataServiceFault {
 
         throw new ODataServiceFault("MongoDB datasources do not support references.");
     }

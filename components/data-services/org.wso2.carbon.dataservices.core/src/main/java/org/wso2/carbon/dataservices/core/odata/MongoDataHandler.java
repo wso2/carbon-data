@@ -289,11 +289,16 @@ public class MongoDataHandler implements ODataDataHandler {
      * @param entity    Entity
      * @throws ODataServiceFault
      */
-    public boolean deleteEntityInTable(String tableName, ODataEntry entity) {
+    public boolean deleteEntityInTable(String tableName, ODataEntry entity) throws ODataServiceFault {
 
         String documentId = entity.getValue(DOCUMENT_ID);
-        WriteResult delete = jongo.getCollection(tableName).remove(new ObjectId(documentId));
-        return delete.wasAcknowledged();
+        String projectionResult = jongo.getCollection(tableName).findOne(new ObjectId(documentId)).map(MongoQuery.MongoResultMapper.getInstance());
+        if (projectionResult != null) {
+            WriteResult delete = jongo.getCollection(tableName).remove(new ObjectId(documentId));
+            return delete.wasAcknowledged();
+        } else {
+            throw new ODataServiceFault("Document ID: " + documentId + " does not exist in " + "collection: " + tableName + ".");
+        }
     }
 
     /**
@@ -303,23 +308,31 @@ public class MongoDataHandler implements ODataDataHandler {
      * @param newProperties New Properties
      * @throws ODataServiceFault
      */
-    public boolean updateEntityInTable(String tableName, ODataEntry newProperties) {
+    public boolean updateEntityInTable(String tableName, ODataEntry newProperties) throws ODataServiceFault {
 
         List<String> primaryKeys = this.primaryKeys.get(tableName);
         String newPropertyObjectKeyValue = null;
+        boolean wasUpdated = false;
         for (String newPropertyObjectKeyName : newProperties.getData().keySet()) {
             if (newPropertyObjectKeyName.equals(DOCUMENT_ID)) {
                 newPropertyObjectKeyValue = newProperties.getValue(newPropertyObjectKeyName);
             }
         }
-        for (String column : newProperties.getData().keySet()) {
-            if (!primaryKeys.contains(column)) {
-                String propertyValue = newProperties.getValue(column);
-                jongo.getCollection(tableName).update(new ObjectId(newPropertyObjectKeyValue)).upsert().
-                    with("{$set: {" + column + ": '" + propertyValue + "'}}");
+
+        String projectionResult = jongo.getCollection(tableName).findOne(new ObjectId(newPropertyObjectKeyValue)).map(MongoQuery.MongoResultMapper.getInstance());
+        if (projectionResult != null) {
+            for (String column : newProperties.getData().keySet()) {
+                if (!primaryKeys.contains(column)) {
+                    String propertyValue = newProperties.getValue(column);
+                    jongo.getCollection(tableName).update(new ObjectId(newPropertyObjectKeyValue)).upsert().
+                        with(SET + column + ": '" + propertyValue + "'}}");
+                    wasUpdated = true;
+                }
             }
+        } else {
+            throw new ODataServiceFault("Document ID: " + newPropertyObjectKeyValue + " does not exist in " + "collection: " + tableName + ".");
         }
-        return true;
+        return wasUpdated;
     }
 
     /**

@@ -64,17 +64,8 @@ public class MongoDataHandler implements ODataDataHandler {
     private Jongo jongo;
     private static final String ETAG = "ETag";
     private static final String DOCUMENT_ID = "_id";
-    private static final String SET = "{$set: {";
-
-    private ThreadLocal<Boolean> transactionAvailable = new ThreadLocal<Boolean>() {
-        protected synchronized Boolean initialValue() {
-
-            return false;
-        }
-    };
 
     public MongoDataHandler(String configId, Jongo jongo) {
-
         this.configId = configId;
         this.jongo = jongo;
         this.tableList = generateTableList();
@@ -93,12 +84,10 @@ public class MongoDataHandler implements ODataDataHandler {
      */
     @Override
     public Map<String, Map<String, DataColumn>> getTableMetadata() {
-
         return this.tableMetaData;
     }
 
     private Map<String, Map<String, DataColumn>> generateTableMetaData() {
-
         int ordinalPosition = 1;
         Map<String, Map<String, DataColumn>> metaData = new HashMap<>();
         HashMap<String, DataColumn> column = new HashMap<>();
@@ -129,15 +118,11 @@ public class MongoDataHandler implements ODataDataHandler {
      */
     @Override
     public List<String> getTableList() {
-
         return this.tableList;
     }
 
     private List<String> generateTableList() {
-
-        List<String> list = new ArrayList<>();
-        list.addAll(jongo.getDatabase().getCollectionNames());
-        return list;
+        return new ArrayList<>(jongo.getDatabase().getCollectionNames());
     }
 
     /**
@@ -149,12 +134,10 @@ public class MongoDataHandler implements ODataDataHandler {
      */
     @Override
     public Map<String, List<String>> getPrimaryKeys() {
-
         return this.primaryKeys;
     }
 
     private Map<String, List<String>> generatePrimaryKeys() {
-
         Map<String, List<String>> primaryKeyList = new HashMap<>();
         List<String> tableNames = this.tableList;
         List<String> primaryKey = new ArrayList<>();
@@ -175,7 +158,6 @@ public class MongoDataHandler implements ODataDataHandler {
      */
     @Override
     public List<ODataEntry> readTable(String tableName) {
-
         List<ODataEntry> entryList = new ArrayList<>();
         DBCollection readResult = jongo.getDatabase().getCollection(tableName);
         Iterator<DBObject> cursor = readResult.find();
@@ -187,7 +169,6 @@ public class MongoDataHandler implements ODataDataHandler {
             tempValue = documentData.toString();
             Iterator<?> keys = new JSONObject(tempValue).keys();
             dataEntry = createDataEntryFromResult(tempValue, keys);
-
             //Set Etag to the entity
             dataEntry.addValue(ETAG, ODataUtils.generateETag(this.configId, tableName, dataEntry));
             entryList.add(dataEntry);
@@ -207,18 +188,18 @@ public class MongoDataHandler implements ODataDataHandler {
      */
     @Override
     public List<ODataEntry> readTableWithKeys(String tableName, ODataEntry keys) throws ODataServiceFault {
-
         List<ODataEntry> entryList = new ArrayList<>();
         ODataEntry dataEntry;
         for (String keyName : keys.getData().keySet()) {
             String keyValue = keys.getValue(keyName);
-            String projectionResult = jongo.getCollection(tableName).findOne(new ObjectId(keyValue)).map(MongoQuery.MongoResultMapper.getInstance());
+            String projectionResult = jongo.getCollection(tableName).findOne(new ObjectId(keyValue)).
+                map(MongoQuery.MongoResultMapper.getInstance());
             if (projectionResult == null) {
-                throw new ODataServiceFault("Document ID: " + keyValue + " does not exist in " + "collection: " + tableName + " .");
+                throw new ODataServiceFault(DOCUMENT_ID + keyValue + " does not exist in collection: "
+                    + tableName + " .");
             }
             Iterator<?> key = new JSONObject(projectionResult).keys();
             dataEntry = createDataEntryFromResult(projectionResult, key);
-
             //Set Etag to the entity
             dataEntry.addValue(ETAG, ODataUtils.generateETag(this.configId, tableName, dataEntry));
             entryList.add(dataEntry);
@@ -236,7 +217,6 @@ public class MongoDataHandler implements ODataDataHandler {
      * @see DataEntry
      */
     private ODataEntry createDataEntryFromResult(String readResult, Iterator<?> keys) {
-
         ODataEntry dataEntry = new ODataEntry();
         while (keys.hasNext()) {
             String columnName = (String) keys.next();
@@ -262,8 +242,8 @@ public class MongoDataHandler implements ODataDataHandler {
      * @param entity    Entity
      * @throws ODataServiceFault
      */
+    @Override
     public ODataEntry insertEntityToTable(String tableName, ODataEntry entity) {
-
         ODataEntry createdEntry = new ODataEntry();
         final Document document = new Document();
         for (String columnName : entity.getData().keySet()) {
@@ -276,7 +256,6 @@ public class MongoDataHandler implements ODataDataHandler {
         jongo.getCollection(tableName).insert(document);
         String documentIdValue = objectId.toString();
         createdEntry.addValue(DOCUMENT_ID, documentIdValue);
-
         //Set Etag to the entity
         createdEntry.addValue(ODataConstants.E_TAG, ODataUtils.generateETag(this.configId, tableName, entity));
         return createdEntry;
@@ -289,15 +268,16 @@ public class MongoDataHandler implements ODataDataHandler {
      * @param entity    Entity
      * @throws ODataServiceFault
      */
+    @Override
     public boolean deleteEntityInTable(String tableName, ODataEntry entity) throws ODataServiceFault {
-
         String documentId = entity.getValue(DOCUMENT_ID);
-        String projectionResult = jongo.getCollection(tableName).findOne(new ObjectId(documentId)).map(MongoQuery.MongoResultMapper.getInstance());
-        if (projectionResult != null) {
-            WriteResult delete = jongo.getCollection(tableName).remove(new ObjectId(documentId));
+        WriteResult delete = jongo.getCollection(tableName).remove(new ObjectId(documentId));
+        int wasDeleted = delete.getN();
+        if (wasDeleted == 1) {
             return delete.wasAcknowledged();
         } else {
-            throw new ODataServiceFault("Document ID: " + documentId + " does not exist in " + "collection: " + tableName + ".");
+            throw new ODataServiceFault("Document ID: " + documentId + " does not exist in " +
+                "collection: " + tableName + ".");
         }
     }
 
@@ -308,31 +288,33 @@ public class MongoDataHandler implements ODataDataHandler {
      * @param newProperties New Properties
      * @throws ODataServiceFault
      */
+    @Override
     public boolean updateEntityInTable(String tableName, ODataEntry newProperties) throws ODataServiceFault {
-
-        List<String> primaryKeys = this.primaryKeys.get(tableName);
-        String newPropertyObjectKeyValue = null;
-        boolean wasUpdated = false;
-        for (String newPropertyObjectKeyName : newProperties.getData().keySet()) {
-            if (newPropertyObjectKeyName.equals(DOCUMENT_ID)) {
-                newPropertyObjectKeyValue = newProperties.getValue(newPropertyObjectKeyName);
-            }
-        }
-
-        String projectionResult = jongo.getCollection(tableName).findOne(new ObjectId(newPropertyObjectKeyValue)).map(MongoQuery.MongoResultMapper.getInstance());
-        if (projectionResult != null) {
-            for (String column : newProperties.getData().keySet()) {
-                if (!primaryKeys.contains(column)) {
-                    String propertyValue = newProperties.getValue(column);
-                    jongo.getCollection(tableName).update(new ObjectId(newPropertyObjectKeyValue)).upsert().
-                        with(SET + column + ": '" + propertyValue + "'}}");
-                    wasUpdated = true;
+        List<String> primaryKeyList = this.primaryKeys.get(tableName);
+        String newPropertyObjectKeyValue = newProperties.getValue(DOCUMENT_ID);
+        StringBuilder mongoUpdate = new StringBuilder();
+        mongoUpdate.append("{$set: {");
+        boolean propertyMatch = false;
+        for (String column : newProperties.getData().keySet()) {
+            if (!primaryKeyList.contains(column)) {
+                if (propertyMatch) {
+                    mongoUpdate.append("', ");
                 }
+                String propertyValue = newProperties.getValue(column);
+                mongoUpdate.append(column).append(": '").append(propertyValue);
+                propertyMatch = true;
             }
-        } else {
-            throw new ODataServiceFault("Document ID: " + newPropertyObjectKeyValue + " does not exist in " + "collection: " + tableName + ".");
         }
-        return wasUpdated;
+        mongoUpdate.append("'}}");
+        String query = mongoUpdate.toString();
+        WriteResult update = jongo.getCollection(tableName).update(new ObjectId(newPropertyObjectKeyValue)).with(query);
+        int wasUpdated = update.getN();
+        if (wasUpdated == 1) {
+            return update.wasAcknowledged();
+        } else {
+            throw new ODataServiceFault("Document ID: " + newPropertyObjectKeyValue +
+                " does not exist in collection: " + tableName + ".");
+        }
     }
 
     /**
@@ -343,52 +325,49 @@ public class MongoDataHandler implements ODataDataHandler {
      * @param newProperties New Properties
      * @throws ODataServiceFault
      */
+    @Override
     public boolean updateEntityInTableTransactional(String tableName, ODataEntry oldProperties,
-                                                    ODataEntry newProperties) {
-
-        List<String> pKeys = this.primaryKeys.get(tableName);
-        String newPropertyObjectKeyValue = null;
-        String oldPropertyObjectKeyValue = null;
-        for (String newPropertyObjectKeyName : newProperties.getData().keySet()) {
-            if (newPropertyObjectKeyName.equals(DOCUMENT_ID)) {
-                newPropertyObjectKeyValue = newProperties.getValue(newPropertyObjectKeyName);
-            }
-        }
-        for (String oldPropertyObjectKeyName : oldProperties.getData().keySet()) {
-            if (oldPropertyObjectKeyName.equals(DOCUMENT_ID)) {
-                oldPropertyObjectKeyValue = oldProperties.getValue(oldPropertyObjectKeyName);
-            }
-        }
+                                                    ODataEntry newProperties) throws ODataServiceFault{
+        String oldPropertyObjectKeyValue = oldProperties.getValue(DOCUMENT_ID);
+        StringBuilder updateNewProperties = new StringBuilder();
+        updateNewProperties.append("{$set: {");
+        boolean propertyMatch = false;
         for (String column : newProperties.getData().keySet()) {
-            if (!pKeys.contains(column)) {
-                String propertyValue = newProperties.getValue(column);
-                assert newPropertyObjectKeyValue != null;
-                jongo.getCollection(tableName).update(new ObjectId(newPropertyObjectKeyValue)).upsert().
-                    with(SET + column + ": '" + propertyValue + "'}}");
+            if (propertyMatch) {
+                updateNewProperties.append("', ");
             }
+            String propertyValue = newProperties.getValue(column);
+            updateNewProperties.append(column).append(": '").append(propertyValue);
+            propertyMatch = true;
         }
-        for (String column : oldProperties.getNames()) {
-            if (!pKeys.contains(column)) {
-                String propertyValue = oldProperties.getValue(column);
-                assert oldPropertyObjectKeyValue != null;
-                jongo.getCollection(tableName).update(new ObjectId(oldPropertyObjectKeyValue)).upsert().
-                    with(SET + column + ": '" + propertyValue + "'}}");
-            }
+        updateNewProperties.append("'}}");
+        String query = updateNewProperties.toString();
+        WriteResult update = jongo.getCollection(tableName).update(new ObjectId(oldPropertyObjectKeyValue)).with(query);
+        int wasUpdated = update.getN();
+        if (wasUpdated == 1) {
+            return update.wasAcknowledged();
+        } else {
+            throw new ODataServiceFault("Error occured while updating the entity to collection :" +
+                tableName + ".");
         }
-        return true;
     }
 
     @Override
     public Map<String, NavigationTable> getNavigationProperties() {
-
         return null;
     }
+
+    private ThreadLocal<Boolean> transactionAvailable = new ThreadLocal<Boolean>() {
+        protected synchronized Boolean initialValue() {
+            return false;
+        }
+    };
 
     /**
      * This method opens the transaction.
      */
+    @Override
     public void openTransaction() {
-
         this.transactionAvailable.set(true);
         // doesn't support
     }
@@ -396,8 +375,8 @@ public class MongoDataHandler implements ODataDataHandler {
     /**
      * This method commits the transaction.
      */
+    @Override
     public void commitTransaction() {
-
         this.transactionAvailable.set(false);
         // doesn't support
     }
@@ -405,8 +384,8 @@ public class MongoDataHandler implements ODataDataHandler {
     /**
      * This method rollbacks the transaction.
      */
+    @Override
     public void rollbackTransaction() {
-
         this.transactionAvailable.set(false);
         // doesn't support
     }
@@ -420,10 +399,9 @@ public class MongoDataHandler implements ODataDataHandler {
      * @param navigationTableKeys Navigation - Entity Name (Primary Keys)
      * @throws ODataServiceFault
      */
-
+    @Override
     public void updateReference(String rootTableName, ODataEntry rootTableKeys, String navigationTable,
                                 ODataEntry navigationTableKeys) throws ODataServiceFault {
-
         throw new ODataServiceFault("MongoDB datasources do not support references.");
     }
 
@@ -436,9 +414,10 @@ public class MongoDataHandler implements ODataDataHandler {
      * @param navigationTableKeys Navigation - Entity Name (Primary Keys)
      * @throws ODataServiceFault
      */
+
+    @Override
     public void deleteReference(String rootTableName, ODataEntry rootTableKeys, String navigationTable,
                                 ODataEntry navigationTableKeys) throws ODataServiceFault {
-
         throw new ODataServiceFault("MongoDB datasources do not support references.");
     }
 }

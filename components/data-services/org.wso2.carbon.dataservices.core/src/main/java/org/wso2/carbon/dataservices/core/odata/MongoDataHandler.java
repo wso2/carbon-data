@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -48,7 +48,7 @@ public class MongoDataHandler implements ODataDataHandler {
     private final String configId;
 
     /**
-     * ObjectId s of the Collections
+     * DocumentId/ObjectId s of the Collections
      */
     private Map<String, List<String>> primaryKeys;
 
@@ -252,7 +252,7 @@ public class MongoDataHandler implements ODataDataHandler {
             entity.addValue(columnName, columnValue);
         }
         ObjectId objectId = new ObjectId();
-        document.put("_id", objectId);
+        document.put(DOCUMENT_ID, objectId);
         jongo.getCollection(tableName).insert(document);
         String documentIdValue = objectId.toString();
         createdEntry.addValue(DOCUMENT_ID, documentIdValue);

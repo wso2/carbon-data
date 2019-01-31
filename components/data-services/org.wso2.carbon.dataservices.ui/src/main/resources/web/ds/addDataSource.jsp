@@ -577,6 +577,11 @@ private Config addNotAvailableFunctions(Config config,String selectedType, HttpS
         if (config.getPropertyValue(DBConstants.MongoDB.THREADS_ALLOWED_TO_BLOCK_CONN_MULTIPLIER) == null) {
             config.addProperty(DBConstants.MongoDB.THREADS_ALLOWED_TO_BLOCK_CONN_MULTIPLIER, "");
         }
+        if (config.isExposeAsODataService() == true) {
+        	isOData = true;
+        } else {
+        	isOData = false;
+        }
     } else if (DBConstants.DataSourceTypes.CUSTOM.equals(selectedType)) {
     	if (config.getPropertyValue(DBConstants.CustomDataSource.DATA_SOURCE_QUERY_CLASS) == null) {
     		ArrayList<Property> properties = null;
@@ -607,7 +612,7 @@ private Config addNotAvailableFunctions(Config config,String selectedType, HttpS
 
 /* private Config addRDBMSProps(Config config, String selectedType, HttpServletRequest request) {
 	if (DBConstants.DataSourceTypes.RDBMS.equals(selectedType)) {
-		
+
 	}
 } */
 
@@ -621,20 +626,20 @@ private String getDataSourceType(String jdbcUrl) {
             return DBConstants.DataSourceTypes.EXCEL;
         } else if (DBConstants.DSSQLDriverPrefixes.GSPRED_PREFIX.equals(m.group())) {
             return DBConstants.DataSourceTypes.GDATA_SPREADSHEET;
-        } 
+        }
     }
     return DBConstants.DataSourceTypes.RDBMS;
 }
 
 private String getExcelGspreadUrl(String excelGspreadJDBCUrl, String dsType) {
 	if (dsType.equals("GDATA_SPREADSHEET")) {
-		String gSpreadPrexixesString = DBConstants.DSSQLDriverPrefixes.GSPRED_PREFIX + ":" + 
+		String gSpreadPrexixesString = DBConstants.DSSQLDriverPrefixes.GSPRED_PREFIX + ":" +
 				DBConstants.DSSQLDriverPrefixes.FILE_PATH + "=";
 		int gSpreadPrexixesLength = gSpreadPrexixesString.length();
 		int endIndex = excelGspreadJDBCUrl.indexOf(";");
 		return excelGspreadJDBCUrl.substring(gSpreadPrexixesLength, endIndex);
 	} else {
-		String excelPrexixesString = DBConstants.DSSQLDriverPrefixes.EXCEL_PREFIX + ":" + 
+		String excelPrexixesString = DBConstants.DSSQLDriverPrefixes.EXCEL_PREFIX + ":" +
 				DBConstants.DSSQLDriverPrefixes.FILE_PATH + "=";
 		int excelPrexixesLength = excelPrexixesString.length();
 		return excelGspreadJDBCUrl.substring(excelPrexixesLength);
@@ -647,16 +652,16 @@ private String getVisibility(String gSpreadJDBCUrl) {
 		String subParams[] = params[1].split("=");
 		if (subParams.length > 1 && subParams[0].equals("visibility")) {
 			return subParams[1];
-		} 
+		}
 		if (params.length > 1)
 		subParams = params[2].split("=");
 		if (subParams.length > 1 && subParams[0].equals("visibility")) {
 			return subParams[1];
-		} 
+		}
 	}
 	return "";
-	
-} 
+
+}
 
 private String getSheetName(String gSpreadJDBCUrl) {
 	String params[] = gSpreadJDBCUrl.split(";");
@@ -664,12 +669,12 @@ private String getSheetName(String gSpreadJDBCUrl) {
 		String subParams[] = params[1].split("=");
 		if (subParams.length > 1 && subParams[0].equals("sheetName")) {
 			return subParams[1];
-		} 
+		}
 		if (params.length > 1)
 		subParams = params[2].split("=");
 		if (subParams.length > 1 && subParams[0].equals("sheetName")) {
 			return subParams[1];
-		} 
+		}
 	}
 	return "";
 }
@@ -911,7 +916,7 @@ private String getRefreshToken(String gSpreadJDBCUrl) {
             if(dsConfig.getPropertyValue("gspread_visibility") instanceof String) {
                 visibility = (String)dsConfig.getPropertyValue("gspread_visibility");
             }
-            
+
             if(dsConfig.getPropertyValue(CustomDataSource.DATA_SOURCE_QUERY_CLASS) != null &&
             		dsConfig.getPropertyValue(CustomDataSource.DATA_SOURCE_QUERY_CLASS).toString().trim().length() > 0) {
                 customDSType = DBConstants.DataSourceTypes.CUSTOM_QUERY;
@@ -1077,11 +1082,11 @@ private String getRefreshToken(String gSpreadJDBCUrl) {
     String passwordAlias = "";
     boolean useSecretAlias = false;
     boolean useQueryMode = false;
-    boolean customConClassAdded = false; 
+    boolean customConClassAdded = false;
     try {
         if (configId != null && configId.trim().length() > 0) {
             Config dsConfig = dataService.getConfig(configId);
-            
+
             if (dsConfig == null || (dsConfig !=null && !flag.equals("edit"))) {
                 dsConfig = newConfig;
             }
@@ -1104,7 +1109,7 @@ private String getRefreshToken(String gSpreadJDBCUrl) {
                         String jdbcUrl = dsConfig.getPropertyValue(DBConstants.RDBMS.URL).toString();
                         if ((jdbcUrl != null) && jdbcUrl.trim().length() > 0) {
                         	dataSourceType = getDataSourceType(jdbcUrl);
-                        		if (dataSourceType.equals(DBConstants.DataSourceTypes.GDATA_SPREADSHEET) || 
+                        		if (dataSourceType.equals(DBConstants.DataSourceTypes.GDATA_SPREADSHEET) ||
                         			dataSourceType.equals(DBConstants.DataSourceTypes.EXCEL)) {
                         			useQueryMode = true;
                         			if (dataSourceType.equals(DBConstants.DataSourceTypes.GDATA_SPREADSHEET)) {
@@ -1327,7 +1332,7 @@ private String getRefreshToken(String gSpreadJDBCUrl) {
                     } else {%>
                     <option value="WEB_CONFIG">Web Datasource</option>
                     <%}%>
-                    
+
                     <% if (dataSourceType.equals("CUSTOM")) { %>
                     <option value="CUSTOM" selected="selected">Custom Datasource</option>
                     <%
@@ -1366,7 +1371,7 @@ private String getRefreshToken(String gSpreadJDBCUrl) {
 	        	</td>
 	        	<td>
 	        		<%if(useQueryMode) { %>
-	        			<input type="checkbox" id="useQueryMode" name="useQueryMode" onclick="showGsExcelProperties(this, '<%=dataSourceType%>')" 
+	        			<input type="checkbox" id="useQueryMode" name="useQueryMode" onclick="showGsExcelProperties(this, '<%=dataSourceType%>')"
 	        			checked/>
 	        		<%} else { %>
 	        			<input type="checkbox" id="useQueryMode" name="useQueryMode" onclick="showGsExcelProperties(this, '<%=dataSourceType%>')"/>
@@ -1663,17 +1668,17 @@ private String getRefreshToken(String gSpreadJDBCUrl) {
                         <input type="text" size="50" id="<%=availableProperty.getName()%>" name="<%=availableProperty.getName()%>"
                                value="<%=availableProperty.getValue()%>"/>
                         <% if(availableProperty.isUseSecretAlias()) {%>
-                        <input type="checkbox" id="useSecretAliasFor<%=availableProperty.getName()%>" name="useSecretAliasFor<%=availableProperty.getName()%>" 
+                        <input type="checkbox" id="useSecretAliasFor<%=availableProperty.getName()%>" name="useSecretAliasFor<%=availableProperty.getName()%>"
                         						onclick="getUseSecretAliasValueForProperty(this,'useSecretAliasFor<%=availableProperty.getName()%>')"
                         						checked/>
                         <% } else {%>
-                        <input type="checkbox" id="useSecretAliasFor<%=availableProperty.getName()%>" name="useSecretAliasFor<%=availableProperty.getName()%>" 
+                        <input type="checkbox" id="useSecretAliasFor<%=availableProperty.getName()%>" name="useSecretAliasFor<%=availableProperty.getName()%>"
                         						onclick="getUseSecretAliasValueForProperty(this,'useSecretAliasFor<%=availableProperty.getName()%>')"
                         						/>
                         <%} %>
 	               		<fmt:message key="usePasswordAlias"/>
 	               	</td>
-                    
+
                 </tr>
             <%
         }%>
@@ -1681,7 +1686,7 @@ private String getRefreshToken(String gSpreadJDBCUrl) {
                 <td colspan="2">
                     <a class="icon-link" style="background-image:url(../admin/images/add.gif);" onclick="addXAPropertyFields(document,document.getElementById('propertyCount').value);" ><fmt:message key="add.new.xa.datasource.properties"/></a>
                 </td>
-                
+
             </tr>
             <tr>
             	<td id="externalDSProperties" style="display:none" colspan="2">
@@ -1702,24 +1707,24 @@ private String getRefreshToken(String gSpreadJDBCUrl) {
                         <input type="text" size="50" id="<%=availableProperty.getName()%>" name="<%=availableProperty.getName()%>"
                                value="<%=availableProperty.getValue()%>"/>
                         <% if(availableProperty.isUseSecretAlias()) {%>
-                        <input type="checkbox" id="useSecretAliasFor<%=availableProperty.getName()%>" name="useSecretAliasFor<%=availableProperty.getName()%>" 
+                        <input type="checkbox" id="useSecretAliasFor<%=availableProperty.getName()%>" name="useSecretAliasFor<%=availableProperty.getName()%>"
                         						onclick="getUseSecretAliasValueForProperty(this,'useSecretAliasFor<%=availableProperty.getName()%>')"
                         						checked/>
                         <% } else {%>
-                        <input type="checkbox" id="useSecretAliasFor<%=availableProperty.getName()%>" name="useSecretAliasFor<%=availableProperty.getName()%>" 
+                        <input type="checkbox" id="useSecretAliasFor<%=availableProperty.getName()%>" name="useSecretAliasFor<%=availableProperty.getName()%>"
                         						onclick="getUseSecretAliasValueForProperty(this,'useSecretAliasFor<%=availableProperty.getName()%>')"
                         						/>
                         <%} %>
 	               		<fmt:message key="usePasswordAlias"/>
 	               	</td>
-                    
+
                 </tr>
             <%  }%>
         <tr>
                 <td colspan="2">
                     <a class="icon-link" style="background-image:url(../admin/images/add.gif);" onclick="addXAPropertyFields(document,document.getElementById('propertyCount').value);" ><fmt:message key="add.new.xa.datasource.properties"/></a>
                 </td>
-                
+
             </tr>
             <tr>
             	<td id="externalDSProperties" style="display:none" colspan="2">
@@ -1728,7 +1733,7 @@ private String getRefreshToken(String gSpreadJDBCUrl) {
                 	</tbody>
                 	</table>
                 </td>
-            </tr>	
+            </tr>
         <%}
         } %>
 
@@ -1800,9 +1805,9 @@ private String getRefreshToken(String gSpreadJDBCUrl) {
             ||propertyName.equals(DBConstants.RDBMS.ALTERNATE_USERNAME_ALLOWED)
             ||propertyName.equals(DBConstants.RDBMS.DYNAMIC_USER_AUTH_CLASS)
             ||propertyName.equals(DBConstants.RDBMS.DYNAMIC_USER_AUTH_MAPPING)
-            ||propertyName.equals(DBConstants.CustomDataSource.DATA_SOURCE_PROPS) 
+            ||propertyName.equals(DBConstants.CustomDataSource.DATA_SOURCE_PROPS)
             ||propertyName.equals(DBConstants.CustomDataSource.DATA_SOURCE_QUERY_CLASS)
-            ||propertyName.equals(DBConstants.CustomDataSource.DATA_SOURCE_TABULAR_CLASS)) && 
+            ||propertyName.equals(DBConstants.CustomDataSource.DATA_SOURCE_TABULAR_CLASS)) &&
             	!(propertyName.equals(DBConstants.GSpread.DATASOURCE) && useQueryMode) &&
             	!(propertyName.equals("gspread_visibility") && useQueryMode)
             ){%>
@@ -2172,7 +2177,7 @@ private String getRefreshToken(String gSpreadJDBCUrl) {
          		    ||propertyName.equals(RDBMS.URL)
          		    ||propertyName.equals(RDBMS.USERNAME)
          		    || propertyName.equals(RDBMS.PASSWORD)) && !isXAType) {
-         			  
+
          			  if (!(dataSourceType.equals("GDATA_SPREADSHEET") || dataSourceType.equals("EXCEL"))) {
          		%>
                  <tr>
@@ -2196,7 +2201,7 @@ private String getRefreshToken(String gSpreadJDBCUrl) {
 	               		<%} %>
 	               		<input type="hidden" id="useSecretAliasValue" name="useSecretAliasValue" size="50" value="<%=useSecretAlias%>">
 	               		</td>
-	            
+
                 </tr>
                		<%} else {  %>
 
@@ -2271,8 +2276,8 @@ private String getRefreshToken(String gSpreadJDBCUrl) {
                  			<%--</td>--%>
                  		<%--</tr>--%>
                  	<%} %>
-                 <% }%> 
-                 
+                 <% }%>
+
                  <%}  else if (propertyName.equals(RDBMS.DATASOURCE_CLASSNAME) && isXAType) {  %>
                     <tr>
                         <td><label><fmt:message key="xa.datasource.class"/><font color="red">*</font></label>
@@ -2328,7 +2333,7 @@ private String getRefreshToken(String gSpreadJDBCUrl) {
             <% }
             } %>
         </select>
-        <% } else if (propertyName.equals("web_harvest_config")) {            
+        <% } else if (propertyName.equals("web_harvest_config")) {
               boolean checked = false;
               String filePath = "";
               String configEle = "";
@@ -2355,7 +2360,7 @@ private String getRefreshToken(String gSpreadJDBCUrl) {
 
         <% } else {
         	if(propertyName.equals("gspread_password") || propertyName.equals("jndi_password") || propertyName.equals(DBConstants.Cassandra.PASSWORD)) {%>
-        	
+
         	<%if ((propertyName.equals("gspread_password") && !useQueryMode) || propertyName.equals("jndi_password") || propertyName.equals(DBConstants.Cassandra.PASSWORD)) { %>
 		        <%if(useSecretAlias) {%>
 			               <input type="text" size="50" id="pwdalias" name="pwdalias" value="<%=propertyValue%>">
@@ -2429,7 +2434,7 @@ private String getRefreshToken(String gSpreadJDBCUrl) {
             ||propertyName.equals(DBConstants.RDBMS.ALTERNATE_USERNAME_ALLOWED)
             ||propertyName.equals(DBConstants.RDBMS.DYNAMIC_USER_AUTH_CLASS)
             ||propertyName.equals(DBConstants.RDBMS.DYNAMIC_USER_AUTH_MAPPING)
-            ||propertyName.equals(DBConstants.CustomDataSource.DATA_SOURCE_PROPS) 
+            ||propertyName.equals(DBConstants.CustomDataSource.DATA_SOURCE_PROPS)
             ||propertyName.equals(DBConstants.CustomDataSource.DATA_SOURCE_QUERY_CLASS)
             ||propertyName.equals(DBConstants.CustomDataSource.DATA_SOURCE_TABULAR_CLASS)) && !(propertyName.equals(DBConstants.GSpread.DATASOURCE) && useQueryMode)
             && !(propertyName.equals(DBConstants.GSpread.USERNAME) && useQueryMode)){ %>
@@ -2445,7 +2450,7 @@ private String getRefreshToken(String gSpreadJDBCUrl) {
     }
     }
 %>
-<% if("RDBMS".equals(dataSourceType) || "Cassandra".equals(dataSourceType) || "CARBON_DATASOURCE".equals(dataSourceType)) { %>
+<% if("RDBMS".equals(dataSourceType) || "Cassandra".equals(dataSourceType) || "MongoDB".equals(dataSourceType) || "CARBON_DATASOURCE".equals(dataSourceType)) { %>
 <tr>
     <td class="leftCol-small" style="white-space: nowrap;">
         Enable OData</td>

@@ -32,6 +32,7 @@ import org.wso2.carbon.dataservices.common.DBConstants;
 import org.wso2.carbon.dataservices.core.DBUtils;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
 import org.wso2.carbon.dataservices.core.engine.DataService;
+import org.wso2.carbon.dataservices.core.odata.MongoDataHandler;
 import org.wso2.carbon.dataservices.core.odata.ODataDataHandler;
 import org.wso2.carbon.dataservices.core.odata.ODataServiceFault;
 
@@ -119,9 +120,8 @@ public class MongoConfig extends Config {
     }
 
     @Override
-    public ODataDataHandler createODataHandler() throws ODataServiceFault {
-        throw new ODataServiceFault("Expose as OData Service feature doesn't support for the " + getConfigId() +
-                                   " Datasource.");
+    public ODataDataHandler createODataHandler() {
+        return new MongoDataHandler(getConfigId(), getJongo());
     }
 
     private MongoClientOptions extractMongoOptions(Map<String, String> properties) {

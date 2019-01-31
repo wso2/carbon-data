@@ -276,8 +276,8 @@ public class MongoDataHandler implements ODataDataHandler {
         if (wasDeleted == 1) {
             return delete.wasAcknowledged();
         } else {
-            throw new ODataServiceFault("Document ID: " + documentId + " does not exist in " +
-                "collection: " + tableName + ".");
+            throw new ODataServiceFault("Document ID: " + documentId + " does not exist in "
+                    + "collection: " + tableName + ".");
         }
     }
 
@@ -312,8 +312,8 @@ public class MongoDataHandler implements ODataDataHandler {
         if (wasUpdated == 1) {
             return update.wasAcknowledged();
         } else {
-            throw new ODataServiceFault("Document ID: " + newPropertyObjectKeyValue +
-                " does not exist in collection: " + tableName + ".");
+            throw new ODataServiceFault("Document ID: " + newPropertyObjectKeyValue
+                    + " does not exist in collection: " + tableName + ".");
         }
     }
 
@@ -327,7 +327,7 @@ public class MongoDataHandler implements ODataDataHandler {
      */
     @Override
     public boolean updateEntityInTableTransactional(String tableName, ODataEntry oldProperties,
-                                                    ODataEntry newProperties) throws ODataServiceFault{
+                                                    ODataEntry newProperties) throws ODataServiceFault {
         String oldPropertyObjectKeyValue = oldProperties.getValue(DOCUMENT_ID);
         StringBuilder updateNewProperties = new StringBuilder();
         updateNewProperties.append("{$set: {");
@@ -347,8 +347,8 @@ public class MongoDataHandler implements ODataDataHandler {
         if (wasUpdated == 1) {
             return update.wasAcknowledged();
         } else {
-            throw new ODataServiceFault("Error occured while updating the entity to collection :" +
-                tableName + ".");
+            throw new ODataServiceFault("Error occured while updating the entity to collection :"
+                    + tableName + ".");
         }
     }
 
@@ -420,4 +420,4 @@ public class MongoDataHandler implements ODataDataHandler {
                                 ODataEntry navigationTableKeys) throws ODataServiceFault {
         throw new ODataServiceFault("MongoDB datasources do not support references.");
     }
-}
+}   

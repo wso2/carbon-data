@@ -53,6 +53,12 @@
             <groupId>org.wso2.carbon.deployment</groupId>
             <artifactId>org.wso2.carbon.service.mgt.ui.feature</artifactId>
             <type>zip</type>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>log4j-over-slf4j</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
       	 <dependency>
             <groupId>org.wso2.carbon.commons</groupId>

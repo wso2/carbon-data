@@ -43,6 +43,7 @@
     String valPattern = request.getParameter("pattern");
     String valCustomClass = request.getParameter("customClass");
     String structType = request.getParameter("structType");
+    String optional = request.getParameter("optional");
     String dsValidatorProperties = request.getParameter("dsValidatorProperties");
     paramType = (paramType == null ) ? "SCALAR" : paramType;
     sqlType = (sqlType == null) ? "" : sqlType;
@@ -141,6 +142,7 @@
                                      param.setParamType(paramType);
                                      param.setSqlType(sqlType);
                                      param.setType(inOutType);
+                                     param.setOptional(optional);
                                      /*if( flag.equals("deleteValidator")) {
                                          validators.remove(validateElementName);
                                      }*/
@@ -170,6 +172,7 @@
                             param.setType(inOutType);
                             param.setParamType(paramType);
                             param.setValidarors(validators);
+                            param.setOptional(optional);
                             if(defaultValue != null && defaultValue.trim().length() > 0){
                                 param.setDefaultValue(defaultValue);
                             }

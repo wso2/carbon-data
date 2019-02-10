@@ -213,11 +213,15 @@ public abstract class Query extends XMLWriterHelper {
 						QueryTypes.INOUT.equals(queryParam.getType()))) {
 					/* check the exported values */
 					tmpParamValue = exportedParams.get(queryParam.getName());
-					if (tmpParamValue == null && !queryParam.hasDefaultValue()) {
+					if (queryParam.isOptional()) {
+						continue;
+					} else {
+						if (tmpParamValue == null && !queryParam.hasDefaultValue()) {
 						/* still can't find, throw an exception */
-						throw new DataServiceFault(FaultCodes.INCOMPATIBLE_PARAMETERS_ERROR,
-								"Error in 'Query.extractParams', " +
+							throw new DataServiceFault(FaultCodes.INCOMPATIBLE_PARAMETERS_ERROR,
+							"Error in 'Query.extractParams', " +
 								"cannot find query param with name:" + queryParam.getName());
+						}
 					}
 				}
 			}

@@ -31,6 +31,7 @@ import org.wso2.carbon.dataservices.common.DBConstants;
 import org.wso2.carbon.dataservices.common.DBConstants.ResultTypes;
 import org.wso2.carbon.dataservices.core.description.operation.Operation;
 import org.wso2.carbon.dataservices.core.description.query.Query;
+import org.wso2.carbon.dataservices.core.description.query.SQLQuery;
 import org.wso2.carbon.dataservices.core.description.resource.Resource;
 import org.wso2.carbon.dataservices.core.description.resource.Resource.ResourceID;
 import org.wso2.carbon.dataservices.core.engine.*;
@@ -211,6 +212,7 @@ public class DataServiceDocLitWrappedSchemaGenerator {
 		AxisOperation axisOp = cparams.getAxisService().getOperation(new QName(requestName));
 		CallQuery callQuery = request.getCallQuery();
 		Query query = callQuery.getQuery();
+		boolean optional = false;
 		AxisMessage inMessage = axisOp.getMessage(WSDLConstants.MESSAGE_LABEL_IN_VALUE);
 		if (inMessage != null) {
                 inMessage.setName(requestName + Java2WSDLConstants.MESSAGE_SUFFIX);
@@ -255,9 +257,17 @@ public class DataServiceDocLitWrappedSchemaGenerator {
                                 }
                                 tmpEl = createInputEntryElement(cparams, query, queryParam,
                                         tmpWithParam);
+                                /* checking if query is SQL update query and for optional parameters*/
+                                if (callQuery.getQuery() instanceof SQLQuery
+                                   && ((SQLQuery) query).getSqlQueryType() == SQLQuery.QueryType.UPDATE
+                                   && queryParam.isOptional()) {
+                                   optional = true;
+                                } else {
+                                   optional = false;
+                                }
                                 /* add to input element complex type */
-                                addElementToComplexTypeSequence(cparams, inputComplexType,
-                                        query.getInputNamespace(), tmpEl, false, false, false);
+                                addElementToComplexTypeSequence(cparams, inputComplexType,query.getInputNamespace(),
+                                     tmpEl, false, false, optional);
                             }
                         }
                     } else {

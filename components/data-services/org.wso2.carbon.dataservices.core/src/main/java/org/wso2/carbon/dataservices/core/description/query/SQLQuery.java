@@ -2525,7 +2525,7 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
     public static QueryType sqlQueryType(String sqlQuery) {
 
         String query = sqlQuery.substring(0, sqlQuery.indexOf(" ")).toUpperCase();
-        ;
+        
         switch (query) {
             case "UPDATE":
                 sqlQueryType = QueryType.UPDATE;

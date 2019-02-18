@@ -17,6 +17,7 @@
  */
 package org.wso2.carbon.dataservices.capp.deployer.internal;
 
+import java.util.Objects;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
@@ -28,15 +29,19 @@ import org.wso2.carbon.ndatasource.capp.deployer.DataSourceCappDeployer;
  * @scr.component name="org.wso2.carbon.dataservices.capp.deployer" immediate="true"
  * @scr.reference name="org.wso2.carbon.application.deployer.handler"
  * interface="org.wso2.carbon.application.deployer.handler.AppDeploymentHandler"
- * cardinality="1..n" policy="dynamic" bind="setDataSrcCappDeployer" unbind="unsetDataSrcCappDeployer"
+ * cardinality="1..n" policy="dynamic" bind="setDataServiceCappDeployer" unbind="unsetDataServiceCappDeployer"
  */
 public class DataServiceCappDeployerServiceComponent {
 
     private static final Log log = LogFactory.getLog(DataServiceCappDeployerServiceComponent.class);
     private ComponentContext ctx;
+    private AppDeploymentHandler appDepHandler;
 
     protected synchronized void activate(ComponentContext ctx) {
         this.ctx = ctx;
+        if (Objects.nonNull(appDepHandler)) {
+            registerDataServiceCappDeployer();
+        }
         if (log.isDebugEnabled()) {
             log.debug("Data Service Capp deployer activated");
         }
@@ -49,19 +54,32 @@ public class DataServiceCappDeployerServiceComponent {
         }
     }
 
-    protected void setDataSrcCappDeployer(AppDeploymentHandler appDeploymentHandler) {
+    protected void setDataServiceCappDeployer(AppDeploymentHandler appDeploymentHandler) {
         if (appDeploymentHandler instanceof DataSourceCappDeployer) {
-            try {
-                //register data source deployer as an OSGi service
-                DataServiceCappDeployer dataServiceCappDeployer = new DataServiceCappDeployer();
-                this.ctx.getBundleContext().registerService(AppDeploymentHandler.class.getName(),
-                                                            dataServiceCappDeployer, null);
-            } catch (Throwable e) {
-                log.error("Failed to activate Data Service Capp Deployer", e);
+            if (Objects.isNull(ctx)) {
+                // save appDeploymentHandler
+                appDepHandler = appDeploymentHandler;
+            } else {
+                registerDataServiceCappDeployer();
             }
         }
     }
 
-    protected void unsetDataSrcCappDeployer(AppDeploymentHandler appDeploymentHandler) {
+    protected void unsetDataServiceCappDeployer(AppDeploymentHandler appDeploymentHandler) {
+        if (appDeploymentHandler.equals(appDepHandler)) {
+            appDepHandler = null;
+        }
+    }
+
+    /**
+     * register data source deployer as an OSGi service
+     */
+    private void registerDataServiceCappDeployer() {
+        try {
+            ctx.getBundleContext().registerService(AppDeploymentHandler.class.getName(),
+                                                   new DataServiceCappDeployer(), null);
+        } catch (Throwable e) {
+            log.error("Failed to activate Data Service Capp Deployer", e);
+        }
     }
 }

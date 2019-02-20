@@ -258,15 +258,11 @@ public class DataServiceDocLitWrappedSchemaGenerator {
                                 tmpEl = createInputEntryElement(cparams, query, queryParam,
                                         tmpWithParam);
                                 /* checking if query is SQL update query and for optional parameters*/
-                                if (callQuery.getQuery() instanceof SQLQuery
-                                   && ((SQLQuery) query).getSqlQueryType() == SQLQuery.QueryType.UPDATE
-                                   && queryParam.isOptional()) {
-                                   optional = true;
-                                } else {
-                                   optional = false;
-                                }
+                                optional = callQuery.getQuery() instanceof SQLQuery
+                                        && ((SQLQuery) query).getSqlQueryType() == SQLQuery.QueryType.UPDATE
+                                        && queryParam.isOptional();
                                 /* add to input element complex type */
-                                addElementToComplexTypeSequence(cparams, inputComplexType,query.getInputNamespace(),
+                                addElementToComplexTypeSequence(cparams, inputComplexType, query.getInputNamespace(),
                                      tmpEl, false, false, optional);
                             }
                         }

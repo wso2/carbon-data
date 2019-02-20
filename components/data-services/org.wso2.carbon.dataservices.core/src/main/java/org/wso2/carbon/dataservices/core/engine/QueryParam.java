@@ -170,11 +170,11 @@ public class QueryParam {
 	return forceDefault;
     }
 
-	public boolean isOptional() {
+    public boolean isOptional() {
 	return optional;
 	}
 
-	public boolean hasDefaultValue() {
+    public boolean hasDefaultValue() {
     	return this.getDefaultValue() != null;
     }
 

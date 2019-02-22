@@ -463,7 +463,7 @@
             </dependency>
             <dependency>
                 <groupId>org.jboss.spec.javax.transaction</groupId>
-                <artifactId>jboss-transaction-api_1.1_spec</artifactId>
+                <artifactId>jboss-transaction-api_1.2_spec</artifactId>
                 <version>${jboss-transaction-api.version}</version>
             </dependency>
             <!--<dependency>--> <!-- keep this for the time being, not used inside the code - rajith -->
@@ -1288,7 +1288,7 @@
         <saxon.orbit.version>8.9.0.wso2v2</saxon.orbit.version>
         <commons-httpclient.orbit.version>3.1.0.wso2v2</commons-httpclient.orbit.version>
         <htmlcleaner.orbit.version>2.1.0.wso2v1</htmlcleaner.orbit.version>
-        <jboss-transaction-api.version>1.0.1.Final</jboss-transaction-api.version>
+        <jboss-transaction-api.version>1.1.1.Final</jboss-transaction-api.version>
         <ojdbc.version>6</ojdbc.version> <!--todo need to check for latest - rajith-->
         <cassandra-jdbc.orbit.version>1.2.5.wso2v1</cassandra-jdbc.orbit.version>
 
@@ -1301,7 +1301,7 @@
         <fasterxml.jackson.version>2.9.8.wso2v1</fasterxml.jackson.version>
         <bson4jackson.orbit.version>2.9.0</bson4jackson.orbit.version>
 
-        <slf4j.version>1.7.21</slf4j.version>
+        <slf4j.version>1.7.25</slf4j.version>
         <cassandra-driver-core.orbit.version>3.7.1</cassandra-driver-core.orbit.version>
         <cassandra-driver-core.orbit.imp.pkg.version>[3.7.1,4.0.0)</cassandra-driver-core.orbit.imp.pkg.version>
         <mongo-java-driver.imp.pkg.version>[3.4.0,)</mongo-java-driver.imp.pkg.version>
@@ -1332,7 +1332,7 @@
         <htrace.import.version>[3.1.0-incubating, 3.2.0)</htrace.import.version>
         <protobuf.import.version>[2.5.0, 2.7.0)</protobuf.import.version>
         <zookeeper.import.version>[3.4.5, 3.5.0)</zookeeper.import.version>
-        <jacoco.maven.plugin.version>0.8.0</jacoco.maven.plugin.version>
+        <jacoco.maven.plugin.version>0.8.2</jacoco.maven.plugin.version>
 
         <hbase.shaded.client.version>1.2.1.wso2v2</hbase.shaded.client.version>
         <hbase-client.orbit.imp.pkg.version>[1.2.1, 2.0)</hbase-client.orbit.imp.pkg.version>

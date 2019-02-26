@@ -440,7 +440,7 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>commons-httpclient.wso2</groupId>
+                <groupId>org.wso2.orbit.commons-httpclient</groupId>
                 <artifactId>commons-httpclient</artifactId>
                 <version>${commons-httpclient.orbit.version}</version>
                 <exclusions>
@@ -1286,7 +1286,7 @@
         <webharvest-core.orbit.imp.pkg.version>[2.0.0,3.0.0)</webharvest-core.orbit.imp.pkg.version> <!--todo change this to appropriate version range ([2.0.0.wso2v2,2.1.0)) after osgi bundle is corrected - rajith-->
 
         <saxon.orbit.version>8.9.0.wso2v2</saxon.orbit.version>
-        <commons-httpclient.orbit.version>3.1.0.wso2v2</commons-httpclient.orbit.version>
+        <commons-httpclient.orbit.version>3.1.0.wso2v6</commons-httpclient.orbit.version>
         <htmlcleaner.orbit.version>2.1.0.wso2v1</htmlcleaner.orbit.version>
         <jboss-transaction-api.version>1.1.1.Final</jboss-transaction-api.version>
         <ojdbc.version>6</ojdbc.version> <!--todo need to check for latest - rajith-->

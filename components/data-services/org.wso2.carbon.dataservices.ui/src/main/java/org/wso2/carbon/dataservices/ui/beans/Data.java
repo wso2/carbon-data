@@ -1329,7 +1329,8 @@ public class Data extends DataServiceConfigurationElement{
 						userSetOrdinalValue,
                         paramElement.getAttributeValue(new QName("defaultValue")),
                         paramElement.getAttributeValue(new QName("structType")),
-                        this.getValidators(paramElement.getChildElements())
+                        this.getValidators(paramElement.getChildElements()),
+                        paramElement.getAttributeValue(new QName("optional"))
                         );
 			paramList.add(param);
 		}

@@ -46,7 +46,9 @@ public class Param extends DataServiceConfigurationElement {
     private String structType;
 
     private List<Validator> validators;
-	
+
+	private String optional;
+
 	public String getName() {
 		return name;
 	}
@@ -111,8 +113,12 @@ public class Param extends DataServiceConfigurationElement {
         this.structType = structType;
     }
 
-    public Param(String name, String paramType, String sqlType, String type, String ordinal,
-                 String defaultValue, String structType, List<Validator> validators){
+	public String getOptional() { return optional; }
+
+	public void setOptional(String optional) { this.optional = optional; }
+
+	public Param(String name, String paramType, String sqlType, String type, String ordinal,
+				 String defaultValue, String structType, List<Validator> validators, String optional){
 		this.name = name;
 		this.sqlType = sqlType;
 		this.type = type;
@@ -129,11 +135,12 @@ public class Param extends DataServiceConfigurationElement {
         this.defaultValue = defaultValue;
         this.structType = structType;
         this.validators = validators;
+        this.optional = optional;
 	}
 	
 	public Param(String name, String paramType, String sqlType, String type, String defaultValue,
-                 List<Validator> validators){
-		this(name, paramType, sqlType, type, "0", defaultValue, null, validators);
+                 List<Validator> validators, String optional){
+		this(name, paramType, sqlType, type, "0", defaultValue, null, validators, optional);
 	}
 
     public Param() {
@@ -180,6 +187,9 @@ public class Param extends DataServiceConfigurationElement {
         if (this.getStructType() != null) {
             paramEl.addAttribute("structType", this.getStructType(), null);
         }
+		if (this.getOptional() != null) {
+			paramEl.addAttribute("optional", this.getOptional(), null);
+		}
         if (this.getValidators() != null) {
             for (Validator val : this.getValidators()) {
                 paramEl.addChild(val.buildXML());

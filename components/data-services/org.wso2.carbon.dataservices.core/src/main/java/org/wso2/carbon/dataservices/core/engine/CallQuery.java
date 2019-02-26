@@ -26,6 +26,7 @@ import org.wso2.carbon.dataservices.common.DBConstants.DBSFields;
 import org.wso2.carbon.dataservices.common.DBConstants.FaultCodes;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
 import org.wso2.carbon.dataservices.core.description.query.Query;
+import org.wso2.carbon.dataservices.core.description.query.SQLQuery;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -328,6 +329,11 @@ public class CallQuery extends OutputElement {
 			} else if (params.getTempEntries().containsKey(withParam.getName())) {
 				/* this means the query param will be added later by the default values */
 				continue;
+			} else if (queryParamMap.get(paramName) != null
+					&& this.getQuery() instanceof SQLQuery
+					&& ((SQLQuery)this.query).getSqlQueryType() == SQLQuery.QueryType.UPDATE
+					&& queryParamMap.get(paramName).isOptional()) {
+						continue;
 			} else {
 				throw new DataServiceFault(FaultCodes.INCOMPATIBLE_PARAMETERS_ERROR,
 						"Error in 'CallQuery.extractParams', cannot find parameter with type:" +

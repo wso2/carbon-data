@@ -1243,7 +1243,7 @@
 
 
 
-        <apache.axis2.orbit.version>1.6.1-wso2v34</apache.axis2.orbit.version>
+        <apache.axis2.orbit.version>1.6.1-wso2v30-SNAPSHOT</apache.axis2.orbit.version>
         <apache.axis2.orbit.imp.pkg.version>[1.6, 1.7)</apache.axis2.orbit.imp.pkg.version>
 
         <h2.engine.orbit.version>1.3.175.wso2v1</h2.engine.orbit.version>

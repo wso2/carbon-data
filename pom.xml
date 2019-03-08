@@ -440,7 +440,7 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>commons-httpclient.wso2</groupId>
+                <groupId>org.wso2.orbit.commons-httpclient</groupId>
                 <artifactId>commons-httpclient</artifactId>
                 <version>${commons-httpclient.orbit.version}</version>
                 <exclusions>
@@ -468,7 +468,7 @@
             </dependency>
             <dependency>
                 <groupId>org.jboss.spec.javax.transaction</groupId>
-                <artifactId>jboss-transaction-api_1.1_spec</artifactId>
+                <artifactId>jboss-transaction-api_1.2_spec</artifactId>
                 <version>${jboss-transaction-api.version}</version>
             </dependency>
             <!--<dependency>--> <!-- keep this for the time being, not used inside the code - rajith -->
@@ -533,11 +533,23 @@
                 <groupId>org.wso2.carbon.identity.framework</groupId> <!-- todo change later to identity user.mgt -->
                 <artifactId>org.wso2.carbon.user.mgt.ui</artifactId>
 		        <version>${carbon-identity.framework.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>log4j-over-slf4j</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.identity.framework</groupId>
                 <artifactId>org.wso2.carbon.user.mgt.common</artifactId>
 		        <version>${carbon-identity.framework.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>log4j-over-slf4j</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <!--<dependency>-->
                 <!--<groupId>org.wso2.carbon</groupId>-->
@@ -1207,8 +1219,8 @@
         <dataservices.imp.pkg.version>[4.3.0,5.0.0)</dataservices.imp.pkg.version>
         <dataservices.package.export.version>4.3.1</dataservices.package.export.version>
 
-        <carbon.kernel.version>4.4.35</carbon.kernel.version>
-        <carbon.kernel.feature.imp.version>4.4.35</carbon.kernel.feature.imp.version>
+        <carbon.kernel.version>4.4.37-SNAPSHOT</carbon.kernel.version>
+        <carbon.kernel.feature.imp.version>4.4.37-SNAPSHOT</carbon.kernel.feature.imp.version>
         <carbon.kernel.imp.pkg.version>[4.4.0,5.0.0)</carbon.kernel.imp.pkg.version>
 
         <carbon.registry.imp.pkg.version>0.0.0</carbon.registry.imp.pkg.version> <!-- todo remove this and use {carbon.kernel.imp.pkg.version} after registry bundles are corrected to export correct versions-->
@@ -1217,7 +1229,7 @@
 
 
 
-        <apache.axis2.orbit.version>1.6.1-wso2v28</apache.axis2.orbit.version>
+        <apache.axis2.orbit.version>1.6.1-wso2v30-SNAPSHOT</apache.axis2.orbit.version>
         <apache.axis2.orbit.imp.pkg.version>[1.6, 1.7)</apache.axis2.orbit.imp.pkg.version>
 
         <h2.engine.orbit.version>1.3.175.wso2v1</h2.engine.orbit.version>
@@ -1268,10 +1280,10 @@
         <webharvest-core.orbit.imp.pkg.version>[2.0.0,3.0.0)</webharvest-core.orbit.imp.pkg.version> <!--todo change this to appropriate version range ([2.0.0.wso2v2,2.1.0)) after osgi bundle is corrected - rajith-->
 
         <saxon.orbit.version>8.9.0.wso2v2</saxon.orbit.version>
-        <commons-httpclient.orbit.version>3.1.0.wso2v2</commons-httpclient.orbit.version>
+        <commons-httpclient.orbit.version>3.1.0.wso2v6</commons-httpclient.orbit.version>
         <bsh.orbit.version>1.3.0.wso2v1</bsh.orbit.version>
         <htmlcleaner.orbit.version>2.1.0.wso2v1</htmlcleaner.orbit.version>
-        <jboss-transaction-api.version>1.0.1.Final</jboss-transaction-api.version>
+        <jboss-transaction-api.version>1.1.1.Final</jboss-transaction-api.version>
         <ojdbc.version>6</ojdbc.version> <!--todo need to check for latest - rajith-->
         <cassandra-jdbc.orbit.version>1.2.5.wso2v1</cassandra-jdbc.orbit.version>
 
@@ -1317,14 +1329,14 @@
         <protobuf.import.version>[2.5.0, 2.7.0)</protobuf.import.version>
         <guava.import.version>[19.0, 20.0)</guava.import.version>
         <zookeeper.import.version>[3.4.5, 3.5.0)</zookeeper.import.version>
-        <jacoco.maven.plugin.version>0.8.0</jacoco.maven.plugin.version>
+        <jacoco.maven.plugin.version>0.8.2</jacoco.maven.plugin.version>
 
         <hbase.shaded.client.version>1.2.1.wso2v2</hbase.shaded.client.version>
         <hbase-client.orbit.imp.pkg.version>[1.2.1, 2.0)</hbase-client.orbit.imp.pkg.version>
 
         <carbon.p2.plugin.version>1.5.5</carbon.p2.plugin.version>
 
-        <carbon-commons.version>4.6.49</carbon-commons.version>
+        <carbon-commons.version>4.6.51-SNAPSHOT</carbon-commons.version>
         <carbon-commons.feature.imp.version>4.6.49</carbon-commons.feature.imp.version>
         <carbon-commons.imp.pkg.version>[4.5.0,5.0.0)</carbon-commons.imp.pkg.version>
         <carbon-commons.user.mgt.imp.pkg.version>0.0.0</carbon-commons.user.mgt.imp.pkg.version> <!-- todo remove this and use identity.imp.pkg.version - rajith (temparory done)-->
@@ -1342,7 +1354,7 @@
         <carbon-deployment.version>4.7.19</carbon-deployment.version>
         <carbon-deployment.feature.imp.version>4.7.19</carbon-deployment.feature.imp.version>
 
-        <osgi.imp.pkg.version>[1.7.0,1.8.0)</osgi.imp.pkg.version> <!-- todo change this version to proper version range after osgi bundles are corrected (because export versions are different from bundle version) -rajith -->
+        <osgi.imp.pkg.version>[1.7.0,2.0.0)</osgi.imp.pkg.version> <!-- todo change this version to proper version range after osgi bundles are corrected (because export versions are different from bundle version) -rajith -->
         <osgi.service.imp.pkg.version>[1.2.0,1.3.0)</osgi.service.imp.pkg.version> <!-- todo change this version to proper version range after osgi bundles are corrected -rajith -->
 
         <commons-io.orbit.version>2.4.0.wso2v1</commons-io.orbit.version>

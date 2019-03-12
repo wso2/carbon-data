@@ -62,8 +62,7 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-                            !org.wso2.carbon.dataservices.capp.deployer.internal,
-                            org.wso2.carbon.dataservices.capp.deployer.*;version="${project.version}"
+                            !org.wso2.carbon.dataservices.capp.deployer.internal
                         </Export-Package>
                     </instructions>
                 </configuration>

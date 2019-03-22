@@ -75,7 +75,7 @@
                 <version>${carbon.kernel.version}</version>
                 <exclusions>
                     <exclusion>
-                        <groupId>org.apache.tomcat.wso2</groupId>
+                        <groupId>org.wso2.orbit.org.apache.tomcat</groupId>
                         <artifactId>jdbc-pool</artifactId>
                     </exclusion>
                     <exclusion>
@@ -313,7 +313,7 @@
                 <version>${carbon.kernel.version}</version>
                 <exclusions>
                     <exclusion>
-                        <groupId>org.apache.tomcat.wso2</groupId>
+                        <groupId>org.wso2.orbit.org.apache.tomcat</groupId>
                         <artifactId>jdbc-pool</artifactId>
                     </exclusion>
                 </exclusions>
@@ -886,7 +886,7 @@
                 <version>${axiom.orbit.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.tomcat.wso2</groupId>
+                <groupId>org.wso2.orbit.org.apache.tomcat</groupId>
                 <artifactId>jdbc-pool</artifactId>
                 <version>${jdbc-pool.orbit.version}</version>
             </dependency>
@@ -1373,7 +1373,7 @@
         <neethi.orbit.version>2.0.4.wso2v4</neethi.orbit.version>
         <neethi.orbit.imp.pkg.version>[2.0.4.wso2v4,2.1.0)</neethi.orbit.imp.pkg.version>
 
-        <jdbc-pool.orbit.version>7.0.34.wso2v2</jdbc-pool.orbit.version>
+        <jdbc-pool.orbit.version>9.0.16.wso2v1</jdbc-pool.orbit.version>
         <jdbc-pool.orbit.imp.pkg.version>[1.7.0,2.0.0)</jdbc-pool.orbit.imp.pkg.version>
 
         <carbon.commons.logging.imp.pkg.version>0.0.0</carbon.commons.logging.imp.pkg.version> <!-- todo  org.apache.commons.logging package version changed to this since there are no version in current export, after it was fixed change accordingly (should be able to use carbon.kernel.imp.pkg.version). - rajith-->

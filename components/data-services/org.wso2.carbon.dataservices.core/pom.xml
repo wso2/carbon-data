@@ -199,7 +199,7 @@
             <artifactId>commons-io</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.orbit.org.apache.tomcat</groupId>
+            <groupId>org.apache.tomcat.wso2</groupId>
             <artifactId>jdbc-pool</artifactId>
         </dependency>
         <dependency>

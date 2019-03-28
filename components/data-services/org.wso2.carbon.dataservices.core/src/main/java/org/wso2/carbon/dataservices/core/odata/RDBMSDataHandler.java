@@ -1016,6 +1016,12 @@ public class RDBMSDataHandler implements ODataDataHandler {
         try {
             if (meta.getDatabaseProductName().toLowerCase().contains(ORACLE_SERVER)) {
                 resultSet = meta.getColumns(null, meta.getUserName(), tableName, null);
+                if (meta.getConnection().getSchema() != null) {
+                    if (!meta.getConnection().getSchema().equals(meta.getUserName())) {
+                        resultSet = meta.getColumns(null, meta.getConnection().getSchema(), tableName,
+                                null);
+                    }
+                }
             } else {
                 resultSet = meta.getColumns(null, null, tableName, null);
             }
@@ -1111,6 +1117,15 @@ public class RDBMSDataHandler implements ODataDataHandler {
                 String tableName = rs.getString(TABLE_NAME);
                 tableList.add(tableName);
             }
+                if (meta.getDatabaseProductName().toLowerCase().contains(ORACLE_SERVER) && connection.getSchema() != null
+                        && !connection.getSchema().equals(meta.getUserName())) {
+                    rs = meta.getTables(null, connection.getSchema(), null,
+                            new String[]{TABLE, VIEW});
+                    while (rs.next()) {
+                        String tableName = rs.getString(TABLE_NAME);
+                        tableList.add(tableName);
+                    }
+                }
             return tableList;
         } catch (SQLException e) {
             throw new ODataServiceFault(e, "Error in reading tables from the database. :" + e.getMessage());

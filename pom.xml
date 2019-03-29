@@ -1281,7 +1281,7 @@
         <jongo.orbit.version>1.2.0.wso2v1</jongo.orbit.version>
         <jongo.orbit.imp.pkg.version>[1.2,1.3)</jongo.orbit.imp.pkg.version>
 
-        <jackson-core.orbit.version>2.6.1.wso2v1</jackson-core.orbit.version>
+        <jackson-core.orbit.version>2.9.8.wso2v1</jackson-core.orbit.version>
         <fasterxml.jackson.databind.version>2.6.1.wso2v3</fasterxml.jackson.databind.version>
         <bson4jackson.orbit.version>2.5.0</bson4jackson.orbit.version>
 

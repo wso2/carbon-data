@@ -631,7 +631,7 @@
             <dependency>
                 <groupId>org.wso2.orbit.org.antlr</groupId>
                 <artifactId>antlr4-runtime</artifactId>
-                <version>4.5.1.wso2v1</version>
+                <version>4.6.wso2v1</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.orbit.org.apache.olingo</groupId>

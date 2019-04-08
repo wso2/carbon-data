@@ -1117,17 +1117,16 @@ public class RDBMSDataHandler implements ODataDataHandler {
                 String tableName = rs.getString(TABLE_NAME);
                 tableList.add(tableName);
             }
-            if (connection.getSchema() != null) {
-                if (meta.getDatabaseProductName().toLowerCase().contains(ORACLE_SERVER) && !connection.getSchema().
-                        equals(meta.getUserName())) {
+          
+                if (meta.getDatabaseProductName().toLowerCase().contains(ORACLE_SERVER) && connection.getSchema() != null
+                        && !connection.getSchema().equals(meta.getUserName())) {
                     rs = meta.getTables(null, connection.getSchema(), null,
-                            new String[] { TABLE, VIEW });
+                            new String[]{TABLE, VIEW});
                     while (rs.next()) {
                         String tableName = rs.getString(TABLE_NAME);
                         tableList.add(tableName);
                     }
                 }
-            }
             return tableList;
         } catch (SQLException e) {
             throw new ODataServiceFault(e, "Error in reading tables from the database. :" + e.getMessage());

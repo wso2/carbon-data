@@ -1117,6 +1117,7 @@ public class RDBMSDataHandler implements ODataDataHandler {
                 String tableName = rs.getString(TABLE_NAME);
                 tableList.add(tableName);
             }
+          
                 if (meta.getDatabaseProductName().toLowerCase().contains(ORACLE_SERVER) && connection.getSchema() != null
                         && !connection.getSchema().equals(meta.getUserName())) {
                     rs = meta.getTables(null, connection.getSchema(), null,

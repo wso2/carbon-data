@@ -10,7 +10,7 @@
     <groupId>org.wso2.carbon.data</groupId>
     <artifactId>carbon-data</artifactId>
     <packaging>pom</packaging>
-    <version>4.4.86-SNAPSHOT</version>
+    <version>4.4.94-SNAPSHOT</version>
     <name>WSO2 Carbon - Data repo Aggregator Pom</name>
     <url>http://wso2.org</url>
 
@@ -695,22 +695,36 @@
             <dependency>
                 <groupId>org.wso2.orbit.com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-annotations</artifactId>
-                <version>${jackson-core.orbit.version}</version>
+                <version>${fasterxml.jackson.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.orbit.com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-core</artifactId>
-                <version>${jackson-core.orbit.version}</version>
+                <version>${fasterxml.jackson.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.orbit.com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
-                <version>${fasterxml.jackson.databind.version}</version>
+                <version>${fasterxml.jackson.version}</version>
             </dependency>
             <dependency>
                 <groupId>de.undercouch</groupId>
                 <artifactId>bson4jackson</artifactId>
                 <version>${bson4jackson.orbit.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.fasterxml.jackson.core</groupId>
+                        <artifactId>jackson-core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.fasterxml.jackson.core</groupId>
+                        <artifactId>jackson-annotations</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.fasterxml.jackson.core</groupId>
+                        <artifactId>jackson-databind</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>com.datastax.cassandra</groupId>
@@ -1215,12 +1229,12 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <dataservices.version>4.4.86-SNAPSHOT</dataservices.version>
+        <dataservices.version>4.4.94-SNAPSHOT</dataservices.version>
         <dataservices.imp.pkg.version>[4.3.0,5.0.0)</dataservices.imp.pkg.version>
         <dataservices.package.export.version>4.3.1</dataservices.package.export.version>
 
-        <carbon.kernel.version>4.4.37-SNAPSHOT</carbon.kernel.version>
-        <carbon.kernel.feature.imp.version>4.4.37-SNAPSHOT</carbon.kernel.feature.imp.version>
+        <carbon.kernel.version>4.4.39-SNAPSHOT</carbon.kernel.version>
+        <carbon.kernel.feature.imp.version>4.4.39-SNAPSHOT</carbon.kernel.feature.imp.version>
         <carbon.kernel.imp.pkg.version>[4.4.0,5.0.0)</carbon.kernel.imp.pkg.version>
 
         <carbon.registry.imp.pkg.version>0.0.0</carbon.registry.imp.pkg.version> <!-- todo remove this and use {carbon.kernel.imp.pkg.version} after registry bundles are corrected to export correct versions-->
@@ -1229,7 +1243,7 @@
 
 
 
-        <apache.axis2.orbit.version>1.6.1-wso2v30-SNAPSHOT</apache.axis2.orbit.version>
+        <apache.axis2.orbit.version>1.6.1-wso2v35-SNAPSHOT</apache.axis2.orbit.version>
         <apache.axis2.orbit.imp.pkg.version>[1.6, 1.7)</apache.axis2.orbit.imp.pkg.version>
 
         <h2.engine.orbit.version>1.3.175.wso2v1</h2.engine.orbit.version>
@@ -1247,7 +1261,7 @@
         <derby.orbit.version>10.3.2.1wso2v1</derby.orbit.version>
 
 
-        <olingo.orbit.version>4.4.0.wso2v1</olingo.orbit.version>
+        <olingo.orbit.version>4.4.0.wso2v2</olingo.orbit.version>
         <olingo.orbit.imp.pkg.version>[4.4,4.5)</olingo.orbit.imp.pkg.version>
 
         <commons.lang3.version>3.4.0.wso2v1</commons.lang3.version>
@@ -1287,15 +1301,14 @@
         <ojdbc.version>6</ojdbc.version> <!--todo need to check for latest - rajith-->
         <cassandra-jdbc.orbit.version>1.2.5.wso2v1</cassandra-jdbc.orbit.version>
 
-        <mongo-java-driver.orbit.version>3.4.1</mongo-java-driver.orbit.version>
+        <mongo-java-driver.orbit.version>3.5.0</mongo-java-driver.orbit.version>
         <mongo-java-driver.orbit.imp.pkg.version>[3.4.1,4.0.0)</mongo-java-driver.orbit.imp.pkg.version> <!--todo change this to appropriate version range ([2.11.4.wso2v1,2.12.0)) after osgi bundle is corrected - rajith-->
 
-        <jongo.orbit.version>1.2.0.wso2v1</jongo.orbit.version>
-        <jongo.orbit.imp.pkg.version>[1.2,1.3)</jongo.orbit.imp.pkg.version>
+        <jongo.orbit.version>1.4.0.wso2v1</jongo.orbit.version>
+        <jongo.orbit.imp.pkg.version>[1.4,1.5)</jongo.orbit.imp.pkg.version>
 
-        <jackson-core.orbit.version>2.6.1.wso2v1</jackson-core.orbit.version>
-        <fasterxml.jackson.databind.version>2.6.1.wso2v3</fasterxml.jackson.databind.version>
-        <bson4jackson.orbit.version>2.5.0</bson4jackson.orbit.version>
+        <fasterxml.jackson.version>2.9.8.wso2v1</fasterxml.jackson.version>
+        <bson4jackson.orbit.version>2.9.0</bson4jackson.orbit.version>
 
         <slf4j.version>1.7.21</slf4j.version>
         <cassandra-driver-core.orbit.version>3.0.2</cassandra-driver-core.orbit.version>
@@ -1312,7 +1325,7 @@
         <commons-dbcp.orbit.version>1.4.0.wso2v1</commons-dbcp.orbit.version>
         <commons-pool.orbit.version>1.5.6.wso2v1</commons-pool.orbit.version>
 
-        <axiom.orbit.version>1.2.11.wso2v11</axiom.orbit.version>
+        <axiom.orbit.version>1.2.11.wso2v13</axiom.orbit.version>
         <axiom.orbit.imp.pkg.version>0.0.0</axiom.orbit.imp.pkg.version> <!--todo change this to appropriate version range ([1.2.11,1.3.0)) after osgi bundle is corrected - rajith-->
 
         <hadoop-client.orbit.version.>2.7.2.wso2v1</hadoop-client.orbit.version.>
@@ -1336,23 +1349,23 @@
 
         <carbon.p2.plugin.version>1.5.5</carbon.p2.plugin.version>
 
-        <carbon-commons.version>4.6.51-SNAPSHOT</carbon-commons.version>
-        <carbon-commons.feature.imp.version>4.6.49</carbon-commons.feature.imp.version>
+        <carbon-commons.version>4.6.62-SNAPSHOT</carbon-commons.version>
+        <carbon-commons.feature.imp.version>4.6.62-SNAPSHOT</carbon-commons.feature.imp.version>
         <carbon-commons.imp.pkg.version>[4.5.0,5.0.0)</carbon-commons.imp.pkg.version>
         <carbon-commons.user.mgt.imp.pkg.version>0.0.0</carbon-commons.user.mgt.imp.pkg.version> <!-- todo remove this and use identity.imp.pkg.version - rajith (temparory done)-->
 
         <json.orbit.version>3.0.0.wso2v1</json.orbit.version>
         <json.orbit.imp.pkg.version>0.0.0</json.orbit.imp.pkg.version> <!-- This comes from carbon-multitenancy, tenant.common.server feature -->
 
-        <carbon-identity.framework.version>5.12.153</carbon-identity.framework.version>
+        <carbon-identity.framework.version>5.12.283</carbon-identity.framework.version>
         <carbon-identity.framework.imp.pkg.version>[5.11.112,6.0.0)</carbon-identity.framework.imp.pkg.version>
 
         <carbon-commons.trnsaction.mgt.imp.pkg.version>0.0.0</carbon-commons.trnsaction.mgt.imp.pkg.version> <!-- todo remove this and use {carbon-commons.imp.pkg.version} after org.wso2.carbon.transaction.manager (bundle - org.wso2.carbon.transaction.manager) is corrected to export correct versions-->
 
 
 
-        <carbon-deployment.version>4.7.19</carbon-deployment.version>
-        <carbon-deployment.feature.imp.version>4.7.19</carbon-deployment.feature.imp.version>
+        <carbon-deployment.version>4.7.22</carbon-deployment.version>
+        <carbon-deployment.feature.imp.version>4.7.22</carbon-deployment.feature.imp.version>
 
         <osgi.imp.pkg.version>[1.7.0,2.0.0)</osgi.imp.pkg.version> <!-- todo change this version to proper version range after osgi bundles are corrected (because export versions are different from bundle version) -rajith -->
         <osgi.service.imp.pkg.version>[1.2.0,1.3.0)</osgi.service.imp.pkg.version> <!-- todo change this version to proper version range after osgi bundles are corrected -rajith -->
@@ -1360,7 +1373,7 @@
         <commons-io.orbit.version>2.4.0.wso2v1</commons-io.orbit.version>
         <commons-io.orbit.imp.pkg.version>0.0.0</commons-io.orbit.imp.pkg.version> <!-- todo change this once commons-io is corrected to use correct version exports - rajith -->
 
-        <commons-codec.orbit.version>1.10</commons-codec.orbit.version>
+        <commons-codec.orbit.version>1.12</commons-codec.orbit.version>
         <commons-codec.orbit.imp.pkg.version>0.0.0</commons-codec.orbit.imp.pkg.version> <!--todo change this to appropriate version range ([1.4.0.wso2v1,1.5.0)) after osgi bundle is corrected - rajith-->
 
 
@@ -1381,7 +1394,7 @@
         <google-api-client.orbit.version>1.20.0.wso2v1</google-api-client.orbit.version>
         <google-api-client.orbit.imp.pkg.version>[1.20,2.0)</google-api-client.orbit.imp.pkg.version>
 
-        <google-http-client.orbit.version>1.20.0.wso2v1</google-http-client.orbit.version>
+        <google-http-client.orbit.version>1.20.0.wso2v2</google-http-client.orbit.version>
         <google-http-client.orbit.imp.pkg.version>[1.20,2.0)</google-http-client.orbit.imp.pkg.version>
 
         <google-oauth-client.orbit.version>1.20.0.wso2v1</google-oauth-client.orbit.version>

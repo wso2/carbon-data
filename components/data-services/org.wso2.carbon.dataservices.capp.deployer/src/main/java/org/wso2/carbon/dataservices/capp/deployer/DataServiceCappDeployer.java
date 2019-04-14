@@ -63,7 +63,7 @@ public class DataServiceCappDeployer implements AppDeploymentHandler {
                 artifacts.add(dependency.getArtifact());
             }
         }
-        deployUnDeployDataSources(true, artifacts, axisConfig);
+        deployDataSources(artifacts, axisConfig);
     }
 
     /**
@@ -87,25 +87,24 @@ public class DataServiceCappDeployer implements AppDeploymentHandler {
                 artifacts.add(dependency.getArtifact());
             }
         }
-        deployUnDeployDataSources(false, artifacts, axisConfig);
+        undeployDataSources(artifacts, axisConfig);
     }
 
     /**
-     * Deploy or un-deploy data services.
-     * if deploying, adding the data service to the data services.
-     * if un-deploying, removing the data service from data services.
+     * Deploy data services.
+     * adding the data service to the data services.
      * there can be multiple data sources as separate xml files.
      *
-     * @param deploy    identify whether deployment process or un-deployment process.
-     * @param artifacts list of artifacts to be deployed.
+     * @param artifacts  list of artifacts to be deployed.
+     * @param axisConfig axis configuration.
      */
-    private void deployUnDeployDataSources(boolean deploy, List<Artifact> artifacts, AxisConfiguration axisConfig)
+    private void deployDataSources(List<Artifact> artifacts, AxisConfiguration axisConfig)
             throws DeploymentException {
         for (Artifact artifact : artifacts) {
             if (DS_TYPE.equals(artifact.getType())) {
                 List<CappFile> files = artifact.getFiles();
                 if (files == null || files.isEmpty()) {
-                    throw new DeploymentException("DataServiceCappDeployer::deployUnDeployDataServices --> "
+                    throw new DeploymentException("DataServiceCappDeployer::deployDataServices --> "
                                                           + "Error No data services found in the artifact to deploy");
                 }
                 for (CappFile cappFile : files) {
@@ -114,7 +113,53 @@ public class DataServiceCappDeployer implements AppDeploymentHandler {
 
                     File file = new File(dataServiceConfigPath);
                     if (!file.exists()) {
-                        throw new DeploymentException("DataServiceCappDeployer::deployUnDeployDataServices --> "
+                        throw new DeploymentException("DataServiceCappDeployer::deployDataServices --> "
+                                                              + "Error Data service file cannot be found in artifact, "
+                                                              + "file name - " + fileName);
+                    }
+                    // access the deployment engine through axis config
+                    DeploymentEngine deploymentEngine = (DeploymentEngine) axisConfig.getConfigurator();
+                    Deployer deployer = deploymentEngine.getDeployer(DS_DIR, "dbs");
+
+                    try {
+                        // Call the deploy method of the deployer
+                        deployer.deploy(new DeploymentFileData(new File(dataServiceConfigPath), deployer));
+                        artifact.setDeploymentStatus(AppDeployerConstants.DEPLOYMENT_STATUS_DEPLOYED);
+                    } catch (DeploymentException e) {
+                        artifact.setDeploymentStatus(AppDeployerConstants.DEPLOYMENT_STATUS_FAILED);
+                        throw new DeploymentException(
+                                "DataServiceCappDeployer::deployDataServices --> "
+                                        + "Error in deploying data service: " + e.getMessage(), e);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Un-deploy data services.
+     * removing the data service from data services.
+     * there can be multiple data sources as separate xml files.
+     *
+     * @param artifacts  list of artifacts to be deployed.
+     * @param axisConfig axis configuration.
+     */
+    private void undeployDataSources(List<Artifact> artifacts, AxisConfiguration axisConfig)
+            throws DeploymentException {
+        for (Artifact artifact : artifacts) {
+            if (DS_TYPE.equals(artifact.getType())) {
+                List<CappFile> files = artifact.getFiles();
+                if (files == null || files.isEmpty()) {
+                    throw new DeploymentException("DataServiceCappDeployer::unDeployDataServices --> "
+                                                          + "Error No data services found in the artifact to deploy");
+                }
+                for (CappFile cappFile : files) {
+                    String fileName = cappFile.getName();
+                    String dataServiceConfigPath = artifact.getExtractedPath() + File.separator + fileName;
+
+                    File file = new File(dataServiceConfigPath);
+                    if (!file.exists()) {
+                        throw new DeploymentException("DataServiceCappDeployer::unDeployDataServices --> "
                                                               + "Error Data service file cannot be found in artifact, "
                                                               + "file name - " + fileName);
                     }
@@ -123,36 +168,21 @@ public class DataServiceCappDeployer implements AppDeploymentHandler {
                     DeploymentEngine deploymentEngine = (DeploymentEngine) axisConfig.getConfigurator();
                     Deployer deployer = deploymentEngine.getDeployer(DS_DIR, "dbs");
 
-                    if (deployer != null) {
-                        if (deploy) {
-                            try {
-                                // Call the deploy method of the deployer
-                                deployer.deploy(new DeploymentFileData(new File(dataServiceConfigPath), deployer));
-                                artifact.setDeploymentStatus(AppDeployerConstants.DEPLOYMENT_STATUS_DEPLOYED);
-                            } catch (DeploymentException e) {
-                                artifact.setDeploymentStatus(AppDeployerConstants.DEPLOYMENT_STATUS_FAILED);
-                                throw new DeploymentException(
-                                        "DataServiceCappDeployer::deployUnDeployDataServices --> "
-                                                + "Error in deploying data service: " + e.getMessage(), e);
+                    if (AppDeployerConstants.DEPLOYMENT_STATUS_DEPLOYED.equals(
+                            artifact.getDeploymentStatus())) {
+                        try {
+                            // Call the un-deploy method of the deployer
+                            deployer.undeploy(dataServiceConfigPath);
+                            artifact.setDeploymentStatus(AppDeployerConstants.DEPLOYMENT_STATUS_PENDING);
+                            File artifactFile = new File(dataServiceConfigPath);
+                            if (artifactFile.exists() && !artifactFile.delete()) {
+                                log.warn("Couldn't delete artifact file : " + dataServiceConfigPath);
                             }
-                        } else {
-                            if (AppDeployerConstants.DEPLOYMENT_STATUS_DEPLOYED.equals(
-                                    artifact.getDeploymentStatus())) {
-                                try {
-                                    // Call the un-deploy method of the deployer
-                                    deployer.undeploy(dataServiceConfigPath);
-                                    artifact.setDeploymentStatus(AppDeployerConstants.DEPLOYMENT_STATUS_PENDING);
-                                    File artifactFile = new File(dataServiceConfigPath);
-                                    if (artifactFile.exists() && !artifactFile.delete()) {
-                                        log.warn("Couldn't delete artifact file : " + dataServiceConfigPath);
-                                    }
-                                } catch (DeploymentException e) {
-                                    artifact.setDeploymentStatus(AppDeployerConstants.DEPLOYMENT_STATUS_FAILED);
-                                    throw new DeploymentException(
-                                            "DataServiceCappDeployer::deployUnDeployDataServices --> "
-                                                    + "Error in un-deploying data service: " + e.getMessage(), e);
-                                }
-                            }
+                        } catch (DeploymentException e) {
+                            artifact.setDeploymentStatus(AppDeployerConstants.DEPLOYMENT_STATUS_FAILED);
+                            throw new DeploymentException(
+                                    "DataServiceCappDeployer::unDeployDataServices --> "
+                                            + "Error in un-deploying data service: " + e.getMessage(), e);
                         }
                     }
                 }

@@ -1263,7 +1263,7 @@
         <gdata-spreadsheet.orbit.version>3.0.0.wso2v1</gdata-spreadsheet.orbit.version>
         <gdata-spreadsheet.orbit.imp.pkg.version>[3.0.0,3.2.0)</gdata-spreadsheet.orbit.imp.pkg.version>
 
-        <google.guava.version>19.0</google.guava.version>
+        <google.guava.version>27.0-jre</google.guava.version>
 
         <poi.orbit.version>3.17.0.wso2v1</poi.orbit.version>
         <poi.orbit.imp.pkg.version>0.0.0</poi.orbit.imp.pkg.version> <!--todo change this to appropriate version range ([3.9.0,4.0.0)) after osgi bundle is corrected - rajith-->
@@ -1328,7 +1328,6 @@
         <org.htrace.import.version>[3.0.4, 3.1.0)</org.htrace.import.version>
         <htrace.import.version>[3.1.0-incubating, 3.2.0)</htrace.import.version>
         <protobuf.import.version>[2.5.0, 2.7.0)</protobuf.import.version>
-        <guava.import.version>[19.0, 20.0)</guava.import.version>
         <zookeeper.import.version>[3.4.5, 3.5.0)</zookeeper.import.version>
         <jacoco.maven.plugin.version>0.8.0</jacoco.maven.plugin.version>
 

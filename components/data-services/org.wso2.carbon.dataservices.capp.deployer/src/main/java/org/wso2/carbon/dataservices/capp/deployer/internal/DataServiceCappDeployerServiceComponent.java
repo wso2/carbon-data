@@ -72,7 +72,7 @@ public class DataServiceCappDeployerServiceComponent {
     }
 
     /**
-     * register data source deployer as an OSGi service
+     * Register data source deployer as an OSGi service.
      */
     private void registerDataServiceCappDeployer() {
         try {

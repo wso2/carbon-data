@@ -1297,7 +1297,7 @@
         <fasterxml.jackson.version>2.9.8.wso2v1</fasterxml.jackson.version>
         <bson4jackson.orbit.version>2.9.0</bson4jackson.orbit.version>
 
-        <slf4j.version>1.7.21</slf4j.version>
+        <slf4j.version>1.7.26</slf4j.version>
         <cassandra-driver-core.orbit.version>3.7.1</cassandra-driver-core.orbit.version>
         <cassandra-driver-core.orbit.imp.pkg.version>[3.7.1,4.0.0)</cassandra-driver-core.orbit.imp.pkg.version>
         <mongo-java-driver.imp.pkg.version>[3.4.0,)</mongo-java-driver.imp.pkg.version>

@@ -383,7 +383,7 @@
             <dependency>
                 <groupId>io.dropwizard.metrics</groupId>
                 <artifactId>metrics-core</artifactId>
-                <version>3.2.6</version>
+                <version>${metrics.core.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.orbit.org.apache.poi</groupId>
@@ -1391,6 +1391,7 @@
         <hazelcast.orbit.imp.pkg.version>0.0.0</hazelcast.orbit.imp.pkg.version> <!-- todo change this once moved to kernel 442 -->
         <encoder.wso2.version>1.2.0.wso2v1</encoder.wso2.version>
         <!--<hazelcast.orbit.imp.pkg.version>[3.2,3.3)</hazelcast.orbit.imp.pkg.version>-->
+        <metrics.core.version>3.2.5</metrics.core.version>
     </properties>
 
 </project>

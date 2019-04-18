@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.wso2.carbon.data</groupId>
         <artifactId>feature-categories</artifactId>
-        <version>4.4.98</version>
+        <version>4.4.99-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>

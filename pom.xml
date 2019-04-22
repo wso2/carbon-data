@@ -1336,7 +1336,7 @@
         <json.orbit.version>3.0.0.wso2v1</json.orbit.version>
         <json.orbit.imp.pkg.version>0.0.0</json.orbit.imp.pkg.version> <!-- This comes from carbon-multitenancy, tenant.common.server feature -->
 
-        <carbon-identity.framework.version>5.12.356</carbon-identity.framework.version>
+        <carbon-identity.framework.version>5.12.364</carbon-identity.framework.version>
         <carbon-identity.framework.imp.pkg.version>[5.12.0,6.0.0)</carbon-identity.framework.imp.pkg.version>
 
         <carbon-commons.trnsaction.mgt.imp.pkg.version>0.0.0</carbon-commons.trnsaction.mgt.imp.pkg.version> <!-- todo remove this and use {carbon-commons.imp.pkg.version} after org.wso2.carbon.transaction.manager (bundle - org.wso2.carbon.transaction.manager) is corrected to export correct versions-->
@@ -1381,7 +1381,7 @@
         <hazelcast.orbit.imp.pkg.version>0.0.0</hazelcast.orbit.imp.pkg.version> <!-- todo change this once moved to kernel 442 -->
         <encoder.wso2.version>1.2.0.wso2v1</encoder.wso2.version>
         <!--<hazelcast.orbit.imp.pkg.version>[3.2,3.3)</hazelcast.orbit.imp.pkg.version>-->
-        <metrics.core.version>4.0.5</metrics.core.version>
+        <metrics.core.version>3.2.5</metrics.core.version>
     </properties>
 
 </project>

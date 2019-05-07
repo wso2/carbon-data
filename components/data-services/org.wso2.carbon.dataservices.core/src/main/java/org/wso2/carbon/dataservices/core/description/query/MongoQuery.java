@@ -20,6 +20,7 @@ package org.wso2.carbon.dataservices.core.description.query;
 
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
+import org.apache.commons.lang.StringUtils;
 import org.jongo.Jongo;
 import org.jongo.MongoCollection;
 import org.jongo.ResultHandler;
@@ -53,6 +54,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 /**
  * This class represents the MongoDB data services query implementation.
@@ -431,14 +433,23 @@ public class MongoQuery extends Query {
                               boolean upsert, boolean multi) throws DataServiceFault {
             if (opQuery != null) {
                 if (parameters.length > 0) {
-                    Update update = collection.update(opQuery);
+                    Stack<Object> parameterStack = putParametersToStack(parameters);
+                    Update update = null;
+                    if (!opQuery.contains("#")) {
+                        update = collection.update(opQuery);
+                    } else {
+                        Object[] opQueryParameters = getParameters(opQuery, parameterStack).toArray();
+                        update = collection.update(opQuery, opQueryParameters);
+                    }
+
                     if (upsert) {
                         update = update.upsert();
                     }
                     if (multi) {
                         update = update.multi();
                     }
-                    update.with(modifier, parameters);
+                    Object[] modifierParameters = getParameters(modifier, parameterStack).toArray();
+                    update.with(modifier, modifierParameters);
                 } else {
                     Update update = collection.update(opQuery);
                     if (upsert) {
@@ -452,6 +463,30 @@ public class MongoQuery extends Query {
             } else {
                 throw new DataServiceFault("Mongo update statements must contain a query");
             }
+        }
+
+        /**
+         * This method takes the full parameter list and pushes it into a stack in descending order.
+         * */
+        private Stack<Object> putParametersToStack(Object[] parameters) {
+            Stack<Object> parameterStack = new Stack<>();
+            for (int index = (parameters.length - 1); index >= 0; index--) {
+                parameterStack.push(parameters[index]);
+            }
+            return parameterStack;
+        }
+
+        /**
+         * This method returns an Arraylist with relevant parameters popped from the stack based
+         * on the number of parameters defined the String value.
+         * */
+        private ArrayList getParameters(String value, Stack<Object> parameterStack) {
+            ArrayList parameters = new ArrayList();
+            int noOfParameters = StringUtils.countMatches(value, "#");
+            for (int i = 0; i < noOfParameters; i++) {
+                parameters.add(parameterStack.pop());
+            }
+            return parameters;
         }
 
         private void doDrop(MongoCollection collection) {

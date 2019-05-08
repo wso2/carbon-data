@@ -1149,7 +1149,8 @@ function deleteQuery(obj){
 
 function deleteResources(objPath, objMethod){
     function forwardToDel() {
-        var url = 'resourceProcessor.jsp?action=remove&oldResourcePath='+objPath+'&oldResourceMethod='+objMethod;
+        var url = 'resourceProcessor.jsp?action=remove&oldResourcePath=' + encodeURIComponent(objPath)
+            + '&oldResourceMethod=' + objMethod;
         document.location.href = url;
     }
     CARBON.showConfirmationDialog('Do you want to delete resource '+objPath+'?', forwardToDel);

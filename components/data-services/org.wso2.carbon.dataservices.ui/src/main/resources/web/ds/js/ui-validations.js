@@ -1481,8 +1481,8 @@ function toggleValidators(validatorName, i, document) {
 	document.getElementById('validators').style.display = '';
     if(validatorName == "validateLength" || validatorName == "validateLongRange"
     	|| validatorName == "validateDoubleRange") {
-    	var minNameValue = properties[0].split("=");
-        var maxNameValue = properties[1].split("=");
+    	var minNameValue = properties[1].split("=");
+        var maxNameValue = properties[0].split("=");
 
     	minValue = minNameValue[1];
     	maxValue = maxNameValue[1];

@@ -19,6 +19,7 @@
 <%@ page import="org.wso2.carbon.dataservices.ui.beans.Query" %>
 <%@ page import="org.wso2.carbon.dataservices.ui.beans.Validator" %>
 <%@ page import="java.util.ArrayList" %>
+<%@ page import="static org.apache.tools.ant.launch.Locator.encodeURI" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar" prefix="carbon" %>
 <fmt:bundle basename="org.wso2.carbon.dataservices.ui.i18n.Resources">
@@ -456,7 +457,7 @@ paramType.equals("") ? "" : "display:none"%>"
                 </td>
                 <td>
                     <a class="icon-link" style="background-image:url(../admin/images/delete.gif);"
-                       href="inputMappingProcessor.jsp?queryId=<%=queryId%>&validatorList=<%=valObj.getElementName()%>&inputMappingId=<%=paramName%>&inputMappingSqlType=<%=sqlType%>&defaultValue=<%=defaultValue%>&structType=<%=(structType == null ? "" : structType)%>&flag=deleteValidator&origin=add">
+                       href="inputMappingProcessor.jsp?queryId=<%=queryId%>&validatorList=<%=valObj.getElementName()%>&inputMappingId=<%=paramName%>&inputMappingSqlType=<%=sqlType%>&defaultValue=<%=defaultValue%>&structType=<%=(structType == null ? "" : encodeURI(structType))%>&flag=deleteValidator&origin=add">
                         <fmt:message key="delete"/></a>
                     <a class="icon-link" style="background-image:url(../admin/images/edit.gif);"
                        href="#"
@@ -513,8 +514,9 @@ paramType.equals("") ? "" : "display:none"%>"
                     <% } %>
                 </td>
                 <td>
+                    <%String paramStructType = params[a].getStructType();%>
                     <a class="icon-link" style="background-image:url(../admin/images/edit.gif);"
-                       href="addInputMapping.jsp?paramName=<%=params[a].getName()%>&queryId=<%=queryId%>&paramType=<%=params[a].getParamType()%>&structType=<%=params[a].getStructType()%>"><fmt:message
+                       href="addInputMapping.jsp?paramName=<%=params[a].getName()%>&queryId=<%=queryId%>&paramType=<%=params[a].getParamType()%>&structType=<%=(paramStructType == null ? "" : encodeURI(paramStructType))%>"><fmt:message
                             key="edit"/></a>
                     <a class="icon-link" style="background-image:url(../admin/images/delete.gif);"
                        href="#"

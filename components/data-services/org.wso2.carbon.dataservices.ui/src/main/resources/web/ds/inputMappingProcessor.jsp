@@ -231,7 +231,8 @@
             location.href= "addQuery.jsp?queryId=" + document.getElementById('queryId').value;
          }    
      } else if(document.getElementById('flag').value == 'validate' || document.getElementById('flag').value == 'deleteValidator'){          
-          location.href= "addInputMapping.jsp?queryId=" + document.getElementById('queryId').value + "&paramName=" + document.getElementById('paramName').value + "&paramType=" + document.getElementById('paramType').value + "&defaultValue=" + document.getElementById('defaultValue').value + "&structType=" + document.getElementById('structType') + "&sqlType=" + document.getElementById('sqlType').value + "&inOutType=" + document.getElementById('inoutType').value;
+          var url= "addInputMapping.jsp?queryId=" + document.getElementById('queryId').value + "&paramName=" + document.getElementById('paramName').value + "&paramType=" + document.getElementById('paramType').value + "&defaultValue=" + document.getElementById('defaultValue').value + "&structType=" + document.getElementById('structType') + "&sqlType=" + document.getElementById('sqlType').value + "&inOutType=" + document.getElementById('inoutType').value;
+          location.href=encodeURI(url);
      }
 
 </script>

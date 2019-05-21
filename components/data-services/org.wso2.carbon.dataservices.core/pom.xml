@@ -145,10 +145,6 @@
             <artifactId>commons-httpclient</artifactId>
         </dependency>
         <dependency>
-            <groupId>bsh.wso2</groupId>
-            <artifactId>bsh</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.htmlcleaner.wso2</groupId>
             <artifactId>htmlcleaner</artifactId>
         </dependency>

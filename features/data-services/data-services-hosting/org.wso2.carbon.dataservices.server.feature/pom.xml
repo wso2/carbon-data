@@ -136,10 +136,6 @@
             <artifactId>saxon</artifactId>
         </dependency>
         <dependency>
-            <groupId>bsh.wso2</groupId>
-            <artifactId>bsh</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.htmlcleaner.wso2</groupId>
             <artifactId>htmlcleaner</artifactId>
         </dependency>
@@ -349,7 +345,6 @@
                                 <bundleDef>com.hp.hpl.jena.wso2:arq</bundleDef>
                                 <bundleDef>org.wso2.orbit.org.webharvest:webharvest-core</bundleDef>
                                 <bundleDef>net.sf.saxon.wso2:saxon</bundleDef>
-                                <bundleDef>bsh.wso2:bsh</bundleDef>
                                 <bundleDef>org.htmlcleaner.wso2:htmlcleaner</bundleDef>
                                 <bundleDef>commons-dbcp.wso2:commons-dbcp</bundleDef>
                                 <bundleDef>commons-pool.wso2:commons-pool</bundleDef>

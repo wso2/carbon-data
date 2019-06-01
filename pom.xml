@@ -1282,7 +1282,7 @@
         <jongo.orbit.imp.pkg.version>[1.4,1.5)</jongo.orbit.imp.pkg.version>
 
         <fasterxml.jackson.version>2.9.8.wso2v1</fasterxml.jackson.version>
-        <bson4jackson.orbit.version>2.9.0</bson4jackson.orbit.version>
+        <bson4jackson.orbit.version>2.9.2</bson4jackson.orbit.version>
 
         <slf4j.version>1.7.21</slf4j.version>
         <cassandra-driver-core.orbit.version>3.7.1</cassandra-driver-core.orbit.version>

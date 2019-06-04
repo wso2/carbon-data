@@ -21,14 +21,18 @@ package org.wso2.carbon.dataservices.core.sqlparser.analysers;
 import org.wso2.carbon.dataservices.core.sqlparser.LexicalConstants;
 import org.wso2.carbon.dataservices.core.sqlparser.SQLParserUtil;
 
+import java.util.LinkedList;
 import java.util.Queue;
 
 public class SelectAnalyser extends KeyWordAnalyzer {
 
     private Queue<String> tempQueue;
+    private Queue<String> columnsQueue;
+    private boolean isSQLFunction = false;
 
     public SelectAnalyser(Queue<String> tempQueue) {
         this.tempQueue = tempQueue;
+        this.columnsQueue = new LinkedList<String>();
     }
 
     /**
@@ -65,6 +69,7 @@ public class SelectAnalyser extends KeyWordAnalyzer {
             }
             /* handling left bracket */
         } else if (tempQueue.peek().equals(LexicalConstants.LEFT_BRACKET)) {
+            isSQLFunction = true;
             tempQueue.poll();
             syntaxQueue.add(LexicalConstants.START_OF_LBRACKET);
             if (!tempQueue.isEmpty()) {
@@ -72,6 +77,7 @@ public class SelectAnalyser extends KeyWordAnalyzer {
             }
             /* handling right bracket */
         } else if (tempQueue.peek().equals(LexicalConstants.RIGHT_BRACKET)) {
+            isSQLFunction = false;
             tempQueue.poll();
             syntaxQueue.add(LexicalConstants.START_OF_RBRACKET);
             if (!tempQueue.isEmpty()) {
@@ -109,9 +115,16 @@ public class SelectAnalyser extends KeyWordAnalyzer {
                 while (!tempQueue.isEmpty() && !tempQueue.peek().equals(LexicalConstants.COMMA)) {
                     sb.append(tempQueue.poll());
                 }
+
+                for (String columnName : columnsQueue) {
+                    if (!syntaxQueue.contains(columnName)) {
+                        syntaxQueue.add(LexicalConstants.COLUMN);
+                        syntaxQueue.add(columnName);
+                    }
+                }
                 syntaxQueue.add(LexicalConstants.COLUMN);
                 syntaxQueue.add(sb.toString());
-
+                columnsQueue.add(sb.toString());
                 if (!tempQueue.isEmpty()) {
                     analyseStatement();
                 }
@@ -135,9 +148,23 @@ public class SelectAnalyser extends KeyWordAnalyzer {
 
                         if (!tempQueue.isEmpty()) {
                             if (tempQueue.peek().equals(LexicalConstants.COMMA)) {
+                                columnsQueue.add(columnRef);
                                 tempQueue.poll();
                                 analyseStatement();
+                            } else if (tempQueue.peek().equals(LexicalConstants.LEFT_BRACKET)) {
+                                if (!tempQueue.isEmpty()) {
+                                    analyseStatement();
+                                }
                             } else if (tempQueue.peek().equals(LexicalConstants.RIGHT_BRACKET)) {
+                                if (!tempQueue.isEmpty()) {
+                                    analyseStatement();
+                                }
+                            } else if (tempQueue.peek().equalsIgnoreCase(LexicalConstants.AS)) {
+                                syntaxQueue.clear();
+                                if (!tempQueue.isEmpty()) {
+                                    analyseStatement();
+                                }
+                            } else {
                                 if (!tempQueue.isEmpty()) {
                                     analyseStatement();
                                 }
@@ -151,6 +178,9 @@ public class SelectAnalyser extends KeyWordAnalyzer {
                     syntaxQueue.add(LexicalConstants.COLUMN);
                     syntaxQueue.add(strRef);
                     tempQueue.poll();
+                    if (!isSQLFunction) {
+                        columnsQueue.add(strRef);
+                    }
                     analyseStatement();
                 } else if (tempQueue.peek().equals(LexicalConstants.AS)) {
 

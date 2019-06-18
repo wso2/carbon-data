@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.wso2.carbon.dbconsole.ui.internal;
 
 import org.h2.server.web.WebServlet;
@@ -23,24 +22,25 @@ import org.osgi.service.http.HttpContext;
 import org.osgi.service.http.HttpService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import java.util.Dictionary;
 import java.util.Hashtable;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
-/*
-       This is to register the h2console servlet to make the h2 console as a carbon component.
- */
-
-/**
- * @scr.component name="org.wso2.carbon.dbconsole.ui" immediate="true"
- * @scr.reference name="http.service" interface="org.osgi.service.http.HttpService"
- * cardinality="1..1" policy="dynamic"  bind="setHttpService" unbind="unsetHttpService"
- */
+@Component(
+         name = "org.wso2.carbon.dbconsole.ui", 
+         immediate = true)
 public class DBConsoleComponent {
+
     private HttpService httpService = null;
 
     private static Log log = LogFactory.getLog(DBConsoleComponent.class);
-          
+
+    @Activate
     protected void activate(ComponentContext context) {
         try {
             registerServlet(context.getBundleContext());
@@ -49,18 +49,26 @@ public class DBConsoleComponent {
             log.error("******* Failed to activate DB Console bundle ******* ", e);
         }
     }
+
     public void registerServlet(BundleContext bundleContext) throws Exception {
         HttpContext defaultHttpContext = httpService.createDefaultHttpContext();
-        Dictionary<String,String> servletParam = new Hashtable<String,String>(2);
+        Dictionary<String, String> servletParam = new Hashtable<String, String>(2);
         servletParam.put("-webAllowOthers", "");
         httpService.registerServlet("/dbconsole", new WebServlet(), servletParam, defaultHttpContext);
-     }
+    }
 
+    @Deactivate
     protected void deactivate(ComponentContext context) {
         httpService.unregister("/dbconsole");
         log.debug("******* DB Console bundle is deactivated ******* ");
     }
 
+    @Reference(
+             name = "http.service", 
+             service = org.osgi.service.http.HttpService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetHttpService")
     protected void setHttpService(HttpService httpService) {
         this.httpService = httpService;
     }
@@ -68,6 +76,5 @@ public class DBConsoleComponent {
     protected void unsetHttpService(HttpService httpService) {
         this.httpService = null;
     }
-
 }
 

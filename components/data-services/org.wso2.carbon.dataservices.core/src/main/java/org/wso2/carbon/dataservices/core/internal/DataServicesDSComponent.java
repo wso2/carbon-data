@@ -22,6 +22,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.dataservices.core.DataServiceFault;
 import org.wso2.carbon.dataservices.core.description.event.EventTrigger;
@@ -38,28 +44,9 @@ import org.wso2.carbon.utils.ConfigurationContextService;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @scr.component name="dataservices.component" immediate="true"
- * @scr.reference name="registry.service" interface="org.wso2.carbon.registry.core.service.RegistryService"
- * cardinality="0..1" policy="dynamic"  bind="setRegistryService" unbind="unsetRegistryService"
- * @scr.reference name="user.realmservice.default" interface="org.wso2.carbon.user.core.service.RealmService"
- * cardinality="0..1" policy="dynamic" bind="setRealmService" unbind="unsetRealmService"
- * @scr.reference name="eventbrokerbuilder.component" interface="org.wso2.carbon.event.core.EventBroker"
- * cardinality="0..1" policy="dynamic" bind="setEventBroker" unbind="unsetEventBroker"
- * @scr.reference name="datasources.service" interface="org.wso2.carbon.ndatasource.core.DataSourceService"
- * cardinality="1..1" policy="dynamic" bind="setDataSourceService" unbind="unsetDataSourceService"
- * @scr.reference name="secret.callback.handler.service"
- * interface="org.wso2.carbon.securevault.SecretCallbackHandlerService"
- * cardinality="1..1" policy="dynamic"
- * bind="setSecretCallbackHandlerService" unbind="unsetSecretCallbackHandlerService"
- * @scr.reference name="tenant.registryloader"
- * interface="org.wso2.carbon.registry.core.service.TenantRegistryLoader"
- * cardinality="0..1" policy="dynamic" bind="setTenantRegistryLoader"
- * unbind="unsetTenantRegistryLoader"
- * @scr.reference name="configuration.context.service"
- * interface="org.wso2.carbon.utils.ConfigurationContextService" cardinality="0..1"
- * policy="dynamic" bind="setConfigurationContextService" unbind="unsetConfigurationContextService"
- */
+@Component(
+        name = "dataservices.component",
+        immediate = true)
 public class DataServicesDSComponent {
 
     private static Log log = LogFactory.getLog(DataServicesDSComponent.class);
@@ -69,31 +56,35 @@ public class DataServicesDSComponent {
     private static RealmService realmService = null;
 
     private static EventBroker eventBroker;
-    
+
     private static DataSourceService dataSourceService;
 
     private static SecretCallbackHandlerService secretCallbackHandlerService;
-    
+
     private static TenantRegistryLoader tenantRegLoader;
 
     private static ConfigurationContextService contextService;
 
-    private static Object dsComponentLock = new Object(); /* class level lock for controlling synchronized access to static variables */
+    private static Object dsComponentLock = new Object(); /* class level lock for controlling synchronized access to
+    static variables */
 
     /* this is to keep event trigger objects which are not registered for subscription*/
-    private static List<EventTrigger> eventTriggerList= new ArrayList<EventTrigger>();
+    private static List<EventTrigger> eventTriggerList = new ArrayList<EventTrigger>();
 
     public DataServicesDSComponent() {
+
     }
 
+    @Activate
     protected void activate(ComponentContext ctxt) {
+
         try {
             BundleContext bundleContext = ctxt.getBundleContext();
             bundleContext.registerService(Axis2ConfigurationContextObserver.class.getName(),
-                                          new DSAxis2ConfigurationContextObserver(), null);
+                    new DSAxis2ConfigurationContextObserver(), null);
             bundleContext.registerService(DSDummyService.class.getName(), new DSDummyService(), null);
             bundleContext.registerService(TransactionManagerDummyService.class.getName(),
-                                          new TransactionManagerDummyService(), null);
+                    new TransactionManagerDummyService(), null);
 
             log.debug("Data Services bundle is activated ");
         } catch (Throwable e) {
@@ -102,11 +93,20 @@ public class DataServicesDSComponent {
         }
     }
 
+    @Deactivate
     protected void deactivate(ComponentContext ctxt) {
+
         log.debug("Data Services bundle is deactivated ");
     }
 
+    @Reference(
+            name = "registry.service",
+            service = org.wso2.carbon.registry.core.service.RegistryService.class,
+            cardinality = ReferenceCardinality.OPTIONAL,
+            policy = ReferencePolicy.DYNAMIC,
+            unbind = "unsetRegistryService")
     protected void setRegistryService(RegistryService registryService) {
+
         if (log.isDebugEnabled()) {
             log.debug("Setting the Registry Service");
         }
@@ -114,13 +114,21 @@ public class DataServicesDSComponent {
     }
 
     protected void unsetRegistryService(RegistryService registryService) {
+
         if (log.isDebugEnabled()) {
             log.debug("Unsetting the Registry Service");
         }
         DataServicesDSComponent.registryService = null;
     }
 
+    @Reference(
+            name = "user.realmservice.default",
+            service = org.wso2.carbon.user.core.service.RealmService.class,
+            cardinality = ReferenceCardinality.OPTIONAL,
+            policy = ReferencePolicy.DYNAMIC,
+            unbind = "unsetRealmService")
     protected void setRealmService(RealmService realmService) {
+
         if (log.isDebugEnabled()) {
             log.debug("Setting the Realm Service");
         }
@@ -128,6 +136,7 @@ public class DataServicesDSComponent {
     }
 
     protected void unsetRealmService(RealmService realmService) {
+
         if (log.isDebugEnabled()) {
             log.debug("Unsetting the Realm Service");
         }
@@ -135,14 +144,23 @@ public class DataServicesDSComponent {
     }
 
     public static RegistryService getRegistryService() {
+
         return registryService;
     }
 
     public static RealmService getRealmService() {
+
         return realmService;
     }
-    
+
+    @Reference(
+            name = "datasources.service",
+            service = org.wso2.carbon.ndatasource.core.DataSourceService.class,
+            cardinality = ReferenceCardinality.MANDATORY,
+            policy = ReferencePolicy.DYNAMIC,
+            unbind = "unsetDataSourceService")
     protected void setDataSourceService(DataSourceService dataSourceService) {
+
         if (log.isDebugEnabled()) {
             log.debug("Setting the Data Sources Service");
         }
@@ -150,6 +168,7 @@ public class DataServicesDSComponent {
     }
 
     protected void unsetDataSourceService(DataSourceService dataSourceService) {
+
         if (log.isDebugEnabled()) {
             log.debug("Unsetting the Data Sources Service");
         }
@@ -157,10 +176,18 @@ public class DataServicesDSComponent {
     }
 
     public static DataSourceService getDataSourceService() {
+
         return dataSourceService;
     }
 
+    @Reference(
+            name = "eventbrokerbuilder.component",
+            service = org.wso2.carbon.event.core.EventBroker.class,
+            cardinality = ReferenceCardinality.OPTIONAL,
+            policy = ReferencePolicy.DYNAMIC,
+            unbind = "unsetEventBroker")
     protected void setEventBroker(EventBroker eventBroker) {
+
         synchronized (dsComponentLock) {
             if (log.isDebugEnabled()) {
                 log.debug("Setting the Event Broker Service");
@@ -171,6 +198,7 @@ public class DataServicesDSComponent {
     }
 
     protected void unsetEventBroker(EventBroker eventBroker) {
+
         synchronized (dsComponentLock) {
             if (log.isDebugEnabled()) {
                 log.debug("Unsetting the Event Broker Service");
@@ -180,10 +208,12 @@ public class DataServicesDSComponent {
     }
 
     public static EventBroker getEventBroker() {
+
         return eventBroker;
     }
 
     public static void registerSubscriptions(EventTrigger eventTrigger) throws DataServiceFault {
+
         synchronized (dsComponentLock) {
             if (DataServicesDSComponent.eventBroker == null) {
                 eventTriggerList.add(eventTrigger);
@@ -194,23 +224,33 @@ public class DataServicesDSComponent {
     }
 
     public static void processSubscriptionsForEventTriggers() {
+
         if (eventTriggerList.size() > 0 && DataServicesDSComponent.eventBroker != null) {
-            for (EventTrigger trigger: eventTriggerList) {
+            for (EventTrigger trigger : eventTriggerList) {
                 trigger.processEventTriggerSubscriptions();
             }
         }
     }
 
     public static String getUsername() {
+
         return CarbonContext.getThreadLocalCarbonContext().getUsername();
     }
 
     public static SecretCallbackHandlerService getSecretCallbackHandlerService() {
+
         return DataServicesDSComponent.secretCallbackHandlerService;
     }
 
+    @Reference(
+            name = "secret.callback.handler.service",
+            service = org.wso2.carbon.securevault.SecretCallbackHandlerService.class,
+            cardinality = ReferenceCardinality.MANDATORY,
+            policy = ReferencePolicy.DYNAMIC,
+            unbind = "unsetSecretCallbackHandlerService")
     protected void setSecretCallbackHandlerService(
             SecretCallbackHandlerService secretCallbackHandlerService) {
+
         if (log.isDebugEnabled()) {
             log.debug("SecretCallbackHandlerService acquired");
         }
@@ -220,30 +260,49 @@ public class DataServicesDSComponent {
 
     protected void unsetSecretCallbackHandlerService(
             SecretCallbackHandlerService secretCallbackHandlerService) {
+
         DataServicesDSComponent.secretCallbackHandlerService = null;
     }
 
+    @Reference(
+            name = "tenant.registryloader",
+            service = org.wso2.carbon.registry.core.service.TenantRegistryLoader.class,
+            cardinality = ReferenceCardinality.OPTIONAL,
+            policy = ReferencePolicy.DYNAMIC,
+            unbind = "unsetTenantRegistryLoader")
     protected void setTenantRegistryLoader(TenantRegistryLoader tenantRegLoader) {
-    	DataServicesDSComponent.tenantRegLoader = tenantRegLoader;
+
+        DataServicesDSComponent.tenantRegLoader = tenantRegLoader;
     }
 
     protected void unsetTenantRegistryLoader(TenantRegistryLoader tenantRegLoader) {
-    	DataServicesDSComponent.tenantRegLoader = null;
+
+        DataServicesDSComponent.tenantRegLoader = null;
     }
 
-    public static TenantRegistryLoader getTenantRegistryLoader(){
+    public static TenantRegistryLoader getTenantRegistryLoader() {
+
         return DataServicesDSComponent.tenantRegLoader;
     }
 
+    @Reference(
+            name = "configuration.context.service",
+            service = org.wso2.carbon.utils.ConfigurationContextService.class,
+            cardinality = ReferenceCardinality.OPTIONAL,
+            policy = ReferencePolicy.DYNAMIC,
+            unbind = "unsetConfigurationContextService")
     protected void setConfigurationContextService(ConfigurationContextService contextService) {
+
         DataServicesDSComponent.contextService = contextService;
     }
 
     protected void unsetConfigurationContextService(ConfigurationContextService contextService) {
+
         DataServicesDSComponent.contextService = null;
     }
 
     public static ConfigurationContextService getContextService() {
+
         return contextService;
     }
 

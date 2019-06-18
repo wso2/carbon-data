@@ -949,6 +949,11 @@
                 <artifactId>org.wso2.carbon.dataservices.capp.deployer</artifactId>
                 <version>${dataservices.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.scr.ds-annotations</artifactId>
+                <version>${apache.felix.scr.ds.annotations.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -1058,7 +1063,7 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-scr-plugin</artifactId>
-                    <version>1.7.2</version>
+                    <version>${maven.scr.plugin.version}</version>
                     <executions>
                         <execution>
                             <id>generate-scr-scrdescriptor</id>
@@ -1376,6 +1381,9 @@
         <encoder.wso2.version>1.2.0.wso2v1</encoder.wso2.version>
         <!--<hazelcast.orbit.imp.pkg.version>[3.2,3.3)</hazelcast.orbit.imp.pkg.version>-->
         <metrics.core.version>3.2.5</metrics.core.version>
+
+        <apache.felix.scr.ds.annotations.version>1.2.4</apache.felix.scr.ds.annotations.version>
+        <maven.scr.plugin.version>1.26.0</maven.scr.plugin.version>
     </properties>
 
 </project>

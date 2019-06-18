@@ -17,27 +17,33 @@
  */
 package org.wso2.carbon.dataservices.capp.deployer.internal;
 
-import java.util.Objects;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.wso2.carbon.application.deployer.handler.AppDeploymentHandler;
 import org.wso2.carbon.dataservices.capp.deployer.DataServiceCappDeployer;
 import org.wso2.carbon.ndatasource.capp.deployer.DataSourceCappDeployer;
 
-/**
- * @scr.component name="org.wso2.carbon.dataservices.capp.deployer" immediate="true"
- * @scr.reference name="org.wso2.carbon.application.deployer.handler"
- * interface="org.wso2.carbon.application.deployer.handler.AppDeploymentHandler"
- * cardinality="1..n" policy="dynamic" bind="setDataServiceCappDeployer" unbind="unsetDataServiceCappDeployer"
- */
+import java.util.Objects;
+
+@Component(
+        name = "org.wso2.carbon.dataservices.capp.deployer",
+        immediate = true)
 public class DataServiceCappDeployerServiceComponent {
 
     private static final Log log = LogFactory.getLog(DataServiceCappDeployerServiceComponent.class);
     private ComponentContext ctx;
     private AppDeploymentHandler appDepHandler;
 
+    @Activate
     protected synchronized void activate(ComponentContext ctx) {
+
         this.ctx = ctx;
         if (Objects.nonNull(appDepHandler)) {
             registerDataServiceCappDeployer();
@@ -47,14 +53,23 @@ public class DataServiceCappDeployerServiceComponent {
         }
     }
 
+    @Deactivate
     protected synchronized void deactivate(ComponentContext ctx) {
+
         this.ctx = null;
         if (log.isDebugEnabled()) {
             log.debug("Data Service Capp deployer deactivated");
         }
     }
 
+    @Reference(
+            name = "org.wso2.carbon.application.deployer.handler",
+            service = org.wso2.carbon.application.deployer.handler.AppDeploymentHandler.class,
+            cardinality = ReferenceCardinality.AT_LEAST_ONE,
+            policy = ReferencePolicy.DYNAMIC,
+            unbind = "unsetDataServiceCappDeployer")
     protected void setDataServiceCappDeployer(AppDeploymentHandler appDeploymentHandler) {
+
         if (appDeploymentHandler instanceof DataSourceCappDeployer) {
             if (Objects.isNull(ctx)) {
                 // save appDeploymentHandler
@@ -66,6 +81,7 @@ public class DataServiceCappDeployerServiceComponent {
     }
 
     protected void unsetDataServiceCappDeployer(AppDeploymentHandler appDeploymentHandler) {
+
         if (appDeploymentHandler.equals(appDepHandler)) {
             appDepHandler = null;
         }
@@ -75,9 +91,10 @@ public class DataServiceCappDeployerServiceComponent {
      * Register data source deployer as an OSGi service.
      */
     private void registerDataServiceCappDeployer() {
+
         try {
             ctx.getBundleContext().registerService(AppDeploymentHandler.class.getName(),
-                                                   new DataServiceCappDeployer(), null);
+                    new DataServiceCappDeployer(), null);
         } catch (Throwable e) {
             log.error("Failed to activate Data Service Capp Deployer", e);
         }

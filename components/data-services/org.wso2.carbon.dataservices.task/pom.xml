@@ -63,10 +63,6 @@
 
     <build>
         <plugins>
-	        <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-scr-plugin</artifactId>
-            </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <inherited>true</inherited>

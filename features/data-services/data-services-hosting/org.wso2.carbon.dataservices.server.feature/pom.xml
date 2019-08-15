@@ -21,7 +21,7 @@
         <groupId>org.wso2.carbon.data</groupId>
         <artifactId>data-services-hosting-feature</artifactId>
         <version>4.5.2-SNAPSHOT</version>
-	    <relativePath>../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -120,8 +120,8 @@
             <artifactId>commons-collections4</artifactId>
         </dependency>
         <!--<dependency>-->
-            <!--<groupId>org.apache.poi.wso2</groupId>-->
-            <!--<artifactId>ooxml-spreadsheet-schemas</artifactId>-->
+        <!--<groupId>org.apache.poi.wso2</groupId>-->
+        <!--<artifactId>ooxml-spreadsheet-schemas</artifactId>-->
         <!--</dependency>-->
         <dependency>
             <groupId>com.hp.hpl.jena.wso2</groupId>
@@ -327,7 +327,6 @@
                                 <bundleDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.sql.driver</bundleDef>
                                 <bundleDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.odata.endpoint</bundleDef>
                                 <bundleDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.capp.deployer</bundleDef>
-                                <bundleDef>org.wso2.carbon.commons:org.wso2.carbon.ndatasource.capp.deployer</bundleDef>
                                 <bundleDef>com.google.gdata.wso2:gdata-core</bundleDef>
                                 <bundleDef>com.google.gdata.wso2:gdata-spreadsheet</bundleDef>
                                 <bundleDef>com.google.guava:guava</bundleDef>
@@ -368,6 +367,9 @@
                                 <importFeatureDef>org.wso2.carbon.event.server:${carbon-commons.feature.imp.version}</importFeatureDef>
                                 <importFeatureDef>org.wso2.carbon.transaction.manager:${carbon-commons.feature.imp.version}</importFeatureDef>
                             </importFeatures>
+                            <importBundles>
+                                <importBundleDef>org.wso2.carbon.commons:org.wso2.carbon.ndatasource.capp.deployer</importBundleDef>
+                            </importBundles>
                         </configuration>
                     </execution>
                 </executions>

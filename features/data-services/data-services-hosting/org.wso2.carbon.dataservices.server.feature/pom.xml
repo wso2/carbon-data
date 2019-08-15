@@ -327,7 +327,6 @@
                                 <bundleDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.sql.driver</bundleDef>
                                 <bundleDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.odata.endpoint</bundleDef>
                                 <bundleDef>org.wso2.carbon.data:org.wso2.carbon.dataservices.capp.deployer</bundleDef>
-                                <bundleDef>org.wso2.carbon.commons:org.wso2.carbon.ndatasource.capp.deployer</bundleDef>
                                 <bundleDef>com.google.gdata.wso2:gdata-core</bundleDef>
                                 <bundleDef>com.google.gdata.wso2:gdata-spreadsheet</bundleDef>
                                 <bundleDef>com.google.guava:guava</bundleDef>
@@ -368,6 +367,9 @@
                                 <importFeatureDef>org.wso2.carbon.event.server:${carbon-commons.feature.imp.version}</importFeatureDef>
                                 <importFeatureDef>org.wso2.carbon.transaction.manager:${carbon-commons.feature.imp.version}</importFeatureDef>
                             </importFeatures>
+                            <importBundles>
+                                <importBundleDef>org.wso2.carbon.commons:org.wso2.carbon.ndatasource.capp.deployer</importBundleDef>
+                            </importBundles>
                         </configuration>
                     </execution>
                 </executions>

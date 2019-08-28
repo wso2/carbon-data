@@ -21,7 +21,7 @@
         <groupId>org.wso2.carbon.data</groupId>
         <artifactId>carbon-data</artifactId>
         <relativePath>../../pom.xml</relativePath>
-        <version>4.5.54</version>
+        <version>4.5.55-SNAPSHOT</version>
     </parent>    
 
     <modelVersion>4.0.0</modelVersion>

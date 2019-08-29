@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.wso2.carbon.data</groupId>
         <artifactId>data-sources</artifactId>
-        <version>4.5.150</version>
+        <version>4.5.151-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 

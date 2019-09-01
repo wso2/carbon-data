@@ -10,7 +10,7 @@
     <groupId>org.wso2.carbon.data</groupId>
     <artifactId>carbon-data</artifactId>
     <packaging>pom</packaging>
-    <version>4.5.504</version>
+    <version>4.5.505-SNAPSHOT</version>
     <name>WSO2 Carbon - Data repo Aggregator Pom</name>
     <url>http://wso2.org</url>
 
@@ -18,7 +18,7 @@
         <url>https://github.com/wso2/carbon-data.git</url>
         <developerConnection>scm:git:https://github.com/wso2/carbon-data.git</developerConnection>
         <connection>scm:git:https://github.com/wso2/carbon-data.git</connection>
-        <tag>v4.5.504</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <modules>
@@ -1229,7 +1229,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <dataservices.version>4.5.504</dataservices.version>
+        <dataservices.version>4.5.505-SNAPSHOT</dataservices.version>
         <dataservices.imp.pkg.version>[4.3.0,5.0.0)</dataservices.imp.pkg.version>
 
         <carbon.kernel.version>4.5.0-alpha3</carbon.kernel.version>

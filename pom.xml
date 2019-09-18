@@ -1232,7 +1232,7 @@
         <dataservices.version>4.5.616-SNAPSHOT</dataservices.version>
         <dataservices.imp.pkg.version>[4.3.0,5.0.0)</dataservices.imp.pkg.version>
 
-        <carbon.kernel.version>4.5.0-alpha3</carbon.kernel.version>
+        <carbon.kernel.version>4.5.0</carbon.kernel.version>
         <carbon.kernel.feature.imp.version>4.5.0</carbon.kernel.feature.imp.version>
         <carbon.kernel.imp.pkg.version>[4.5.0,5.0.0)</carbon.kernel.imp.pkg.version>
 
@@ -1240,7 +1240,7 @@
         <carbon.base.imp.pkg.version>0.0.0</carbon.base.imp.pkg.version> <!-- todo remove this and use {carbon.kernel.imp.pkg.version} after carbon base bundles are corrected to export correct versions-->
         <carbon.user.api.imp.pkg.version>[1.0.1,1.1.0)</carbon.user.api.imp.pkg.version> <!-- todo remove this and use {carbon.kernel.imp.pkg.version} after carbon base bundles are corrected to export correct versions-->
 
-        <apache.axis2.orbit.version>1.6.1-wso2v37</apache.axis2.orbit.version>
+        <apache.axis2.orbit.version>1.6.1-wso2v38</apache.axis2.orbit.version>
         <apache.axis2.orbit.imp.pkg.version>[1.6, 1.7)</apache.axis2.orbit.imp.pkg.version>
 
         <h2.engine.orbit.version>1.3.175.wso2v1</h2.engine.orbit.version>
@@ -1339,7 +1339,7 @@
 
         <carbon.p2.plugin.version>1.5.5</carbon.p2.plugin.version>
 
-        <carbon-commons.version>4.7.9</carbon-commons.version>
+        <carbon-commons.version>4.7.11</carbon-commons.version>
         <carbon-commons.feature.imp.version>${carbon-commons.version}</carbon-commons.feature.imp.version>
         <carbon-commons.imp.pkg.version>[4.7.0,5.0.0)</carbon-commons.imp.pkg.version>
         <carbon-commons.user.mgt.imp.pkg.version>0.0.0</carbon-commons.user.mgt.imp.pkg.version> <!-- todo remove this and use identity.imp.pkg.version - rajith (temparory done)-->
@@ -1347,12 +1347,12 @@
         <json.orbit.version>3.0.0.wso2v1</json.orbit.version>
         <json.orbit.imp.pkg.version>0.0.0</json.orbit.imp.pkg.version> <!-- This comes from carbon-multitenancy, tenant.common.server feature -->
 
-        <carbon-identity.framework.version>5.14.33</carbon-identity.framework.version>
+        <carbon-identity.framework.version>5.14.67</carbon-identity.framework.version>
         <carbon-identity.framework.imp.pkg.version>[5.13.0,6.0.0)</carbon-identity.framework.imp.pkg.version>
 
         <carbon-commons.trnsaction.mgt.imp.pkg.version>0.0.0</carbon-commons.trnsaction.mgt.imp.pkg.version> <!-- todo remove this and use {carbon-commons.imp.pkg.version} after org.wso2.carbon.transaction.manager (bundle - org.wso2.carbon.transaction.manager) is corrected to export correct versions-->
 
-        <carbon-deployment.version>4.9.9</carbon-deployment.version>
+        <carbon-deployment.version>4.9.11</carbon-deployment.version>
         <carbon-deployment.feature.imp.version>${carbon-deployment.version}</carbon-deployment.feature.imp.version>
 
         <osgi.imp.pkg.version>[1.7.0,2.0.0)</osgi.imp.pkg.version> <!-- todo change this version to proper version range after osgi bundles are corrected (because export versions are different from bundle version) -rajith -->
@@ -1364,7 +1364,7 @@
         <commons-codec.orbit.version>1.12</commons-codec.orbit.version>
         <commons-codec.orbit.imp.pkg.version>0.0.0</commons-codec.orbit.imp.pkg.version> <!--todo change this to appropriate version range ([1.4.0.wso2v1,1.5.0)) after osgi bundle is corrected - rajith-->
 
-        <wso2.securevault.version>1.1.2</wso2.securevault.version>
+        <wso2.securevault.version>1.1.3</wso2.securevault.version>
         <wso2.securevault.imp.pkg.version>0.0.0</wso2.securevault.imp.pkg.version> <!--todo change this to appropriate version range ([1.0.0-wso2v2,1.1.0)) after osgi bundle is corrected - rajith-->
 
         <xmlschema.orbit.version>1.4.7.wso2v3</xmlschema.orbit.version>

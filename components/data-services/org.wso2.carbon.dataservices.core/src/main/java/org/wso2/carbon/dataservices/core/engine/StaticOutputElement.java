@@ -245,8 +245,8 @@ public class StaticOutputElement extends OutputElement {
         } else {
             paramValue = this.getParamValue(params);
         }
-        /* if the result is null, this is an optional field then, do not write it out */
-        if (paramValue == null) {
+        /* if the result is null and this is an optional field, then do not write it out */
+        if (this.isOptional() && paramValue.getScalarValue() == null) {
         	return;
         }
         if (escapeNonPrintableChar && paramValue.getScalarValue() != null) {

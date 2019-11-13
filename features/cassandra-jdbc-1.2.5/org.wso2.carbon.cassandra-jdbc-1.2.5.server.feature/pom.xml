@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.wso2.carbon.data</groupId>
         <artifactId>cassandra-jdbc-1.2.5-feature</artifactId>
-        <version>4.5.1254-SNAPSHOT</version>
+        <version>4.5.1254</version>
 	    <relativePath>../pom.xml</relativePath>
     </parent>
 

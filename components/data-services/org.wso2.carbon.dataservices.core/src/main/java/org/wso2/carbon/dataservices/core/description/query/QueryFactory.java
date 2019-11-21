@@ -930,13 +930,13 @@ public class QueryFactory {
             ResultEntryColumnInfo info = extractJSONResultColumnInfo(item.toString());
             childEl.addAttribute(DBSFields.COLUMN, info.getName(), null);
             if (info.getDataType() != null) {
-        	    childEl.addAttribute(DBSFields.XSD_TYPE, info.getDataType(), null);
+                childEl.addAttribute(DBSFields.XSD_TYPE, info.getDataType(), null);
             }
             if (info.isOptional()) {
-        	    childEl.addAttribute(DBSFields.OPTIONAL, String.valueOf(info.isOptional()), null);
+                childEl.addAttribute(DBSFields.OPTIONAL, String.valueOf(info.isOptional()), null);
             }
             if (info.getRequiredRoles() != null) {
-        	    childEl.addAttribute(DBSFields.REQUIRED_ROLES, info.getRequiredRoles(), null);
+                childEl.addAttribute(DBSFields.REQUIRED_ROLES, info.getRequiredRoles(), null);
             }
         }
     }

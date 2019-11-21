@@ -851,7 +851,7 @@ public class QueryFactory {
             } else if (DBSFields.TYPE.equals(name)) {
                 this.dataType = value;
             } else if (DBSFields.OPTIONAL.equals(name)) {
-            	this.isOptional = Boolean.parseBoolean(value);
+                this.isOptional = Boolean.parseBoolean(value);
             } else {
                 throw new DataServiceFault("Unrecognized option type '" + name + "', "
                         + "found: " + name);
@@ -870,9 +870,9 @@ public class QueryFactory {
             return dataType;
         }
 
-	    public boolean isOptional() {
-		    return isOptional;
-	    }
+	public boolean isOptional() {
+ 	    return isOptional;
+	}
     }
     
     private static ResultEntryColumnInfo extractJSONResultColumnInfo(
@@ -927,17 +927,17 @@ public class QueryFactory {
         } else if (item instanceof JSONArray) {
             throw new DataServiceFault("A JSON Array cannot be contained in the result records");
         } else {
-        	ResultEntryColumnInfo info = extractJSONResultColumnInfo(item.toString());
-        	childEl.addAttribute(DBSFields.COLUMN, info.getName(), null);
-        	if (info.getDataType() != null) {
-        		childEl.addAttribute(DBSFields.XSD_TYPE, info.getDataType(), null);
-        	}
-        	if (info.isOptional()) {
-        		childEl.addAttribute(DBSFields.OPTIONAL, String.valueOf(info.isOptional()), null);
-        	}
-        	if (info.getRequiredRoles() != null) {
-        		childEl.addAttribute(DBSFields.REQUIRED_ROLES, info.getRequiredRoles(), null);
-        	}
+            ResultEntryColumnInfo info = extractJSONResultColumnInfo(item.toString());
+            childEl.addAttribute(DBSFields.COLUMN, info.getName(), null);
+            if (info.getDataType() != null) {
+        	    childEl.addAttribute(DBSFields.XSD_TYPE, info.getDataType(), null);
+            }
+            if (info.isOptional()) {
+        	    childEl.addAttribute(DBSFields.OPTIONAL, String.valueOf(info.isOptional()), null);
+            }
+            if (info.getRequiredRoles() != null) {
+        	    childEl.addAttribute(DBSFields.REQUIRED_ROLES, info.getRequiredRoles(), null);
+            }
         }
     }
     

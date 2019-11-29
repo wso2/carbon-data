@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.wso2.carbon.data</groupId>
         <artifactId>data-services-hosting-feature</artifactId>
-        <version>4.5.1461</version>
+        <version>4.5.1462-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 

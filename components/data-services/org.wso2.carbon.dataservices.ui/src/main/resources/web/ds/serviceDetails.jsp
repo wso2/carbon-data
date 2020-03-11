@@ -32,6 +32,9 @@
 <%@ page import="org.wso2.carbon.dataservices.ui.beans.Property" %>
 <%@ page import="org.owasp.encoder.Encode" %>
 <script type="text/javascript" src="js/ui-validations.js"></script>
+<script type="text/javascript" src="../resources/js/resource_util.js"></script>
+<jsp:include page="../resources/resources-i18n-ajaxprocessor.jsp"/>
+<script type="text/javascript" src="../ajax/js/prototype.js"></script>
 <jsp:useBean id="dataService" class="org.wso2.carbon.dataservices.ui.beans.Data"
              scope="session"></jsp:useBean>
 <fmt:bundle basename="org.wso2.carbon.dataservices.ui.i18n.Resources">
@@ -67,6 +70,7 @@
     String passwordProvider = "";
     String serviceNamespace = "";
     AuthProvider authProvider = null;
+    String swaggerLocation = "";
 
     String detailedServiceName = null;
 
@@ -86,6 +90,7 @@
                 //txManagerClass = dataService.getTxManagerClass();
                 txManagerJNDIName = dataService.getTxManagerName();
                 description = dataService.getDescription();
+                swaggerLocation = dataService.getSwaggerLocation();
                 protectedTokens = dataService.getProtectedTokens();
                 passwordProvider = dataService.getPasswordProvider();
                 boxcarring = dataService.isBoxcarring();
@@ -123,6 +128,7 @@
                 //txManagerClass = data.getTxManagerClass();
                 txManagerJNDIName = data.getTxManagerName();
                 description = data.getDescription();
+                swaggerLocation = data.getSwaggerLocation();
                 protectedTokens = data.getProtectedTokens();
                 passwordProvider = data.getPasswordProvider();
                 boxcarring = data.isBoxcarring();
@@ -141,6 +147,7 @@
             }
 
             description = (description == null) ? "" : description;
+            swaggerLocation = (swaggerLocation == null) ? "" : swaggerLocation;
             //txManagerClass = (txManagerClass == null) ? "" : txManagerClass;
             //txManagerCleanupMethod = (txManagerCleanupMethod == null) ? "" : txManagerCleanupMethod;
             txManagerJNDIName = (txManagerJNDIName == null) ? "" : txManagerJNDIName;
@@ -168,6 +175,7 @@
             detailedServiceName = serviceName;
             editingDataService = true;
             description = dataService.getDescription();
+            swaggerLocation = dataService.getSwaggerLocation();
             description = (description == null) ? "" : description;
             serviceNamespace = dataService.getServiceNamespace();
             serviceNamespace = (serviceNamespace == null) ? "" : serviceNamespace;
@@ -260,6 +268,18 @@
                                 <td align="left"><textarea cols="40" rows="5"
                                            name="description"><%=Encode.forHtmlContent(description)%>
                                 </textarea></td>
+                            </tr>
+                            <tr>
+                                <td><fmt:message key="service.swaggerlocation"/></td>
+                                <td><input type="text" size="30" name="swaggerDefKey" id="swaggerDefKey"
+                                value="<%=Encode.forHtmlAttribute(swaggerLocation)%>" readonly="readonly"/></td>
+
+                                <td><a onclick="showResourceTree('swaggerDefKey', setValueConf , '/_system/config')"
+                                        style="background-image:url(images/registry_picker.gif);" class="icon-link"
+                                        href="#"> Configuration Registry </a></td>
+                                <td><a onclick="showResourceTree('swaggerDefKey', setValueGov , '/_system/governance')"
+                                        style="background-image:url(images/registry_picker.gif);" class="icon-link"
+                                        href="#"> Governance Registry </a></td>
                             </tr>
                         </table>
                     </td>
@@ -471,6 +491,15 @@
 </div>
 
 <script type="text/javascript">
+    function setValueConf() {
+        var elementId = 'swaggerDefKey';
+        $(elementId).value = $(elementId).value.replace("/_system/config", "conf:");
+    }
+    function setValueGov() {
+        var elementId = 'swaggerDefKey';
+        $(elementId).value = $(elementId).value.replace("/_system/governance", "gov:");
+    }
+
 var editingDataService = <%=editingDataService %> ;
 window.onload = onLoadPage();
     function showAdvancedServiceDetailsConfigurations() {

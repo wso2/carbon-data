@@ -102,6 +102,9 @@ public class Data extends DataServiceConfigurationElement{
 
     private AuthProvider authProvider;
 
+    // location where the swagger is stored in the registry.
+    private String swaggerLocation;
+
     public Data() {
         this.configs = new ArrayList<Config>();
         this.queries = new ArrayList<Query>();
@@ -379,6 +382,14 @@ public class Data extends DataServiceConfigurationElement{
 
     public void setAuthProvider(AuthProvider authProvider) {
         this.authProvider = authProvider;
+    }
+
+    public String getSwaggerLocation() {
+        return swaggerLocation;
+    }
+
+    public void setSwaggerLocation(String swaggerLocation) {
+        this.swaggerLocation = swaggerLocation;
     }
 
     /**
@@ -1033,6 +1044,11 @@ public class Data extends DataServiceConfigurationElement{
 		if (serviceName != null) {
 			setName(serviceName.getAttributeValue());
 		}
+        /* populate swagger location*/
+        OMAttribute swaggerLocation = dsXml.getAttribute(new QName(DBSFields.SWAGGER_LOCATION));
+        if (swaggerLocation != null) {
+            setSwaggerLocation(swaggerLocation.getAttributeValue());
+        }
 		/* There can be only one description */
 		OMElement desc = dsXml.getFirstChildWithName(new QName("description"));
 		if (desc != null) {
@@ -1390,6 +1406,9 @@ public class Data extends DataServiceConfigurationElement{
 		if (this.isBatchRequest()) {
 			 dataEl.addAttribute("enableBatchRequests", String.valueOf(this.isBatchRequest()), null);
 		}
+        if (this.getSwaggerLocation() != null && !this.getSwaggerLocation().isEmpty()) {
+            dataEl.addAttribute(DBSFields.SWAGGER_LOCATION, this.getSwaggerLocation(), null);
+        }
         if (this.isBoxcarring()) {
         	dataEl.addAttribute("enableBoxcarring", String.valueOf(this.isBoxcarring()), null);
         }

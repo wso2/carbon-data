@@ -31,6 +31,7 @@
 
     <%
  //retrieve value from serviceDetails.jsp
+    String swaggerLocation = request.getParameter("swaggerDefKey");
     String description = request.getParameter("description");
 	String serviceName = request.getParameter("serviceName");
     String batchRequest = request.getParameter("enableBatchReq");
@@ -72,6 +73,9 @@
         }
         if (description != null && description.trim().length() > 0) {
             dataService.setDescription(description);
+        }
+        if (swaggerLocation !=null && swaggerLocation.trim().length() > 0 ) {
+            dataService.setSwaggerLocation(swaggerLocation);
         }
         if (enableStreaming != null && enableStreaming.trim().length() > 0) {
         	dataService.setDisableStreaming(false);

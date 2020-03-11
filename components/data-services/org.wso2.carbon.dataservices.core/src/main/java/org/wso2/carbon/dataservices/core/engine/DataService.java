@@ -18,6 +18,10 @@
  */
 package org.wso2.carbon.dataservices.core.engine;
 
+import org.apache.axis2.description.AxisResource;
+import org.apache.axis2.description.AxisResourceMap;
+import org.apache.axis2.description.AxisResourceParameter;
+import org.apache.axis2.description.AxisResources;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.dataservices.common.DBConstants;
@@ -48,16 +52,17 @@ import javax.xml.stream.XMLStreamWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.List;
+
 
 /**
  * This class is the logical representation of a data service, and is the
  * location of all the queries, operations and configurations associated with a specific DS.
  */
-public class DataService {
+public class DataService implements AxisResources {
 
     private static final Log log = LogFactory.getLog(DataService.class);
 
@@ -188,6 +193,19 @@ public class DataService {
      * transport settings
      */
     private List<String> transports;
+
+    public String getSwaggerResourcePath() {
+        return swaggerResourcePath;
+    }
+
+    public void setSwaggerResourcePath(String swaggerResourcePath) {
+        this.swaggerResourcePath = swaggerResourcePath;
+    }
+
+    /**
+     * Swagger resource location in the registry.
+     */
+    private String swaggerResourcePath;
 
 	public DataService(String name, String description,
                        String defaultNamespace, String dsLocation, String serviceStatus,
@@ -697,4 +715,98 @@ public class DataService {
         return this.getDSSTxManager().isInDTX();
     }
 
+    /**
+     * Implement the AxisResources interface to return the API definition as an object.
+     *
+     * @return AxisResourceMap API as an AxisResourceMap
+     */
+    @Override
+    public AxisResourceMap getAxisResourceMap() {
+        AxisResourceMap axisResourceMap = new AxisResourceMap();
+        for (Map.Entry<ResourceID, Resource> entry : resourceMap.entrySet()) {
+            String resourcePath = entry.getKey().getPath();
+            String method = entry.getKey().getMethod();
+
+            AxisResource existingResource = axisResourceMap.getResources().get(resourcePath);
+            if (existingResource != null) {
+                // resource path same but different method
+                if (!existingResource.getMethods().contains(method)) {
+                    existingResource.setMethod(method);
+                    createResourceParameter(existingResource, entry.getValue(), method, resourcePath);
+                }
+            } else {
+                AxisResource axisResource = new AxisResource();
+                createResourceParameter(axisResource, entry.getValue(), method, resourcePath);
+                axisResource.setMethod(method);
+                axisResourceMap.addNewResource(resourcePath, axisResource);
+            }
+        }
+        return axisResourceMap;
+    }
+
+    // helper method to get the matching query param for a given with-param.
+    private QueryParam checkWithParamInQueryParams(ArrayList<QueryParam> paramList, String withParamName) {
+        for (QueryParam queryParam : paramList) {
+            if (queryParam.getName().equals(withParamName)) {
+                return queryParam;
+            }
+        }
+        return null;
+    }
+
+    // given a DSS data type this method will return the corresponding swagger data type.
+    private String dataTypeMapper(String dataServiceDataType) {
+        switch (dataServiceDataType) {
+            case DBConstants.DataTypes.BIT:
+                return DBConstants.SwaggerDataTypes.BOOLEAN;
+            case DBConstants.DataTypes.INTEGER:
+            case DBConstants.DataTypes.BIGINT:
+            case DBConstants.DataTypes.TINYINT:
+            case DBConstants.DataTypes.SMALLINT:
+            case DBConstants.DataTypes.DECIMAL:
+                return DBConstants.SwaggerDataTypes.INTEGER;
+            case DBConstants.DataTypes.DOUBLE:
+            case DBConstants.DataTypes.FLOAT:
+            case DBConstants.DataTypes.LONG:
+                return DBConstants.SwaggerDataTypes.NUMBER;
+            default:
+                return DBConstants.SwaggerDataTypes.STRING;
+        }
+    }
+
+    // this method will generate query and url parameters for a given resource in the API.
+    private void createResourceParameter(AxisResource axisResource, Resource resource, String method,
+                                         String resourcePath) {
+        ArrayList<QueryParam> queryParamsList =
+                new ArrayList<>(resource.getCallQuery().getQuery().getQueryParams());
+        Map<String, CallQuery.WithParam> withParamMap = resource.getCallQuery().getWithParams();
+        ArrayList<AxisResourceParameter> resourceParameterList = new ArrayList<>();
+
+        for (Map.Entry<String, CallQuery.WithParam> withParam : withParamMap.entrySet()) {
+            String queryParam = withParam.getValue().getParam();
+
+            if (queryParam != null && !queryParam.isEmpty()) {
+                String urlParameter = "{" + queryParam + "}";
+                AxisResourceParameter resourceParameter = new AxisResourceParameter();
+                resourceParameter.setParameterName(queryParam);
+                // setting the type of the parameter - query param or url param.
+                if (resourcePath.contains(urlParameter)) {
+                    resourceParameter.setParameterType(AxisResourceParameter.ParameterType.URL_PARAMETER);
+                } else {
+                    resourceParameter.setParameterType(AxisResourceParameter.ParameterType.QUERY_PARAMETER);
+                }
+
+                // setting the data type of the parameter.
+                QueryParam param = checkWithParamInQueryParams(queryParamsList, withParam.getValue().getName());
+                if (param != null) {
+                    resourceParameter.setParameterDataType(dataTypeMapper(param.getSqlType()));
+                } else {
+                    // If no entry found, add the default data type.
+                    resourceParameter.setParameterDataType(DBConstants.SwaggerDataTypes.STRING);
+                }
+                resourceParameterList.add(resourceParameter);
+            }
+        }
+        axisResource.addResourceParameter(method, resourceParameterList);
+    }
 }

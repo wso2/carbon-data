@@ -143,7 +143,17 @@ public class MongoQuery extends Query {
                     dataEntry.addValue(DBConstants.MongoDB.RESULT_COLUMN_NAME.toLowerCase(), new ParamValue(jsonString));
                 }
             } catch (NumberFormatException e1) {
-                throw new DataServiceFault("Error occurred when retrieving data. :" + e.getMessage());
+                // Or for exists operation. For exists operation it produces only true false value instead of json.
+                try {
+                    if(jsonString.trim().equalsIgnoreCase("true") ||
+                            jsonString.trim().equalsIgnoreCase("false")) {
+                        dataEntry.addValue(DBConstants.MongoDB.RESULT_COLUMN_NAME.toLowerCase(), new ParamValue(jsonString));
+                    } else {
+                        throw new DataServiceFault("Error occurred when retrieving data. :" + e.getMessage());
+                    }
+                } catch (Exception ex) {
+                    throw new DataServiceFault("Error occurred when retrieving data. :" + e.getMessage());
+                }
             }
         }
         return dataEntry;
@@ -284,6 +294,10 @@ public class MongoQuery extends Query {
             return DBConstants.MongoDB.MongoOperation.REMOVE;
         } else if (DBConstants.MongoDB.MongoOperationLabels.UPDATE.equals(operation)) {
             return DBConstants.MongoDB.MongoOperation.UPDATE;
+        } else if (DBConstants.MongoDB.MongoOperationLabels.EXISTS.equals(operation)) {
+            return DBConstants.MongoDB.MongoOperation.EXISTS;
+        }  else if (DBConstants.MongoDB.MongoOperationLabels.CREATE.equals(operation)) {
+            return DBConstants.MongoDB.MongoOperation.CREATE;
         } else {
             throw new DataServiceFault("Unknown MongoDB operation '" + operation + "'");
         }
@@ -338,6 +352,12 @@ public class MongoQuery extends Query {
                     break;
                 case REMOVE:
                     this.doRemove(collection, opQuery, mongoParams);
+                    break;
+                case EXISTS:
+                    this.dataIterator = this.isExist(collection);
+                    break;
+                case CREATE:
+                    this.createCollection(collection);
                     break;
                 case UPDATE:
                     if (request.length < 4) {
@@ -427,6 +447,17 @@ public class MongoQuery extends Query {
             } else {
                 throw new DataServiceFault("Mongo remove statements must contain a query");
             }
+        }
+
+        private Iterator<String> isExist(MongoCollection collection) {
+            Boolean isExists = getJongo().getDatabase().collectionExists(collection.getName());
+            List<String> result = new ArrayList<>();
+            result.add(isExists.toString());
+            return result.iterator();
+        }
+
+        private void createCollection(MongoCollection collection) {
+            getJongo().getDatabase().createCollection(collection.getName(), null);
         }
 
         private void doUpdate(MongoCollection collection, String opQuery, Object[] parameters, String modifier,

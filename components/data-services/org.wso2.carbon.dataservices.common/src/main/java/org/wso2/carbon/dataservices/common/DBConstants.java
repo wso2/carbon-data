@@ -84,7 +84,8 @@ public final class DBConstants {
     public static final String SQL_DRIVER_CLASS_NAME = "org.wso2.carbon.dataservices.sql.driver.TDriver";
     public static final String SECURITY_MODULE_NAME = "rampart";
     public static final String TENANT_IN_ONLY_MESSAGE = "TENANT_IN_ONLY_MESSAGE";
-        
+    public static final String DISABLE_CURRENT_PARAMS_IN_LOG = "dss.disable.current.params";
+
     /**
      * Codes to be used as fault codes.
      */

@@ -668,6 +668,8 @@ public final class DBConstants {
             public static final String INSERT = "insert";
             public static final String REMOVE = "remove";
             public static final String UPDATE = "update";
+            public static final String EXISTS = "exists";
+            public static final String CREATE = "create";
 
         }
 
@@ -678,7 +680,10 @@ public final class DBConstants {
             FIND_ONE,
             INSERT,
             REMOVE,
-            UPDATE
+            UPDATE,
+            EXISTS,
+            CREATE
+            
         }
 
         public static class MongoAuthenticationTypes {

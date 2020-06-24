@@ -398,7 +398,7 @@ public class CassandraDataHandler implements ODataDataHandler {
                         paramValue = row.getString(i);
                         break;
                     case TIMESTAMP:
-                        paramValue = row.isNull(i) ? null : ConverterUtil.convertToString(row.getDate(i));
+                        paramValue = row.isNull(i) ? null : ConverterUtil.convertToString(row.getTimestamp(i));
                         break;
                     case UUID:
                         paramValue = row.isNull(i) ? null : ConverterUtil.convertToString(row.getUUID(i));

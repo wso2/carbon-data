@@ -81,7 +81,8 @@ public class DSOMDataSource implements OMDataSource {
 	}
 
 	public void serialize(OutputStream output, OMOutputFormat format) throws XMLStreamException {
-		XMLStreamWriter xmlWriter = DBUtils.getXMLOutputFactory().createXMLStreamWriter(output);
+		XMLStreamWriter xmlWriter = DBUtils.getXMLOutputFactory().createXMLStreamWriter(output,
+				format.getCharSetEncoding());
 		this.serialize(xmlWriter);
 	}
 	

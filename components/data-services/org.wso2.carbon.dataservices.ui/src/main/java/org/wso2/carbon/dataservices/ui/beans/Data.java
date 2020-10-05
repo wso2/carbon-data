@@ -102,6 +102,10 @@ public class Data extends DataServiceConfigurationElement{
 
     private AuthProvider authProvider;
 
+    private boolean enableSec;
+
+    private String policy;
+
     public Data() {
         this.configs = new ArrayList<Config>();
         this.queries = new ArrayList<Query>();
@@ -379,6 +383,22 @@ public class Data extends DataServiceConfigurationElement{
 
     public void setAuthProvider(AuthProvider authProvider) {
         this.authProvider = authProvider;
+    }
+
+    public boolean isEnableSec() {
+        return enableSec;
+    }
+
+    public void setEnableSec(boolean enableSec) {
+        this.enableSec = enableSec;
+    }
+
+    public String getPolicy() {
+        return policy;
+    }
+
+    public void setPolicy(String policy) {
+        this.policy = policy;
     }
 
     /**
@@ -1157,6 +1177,16 @@ public class Data extends DataServiceConfigurationElement{
             OMElement eventsEle = events.next();
             this.events.add(this.getEvent(eventsEle));
         }
+
+        OMElement policyElem = dsXml.getFirstChildWithName(new QName("policy"));
+        if (policyElem != null) {
+            this.policy = policyElem.getAttributeValue(new QName("key"));
+        }
+
+        OMElement enableSecElem = dsXml.getFirstChildWithName(new QName("enableSec"));
+        if (enableSecElem != null) {
+            this.enableSec = true;
+        }
         
         /* populate XADataSource objects */
         Iterator<OMElement> xADataSource = dsXml.getChildrenWithName(new QName("xa-datasource"));
@@ -1527,6 +1557,17 @@ public class Data extends DataServiceConfigurationElement{
         /* add authprovider to config */
         if (this.getAuthProvider() != null) {
             dataEl.addChild(this.getAuthProvider().buildXML());
+        }
+        /* adding policy to data service */
+        if (this.policy != null) {
+            OMElement policyElem = fac.createOMElement("policy", null);
+            policyElem.addAttribute("key", this.getPolicy(), null);
+            dataEl.addChild(policyElem);
+        }
+        /* adding enableSec to data service */
+        if (isEnableSec()) {
+            OMElement enableSecElem = fac.createOMElement("enableSec", null);
+            dataEl.addChild(enableSecElem);
         }
 		return dataEl;
 	}

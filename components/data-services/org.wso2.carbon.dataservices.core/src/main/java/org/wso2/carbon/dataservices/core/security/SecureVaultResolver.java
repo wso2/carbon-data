@@ -91,6 +91,7 @@ public class SecureVaultResolver {
             encryptedValue = registryResource.getProperty(alias);
         }
         if (encryptedValue == null) {
+            log.error("Calling for a non existence alias: " + alias);
             return alias;
         }
 

@@ -55,8 +55,8 @@ public class CipherInitializer {
 
     private CipherInitializer() {
         super();
-        boolean initPro = init();
-        if (initPro) {
+        boolean initProperties = init();
+        if (initProperties) {
             // initialize the cipher decryption provider for decryption purposes.
             initCipherDecryptProvider();
         } else {
@@ -69,7 +69,7 @@ public class CipherInitializer {
     private boolean init() {
         Properties properties = loadProperties();
 
-        if (properties == null) {
+        if (properties.isEmpty()) {
             log.error("KeyStore configuration properties cannot be found");
             return false;
         }
@@ -85,15 +85,6 @@ public class CipherInitializer {
                                   " Will use synapse properties");
             }
             configurationProperties = properties;
-        }
-
-        String globalSecretProvider =
-                MiscellaneousUtil.getProperty(configurationProperties, SecureVaultConstants.SECRET_PROVIDER_PROPERTY,
-                                              null);
-        if (globalSecretProvider == null || "".equals(globalSecretProvider)) {
-            if (log.isDebugEnabled()) {
-                log.debug("No global secret provider is configured.");
-            }
         }
 
         String repositoriesString = MiscellaneousUtil.getProperty(configurationProperties,
@@ -150,7 +141,7 @@ public class CipherInitializer {
                     + SecureVaultConstants.DOT + SecureVaultConstants.PROVIDER_PROPERTY;
             String provider = MiscellaneousUtil.getProperty(configurationProperties, sb, null);
             if (provider == null || "".equals(provider)) {
-                handleException("Repository provider cannot be null ");
+                handleException("Repository provider cannot be null.");
             }
 
             if (log.isDebugEnabled()) {
@@ -268,5 +259,6 @@ public class CipherInitializer {
 
     private static void handleException(String msg) {
         //throw new CipherToolException(msg);
+        log.error(msg);
     }
 }

@@ -77,9 +77,11 @@ import org.wso2.carbon.dataservices.core.jmx.DataServiceInstance;
 import org.wso2.carbon.dataservices.core.jmx.DataServiceInstanceMBean;
 import org.wso2.carbon.dataservices.core.odata.ODataServiceHandler;
 import org.wso2.carbon.dataservices.core.odata.ODataServiceRegistry;
+import org.wso2.carbon.dataservices.core.security.SecureVaultResolver;
 import org.wso2.carbon.ndatasource.common.DataSourceConstants;
 import org.wso2.carbon.ndatasource.common.DataSourceException;
 import org.wso2.carbon.ndatasource.core.DataSourceManager;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.utils.CarbonUtils;
 
 import javax.management.MBeanServer;
@@ -919,6 +921,8 @@ public class DBDeployer extends AbstractDeployer {
 			throw new DataServiceFault(e, "Error while parsing the service configuration file.");
 		} catch (AxisFault e) {
 			throw new DataServiceFault(e);
+		} catch (RegistryException e) {
+			throw new DataServiceFault(e, "Error while resolving the secrets in the service configuration file.");
 		} finally {
 			try {
 				if (fis != null) {
@@ -1208,12 +1212,18 @@ public class DBDeployer extends AbstractDeployer {
     }
 
     @SuppressWarnings("unchecked")
-	private void secureVaultResolve(OMElement dbsElement) {
+	private void secureVaultResolve(OMElement dbsElement) throws RegistryException {
     	String secretAliasAttr = dbsElement.getAttributeValue(
 			    new QName(DataSourceConstants.SECURE_VAULT_NS, DataSourceConstants.SECRET_ALIAS_ATTR_NAME));
     	if (secretAliasAttr != null) {
     		dbsElement.setText(DBUtils.loadFromSecureVault(secretAliasAttr));
     	}
+    	// check for existence of the vault-lookup function
+    	String elementText = dbsElement.getText();
+    	if (SecureVaultResolver.checkVaultLookupPattersExists(elementText)) {
+    		dbsElement.setText(SecureVaultResolver.resolve(elementText));
+    	}
+
     	Iterator<OMElement> childEls = (Iterator<OMElement>) dbsElement.getChildElements();
     	while (childEls.hasNext()) {
     		this.secureVaultResolve(childEls.next());

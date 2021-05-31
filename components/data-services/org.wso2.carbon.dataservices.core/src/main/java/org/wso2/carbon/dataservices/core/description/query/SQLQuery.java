@@ -2527,7 +2527,7 @@ public class SQLQuery extends ExpressionQuery implements BatchRequestParticipant
         String query;
         try {
            query = sqlQuery.substring(0, sqlQuery.indexOf(" ")).toUpperCase();
-        } catch (Exception e) {
+        } catch (IndexOutOfBoundsException e) {
             return QueryType.UNDEFINED;
         }
         switch (query) {

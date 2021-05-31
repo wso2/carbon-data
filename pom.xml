@@ -1253,7 +1253,7 @@
         <opencsv.orbit.version>1.8.wso2v1</opencsv.orbit.version>
         <opencsv.orbit.imp.pkg.version>0.0.0</opencsv.orbit.imp.pkg.version> <!--todo change this to appropriate version range ([1.8.wso2v1,1.9)) after osgi bundle was corrected -->
 
-        <mysql.connector.version>5.1.35</mysql.connector.version>
+        <mysql.connector.version>8.0.16</mysql.connector.version>
         <derby.orbit.version>10.3.2.1wso2v1</derby.orbit.version>
 
 

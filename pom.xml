@@ -1326,7 +1326,7 @@
         <apache.htrace.version>3.1.0-incubating.wso2v1</apache.htrace.version>
         <google.protobuf.version>2.6.1</google.protobuf.version>
         <protobuf.fragment.version>2.5.0.wso2v1</protobuf.fragment.version>
-        <xerces.version>2.11.0</xerces.version>
+        <xerces.version>2.12.0</xerces.version>
         <commons.codec.import.version>[1.4, 1.5)</commons.codec.import.version>
         <org.htrace.import.version>[3.0.4, 3.1.0)</org.htrace.import.version>
         <htrace.import.version>[3.1.0-incubating, 3.2.0)</htrace.import.version>

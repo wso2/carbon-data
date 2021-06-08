@@ -1058,10 +1058,10 @@ public class TResultSet implements ResultSet {
         return columns;
     }
 
-    private Object getValue(int columnIndex) throws SQLException {
+    private Object getValue(int columnIndex) {
         DataCell cell = getCurrentRow().getCells().get(columnIndex);
         if (cell == null) {
-            throw new SQLException("Error occurred while extracting the value");
+            return null;
         }
         return cell.getCellValue();
     }

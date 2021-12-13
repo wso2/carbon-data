@@ -145,6 +145,8 @@
     String mongoDBMaxWait = request.getParameter(DBConstants.MongoDB.MAX_WAIT_TIME);
     String mongoDBSocketTimeout = request.getParameter(DBConstants.MongoDB.SOCKET_TIMEOUT);
     String mongoDBConnectionsPerHost = request.getParameter(DBConstants.MongoDB.CONNECTIONS_PER_HOST);
+    String mongoAuthSource = request.getParameter(DBConstants.MongoDB.AUTH_SOURCE);
+    String mongoEnableSSL = request.getParameter(DBConstants.MongoDB.SSL_ENABLED);
     String mongoDBThreadsAllowed= request.getParameter(DBConstants.MongoDB.THREADS_ALLOWED_TO_BLOCK_CONN_MULTIPLIER);
 
     String gspreadDatasource = request.getParameter(DBConstants.GSpread.DATASOURCE);
@@ -504,6 +506,8 @@
                     updateConfiguration(dsConfig, DBConstants.MongoDB.MAX_WAIT_TIME, mongoDBMaxWait);
                     updateConfiguration(dsConfig, DBConstants.MongoDB.SOCKET_TIMEOUT, mongoDBSocketTimeout);
                     updateConfiguration(dsConfig, DBConstants.MongoDB.CONNECTIONS_PER_HOST, mongoDBConnectionsPerHost);
+                    updateConfiguration(dsConfig, DBConstants.MongoDB.AUTH_SOURCE, mongoAuthSource);
+                    updateConfiguration(dsConfig, DBConstants.MongoDB.SSL_ENABLED, mongoEnableSSL);
                     updateConfiguration(dsConfig, DBConstants.MongoDB.THREADS_ALLOWED_TO_BLOCK_CONN_MULTIPLIER, mongoDBThreadsAllowed);
                     dsConfig.setExposeAsOData(isOData);
                 } else if (DBConstants.DataSourceTypes.GDATA_SPREADSHEET.equals(datasourceType)) {

@@ -550,6 +550,12 @@ private Config addNotAvailableFunctions(Config config,String selectedType, HttpS
         if (config.getPropertyValue(DBConstants.MongoDB.AUTHENTICATION_TYPE) == null) {
             config.addProperty(DBConstants.MongoDB.AUTHENTICATION_TYPE, "");
         }
+        if (config.getPropertyValue(DBConstants.MongoDB.AUTH_SOURCE) == null) {
+        	config.addProperty(DBConstants.MongoDB.AUTH_SOURCE, "");
+        }
+        if (config.getPropertyValue(DBConstants.MongoDB.SSL_ENABLED) == null) {
+        	config.addProperty(DBConstants.MongoDB.SSL_ENABLED, "");
+        }
         if (config.getPropertyValue(DBConstants.MongoDB.USERNAME) == null) {
             config.addProperty(DBConstants.MongoDB.USERNAME, "");
         }
@@ -896,6 +902,8 @@ private String getRefreshToken(String gSpreadJDBCUrl) {
                     newConfig.addProperty(DBConstants.MongoDB.SERVERS, "");
                     newConfig.addProperty(DBConstants.MongoDB.DATABASE, "");
                     newConfig.addProperty(DBConstants.MongoDB.AUTHENTICATION_TYPE, "");
+                    newConfig.addProperty(DBConstants.MongoDB.AUTH_SOURCE, "");
+                    newConfig.addProperty(DBConstants.MongoDB.SSL_ENABLED, "");
                     newConfig.addProperty(DBConstants.MongoDB.USERNAME, "");
                     newConfig.addProperty(DBConstants.MongoDB.PASSWORD, "");
                     newConfig.addProperty(DBConstants.MongoDB.WRITE_CONCERN, "");
@@ -1060,6 +1068,8 @@ private String getRefreshToken(String gSpreadJDBCUrl) {
                     conf.addProperty(DBConstants.MongoDB.SERVERS, "");
                     conf.addProperty(DBConstants.MongoDB.DATABASE, "");
                     conf.addProperty(DBConstants.MongoDB.AUTHENTICATION_TYPE, "");
+                    conf.addProperty(DBConstants.MongoDB.AUTH_SOURCE, "");
+                    conf.addProperty(DBConstants.MongoDB.SSL_ENABLED, "");
                     conf.addProperty(DBConstants.MongoDB.USERNAME, "");
                     conf.addProperty(DBConstants.MongoDB.PASSWORD, "");
                     conf.addProperty(DBConstants.MongoDB.WRITE_CONCERN, "");
@@ -1835,7 +1845,7 @@ private String getRefreshToken(String gSpreadJDBCUrl) {
             <option value="false">false</option>
             <% } %>
         </select>
-        <% } else if (propertyName.equals(DBConstants.Cassandra.ENABLE_JMX_REPORTING)
+        <% } else if (propertyName.equals(DBConstants.Cassandra.ENABLE_JMX_REPORTING) || propertyName.equals(DBConstants.MongoDB.SSL_ENABLED)
                   || propertyName.equals(DBConstants.Cassandra.ENABLE_METRICS) || propertyName.equals(DBConstants.Cassandra.KEEP_ALIVE)
                   || propertyName.equals(DBConstants.Cassandra.REUSE_ADDRESS) || propertyName.equals(DBConstants.Cassandra.TCP_NODELAY)
                   || propertyName.equals(DBConstants.Cassandra.ENABLE_SSL) || propertyName.equals(DBConstants.Cassandra.ALLOW_REMOTE_DCS_FOR_LOCAL_CONSISTENCY_LEVEL))

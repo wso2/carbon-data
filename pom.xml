@@ -1308,7 +1308,7 @@
 		<mongo.driver.version>3.4.1</mongo.driver.version>
         <cassandra-driver-core.version>3.7.1</cassandra-driver-core.version>
         <cassandra-driver-core.imp.pkg.version>[3.7.1,4.0.0)</cassandra-driver-core.imp.pkg.version>
-        <netty.version>4.1.68.Final</netty.version>
+        <netty.version>4.1.115.Final</netty.version>
         <netty.imp.pkg.version>[4.0.33.Final,4.1.0)</netty.imp.pkg.version>
 
         <snappy-java.orbit.version>1.1.1.6.wso2v1</snappy-java.orbit.version>
